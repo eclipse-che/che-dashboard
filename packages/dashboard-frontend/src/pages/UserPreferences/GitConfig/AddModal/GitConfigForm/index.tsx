@@ -22,6 +22,11 @@ const MAX_LENGTH = 4096;
 export const MAX_LENGTH_ERROR = `The value is too long. The maximum length is ${MAX_LENGTH} characters.`;
 export const WRONG_TYPE_ERROR = 'This file type is not supported.';
 
+// Validation constants for user fields
+const USER_NAME_MAX_LENGTH = 128;
+const USER_EMAIL_MAX_LENGTH = 128;
+const USER_EMAIL_REGEX = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
 export type Props = {
   gitConfig: GitConfigStore.GitConfig | undefined;
   onChange: (gitConfig: GitConfigStore.GitConfig, isValid: boolean) => void;
@@ -99,11 +104,29 @@ export class GitConfigForm extends React.Component<Props, State> {
   }
 
   private isGitConfig(gitConfig: unknown): gitConfig is GitConfigStore.GitConfig {
-    return (
-      (gitConfig as GitConfigStore.GitConfig).user !== undefined &&
-      (gitConfig as GitConfigStore.GitConfig).user.email !== undefined &&
-      (gitConfig as GitConfigStore.GitConfig).user.name !== undefined
-    );
+    const config = gitConfig as GitConfigStore.GitConfig;
+
+    // Check if user section exists
+    if (!config.user || !config.user.email || !config.user.name) {
+      return false;
+    }
+
+    // Validate name
+    const name = config.user.name;
+    if (name.length === 0 || name.length > USER_NAME_MAX_LENGTH) {
+      return false;
+    }
+
+    // Validate email
+    const email = config.user.email;
+    if (email.length === 0 || email.length > USER_EMAIL_MAX_LENGTH) {
+      return false;
+    }
+    if (!USER_EMAIL_REGEX.test(email)) {
+      return false;
+    }
+
+    return true;
   }
 
   private getErrorMessage(gitConfigStr: string | undefined, isUpload: boolean): string | undefined {

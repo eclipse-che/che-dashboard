@@ -58,6 +58,41 @@ describe('GitConfigForm', () => {
 
     expect(mockOnChange).toHaveBeenCalledWith({ user: { name: 'User One' } }, false);
   });
+
+  it('should reject invalid email format', async () => {
+    renderComponent();
+
+    const gitConfigField = screen.getByTestId('submit-invalid-email-git-config');
+    await userEvent.click(gitConfigField);
+
+    expect(mockOnChange).toHaveBeenCalledWith(
+      { user: { email: 'invalid-email', name: 'User One' } },
+      false,
+    );
+  });
+
+  it('should reject empty name', async () => {
+    renderComponent();
+
+    const gitConfigField = screen.getByTestId('submit-empty-name-git-config');
+    await userEvent.click(gitConfigField);
+
+    // When name is empty, the parser omits it from the object
+    expect(mockOnChange).toHaveBeenCalledWith({ user: { email: 'user@test.com' } }, false);
+  });
+
+  it('should reject name exceeding max length', async () => {
+    renderComponent();
+
+    const gitConfigField = screen.getByTestId('submit-long-name-git-config');
+    await userEvent.click(gitConfigField);
+
+    const longName = 'a'.repeat(129);
+    expect(mockOnChange).toHaveBeenCalledWith(
+      { user: { email: 'user@test.com', name: longName } },
+      false,
+    );
+  });
 });
 
 function getComponent(gitConfig?: GitConfigStore.GitConfig) {

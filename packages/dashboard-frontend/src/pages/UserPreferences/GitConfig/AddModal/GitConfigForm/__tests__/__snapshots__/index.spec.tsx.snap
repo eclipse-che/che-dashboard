@@ -42,6 +42,21 @@ exports[`GitConfigForm snapshot with predefined git configuration 1`] = `
           onClick={[Function]}
           type="button"
         />
+        <input
+          data-testid="submit-invalid-email-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-empty-name-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-long-name-git-config"
+          onClick={[Function]}
+          type="button"
+        />
       </div>
     </div>
   </div>
@@ -83,6 +98,21 @@ exports[`GitConfigForm snapshot without predefined git configuration 1`] = `
         />
         <input
           data-testid="submit-valid-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-invalid-email-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-empty-name-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-long-name-git-config"
           onClick={[Function]}
           type="button"
         />

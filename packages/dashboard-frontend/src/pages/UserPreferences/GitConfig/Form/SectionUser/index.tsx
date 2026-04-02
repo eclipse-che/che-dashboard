@@ -24,8 +24,24 @@ export type Props = {
 };
 
 export class GitConfigSectionUser extends React.PureComponent<Props> {
-  private handleChange(partialConfigUser: Partial<GitConfig['user']>, isValid: boolean): void {
+  private isNameValid = true;
+  private isEmailValid = true;
+
+  private handleChange(
+    partialConfigUser: Partial<GitConfig['user']>,
+    fieldName: 'name' | 'email',
+    isValid: boolean,
+  ): void {
     const { config, onChange } = this.props;
+
+    // Update the validation state synchronously
+    if (fieldName === 'name') {
+      this.isNameValid = isValid;
+    } else {
+      this.isEmailValid = isValid;
+    }
+
+    const isFormValid = this.isNameValid && this.isEmailValid;
 
     onChange(
       {
@@ -35,7 +51,7 @@ export class GitConfigSectionUser extends React.PureComponent<Props> {
           ...partialConfigUser,
         },
       },
-      isValid,
+      isFormValid,
     );
   }
 
@@ -46,12 +62,12 @@ export class GitConfigSectionUser extends React.PureComponent<Props> {
         <GitConfigUserName
           isLoading={isLoading}
           value={config.user.name}
-          onChange={(name, isValid) => this.handleChange({ name }, isValid)}
+          onChange={(name, isValid) => this.handleChange({ name }, 'name', isValid)}
         />
         <GitConfigUserEmail
           isLoading={isLoading}
           value={config.user.email}
-          onChange={(email, isValid) => this.handleChange({ email }, isValid)}
+          onChange={(email, isValid) => this.handleChange({ email }, 'email', isValid)}
         />
       </FormSection>
     );

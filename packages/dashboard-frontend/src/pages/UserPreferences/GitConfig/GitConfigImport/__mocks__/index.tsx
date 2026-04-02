@@ -33,6 +33,24 @@ export class GitConfigImport extends React.PureComponent<Props> {
             onChange('[user]\n\tname = User One\n\temail = user-1@chetest.com\n', true)
           }
         />
+        <input
+          data-testid="submit-invalid-email-git-config"
+          type="button"
+          onClick={() => onChange('[user]\n\tname = User One\n\temail = invalid-email\n', false)}
+        />
+        <input
+          data-testid="submit-empty-name-git-config"
+          type="button"
+          onClick={() => onChange('[user]\n\tname = \n\temail = user@test.com\n', false)}
+        />
+        <input
+          data-testid="submit-long-name-git-config"
+          type="button"
+          onClick={() => {
+            const longName = 'a'.repeat(129);
+            onChange(`[user]\n\tname = ${longName}\n\temail = user@test.com\n`, false);
+          }}
+        />
       </div>
     );
   }
