@@ -49,6 +49,13 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
                 value="onError"
               />
               <input
+                data-testid="onWarning"
+                name="onWarning"
+                onClick={[Function]}
+                type="button"
+                value="onWarning"
+              />
+              <input
                 data-testid="onRestart"
                 name="onRestart"
                 onClick={[Function]}
@@ -103,6 +110,13 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
                 value="onError"
               />
               <input
+                data-testid="onWarning"
+                name="onWarning"
+                onClick={[Function]}
+                type="button"
+                value="onWarning"
+              />
+              <input
                 data-testid="onRestart"
                 name="onRestart"
                 onClick={[Function]}
@@ -155,6 +169,13 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
                 onClick={[Function]}
                 type="button"
                 value="onError"
+              />
+              <input
+                data-testid="onWarning"
+                name="onWarning"
+                onClick={[Function]}
+                type="button"
+                value="onWarning"
               />
               <input
                 data-testid="onRestart"
@@ -214,6 +235,13 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
                     value="onError"
                   />
                   <input
+                    data-testid="onWarning"
+                    name="onWarning"
+                    onClick={[Function]}
+                    type="button"
+                    value="onWarning"
+                  />
+                  <input
                     data-testid="onRestart"
                     name="onRestart"
                     onClick={[Function]}
@@ -268,6 +296,13 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
                     value="onError"
                   />
                   <input
+                    data-testid="onWarning"
+                    name="onWarning"
+                    onClick={[Function]}
+                    type="button"
+                    value="onWarning"
+                  />
+                  <input
                     data-testid="onRestart"
                     name="onRestart"
                     onClick={[Function]}
@@ -320,6 +355,13 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
                     onClick={[Function]}
                     type="button"
                     value="onError"
+                  />
+                  <input
+                    data-testid="onWarning"
+                    name="onWarning"
+                    onClick={[Function]}
+                    type="button"
+                    value="onWarning"
                   />
                   <input
                     data-testid="onRestart"
@@ -378,6 +420,13 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
                 value="onError"
               />
               <input
+                data-testid="onWarning"
+                name="onWarning"
+                onClick={[Function]}
+                type="button"
+                value="onWarning"
+              />
+              <input
                 data-testid="onRestart"
                 name="onRestart"
                 onClick={[Function]}
@@ -432,6 +481,13 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
                 value="onError"
               />
               <input
+                data-testid="onWarning"
+                name="onWarning"
+                onClick={[Function]}
+                type="button"
+                value="onWarning"
+              />
+              <input
                 data-testid="onRestart"
                 name="onRestart"
                 onClick={[Function]}
@@ -473,7 +529,7 @@ exports[`LoaderProgress workspace starting flow snapshot 1`] = `
           aria-current="step"
           aria-disabled={null}
           className="pf-v6-c-wizard__nav-link pf-m-current"
-          data-ouia-component-id="OUIA-Generated-WizardNavItem-94"
+          data-ouia-component-id="OUIA-Generated-WizardNavItem-118"
           data-ouia-component-type="PF6/WizardNavItem"
           data-ouia-safe={true}
           disabled={false}
@@ -503,6 +559,13 @@ exports[`LoaderProgress workspace starting flow snapshot 1`] = `
                 value="onError"
               />
               <input
+                data-testid="onWarning"
+                name="onWarning"
+                onClick={[Function]}
+                type="button"
+                value="onWarning"
+              />
+              <input
                 data-testid="onRestart"
                 name="onRestart"
                 onClick={[Function]}
@@ -527,7 +590,7 @@ exports[`LoaderProgress workspace starting flow snapshot 1`] = `
           aria-current={false}
           aria-disabled={null}
           className="pf-v6-c-wizard__nav-link"
-          data-ouia-component-id="OUIA-Generated-WizardNavItem-95"
+          data-ouia-component-id="OUIA-Generated-WizardNavItem-119"
           data-ouia-component-type="PF6/WizardNavItem"
           data-ouia-safe={true}
           disabled={false}
@@ -557,6 +620,13 @@ exports[`LoaderProgress workspace starting flow snapshot 1`] = `
                 value="onError"
               />
               <input
+                data-testid="onWarning"
+                name="onWarning"
+                onClick={[Function]}
+                type="button"
+                value="onWarning"
+              />
+              <input
                 data-testid="onRestart"
                 name="onRestart"
                 onClick={[Function]}
@@ -581,7 +651,7 @@ exports[`LoaderProgress workspace starting flow snapshot 1`] = `
           aria-current={false}
           aria-disabled={null}
           className="pf-v6-c-wizard__nav-link"
-          data-ouia-component-id="OUIA-Generated-WizardNavItem-96"
+          data-ouia-component-id="OUIA-Generated-WizardNavItem-120"
           data-ouia-component-type="PF6/WizardNavItem"
           data-ouia-safe={true}
           disabled={false}
@@ -611,6 +681,13 @@ exports[`LoaderProgress workspace starting flow snapshot 1`] = `
                 value="onError"
               />
               <input
+                data-testid="onWarning"
+                name="onWarning"
+                onClick={[Function]}
+                type="button"
+                value="onWarning"
+              />
+              <input
                 data-testid="onRestart"
                 name="onRestart"
                 onClick={[Function]}
@@ -635,7 +712,7 @@ exports[`LoaderProgress workspace starting flow snapshot 1`] = `
           aria-current={false}
           aria-disabled={null}
           className="pf-v6-c-wizard__nav-link"
-          data-ouia-component-id="OUIA-Generated-WizardNavItem-97"
+          data-ouia-component-id="OUIA-Generated-WizardNavItem-121"
           data-ouia-component-type="PF6/WizardNavItem"
           data-ouia-safe={true}
           disabled={false}
@@ -663,6 +740,13 @@ exports[`LoaderProgress workspace starting flow snapshot 1`] = `
                 onClick={[Function]}
                 type="button"
                 value="onError"
+              />
+              <input
+                data-testid="onWarning"
+                name="onWarning"
+                onClick={[Function]}
+                type="button"
+                value="onWarning"
               />
               <input
                 data-testid="onRestart"

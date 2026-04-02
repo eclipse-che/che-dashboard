@@ -258,6 +258,21 @@ class Progress extends React.Component<Props, State> {
     });
   }
 
+  private handleStepsShowWarning(step: StepId, alertItem: AlertItem): void {
+    if (step !== this.state.activeStepId) {
+      return;
+    }
+
+    const { alertItems } = this.state;
+    if (alertItems.some(item => item.key === alertItem.key)) {
+      return;
+    }
+
+    this.setState({
+      alertItems: [...alertItems, alertItem],
+    });
+  }
+
   private handleCloseStepAlert(key: string): void {
     const { alertItems } = this.state;
 
@@ -351,6 +366,7 @@ class Progress extends React.Component<Props, State> {
           navigate={navigate}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.INITIALIZE, alertItem)}
+          onWarning={alertItem => this.handleStepsShowWarning(Step.INITIALIZE, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
           onNextStep={() => this.handleStepsGoToNext(Step.INITIALIZE)}
           onRestart={tab => this.handleStepsRestart(Step.INITIALIZE, tab)}
@@ -376,6 +392,7 @@ class Progress extends React.Component<Props, State> {
           navigate={navigate}
           matchParams={matchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.INITIALIZE, alertItem)}
+          onWarning={alertItem => this.handleStepsShowWarning(Step.INITIALIZE, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
           onNextStep={() => this.handleStepsGoToNext(Step.INITIALIZE)}
           onRestart={tab => this.handleStepsRestart(Step.INITIALIZE, tab)}
@@ -402,6 +419,7 @@ class Progress extends React.Component<Props, State> {
             navigate={navigate}
             matchParams={matchParams}
             onError={alertItem => this.handleStepsShowAlert(Step.LIMIT_CHECK, alertItem)}
+            onWarning={alertItem => this.handleStepsShowWarning(Step.LIMIT_CHECK, alertItem)}
             onHideError={key => this.handleCloseStepAlert(key)}
             onNextStep={() => this.handleStepsGoToNext(Step.LIMIT_CHECK)}
             onRestart={tab => this.handleStepsRestart(Step.LIMIT_CHECK, tab)}
@@ -437,6 +455,7 @@ class Progress extends React.Component<Props, State> {
             navigate={navigate}
             searchParams={searchParams}
             onError={alertItem => this.handleStepsShowAlert(Step.CREATE, alertItem)}
+            onWarning={alertItem => this.handleStepsShowWarning(Step.CREATE, alertItem)}
             onHideError={key => this.handleCloseStepAlert(key)}
             onNextStep={() => this.handleStepsGoToNext(Step.CREATE)}
             onRestart={tab => this.handleStepsRestart(Step.CREATE, tab)}
@@ -463,6 +482,7 @@ class Progress extends React.Component<Props, State> {
           navigate={navigate}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.CONFLICT_CHECK, alertItem)}
+          onWarning={alertItem => this.handleStepsShowWarning(Step.CONFLICT_CHECK, alertItem)}
           onHideError={alertId => this.handleCloseStepAlert(alertId)}
           onNextStep={() => this.handleStepsGoToNext(Step.CONFLICT_CHECK)}
           onRestart={tab => this.handleStepsRestart(Step.CONFLICT_CHECK, tab)}
@@ -487,6 +507,7 @@ class Progress extends React.Component<Props, State> {
           navigate={navigate}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.FETCH, alertItem)}
+          onWarning={alertItem => this.handleStepsShowWarning(Step.FETCH, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
           onNextStep={() => this.handleStepsGoToNext(Step.FETCH)}
           onRestart={tab => this.handleStepsRestart(Step.FETCH, tab)}
@@ -511,6 +532,7 @@ class Progress extends React.Component<Props, State> {
           navigate={navigate}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.APPLY, alertItem)}
+          onWarning={alertItem => this.handleStepsShowWarning(Step.APPLY, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
           onNextStep={() => this.handleStepsGoToNext(Step.APPLY)}
           onRestart={tab => this.handleStepsRestart(Step.APPLY, tab)}
@@ -535,6 +557,7 @@ class Progress extends React.Component<Props, State> {
           navigate={navigate}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.FETCH, alertItem)}
+          onWarning={alertItem => this.handleStepsShowWarning(Step.FETCH, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
           onNextStep={() => this.handleStepsGoToNext(Step.FETCH)}
           onRestart={tab => this.handleStepsRestart(Step.FETCH, tab)}
@@ -559,6 +582,7 @@ class Progress extends React.Component<Props, State> {
           navigate={navigate}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.APPLY, alertItem)}
+          onWarning={alertItem => this.handleStepsShowWarning(Step.APPLY, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
           onNextStep={() => this.handleStepsGoToNext(Step.APPLY)}
           onRestart={tab => this.handleStepsRestart(Step.APPLY, tab)}
@@ -591,6 +615,7 @@ class Progress extends React.Component<Props, State> {
             distance={this.getDistance(Step.START)}
             hasChildren={showChildren}
             onError={alertItem => this.handleStepsShowAlert(Step.START, alertItem)}
+            onWarning={alertItem => this.handleStepsShowWarning(Step.START, alertItem)}
             onHideError={key => this.handleCloseStepAlert(key)}
             onNextStep={() => this.handleStepsGoToNext(Step.START)}
             onRestart={tab => this.handleStepsRestart(Step.START, tab)}
@@ -608,6 +633,7 @@ class Progress extends React.Component<Props, State> {
             distance={this.getDistance(Step.OPEN)}
             hasChildren={false}
             onError={alertItem => this.handleStepsShowAlert(Step.OPEN, alertItem)}
+            onWarning={alertItem => this.handleStepsShowWarning(Step.OPEN, alertItem)}
             onHideError={key => this.handleCloseStepAlert(key)}
             onNextStep={() => this.handleStepsGoToNext(Step.OPEN)}
             onRestart={tab => this.handleStepsRestart(Step.OPEN, tab)}
@@ -662,6 +688,7 @@ class Progress extends React.Component<Props, State> {
               location={location}
               navigate={navigate}
               onError={alertItem => this.handleStepsShowAlert(stepId, alertItem)}
+              onWarning={alertItem => this.handleStepsShowWarning(stepId, alertItem)}
               onHideError={key => this.handleCloseStepAlert(key)}
               onNextStep={() => this.handleStepsGoToNext(stepId)}
               onRestart={tab => this.handleStepsRestart(stepId, tab)}

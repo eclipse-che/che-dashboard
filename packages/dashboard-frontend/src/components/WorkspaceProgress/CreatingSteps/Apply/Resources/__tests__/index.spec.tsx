@@ -66,6 +66,7 @@ const mockTabManagerRename = jest.fn();
 const mockOnNextStep = jest.fn();
 const mockOnRestart = jest.fn();
 const mockOnError = jest.fn();
+const mockOnWarning = jest.fn();
 const mockOnHideError = jest.fn();
 
 const resourcesUrl = 'https://resources-url';
@@ -491,6 +492,7 @@ function getComponent(store: Store, searchParams: URLSearchParams): React.ReactE
       onNextStep={mockOnNextStep}
       onRestart={mockOnRestart}
       onError={mockOnError}
+      onWarning={mockOnWarning}
       onHideError={mockOnHideError}
     />
   );

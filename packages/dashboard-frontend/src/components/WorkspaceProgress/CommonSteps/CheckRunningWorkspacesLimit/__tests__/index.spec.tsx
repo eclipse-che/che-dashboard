@@ -74,6 +74,7 @@ jest.mock('@/store/DevWorkspacesCluster', () => {
 const mockOnNextStep = jest.fn();
 const mockOnRestart = jest.fn();
 const mockOnError = jest.fn();
+const mockOnWarning = jest.fn();
 const mockOnHideError = jest.fn();
 
 const mockNavigate = jest.fn();
@@ -643,6 +644,7 @@ function getComponent(store: Store, localState?: Partial<State>): React.ReactEle
       onNextStep={mockOnNextStep}
       onRestart={mockOnRestart}
       onError={mockOnError}
+      onWarning={mockOnWarning}
       onHideError={mockOnHideError}
     />
   );

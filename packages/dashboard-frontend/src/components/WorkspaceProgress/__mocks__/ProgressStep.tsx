@@ -20,12 +20,18 @@ export class ProgressStep extends React.Component<ProgressStepProps, ProgressSte
   protected readonly name: string;
 
   public render() {
-    const { distance, onError, onNextStep, onRestart } = this.props;
+    const { distance, onError, onWarning, onNextStep, onRestart } = this.props;
     const alertItem: AlertItem = {
       title: 'Error',
       key: 'error',
       variant: AlertVariant.danger,
       children: `Error in step ${this.name}`,
+    };
+    const warningItem: AlertItem = {
+      title: 'Warning',
+      key: 'warning',
+      variant: AlertVariant.warning,
+      children: `Warning in step ${this.name}`,
     };
     return (
       <div data-testid="progress-step">
@@ -37,6 +43,13 @@ export class ProgressStep extends React.Component<ProgressStepProps, ProgressSte
           name="onError"
           type="button"
           value="onError"
+        />
+        <input
+          onClick={() => onWarning(warningItem)}
+          data-testid="onWarning"
+          name="onWarning"
+          type="button"
+          value="onWarning"
         />
         <input
           onClick={() => onRestart()}

@@ -220,6 +220,12 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
         errorMessage.startsWith('Could not reach devfile')
       ) {
         this.setState({ useDefaultDevfile: true });
+        const alertItem = {
+          key: this.name,
+          title: 'Failed to fetch devfile. Workspace will start from the default devfile.',
+          variant: AlertVariant.warning,
+        };
+        this.handleWarning(alertItem);
         return true;
       }
       throw e;
