@@ -10,13 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { BackupInfo, BackupStatus } from '@eclipse-che/common';
+import { api, BackupInfo, BackupStatus } from '@eclipse-che/common';
 import { Button } from '@patternfly/react-core';
 import { ThProps } from '@patternfly/react-table';
 import { Location } from 'history';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import { AiToolIcon } from '@/components/AiToolIcon';
 import { BackupStatusBadge } from '@/components/BackupStatusBadge';
 import { EditorIcon, getEditorName } from '@/components/EditorIcon';
 import { WorkspaceStatusIndicator } from '@/components/Workspace/Status/Indicator';
@@ -37,8 +38,9 @@ export interface RowData {
   cells: {
     details: React.ReactNode;
     editorIcon: React.ReactNode;
+    aiTool: React.ReactNode;
     lastModifiedDate: string;
-    backupStatus?: React.ReactNode;
+    backupStatus: React.ReactNode;
     projectsList: string;
     action: React.ReactNode;
     actionsDropdown: React.ReactNode;
@@ -55,7 +57,8 @@ export function buildRows(
   selected: string[],
   sortBy: { index: number; direction: SortDirection },
   backupsByWorkspace: Record<string, BackupInfo> = {},
-  showBackupStatus = true,
+  aiProviders: api.AiProviderDefinition[] = [],
+  aiTools: api.AiToolDefinition[] = [],
 ): RowData[] {
   const rows: RowData[] = [];
   workspaces
@@ -72,7 +75,7 @@ export function buildRows(
         const editorB = getEditorName({ editors, workspace: workspaceB }) || '';
         return sort(editorA, editorB, sortBy.direction);
       }
-      if (sortBy.index === 2) {
+      if (sortBy.index === 3) {
         const updatedA = workspaceA.updated || workspaceA.created || 0;
         const updatedB = workspaceB.updated || workspaceB.created || 0;
         return sort(updatedA, updatedB, sortBy.direction);
@@ -99,7 +102,8 @@ export function buildRows(
             overviewPageLocation,
             ideLoaderHref,
             backupInfo,
-            showBackupStatus,
+            aiProviders,
+            aiTools,
           ),
         );
       } catch (e) {
@@ -126,7 +130,8 @@ export function buildRow(
   overviewPageLocation: Location,
   ideLoaderHref: string,
   backupInfo?: BackupInfo,
-  showBackupStatus = true,
+  aiProviders: api.AiProviderDefinition[] = [],
+  aiTools: api.AiToolDefinition[] = [],
 ): RowData {
   if (!workspace.name) {
     throw new Error('Empty workspace name.');
@@ -152,6 +157,9 @@ export function buildRow(
 
   /* editor icon */
   const editorIcon = <EditorIcon editors={editors} workspace={workspace} />;
+
+  /* injected AI tool */
+  const aiTool = <AiToolIcon workspace={workspace} aiTools={aiTools} aiProviders={aiProviders} />;
 
   /* last modified time */
   const lastModifiedMs = workspace.updated;
@@ -217,19 +225,20 @@ export function buildRow(
   );
 
   /* backup status */
-  const backupStatus = showBackupStatus ? (
+  const backupStatus = (
     <BackupStatusBadge
       status={backupInfo?.status ?? BackupStatus.NEVER}
       lastBackupTime={backupInfo?.lastBackupTime}
       backupImageUrl={backupInfo?.backupImageUrl}
     />
-  ) : undefined;
+  );
 
   return {
     workspaceUID: workspace.uid,
     cells: {
       details,
       editorIcon,
+      aiTool,
       lastModifiedDate,
       backupStatus,
       projectsList,

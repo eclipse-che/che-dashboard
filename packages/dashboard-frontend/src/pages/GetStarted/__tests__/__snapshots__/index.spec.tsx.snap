@@ -42,6 +42,10 @@ exports[`GetStarted snapshot 1`] = `
         data-testid="spacer"
       />
       <div
+        className="spacer"
+        data-testid="spacer"
+      />
+      <div
         data-testid="import-from-git"
       >
         <div>
