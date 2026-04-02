@@ -1,0 +1,247 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`AiSelector snapshot 1`] = `
+<div
+  className="pf-v6-c-panel"
+>
+  <div
+    className="pf-v6-c-panel__header"
+  >
+    <h3
+      className="pf-v6-c-title pf-m-h3"
+      data-ouia-component-id="OUIA-Generated-Title-1"
+      data-ouia-component-type="PF6/Title"
+      data-ouia-safe={true}
+    >
+      AI Provider Selector
+    </h3>
+  </div>
+  <div
+    className="pf-v6-c-panel__main"
+    style={
+      {
+        "--pf-v6-c-panel__main--MaxHeight": undefined,
+      }
+    }
+  >
+    <div
+      className="pf-v6-c-panel__main-body"
+    >
+      <dl
+        className="pf-v6-c-accordion"
+      >
+        <div
+          className="pf-v6-c-accordion__item pf-m-expanded"
+        >
+          <dt>
+            <button
+              aria-expanded={true}
+              className="pf-v6-c-accordion__toggle pf-m-expanded"
+              id="accordion-item-no-ai"
+              onClick={[Function]}
+              type="button"
+            >
+              <span
+                className="pf-v6-c-accordion__toggle-text"
+              >
+                Use a Default AI Provider
+              </span>
+              <span
+                className="pf-v6-c-accordion__toggle-icon"
+              >
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v6-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 256 512"
+                  width="1em"
+                >
+                  <path
+                    d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
+                  />
+                </svg>
+              </span>
+            </button>
+          </dt>
+          <dd
+            className="pf-v6-c-accordion__expandable-content"
+            data-testid="no-ai-provider-content"
+            hidden={false}
+            id=""
+          >
+            <div
+              className="pf-v6-c-accordion__expandable-content-body"
+            >
+              <div
+                className="pf-v6-c-panel"
+              >
+                <div
+                  className="pf-v6-c-panel__main"
+                  style={
+                    {
+                      "--pf-v6-c-panel__main--MaxHeight": undefined,
+                    }
+                  }
+                >
+                  <div
+                    className="pf-v6-c-panel__main-body"
+                  >
+                    <p
+                      className="pf-v6-c-content--p"
+                      data-ouia-component-id="OUIA-Generated-Content-1"
+                      data-ouia-component-type="PF6/Content"
+                      data-ouia-safe={true}
+                      data-pf-content={true}
+                    >
+                      The default AI provider configured by your administrator will be used.
+                    </p>
+                    <div
+                      className="pf-v6-l-flex"
+                    >
+                      <div
+                        className="pf-m-align-right"
+                      >
+                        <a
+                          aria-label={null}
+                          className="pf-v6-c-button pf-m-link pf-m-inline"
+                          data-ouia-component-id="OUIA-Generated-Button-link-1"
+                          data-ouia-component-type="PF6/Button"
+                          data-ouia-safe={true}
+                          disabled={null}
+                          href="https://eclipse.dev/che/docs/stable/end-user-guide/ai-provider/"
+                          target="_blank"
+                          type={null}
+                        >
+                          <span
+                            className="pf-v6-c-button__text"
+                          >
+                            Learn more about AI providers
+                          </span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </dd>
+        </div>
+        <div
+          className="pf-v6-c-accordion__item"
+        >
+          <dt>
+            <button
+              aria-expanded={false}
+              className="pf-v6-c-accordion__toggle"
+              id="accordion-item-ai-selector"
+              onClick={[Function]}
+              type="button"
+            >
+              <span
+                className="pf-v6-c-accordion__toggle-text"
+              >
+                Choose an AI Provider
+              </span>
+              <span
+                className="pf-v6-c-accordion__toggle-icon"
+              >
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v6-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 256 512"
+                  width="1em"
+                >
+                  <path
+                    d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
+                  />
+                </svg>
+              </span>
+            </button>
+          </dt>
+          <dd
+            className="pf-v6-c-accordion__expandable-content"
+            data-testid="ai-provider-gallery-content"
+            hidden={true}
+            id=""
+          >
+            <div
+              className="pf-v6-c-accordion__expandable-content-body"
+            >
+              <div
+                className="pf-v6-c-panel"
+              >
+                <div
+                  className="pf-v6-c-panel__main"
+                  style={
+                    {
+                      "--pf-v6-c-panel__main--MaxHeight": undefined,
+                    }
+                  }
+                >
+                  <div
+                    className="pf-v6-c-panel__main-body"
+                  >
+                    <div
+                      data-testid="ai-provider-gallery-component"
+                    >
+                      <div>
+                        AI Provider Gallery
+                      </div>
+                      <div
+                        data-testid="selected-provider-id"
+                      >
+                        claude-code
+                      </div>
+                      <button
+                        onClick={[Function]}
+                      >
+                        Select Provider
+                      </button>
+                    </div>
+                    <p
+                      className="pf-v6-c-content--p"
+                      data-ouia-component-id="OUIA-Generated-Content-2"
+                      data-ouia-component-type="PF6/Content"
+                      data-ouia-safe={true}
+                      data-pf-content={true}
+                      style={
+                        {
+                          "marginTop": "8px",
+                        }
+                      }
+                    >
+                      <a
+                        aria-label={null}
+                        className="pf-v6-c-button pf-m-link pf-m-inline"
+                        data-ouia-component-id="OUIA-Generated-Button-link-2"
+                        data-ouia-component-type="PF6/Button"
+                        data-ouia-safe={true}
+                        disabled={null}
+                        href="http://localhost/dashboard/#/user-preferences?tab=AiProviderKeys"
+                        type={null}
+                      >
+                        <span
+                          className="pf-v6-c-button__text"
+                        >
+                          Manage API keys in User Preferences
+                        </span>
+                      </a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</div>
+`;

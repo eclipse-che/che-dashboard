@@ -15,6 +15,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Location, NavigateFunction } from 'react-router-dom';
 
+import AiSelector from '@/components/AiSelector';
 import EditorSelector from '@/components/EditorSelector';
 import Head from '@/components/Head';
 import ImportFromGit from '@/components/ImportFromGit';
@@ -31,6 +32,7 @@ type Props = MappedProps & {
 type State = {
   editorDefinition: string | undefined;
   editorImage: string | undefined;
+  aiProvider: string | undefined;
   presetFilter: string | undefined;
 };
 
@@ -41,6 +43,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
     this.state = {
       editorDefinition: undefined,
       editorImage: undefined,
+      aiProvider: undefined,
       presetFilter: this.getPresetFilter(),
     };
   }
@@ -78,7 +81,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
 
   render(): React.ReactNode {
     const { defaultEditor, navigate } = this.props;
-    const { editorDefinition, editorImage, presetFilter } = this.state;
+    const { editorDefinition, editorImage, aiProvider, presetFilter } = this.state;
 
     const title = 'Create Workspace';
 
@@ -102,9 +105,14 @@ export class GetStarted extends React.PureComponent<Props, State> {
 
           <Spacer />
 
+          <AiSelector onSelect={providerId => this.setState({ aiProvider: providerId })} />
+
+          <Spacer />
+
           <ImportFromGit
             editorDefinition={editorDefinition}
             editorImage={editorImage}
+            aiProvider={aiProvider}
             navigate={navigate}
           />
 
@@ -113,6 +121,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
           <SamplesList
             editorDefinition={editorDefinition}
             editorImage={editorImage}
+            aiProvider={aiProvider}
             presetFilter={presetFilter}
           />
         </PageSection>

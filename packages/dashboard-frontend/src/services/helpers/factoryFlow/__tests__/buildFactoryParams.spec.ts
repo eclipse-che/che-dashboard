@@ -11,6 +11,7 @@
  */
 
 import {
+  AI_PROVIDER_ATTR,
   buildFactoryParams,
   EDITOR_ATTR,
   EXISTING_WORKSPACE_NAME,
@@ -20,6 +21,31 @@ import {
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 
 describe('buildFactoryParams', () => {
+  describe('aiProvider', () => {
+    it('should return undefined when ai-provider is absent', () => {
+      const searchParams = new URLSearchParams({});
+      expect(buildFactoryParams(searchParams).aiProvider).toBeUndefined();
+    });
+
+    it('should return the ai-provider value when present', () => {
+      const searchParams = new URLSearchParams({
+        [AI_PROVIDER_ATTR]: 'google/gemini/latest',
+      });
+      expect(buildFactoryParams(searchParams).aiProvider).toBe('google/gemini/latest');
+    });
+
+    it('should return undefined when ai-provider is an empty string', () => {
+      const searchParams = new URLSearchParams({
+        [AI_PROVIDER_ATTR]: '',
+      });
+      expect(buildFactoryParams(searchParams).aiProvider).toBeUndefined();
+    });
+
+    it('should have AI_PROVIDER_ATTR constant equal to "ai-provider"', () => {
+      expect(AI_PROVIDER_ATTR).toBe('ai-provider');
+    });
+  });
+
   describe('getStorageType', () => {
     it('should return undefined', () => {
       const searchParams = new URLSearchParams({

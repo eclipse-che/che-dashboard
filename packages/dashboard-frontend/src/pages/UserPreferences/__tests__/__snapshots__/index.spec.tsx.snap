@@ -38,6 +38,22 @@ exports[`UserPreferences snapshot 1`] = `
             role="tablist"
           >
             <li
+              class="pf-v6-c-tabs__item"
+              role="presentation"
+            >
+              <button
+                aria-selected="false"
+                class="pf-v6-c-tabs__link"
+                data-ouia-component-type="PF6/TabButton"
+                data-ouia-safe="true"
+                id="pf-tab-AiProviderKeys-user-preferences-tabs"
+                role="tab"
+                type="button"
+              >
+                AI Provider Keys
+              </button>
+            </li>
+            <li
               class="pf-v6-c-tabs__item pf-m-current"
               role="presentation"
             >

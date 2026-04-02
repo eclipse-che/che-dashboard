@@ -35,6 +35,7 @@ import { ResourceFetcherService } from '@/services/resource-fetcher';
 import { Workspace } from '@/services/workspace-adapter';
 import { hasLoginPage, isForbidden, isUnauthorized } from '@/services/workspace-client/helpers';
 import { RootState } from '@/store';
+import { aiConfigActionCreators } from '@/store/AiConfig';
 import { bannerAlertActionCreators } from '@/store/BannerAlert';
 import { brandingActionCreators } from '@/store/Branding';
 import { clusterConfigActionCreators, selectDashboardFavicon } from '@/store/ClusterConfig';
@@ -123,6 +124,7 @@ export default class Bootstrap {
       }),
       this.fetchSshKeys(),
       this.fetchWorkspacePreferences(),
+      this.fetchAiConfig(),
     ]);
 
     const errors = results
@@ -464,6 +466,14 @@ export default class Bootstrap {
 
   private async fetchWorkspacePreferences(): Promise<void> {
     await workspacePreferencesActionCreators.requestPreferences()(
+      this.store.dispatch,
+      this.store.getState,
+      undefined,
+    );
+  }
+
+  private async fetchAiConfig(): Promise<void> {
+    await aiConfigActionCreators.requestAiConfig()(
       this.store.dispatch,
       this.store.getState,
       undefined,

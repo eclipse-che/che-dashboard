@@ -158,6 +158,9 @@ export function isCheClusterCustomResource(object: unknown): object is CheCluste
   );
 }
 
+export type AiProviderDefinition = api.AiProviderDefinition;
+export type AiToolDefinition = api.AiToolDefinition;
+
 export type CheClusterCustomResourceSpecDevEnvironments = {
   containerBuildConfiguration?: {
     openShiftSecurityContextConstraint?: string;
@@ -186,6 +189,9 @@ export type CheClusterCustomResourceSpecDevEnvironments = {
   allowedSources?: {
     urls?: string[];
   };
+  aiProviders?: AiProviderDefinition[];
+  defaultAiProvider?: string;
+  aiTools?: AiToolDefinition[];
 };
 
 export function isCheClusterCustomResourceSpecDevEnvironments(
@@ -418,6 +424,21 @@ export interface IServerConfigApi {
    * The value is determined by executing the `uname -m` command.
    */
   getCurrentArchitecture(): Promise<Architecture | undefined>;
+
+  /**
+   * Returns the list of AI providers configured in the CheCluster CR.
+   */
+  getAiProviders(cheCustomResource: CheClusterCustomResource): AiProviderDefinition[];
+
+  /**
+   * Returns the default AI provider ID configured in the CheCluster CR.
+   */
+  getDefaultAiProvider(cheCustomResource: CheClusterCustomResource): string | undefined;
+
+  /**
+   * Returns the AI tool definitions (from CR if configured, otherwise built-in defaults).
+   */
+  getAiTools(cheCustomResource: CheClusterCustomResource): AiToolDefinition[];
 }
 
 export interface IKubeConfigApi {
@@ -514,6 +535,7 @@ export interface IDevWorkspaceClient {
   sshKeysApi: IShhKeysApi;
   workspacePreferencesApi: IWorkspacePreferencesApi;
   editorsApi: IEditorsApi;
+  aiProviderKeyApi: IAiProviderKeyApi;
 }
 
 export interface IDevWorkspaceSingletonClient {
@@ -576,6 +598,33 @@ export interface IShhKeysApi {
   list(namespace: string): Promise<Array<api.SshKey>>;
   add(namespace: string, sshKey: api.SshKey): Promise<api.SshKey>;
   delete(namespace: string, name: string): Promise<void>;
+}
+
+export interface IAiProviderKeyApi {
+  /**
+   * Returns sanitized provider IDs that have a key Secret in the namespace.
+   * Detects both dashboard-managed Secrets (via che.eclipse.org/ai-provider-id label)
+   * and manually created Secrets (via envVarName data key matching).
+   */
+  listProviderIdsWithKey(namespace: string, providers?: AiToolDefinition[]): Promise<string[]>;
+
+  /**
+   * Creates or replaces the API key Secret for the given provider in the given namespace.
+   * The envVarName becomes both the Secret data key and the injected env var name.
+   */
+  createOrReplace(
+    namespace: string,
+    providerId: string,
+    apiKey: string,
+    envVarName: string,
+  ): Promise<void>;
+
+  /**
+   * Deletes the API key Secret for the given provider from the given namespace.
+   * If envVarName is provided, also searches for manually-created secrets
+   * (without the ai-provider-id label) that contain the envVarName data key.
+   */
+  delete(namespace: string, providerId: string, envVarName?: string): Promise<void>;
 }
 
 export interface IBackupApi {

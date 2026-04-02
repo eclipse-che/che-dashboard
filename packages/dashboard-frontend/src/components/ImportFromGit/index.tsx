@@ -39,6 +39,7 @@ import UntrustedSourceModal from '@/components/UntrustedSourceModal';
 import { buildFactoryLoaderPath } from '@/preload/main';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import {
+  AI_PROVIDER_ATTR,
   EDITOR_ATTR,
   EDITOR_IMAGE_ATTR,
   REVISION_ATTR,
@@ -54,6 +55,7 @@ const FIELD_ID = 'git-repo-url';
 export type Props = MappedProps & {
   editorDefinition: string | undefined;
   editorImage: string | undefined;
+  aiProvider?: string | undefined;
   navigate: NavigateFunction;
 };
 export type State = {
@@ -109,7 +111,7 @@ class ImportFromGit extends React.PureComponent<Props, State> {
   }
 
   private startFactory(): void {
-    const { editorDefinition, editorImage } = this.props;
+    const { editorDefinition, editorImage, aiProvider } = this.props;
     const factory = new FactoryLocationAdapter(this.state.location);
 
     // add the editor definition and editor image to the URL
@@ -121,6 +123,9 @@ class ImportFromGit extends React.PureComponent<Props, State> {
       if (editorImage !== undefined) {
         factory.searchParams.set(EDITOR_IMAGE_ATTR, editorImage);
       }
+    }
+    if (aiProvider !== undefined && !factory.searchParams.has(AI_PROVIDER_ATTR)) {
+      factory.searchParams.set(AI_PROVIDER_ATTR, aiProvider);
     }
     if (this.state.gitBranch && !this.state.location.startsWith('http')) {
       factory.searchParams.set(REVISION_ATTR, this.state.gitBranch);

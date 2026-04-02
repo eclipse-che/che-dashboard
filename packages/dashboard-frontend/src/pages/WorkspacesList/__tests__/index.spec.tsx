@@ -204,6 +204,7 @@ function getComponent(_workspaces = workspaces): React.ReactElement {
   return (
     <MemoryRouter>
       <WorkspacesList
+        aiTools={[]}
         backupsByWorkspace={{}}
         branding={brandingData}
         editors={[]}

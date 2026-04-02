@@ -16,6 +16,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Location, NavigateFunction } from 'react-router-dom';
 
 import Head from '@/components/Head';
+import AiProviderKeys from '@/pages/UserPreferences/AiProviderKeys';
 import ContainerRegistries from '@/pages/UserPreferences/ContainerRegistriesTab';
 import GitConfig from '@/pages/UserPreferences/GitConfig';
 import GitServices from '@/pages/UserPreferences/GitServices';
@@ -55,7 +56,8 @@ class UserPreferences extends React.PureComponent<Props, State> {
       const tab = searchParam.get('tab');
       if (
         pathname === ROUTE.USER_PREFERENCES &&
-        (tab === UserPreferencesTab.CONTAINER_REGISTRIES ||
+        (tab === UserPreferencesTab.AI_PROVIDER_KEYS ||
+          tab === UserPreferencesTab.CONTAINER_REGISTRIES ||
           tab === UserPreferencesTab.GITCONFIG ||
           tab === UserPreferencesTab.GIT_SERVICES ||
           tab === UserPreferencesTab.PERSONAL_ACCESS_TOKENS ||
@@ -98,6 +100,9 @@ class UserPreferences extends React.PureComponent<Props, State> {
             mountOnEnter={true}
             unmountOnExit={true}
           >
+            <Tab eventKey={UserPreferencesTab.AI_PROVIDER_KEYS} title="AI Provider Keys">
+              <AiProviderKeys />
+            </Tab>
             <Tab eventKey={UserPreferencesTab.CONTAINER_REGISTRIES} title="Container Registries">
               <ContainerRegistries />
             </Tab>

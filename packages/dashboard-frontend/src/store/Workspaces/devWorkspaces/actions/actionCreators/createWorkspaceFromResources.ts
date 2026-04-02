@@ -13,8 +13,10 @@
 import common, { ApplicationId } from '@eclipse-che/common';
 
 import devfileApi from '@/services/devfileApi';
+import { addAiToolToWorkspace } from '@/services/helpers/aiTools';
 import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { AppThunk } from '@/store';
+import { selectAiTools } from '@/store/AiConfig/selectors';
 import { selectApplications } from '@/store/ClusterInfo';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces';
 import { verifyAuthorized } from '@/store/SanityCheck';
@@ -52,6 +54,14 @@ export const createWorkspaceFromResources =
       await verifyAuthorized(dispatch, getState);
 
       dispatch(devWorkspacesRequestAction());
+
+      // Inject AI tool into the DevWorkspace if selected
+      if (params.aiProvider) {
+        const aiTools = selectAiTools(state);
+        if (aiTools.length > 0) {
+          devWorkspace = addAiToolToWorkspace(devWorkspace, params.aiProvider, aiTools);
+        }
+      }
 
       /* create a new DevWorkspace */
       const createResp = await getDevWorkspaceClient().createDevWorkspace(

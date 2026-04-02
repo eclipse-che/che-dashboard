@@ -103,6 +103,38 @@ export interface IExternalDevfileRegistry {
   url: string;
 }
 
+export interface AiToolDefinition {
+  /** Tool identifier, e.g. 'claude-code' */
+  id: string;
+  /** Links this tool to an AiProviderDefinition.id, e.g. 'google/gemini/latest' */
+  providerId?: string;
+  name: string;
+  description: string;
+  url: string;
+  /** Binary name available in PATH after injection, e.g. 'claude' */
+  binary: string;
+  /** init: single binary copied; bundle: full runtime dir copied */
+  pattern: 'init' | 'bundle';
+  /** Full injector image, e.g. 'quay.io/okurinny/tools-injector/claude-code:next' */
+  injectorImage: string;
+  /** API key env var required by this tool, if any */
+  envVarName?: string;
+  /** One-time setup command run in the editor container at postStart */
+  setupCommand?: string;
+  /** Command line to start the AI tool inside the workspace container */
+  runCommandLine: string;
+  /** URL to the tool's SVG icon */
+  icon?: string;
+}
+
+export interface AiProviderDefinition {
+  id: string;
+  name: string;
+  publisher: string;
+  description?: string;
+  docsUrl?: string;
+}
+
 export interface IServerConfig {
   containerBuild: {
     containerBuildConfiguration?: {
@@ -150,6 +182,9 @@ export interface IServerConfig {
   pluginRegistryInternalURL: string;
   dashboardLogo?: { base64data: string; mediatype: string };
   allowedSourceUrls: string[];
+  aiProviders?: AiProviderDefinition[];
+  defaultAiProvider?: string;
+  aiTools?: AiToolDefinition[];
 }
 
 export interface IAdvancedAuthorization {

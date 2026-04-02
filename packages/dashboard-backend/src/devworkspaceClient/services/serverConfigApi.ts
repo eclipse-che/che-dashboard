@@ -16,6 +16,8 @@ import * as k8s from '@kubernetes/client-node';
 import { readFileSync } from 'fs';
 import path from 'path';
 
+import { DEFAULT_AI_PROVIDER_ID, DEFAULT_AI_PROVIDERS } from '@/constants/default-ai-providers';
+import { DEFAULT_AI_TOOLS } from '@/constants/default-ai-tools';
 import { requestTimeoutSeconds, startTimeoutSeconds } from '@/constants/server-config';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import { run } from '@/devworkspaceClient/services/helpers/exec';
@@ -24,6 +26,8 @@ import {
   prepareCustomObjectAPI,
 } from '@/devworkspaceClient/services/helpers/prepareCustomObjectAPI';
 import {
+  AiProviderDefinition,
+  AiToolDefinition,
   CheClusterCustomResource,
   CheClusterCustomResourceSpecDevEnvironments,
   CustomResourceDefinitionList,
@@ -310,6 +314,60 @@ export class ServerConfigApiService implements IServerConfigApi {
       return [];
     }
     return value.split(',').map(val => val.trim());
+  }
+
+  getAiProviders(cheCustomResource: CheClusterCustomResource): AiProviderDefinition[] {
+    if (cheCustomResource.spec.devEnvironments?.aiProviders?.length) {
+      return cheCustomResource.spec.devEnvironments.aiProviders;
+    }
+
+    if (process.env['CHE_DEFAULT_SPEC_DEVENVIRONMENTS_AIPROVIDERS']) {
+      try {
+        return JSON.parse(process.env['CHE_DEFAULT_SPEC_DEVENVIRONMENTS_AIPROVIDERS']);
+      } catch (e) {
+        logger.error(
+          e,
+          'Unable to parse AI providers from environment variable CHE_DEFAULT_SPEC_DEVENVIRONMENTS_AIPROVIDERS.',
+        );
+      }
+    }
+
+    return DEFAULT_AI_PROVIDERS;
+  }
+
+  getDefaultAiProvider(cheCustomResource: CheClusterCustomResource): string | undefined {
+    if (cheCustomResource.spec.devEnvironments?.defaultAiProvider) {
+      return cheCustomResource.spec.devEnvironments.defaultAiProvider;
+    }
+
+    if (process.env['CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTAIPROVIDER']) {
+      return process.env['CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTAIPROVIDER'];
+    }
+
+    return DEFAULT_AI_PROVIDER_ID;
+  }
+
+  /**
+   * Returns the AI tool definitions. When aiTools is configured in the CR, those
+   * are returned; otherwise falls back to the environment variable, then built-in defaults.
+   */
+  getAiTools(cheCustomResource: CheClusterCustomResource): AiToolDefinition[] {
+    if (cheCustomResource.spec.devEnvironments?.aiTools?.length) {
+      return cheCustomResource.spec.devEnvironments.aiTools;
+    }
+
+    if (process.env['CHE_DEFAULT_SPEC_DEVENVIRONMENTS_AITOOLS']) {
+      try {
+        return JSON.parse(process.env['CHE_DEFAULT_SPEC_DEVENVIRONMENTS_AITOOLS']);
+      } catch (e) {
+        logger.error(
+          e,
+          'Unable to parse AI tools from environment variable CHE_DEFAULT_SPEC_DEVENVIRONMENTS_AITOOLS.',
+        );
+      }
+    }
+
+    return DEFAULT_AI_TOOLS;
   }
 }
 
