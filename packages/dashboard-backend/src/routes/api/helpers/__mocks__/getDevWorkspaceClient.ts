@@ -23,7 +23,9 @@ import * as k8s from '@kubernetes/client-node';
 import { IncomingHttpHeaders } from 'http';
 
 import {
+  CheClusterCustomResource,
   DevWorkspaceClient,
+  IAiProviderKeyApi,
   IDevWorkspaceApi,
   IDevWorkspaceClusterApi,
   IDevWorkspaceTemplateApi,
@@ -159,6 +161,29 @@ export const stubSshKeysList: api.SshKey[] = [
   },
 ];
 
+export const stubAiProviderKeyIds: string[] = ['google-gemini'];
+
+export const stubAiProviders = [
+  {
+    id: 'google/gemini',
+    name: 'Gemini',
+    publisher: 'Google',
+  },
+];
+
+export const stubAiTools = [
+  {
+    providerId: 'google/gemini',
+    tag: 'latest',
+    name: 'Gemini CLI',
+    url: 'https://github.com/google-gemini/gemini-cli',
+    binary: 'gemini',
+    pattern: 'bundle',
+    injectorImage: 'quay.io/okurinny/tools-injector/gemini-cli:next',
+    envVarName: 'GEMINI_API_KEY',
+  },
+];
+
 export const stubAutoProvision = true;
 
 export const stubAdvancedAuthorization = {};
@@ -180,31 +205,35 @@ export const getDevWorkspaceClient = jest.fn(
   (..._args: Parameters<typeof helper>): ReturnType<typeof helper> => {
     return {
       serverConfigApi: {
-        fetchCheCustomResource: () => ({}),
-        getDashboardWarning: _cheCustomResource => stubDashboardWarning,
-        getContainerBuild: _cheCustomResource => stubContainerBuild,
-        getContainerRun: _cheCustomResource => stubContainerRun,
-        getDefaultComponents: _cheCustomResource => stubDefaultComponents,
-        getDefaultEditor: _cheCustomResource => stubDefaultEditor,
-        getDefaultPlugins: _cheCustomResource => stubDefaultPlugins,
-        getPluginRegistry: _cheCustomResource => stubPluginRegistry,
-        getPvcStrategy: _cheCustomResource => stubPvcStrategy,
-        getRunningWorkspacesLimit: _cheCustomResource => stubRunningWorkspacesLimit,
-        getAllWorkspacesLimit: _cheCustomResource => stubAllWorkspacesLimit,
+        fetchCheCustomResource: () => Promise.resolve({} as CheClusterCustomResource),
+        getDashboardWarning: () => stubDashboardWarning,
+        getContainerBuild: () => stubContainerBuild,
+        getContainerRun: () => stubContainerRun,
+        getDefaultComponents: () => stubDefaultComponents,
+        getDefaultEditor: () => stubDefaultEditor,
+        getDefaultPlugins: () => stubDefaultPlugins,
+        getPluginRegistry: () => stubPluginRegistry,
+        getPvcStrategy: () => stubPvcStrategy,
+        getRunningWorkspacesLimit: () => stubRunningWorkspacesLimit,
+        getRunningWorkspacesClusterLimit: () => -1,
+        getAllWorkspacesLimit: () => stubAllWorkspacesLimit,
         getCurrentArchitecture: () => Promise.resolve(stubCurrentArchitecture),
-        getWorkspaceInactivityTimeout: _cheCustomResource => stubWorkspaceInactivityTimeout,
-        getWorkspaceRunTimeout: _cheCustomResource => stubWorkspaceRunTimeout,
-        getWorkspaceStartTimeout: _cheCustomResource => stubWorkspaceStartupTimeout,
+        getWorkspaceInactivityTimeout: () => stubWorkspaceInactivityTimeout,
+        getWorkspaceRunTimeout: () => stubWorkspaceRunTimeout,
+        getWorkspaceStartTimeout: () => stubWorkspaceStartupTimeout,
         getAxiosRequestTimeout: () => stubAxiosRequestTimeout,
-        getDefaultPluginRegistryUrl: _cheCustomResource => defaultPluginRegistryUrl,
-        getExternalDevfileRegistries: _cheCustomResource => externalDevfileRegistries,
-        getInternalRegistryDisableStatus: _cheCustomResource => internalRegistryDisableStatus,
-        getDashboardLogo: _cheCustomResource => dashboardLogo,
-        getAutoProvision: _cheCustomResource => stubAutoProvision,
-        getAdvancedAuthorization: _cheCustomResource => stubAdvancedAuthorization,
-        getAllowedSourceUrls: _cheCustomResource => stubAllowedSourceUrls,
-        getShowDeprecatedEditors: _cheCustomResource => stubShowDeprecatedEditors,
-        getHideEditorsById: _cheCustomResource => stubHideEditorsById,
+        getDefaultPluginRegistryUrl: () => defaultPluginRegistryUrl,
+        getExternalDevfileRegistries: () => externalDevfileRegistries,
+        getInternalRegistryDisableStatus: () => internalRegistryDisableStatus,
+        getDashboardLogo: () => dashboardLogo,
+        getAutoProvision: () => stubAutoProvision,
+        getAdvancedAuthorization: () => stubAdvancedAuthorization,
+        getAllowedSourceUrls: () => stubAllowedSourceUrls,
+        getShowDeprecatedEditors: () => stubShowDeprecatedEditors,
+        getHideEditorsById: () => stubHideEditorsById,
+        getAiProviders: () => stubAiProviders,
+        getDefaultAiProviders: () => [],
+        getAiTools: () => stubAiTools,
       } as IServerConfigApi,
       devworkspaceApi: {
         create: (_devworkspace, _namespace) =>
@@ -281,6 +310,11 @@ export const getDevWorkspaceClient = jest.fn(
         removeProviderFromSkipAuthorizationList: (_namespace, _provider) => Promise.resolve(),
         removeTrustedSources: _namespace => Promise.resolve(),
       } as IWorkspacePreferencesApi,
+      aiProviderKeyApi: {
+        listProviderIdsWithKey: _namespace => Promise.resolve(stubAiProviderKeyIds),
+        createOrReplace: (_namespace, _providerId, _apiKey, _envVarName) => Promise.resolve(),
+        delete: (_namespace, _providerId) => Promise.resolve(),
+      } as IAiProviderKeyApi,
     } as DevWorkspaceClient;
   },
 );

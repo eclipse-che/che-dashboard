@@ -52,6 +52,9 @@ export function registerServerConfigRoute(instance: FastifyInstance) {
       const axiosRequestTimeout = serverConfigApi.getAxiosRequestTimeout();
       const showDeprecated = serverConfigApi.getShowDeprecatedEditors(cheCustomResource);
       const hideById = serverConfigApi.getHideEditorsById(cheCustomResource);
+      const aiProviders = serverConfigApi.getAiProviders(cheCustomResource);
+      const defaultAiProviders = serverConfigApi.getDefaultAiProviders(cheCustomResource);
+      const aiTools = serverConfigApi.getAiTools(cheCustomResource);
 
       const serverConfig: api.IServerConfig = {
         containerBuild,
@@ -99,6 +102,18 @@ export function registerServerConfigRoute(instance: FastifyInstance) {
           showDeprecated,
           hideById,
         };
+      }
+
+      if (aiProviders.length > 0) {
+        serverConfig.aiProviders = aiProviders;
+      }
+
+      if (defaultAiProviders.length > 0) {
+        serverConfig.defaultAiProviders = defaultAiProviders;
+      }
+
+      if (aiTools.length > 0) {
+        serverConfig.aiTools = aiTools;
       }
 
       return serverConfig;
