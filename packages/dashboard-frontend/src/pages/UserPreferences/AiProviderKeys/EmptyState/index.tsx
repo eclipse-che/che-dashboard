@@ -53,7 +53,7 @@ export class AiProviderKeysEmptyState extends React.PureComponent<Props> {
           isFullHeight={true}
           variant={EmptyStateVariant.sm}
           icon={KeyIcon}
-          titleText="No AI Provider Keys"
+          titleText="No AI Providers Keys"
         >
           <EmptyStateBody>
             <Button

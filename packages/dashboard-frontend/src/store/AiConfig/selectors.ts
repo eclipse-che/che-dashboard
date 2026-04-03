@@ -13,16 +13,23 @@
 import { createSelector } from '@reduxjs/toolkit';
 
 import { RootState } from '@/store';
+import { selectServerConfigState } from '@/store/ServerConfig/selectors';
 
 const selectState = (state: RootState) => state.aiConfig;
 
-export const selectAiProviders = createSelector(selectState, state => state.providers);
+export const selectAiProviders = createSelector(
+  selectServerConfigState,
+  state => state.config.aiProviders ?? [],
+);
 
-export const selectAiTools = createSelector(selectState, state => state.tools);
+export const selectAiTools = createSelector(
+  selectServerConfigState,
+  state => state.config.aiTools ?? [],
+);
 
-export const selectDefaultAiProvider = createSelector(
-  selectState,
-  state => state.defaultProviderId,
+export const selectDefaultAiProviders = createSelector(
+  selectServerConfigState,
+  state => state.config.defaultAiProviders ?? [],
 );
 
 export const selectAiProviderKeyExists = createSelector(

@@ -16,7 +16,7 @@ import * as k8s from '@kubernetes/client-node';
 import { readFileSync } from 'fs';
 import path from 'path';
 
-import { DEFAULT_AI_PROVIDER_ID, DEFAULT_AI_PROVIDERS } from '@/constants/default-ai-providers';
+import { DEFAULT_AI_PROVIDER_IDS, DEFAULT_AI_PROVIDERS } from '@/constants/default-ai-providers';
 import { DEFAULT_AI_TOOLS } from '@/constants/default-ai-tools';
 import { requestTimeoutSeconds, startTimeoutSeconds } from '@/constants/server-config';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
@@ -335,16 +335,23 @@ export class ServerConfigApiService implements IServerConfigApi {
     return DEFAULT_AI_PROVIDERS;
   }
 
-  getDefaultAiProvider(cheCustomResource: CheClusterCustomResource): string | undefined {
-    if (cheCustomResource.spec.devEnvironments?.defaultAiProvider) {
-      return cheCustomResource.spec.devEnvironments.defaultAiProvider;
+  getDefaultAiProviders(cheCustomResource: CheClusterCustomResource): string[] {
+    if (cheCustomResource.spec.devEnvironments?.defaultAiProviders?.length) {
+      return cheCustomResource.spec.devEnvironments.defaultAiProviders;
     }
 
-    if (process.env['CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTAIPROVIDER']) {
-      return process.env['CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTAIPROVIDER'];
+    if (process.env['CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTAIPROVIDERS']) {
+      try {
+        return JSON.parse(process.env['CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTAIPROVIDERS']);
+      } catch {
+        // Fall back to comma-separated string
+        return process.env['CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTAIPROVIDERS']
+          .split(',')
+          .map(s => s.trim());
+      }
     }
 
-    return DEFAULT_AI_PROVIDER_ID;
+    return DEFAULT_AI_PROVIDER_IDS;
   }
 
   /**

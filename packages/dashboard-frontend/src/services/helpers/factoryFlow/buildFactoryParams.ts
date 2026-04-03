@@ -73,7 +73,7 @@ export type FactoryParams = {
   debugWorkspaceStart: boolean;
   existing: string | undefined;
   name: string | undefined;
-  aiProvider: string | undefined;
+  aiProviders: string[];
 };
 
 export type PoliciesCreate = 'perclick' | 'peruser';
@@ -101,7 +101,7 @@ export function buildFactoryParams(searchParams: URLSearchParams): FactoryParams
     debugWorkspaceStart: isDebugWorkspaceStart(searchParams) !== undefined,
     existing: getExistingWorkspaceName(searchParams),
     name: getName(searchParams),
-    aiProvider: getAiProvider(searchParams),
+    aiProviders: getAiProviders(searchParams),
   };
 }
 
@@ -226,6 +226,13 @@ function getName(searchParams: URLSearchParams): string | undefined {
   return searchParams.get(NAME_ATTR) || undefined;
 }
 
-function getAiProvider(searchParams: URLSearchParams): string | undefined {
-  return searchParams.get(AI_PROVIDER_ATTR) || undefined;
+function getAiProviders(searchParams: URLSearchParams): string[] {
+  const value = searchParams.get(AI_PROVIDER_ATTR);
+  if (!value) {
+    return [];
+  }
+  return value
+    .split(',')
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
 }

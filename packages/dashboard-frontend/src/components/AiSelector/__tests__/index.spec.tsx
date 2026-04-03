@@ -23,14 +23,6 @@ import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentR
 import { rootReducer } from '@/store/rootReducer';
 
 jest.mock('@/components/AiSelector/Gallery');
-jest.mock('@/store/AiConfig/actions', () => ({
-  ...jest.requireActual('@/store/AiConfig/actions'),
-  actionCreators: {
-    requestAiConfig: () => () => Promise.resolve(),
-    saveAiProviderKey: () => () => Promise.resolve(),
-    deleteAiProviderKey: () => () => Promise.resolve(),
-  },
-}));
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
@@ -38,27 +30,23 @@ const mockOnSelect = jest.fn();
 
 const mockTools: api.AiToolDefinition[] = [
   {
-    id: 'gemini-cli',
-    providerId: 'google/gemini/latest',
+    providerId: 'google/gemini',
+    tag: 'latest',
     name: 'Gemini CLI',
-    description: 'Google Gemini AI assistant for the terminal',
     url: 'https://github.com/google-gemini/gemini-cli',
     binary: 'gemini',
     pattern: 'bundle' as const,
     injectorImage: 'quay.io/okurinny/tools-injector/gemini-cli:next',
-    runCommandLine: 'gemini',
     envVarName: 'GEMINI_API_KEY',
   },
   {
-    id: 'claude-code',
-    providerId: 'anthropic/claude/latest',
+    providerId: 'anthropic/claude',
+    tag: 'latest',
     name: 'Claude Code',
-    description: 'Anthropic Claude AI coding assistant for terminal',
     url: 'https://claude.ai/code',
     binary: 'claude',
     pattern: 'init' as const,
     injectorImage: 'quay.io/okurinny/tools-injector/claude-code:next',
-    runCommandLine: 'claude',
     envVarName: 'ANTHROPIC_API_KEY',
   },
 ];
@@ -109,7 +97,7 @@ describe('AiSelector', () => {
     expect(screen.getByTestId('ai-provider-gallery-content')).toHaveAttribute('hidden');
   });
 
-  test('calls onSelect with default tool ID when switching back to "Use a Default AI Provider"', async () => {
+  test('calls onSelect with default tool IDs when switching back to "Use a Default AI Provider"', async () => {
     renderComponent();
 
     // First switch to "Choose an AI Provider"
@@ -117,28 +105,29 @@ describe('AiSelector', () => {
     await userEvent.click(chooseAiButton);
     mockOnSelect.mockClear();
 
-    // Now click "Use a Default AI Provider" — should fire onSelect with the default tool
+    // Now click "Use a Default AI Provider" — should fire onSelect with the default tools
     const noAiButton = screen.getByRole('button', { name: 'Use a Default AI Provider' });
     await userEvent.click(noAiButton);
 
-    // Falls back to alphabetically first tool since no defaultProviderId is set in Redux
-    expect(mockOnSelect).toHaveBeenCalledWith('claude-code');
+    // Falls back to alphabetically first tool since no defaultProviderIds is set in Redux
+    expect(mockOnSelect).toHaveBeenCalledWith(['anthropic/claude']);
   });
 
-  test('select provider from gallery', async () => {
+  test('toggle provider from gallery', async () => {
     renderComponent({
-      selectedProviderId: 'google/gemini/latest',
+      selectedProviderIds: ['google/gemini'],
       expandedId: 'selector',
     });
 
     const galleryContent = screen.getByTestId('ai-provider-gallery-content');
     expect(galleryContent).not.toHaveAttribute('hidden');
 
-    // The mocked gallery renders a "Select Provider" button
-    const selectButton = screen.getByRole('button', { name: 'Select Provider' });
-    await userEvent.click(selectButton);
+    // The mocked gallery renders a "Toggle Provider" button
+    const toggleButton = screen.getByRole('button', { name: 'Toggle Provider' });
+    await userEvent.click(toggleButton);
 
-    expect(mockOnSelect).toHaveBeenCalledWith('google/gemini/latest');
+    // google/gemini was already selected, toggling removes it
+    expect(mockOnSelect).toHaveBeenCalledWith([]);
   });
 
   test('returns null when no AI providers are configured', () => {
@@ -154,8 +143,8 @@ describe('AiSelector', () => {
   test('does not fire onSelect when clicking already-open accordion item', async () => {
     renderComponent();
 
-    // componentDidMount fires onSelect with the default tool
-    expect(mockOnSelect).toHaveBeenCalledWith('claude-code');
+    // componentDidMount fires onSelect with the default tools
+    expect(mockOnSelect).toHaveBeenCalledWith(['anthropic/claude']);
     mockOnSelect.mockClear();
 
     // "Use a Default AI Provider" is open by default — clicking it again should not fire onSelect
@@ -171,12 +160,27 @@ function buildStoreWithTools(tools: api.AiToolDefinition[]) {
   return configureStore({
     reducer: rootReducer,
     preloadedState: {
-      aiConfig: {
-        providers: [],
-        tools,
-        defaultProviderId: undefined,
-        providerKeyExists: {},
+      dwServerConfig: {
         isLoading: false,
+        config: {
+          aiTools: tools,
+          containerBuild: { disableContainerBuildCapabilities: true },
+          containerRun: { disableContainerRunCapabilities: true },
+          defaults: { editor: undefined, components: [], plugins: [], pvcStrategy: undefined },
+          timeouts: {
+            inactivityTimeout: -1,
+            runTimeout: -1,
+            startTimeout: 300,
+            axiosRequestTimeout: 30,
+          },
+          devfileRegistry: { disableInternalRegistry: false, externalDevfileRegistries: [] },
+          defaultNamespace: { autoProvision: true },
+          pluginRegistry: {},
+          cheNamespace: 'eclipse-che',
+          pluginRegistryURL: '',
+          pluginRegistryInternalURL: '',
+          allowedSourceUrls: [],
+        },
         error: undefined,
       },
     } as Parameters<typeof configureStore>[0]['preloadedState'],

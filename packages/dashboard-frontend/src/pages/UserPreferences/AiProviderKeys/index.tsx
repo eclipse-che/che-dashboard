@@ -28,6 +28,7 @@ import {
   selectAiConfigError,
   selectAiConfigIsLoading,
   selectAiProviderKeyExists,
+  selectAiProviders,
   selectAiTools,
 } from '@/store/AiConfig';
 
@@ -59,7 +60,7 @@ class AiProviderKeys extends React.PureComponent<Props, State> {
       return;
     }
     try {
-      await this.props.requestAiConfig();
+      await this.props.requestAiProviderKeyStatus();
     } catch (e) {
       this.appAlerts.showAlert({
         key: 'request-ai-config-failed',
@@ -101,9 +102,7 @@ class AiProviderKeys extends React.PureComponent<Props, State> {
   }
 
   private async handleSave(toolId: string, apiKey: string): Promise<void> {
-    this.setState({ isAddEditOpen: false, editingProvider: undefined });
-
-    const tool = this.props.tools.find(t => t.id === toolId);
+    const tool = this.props.tools.find(t => t.providerId === toolId);
     const name = tool?.name ?? toolId;
 
     try {
@@ -119,14 +118,14 @@ class AiProviderKeys extends React.PureComponent<Props, State> {
         title: helpers.errors.getMessage(e),
         variant: AlertVariant.danger,
       });
+    } finally {
+      this.setState({ isAddEditOpen: false, editingProvider: undefined });
     }
   }
 
   private async handleDelete(provider: api.AiToolDefinition): Promise<void> {
-    this.setState({ isDeleteOpen: false, deletingProvider: undefined });
-
     try {
-      await this.props.deleteAiProviderKey(provider.id);
+      await this.props.deleteAiProviderKey(provider.providerId);
       this.appAlerts.showAlert({
         key: 'ai-provider-key-deleted',
         title: `${provider.name} API key deleted successfully.`,
@@ -138,6 +137,8 @@ class AiProviderKeys extends React.PureComponent<Props, State> {
         title: helpers.errors.getMessage(e),
         variant: AlertVariant.danger,
       });
+    } finally {
+      this.setState({ isDeleteOpen: false, deletingProvider: undefined });
     }
   }
 
@@ -147,11 +148,11 @@ class AiProviderKeys extends React.PureComponent<Props, State> {
 
     // Only show tools that require an API key (have envVarName)
     const keyTools = tools.filter(t => !!t.envVarName);
-    const canAddMore = keyTools.some(t => !providerKeyExists[t.id]);
-    const availableTools = keyTools.filter(t => !providerKeyExists[t.id]);
+    const canAddMore = keyTools.some(t => !providerKeyExists[t.providerId]);
+    const availableTools = keyTools.filter(t => !providerKeyExists[t.providerId]);
 
     // List: only tools that require a key (tools without envVarName have nothing to manage here)
-    const listTools = keyTools.filter(t => providerKeyExists[t.id]);
+    const listTools = keyTools.filter(t => providerKeyExists[t.providerId]);
 
     return (
       <React.Fragment>
@@ -182,6 +183,7 @@ class AiProviderKeys extends React.PureComponent<Props, State> {
             <AiProviderKeysList
               isDisabled={isLoading}
               providers={listTools}
+              aiProviders={this.props.aiProviders}
               providerKeyExists={providerKeyExists}
               canAddMore={canAddMore}
               onAddKey={() => this.handleShowAddModal()}
@@ -196,6 +198,7 @@ class AiProviderKeys extends React.PureComponent<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
+  aiProviders: selectAiProviders(state),
   tools: selectAiTools(state),
   providerKeyExists: selectAiProviderKeyExists(state),
   isLoading: selectAiConfigIsLoading(state),
@@ -205,7 +208,7 @@ const mapStateToProps = (state: RootState) => ({
 const connector = connect(
   mapStateToProps,
   {
-    requestAiConfig: aiConfigActionCreators.requestAiConfig,
+    requestAiProviderKeyStatus: aiConfigActionCreators.requestAiProviderKeyStatus,
     saveAiProviderKey: aiConfigActionCreators.saveAiProviderKey,
     deleteAiProviderKey: aiConfigActionCreators.deleteAiProviderKey,
   },

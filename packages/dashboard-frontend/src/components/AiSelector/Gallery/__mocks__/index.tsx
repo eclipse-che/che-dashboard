@@ -16,13 +16,13 @@ import { Props } from '@/components/AiSelector/Gallery';
 
 export class AiProviderGallery extends React.PureComponent<Props> {
   public render() {
-    const { selectedProviderId, onSelect } = this.props;
+    const { selectedProviderIds, onToggle } = this.props;
 
     return (
       <div data-testid="ai-provider-gallery-component">
         <div>AI Provider Gallery</div>
-        <div data-testid="selected-provider-id">{selectedProviderId}</div>
-        <button onClick={() => onSelect('google/gemini/latest')}>Select Provider</button>
+        <div data-testid="selected-provider-ids">{selectedProviderIds.join(',')}</div>
+        <button onClick={() => onToggle('google/gemini')}>Toggle Provider</button>
       </div>
     );
   }

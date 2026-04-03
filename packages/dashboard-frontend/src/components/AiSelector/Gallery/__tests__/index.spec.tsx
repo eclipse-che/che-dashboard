@@ -23,25 +23,23 @@ const mockOnSelect = jest.fn();
 
 const mockProviders: api.AiToolDefinition[] = [
   {
-    id: 'google/gemini/latest',
+    providerId: 'google/gemini',
+    tag: 'latest',
     name: 'Gemini',
-    description: 'Google Gemini AI assistant',
     url: 'https://github.com/google-gemini/gemini-cli',
     binary: 'gemini',
     pattern: 'bundle' as const,
     injectorImage: 'quay.io/okurinny/tools-injector/gemini-cli:next',
-    runCommandLine: 'gemini',
     envVarName: 'GEMINI_API_KEY',
   },
   {
-    id: 'anthropic/claude/latest',
+    providerId: 'anthropic/claude',
+    tag: 'latest',
     name: 'Claude',
-    description: 'Anthropic Claude AI assistant',
     url: 'https://claude.ai/code',
     binary: 'claude',
     pattern: 'init' as const,
     injectorImage: 'quay.io/okurinny/tools-injector/claude-code:next',
-    runCommandLine: 'claude',
     envVarName: 'ANTHROPIC_API_KEY',
   },
 ];
@@ -63,25 +61,18 @@ describe('AiProviderGallery', () => {
     expect(screen.getByText('Claude')).toBeInTheDocument();
   });
 
-  test('renders provider descriptions', () => {
-    renderComponent();
-
-    expect(screen.getByText('Google Gemini AI assistant')).toBeInTheDocument();
-    expect(screen.getByText('Anthropic Claude AI assistant')).toBeInTheDocument();
-  });
-
   test('clicking a provider card calls onSelect', async () => {
     renderComponent();
 
-    // Click the radio input for the first provider (Gemini)
-    const geminiInput = screen.getByRole('radio', { name: /Gemini/i });
+    // Click the checkbox input for the first provider (Gemini)
+    const geminiInput = screen.getByRole('checkbox', { name: /Gemini/i });
     await userEvent.click(geminiInput);
 
-    expect(mockOnSelect).toHaveBeenCalledWith('google/gemini/latest');
+    expect(mockOnSelect).toHaveBeenCalledWith('google/gemini');
   });
 
   test('shows "Key configured" badge when provider has an existing key', () => {
-    renderComponent('google/gemini/latest', { 'google/gemini/latest': true });
+    renderComponent('google/gemini', { 'google/gemini': true });
 
     expect(screen.getByText(/Key configured/i)).toBeInTheDocument();
   });
@@ -91,9 +82,10 @@ function getComponent(selectedProviderId?: string, providerKeyExists?: Record<st
   return (
     <AiProviderGallery
       providers={mockProviders}
-      selectedProviderId={selectedProviderId}
+      aiProviders={[]}
+      selectedProviderIds={selectedProviderId ? [selectedProviderId] : []}
       providerKeyExists={providerKeyExists || {}}
-      onSelect={mockOnSelect}
+      onToggle={mockOnSelect}
     />
   );
 }

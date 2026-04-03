@@ -20,8 +20,8 @@ import { AiProviderKeyApiService } from '@/devworkspaceClient/services/aiProvide
 jest.mock('@/devworkspaceClient/services/helpers/retryableExec.ts');
 
 const namespace = 'user-che';
-const providerId = 'google/gemini/latest';
-const sanitizedId = 'google-gemini-latest';
+const providerId = 'google/gemini';
+const sanitizedId = 'google-gemini';
 const envVarName = 'GEMINI_API_KEY';
 // Secret name is derived from envVarName: "ai-provider-" + envVarName.toLowerCase().replace(/_/g, '-')
 const secretName = 'ai-provider-gemini-api-key';
@@ -57,12 +57,6 @@ describe('AI Provider Key API Service', () => {
         ],
       } as V1SecretList);
     },
-    readNamespacedSecret: () => {
-      return Promise.resolve({
-        metadata: { name: secretName },
-        data: { [envVarName]: Buffer.from('test-key').toString('base64') },
-      } as V1Secret);
-    },
     createNamespacedSecret: () => {
       return Promise.resolve({} as V1Secret);
     },
@@ -75,7 +69,6 @@ describe('AI Provider Key API Service', () => {
   } as unknown as CoreV1Api;
 
   const spyListNamespacedSecret = jest.spyOn(stubCoreV1Api, 'listNamespacedSecret');
-  const spyReadNamespacedSecret = jest.spyOn(stubCoreV1Api, 'readNamespacedSecret');
   const spyCreateNamespacedSecret = jest.spyOn(stubCoreV1Api, 'createNamespacedSecret');
   const spyReplaceNamespacedSecret = jest.spyOn(stubCoreV1Api, 'replaceNamespacedSecret');
   const spyDeleteNamespacedSecret = jest.spyOn(stubCoreV1Api, 'deleteNamespacedSecret');
@@ -92,141 +85,45 @@ describe('AI Provider Key API Service', () => {
   });
 
   describe('listProviderIdsWithKey', () => {
-    it('should list provider IDs from labeled secrets using exists label selector', async () => {
-      // labeled list returns our secret; mounted list returns empty (no extra secrets)
-      spyListNamespacedSecret
-        .mockResolvedValueOnce({
-          items: [
-            {
-              metadata: {
-                name: secretName,
-                labels: {
-                  [MOUNT_TO_DEVWORKSPACE_LABEL]: 'true',
-                  [WATCH_SECRET_LABEL]: 'true',
-                  [AI_PROVIDER_ID_LABEL]: sanitizedId,
-                },
+    it('should return provider IDs from labeled secrets', async () => {
+      spyListNamespacedSecret.mockResolvedValueOnce({
+        items: [
+          {
+            metadata: {
+              name: secretName,
+              labels: {
+                [MOUNT_TO_DEVWORKSPACE_LABEL]: 'true',
+                [WATCH_SECRET_LABEL]: 'true',
+                [AI_PROVIDER_ID_LABEL]: sanitizedId,
               },
-              data: { [envVarName]: Buffer.from('test-key').toString('base64') },
-            } as V1Secret,
-          ],
-        } as V1SecretList)
-        .mockResolvedValueOnce({ items: [] } as V1SecretList);
+            },
+          } as V1Secret,
+        ],
+      } as V1SecretList);
 
-      const result = await service.listProviderIdsWithKey(namespace, [
-        {
-          id: 'gemini-cli',
-          name: 'Gemini CLI',
-          description: 'Gemini',
-          url: 'https://github.com',
-          binary: 'gemini',
-          pattern: 'bundle' as const,
-          injectorImage: 'quay.io/okurinny/tools-injector/gemini-cli:next',
-          runCommandLine: 'gemini',
-          envVarName,
-        },
-      ]);
+      const result = await service.listProviderIdsWithKey(namespace);
 
-      expect(spyListNamespacedSecret).toHaveBeenNthCalledWith(1, {
+      expect(spyListNamespacedSecret).toHaveBeenCalledWith({
         namespace,
         labelSelector: AI_PROVIDER_ID_LABEL,
       });
       expect(result).toEqual([sanitizedId]);
     });
 
-    it('should detect manually-created secrets by envVarName data key', async () => {
-      // Labeled list returns empty (no dashboard-managed secret)
-      spyListNamespacedSecret
-        .mockResolvedValueOnce({ items: [] } as V1SecretList)
-        // Mounted list returns the manually created demo-style secret
-        .mockResolvedValueOnce({
-          items: [
-            {
-              metadata: {
-                name: 'gemini-api-key',
-                labels: { [MOUNT_TO_DEVWORKSPACE_LABEL]: 'true' },
-              },
-              data: { [envVarName]: Buffer.from('manual-key').toString('base64') },
-            } as V1Secret,
-          ],
-        } as V1SecretList);
+    it('should return empty array when no labeled secrets found', async () => {
+      spyListNamespacedSecret.mockResolvedValueOnce({ items: [] } as V1SecretList);
 
-      const result = await service.listProviderIdsWithKey(namespace, [
-        {
-          id: 'gemini-cli',
-          name: 'Gemini CLI',
-          description: 'Gemini',
-          url: 'https://github.com',
-          binary: 'gemini',
-          pattern: 'bundle' as const,
-          injectorImage: 'quay.io/okurinny/tools-injector/gemini-cli:next',
-          runCommandLine: 'gemini',
-          envVarName,
-        },
-      ]);
+      const result = await service.listProviderIdsWithKey(namespace);
 
-      expect(spyListNamespacedSecret).toHaveBeenNthCalledWith(2, {
-        namespace,
-        labelSelector: `${MOUNT_TO_DEVWORKSPACE_LABEL}=true`,
-      });
-      // 'gemini-cli' has no slashes, so sanitized form is 'gemini-cli'
-      expect(result).toEqual(['gemini-cli']);
-    });
-
-    it('should not duplicate when same provider has both labeled and envVarName secret', async () => {
-      // The labeled secret has sanitized tool ID 'gemini-cli'
-      spyListNamespacedSecret
-        .mockResolvedValueOnce({
-          items: [
-            {
-              metadata: { labels: { [AI_PROVIDER_ID_LABEL]: 'gemini-cli' } },
-              data: {},
-            } as V1Secret,
-          ],
-        } as V1SecretList)
-        .mockResolvedValueOnce({
-          items: [
-            {
-              metadata: { labels: { [MOUNT_TO_DEVWORKSPACE_LABEL]: 'true' } },
-              data: { [envVarName]: Buffer.from('key').toString('base64') },
-            } as V1Secret,
-          ],
-        } as V1SecretList);
-
-      const result = await service.listProviderIdsWithKey(namespace, [
-        {
-          id: 'gemini-cli',
-          name: 'Gemini CLI',
-          description: 'Gemini',
-          url: 'https://github.com',
-          binary: 'gemini',
-          pattern: 'bundle' as const,
-          injectorImage: 'quay.io/okurinny/tools-injector/gemini-cli:next',
-          runCommandLine: 'gemini',
-          envVarName,
-        },
-      ]);
-
-      expect(result).toEqual(['gemini-cli']); // no duplicates
-    });
-
-    it('should return empty array when no secrets found', async () => {
-      spyListNamespacedSecret
-        .mockResolvedValueOnce({ items: [] } as V1SecretList)
-        .mockResolvedValueOnce({ items: [] } as V1SecretList);
-      const result = await service.listProviderIdsWithKey(namespace, [
-        {
-          id: 'gemini-cli',
-          name: 'Gemini CLI',
-          description: 'Gemini',
-          url: 'https://github.com',
-          binary: 'gemini',
-          pattern: 'bundle' as const,
-          injectorImage: 'quay.io/okurinny/tools-injector/gemini-cli:next',
-          runCommandLine: 'gemini',
-          envVarName,
-        },
-      ]);
       expect(result).toEqual([]);
+    });
+
+    it('should make exactly one API call', async () => {
+      spyListNamespacedSecret.mockResolvedValueOnce({ items: [] } as V1SecretList);
+
+      await service.listProviderIdsWithKey(namespace);
+
+      expect(spyListNamespacedSecret).toHaveBeenCalledTimes(1);
     });
 
     it('should throw error when listing fails', async () => {
@@ -234,7 +131,7 @@ describe('AI Provider Key API Service', () => {
         throw new Error('Forbidden');
       });
 
-      await expect(service.listProviderIdsWithKey(namespace, [])).rejects.toThrow(
+      await expect(service.listProviderIdsWithKey(namespace)).rejects.toThrow(
         `Unable to list AI provider keys in the namespace "${namespace}": Forbidden`,
       );
     });
@@ -324,12 +221,6 @@ describe('AI Provider Key API Service', () => {
         service.createOrReplace(namespace, providerId, 'key', envVarName),
       ).rejects.toThrow(`Unable to create AI provider key for "${providerId}"`);
     });
-
-    it('should not call readNamespacedSecret (no TOCTOU pattern)', async () => {
-      await service.createOrReplace(namespace, providerId, 'key', envVarName);
-
-      expect(spyReadNamespacedSecret).not.toHaveBeenCalled();
-    });
   });
 
   describe('delete', () => {
@@ -346,37 +237,12 @@ describe('AI Provider Key API Service', () => {
       });
     });
 
-    it('should do nothing when no secret is found and no envVarName provided', async () => {
+    it('should do nothing when no secret is found', async () => {
       spyListNamespacedSecret.mockResolvedValueOnce({ items: [] } as V1SecretList);
 
       await service.delete(namespace, providerId);
 
       expect(spyDeleteNamespacedSecret).not.toHaveBeenCalled();
-    });
-
-    it('should fall back to deleting a manually-created mounted secret by envVarName', async () => {
-      // No labeled secret found
-      spyListNamespacedSecret
-        .mockResolvedValueOnce({ items: [] } as V1SecretList)
-        // Mounted secret with GEMINI_API_KEY data key
-        .mockResolvedValueOnce({
-          items: [
-            {
-              metadata: {
-                name: 'gemini-api-key',
-                labels: { [MOUNT_TO_DEVWORKSPACE_LABEL]: 'true' },
-              },
-              data: { [envVarName]: Buffer.from('manual-key').toString('base64') },
-            } as V1Secret,
-          ],
-        } as V1SecretList);
-
-      await service.delete(namespace, providerId, envVarName);
-
-      expect(spyDeleteNamespacedSecret).toHaveBeenCalledWith({
-        name: 'gemini-api-key',
-        namespace,
-      });
     });
 
     it('should throw error when listing fails during delete', async () => {

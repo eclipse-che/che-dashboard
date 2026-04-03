@@ -59,7 +59,7 @@ describe('AiConfig API client', () => {
       mockPost.mockResolvedValueOnce({ data: undefined });
 
       await expect(
-        saveAiProviderKey('test-namespace', 'gemini-cli', 'test-api-key'),
+        saveAiProviderKey('test-namespace', 'gemini-cli', 'GEMINI_API_KEY', 'test-api-key'),
       ).resolves.not.toThrow();
     });
 
@@ -71,7 +71,7 @@ describe('AiConfig API client', () => {
 
       let errorMessage: string | undefined;
       try {
-        await saveAiProviderKey('test-namespace', 'gemini-cli', 'test-api-key');
+        await saveAiProviderKey('test-namespace', 'gemini-cli', 'GEMINI_API_KEY', 'test-api-key');
       } catch (err) {
         errorMessage = common.helpers.errors.getMessage(err);
       }

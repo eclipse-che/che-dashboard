@@ -47,7 +47,7 @@ import { selectPvcStrategy } from '@/store/ServerConfig/selectors';
 export type Props = {
   editorDefinition: string | undefined;
   editorImage: string | undefined;
-  aiProvider?: string | undefined;
+  aiProviders?: string[];
   presetFilter: string | undefined;
 } & MappedProps;
 
@@ -98,7 +98,7 @@ class SamplesList extends React.PureComponent<Props, State> {
   }
 
   private async handleSampleCardClick(metadata: DevfileRegistryMetadata): Promise<void> {
-    const { editorDefinition, editorImage, aiProvider } = this.props;
+    const { editorDefinition, editorImage, aiProviders } = this.props;
 
     // Handle SSH URLs (git@...) and HTTP(S) URLs differently
     let factoryUrl: string;
@@ -129,8 +129,8 @@ class SamplesList extends React.PureComponent<Props, State> {
       factoryParams[EDITOR_IMAGE_ATTR] = editorImage;
     }
 
-    if (aiProvider !== undefined) {
-      factoryParams[AI_PROVIDER_ATTR] = aiProvider;
+    if (aiProviders !== undefined && aiProviders.length > 0) {
+      factoryParams[AI_PROVIDER_ATTR] = aiProviders.join(',');
     }
 
     const policiesCreate = this.getPoliciesCreate();

@@ -20,7 +20,6 @@ import {
 } from '@/constants/schemas';
 import { restParams } from '@/models';
 import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
-import { getServiceAccountToken } from '@/routes/api/helpers/getServiceAccountToken';
 import { getToken } from '@/routes/api/helpers/getToken';
 import { getSchema } from '@/services/helpers';
 
@@ -28,7 +27,7 @@ const tags = ['AI Config'];
 const rateLimitConfig = {
   config: {
     rateLimit: {
-      max: 30,
+      max: 100,
       timeWindow: '1 minute',
     },
   },
@@ -38,7 +37,8 @@ export function registerAiConfigRoutes(instance: FastifyInstance) {
   instance.register(async server => {
     /**
      * GET /dashboard/api/namespace/:namespace/ai-provider-key
-     * Returns provider IDs that have a key Secret in the given namespace.
+     * Returns sanitized provider IDs that have a dashboard-managed key Secret
+     * (identified by the che.eclipse.org/ai-provider-id label) in the namespace.
      * Uses user bearer token.
      */
     server.get(
@@ -46,21 +46,17 @@ export function registerAiConfigRoutes(instance: FastifyInstance) {
       Object.assign({}, rateLimitConfig, getSchema({ tags, params: namespacedSchema })),
       async function (request: FastifyRequest) {
         const { namespace } = request.params as restParams.INamespacedParams;
-        // Fetch provider definitions to enable detection of manually-created secrets
-        // (e.g. created via CLI following the demo-repo pattern, without our custom label).
-        const serviceToken = getServiceAccountToken();
-        const { serverConfigApi } = getDevWorkspaceClient(serviceToken);
-        const cheCustomResource = await serverConfigApi.fetchCheCustomResource();
-        const tools = serverConfigApi.getAiTools(cheCustomResource);
         const token = getToken(request);
         const { aiProviderKeyApi } = getDevWorkspaceClient(token);
-        return aiProviderKeyApi.listProviderIdsWithKey(namespace, tools);
+        return aiProviderKeyApi.listProviderIdsWithKey(namespace);
       },
     );
 
     /**
      * POST /dashboard/api/namespace/:namespace/ai-provider-key
      * Creates or replaces the API key Secret for a provider.
+     * The client supplies envVarName (e.g. GEMINI_API_KEY) which it already
+     * knows from the tool registry — no server-side CR lookup needed.
      * Uses user bearer token.
      */
     server.post(
@@ -72,24 +68,11 @@ export function registerAiConfigRoutes(instance: FastifyInstance) {
       ),
       async function (request: FastifyRequest, reply: FastifyReply) {
         const { namespace } = request.params as restParams.INamespacedParams;
-        const { toolId, apiKey } = request.body as restParams.AiProviderKeyBody;
-        const serviceToken = getServiceAccountToken();
-        const { serverConfigApi } = getDevWorkspaceClient(serviceToken);
-        const cheCluster = await serverConfigApi.fetchCheCustomResource();
-        const tools = serverConfigApi.getAiTools(cheCluster);
-        const tool = tools.find(t => t.id === toolId);
-        if (!tool) {
-          reply.code(404).send({ message: `AI tool '${toolId}' not found in server config` });
-          return;
-        }
-        if (!tool.envVarName) {
-          reply.code(400).send({ message: `AI tool '${toolId}' does not require an API key` });
-          return;
-        }
+        const { toolId, envVarName, apiKey } = request.body as restParams.AiProviderKeyBody;
         const token = getToken(request);
         const { aiProviderKeyApi } = getDevWorkspaceClient(token);
-        await aiProviderKeyApi.createOrReplace(namespace, toolId, apiKey, tool.envVarName);
-        return { toolId };
+        await aiProviderKeyApi.createOrReplace(namespace, toolId, apiKey, envVarName);
+        reply.code(201).send({ toolId });
       },
     );
 
@@ -103,15 +86,9 @@ export function registerAiConfigRoutes(instance: FastifyInstance) {
       Object.assign({}, rateLimitConfig, getSchema({ tags, params: aiProviderKeyParamsSchema })),
       async function (request: FastifyRequest, reply: FastifyReply) {
         const { namespace, toolId } = request.params as restParams.AiProviderKeyNamespacedParams;
-        // Look up the tool to get envVarName for fallback deletion of manually-created secrets.
-        const serviceToken = getServiceAccountToken();
-        const { serverConfigApi } = getDevWorkspaceClient(serviceToken);
-        const cheCluster = await serverConfigApi.fetchCheCustomResource();
-        const tools = serverConfigApi.getAiTools(cheCluster);
-        const tool = tools.find(t => t.id === toolId);
         const token = getToken(request);
         const { aiProviderKeyApi } = getDevWorkspaceClient(token);
-        await aiProviderKeyApi.delete(namespace, toolId, tool?.envVarName);
+        await aiProviderKeyApi.delete(namespace, toolId);
         reply.code(204).send();
       },
     );

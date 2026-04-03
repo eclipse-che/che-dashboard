@@ -50,7 +50,7 @@ exports[`UserPreferences snapshot 1`] = `
                 role="tab"
                 type="button"
               >
-                AI Provider Keys
+                AI Providers Keys
               </button>
             </li>
             <li

@@ -18,14 +18,19 @@ import { AiProviderEntry } from '@/components/AiSelector/Gallery/Entry';
 
 export type Props = {
   providers: api.AiToolDefinition[];
-  selectedProviderId: string | undefined;
+  aiProviders: api.AiProviderDefinition[];
+  selectedProviderIds: string[];
   providerKeyExists: Record<string, boolean>;
-  onSelect: (providerId: string) => void;
+  onToggle: (providerId: string) => void;
 };
 
 export class AiProviderGallery extends React.PureComponent<Props> {
+  private getProvider(tool: api.AiToolDefinition): api.AiProviderDefinition | undefined {
+    return this.props.aiProviders.find(p => p.id === tool.providerId);
+  }
+
   public render(): React.ReactElement {
-    const { providers, selectedProviderId, providerKeyExists, onSelect } = this.props;
+    const { providers, selectedProviderIds, providerKeyExists, onToggle } = this.props;
 
     const sorted = [...providers].sort((a, b) => a.name.localeCompare(b.name));
 
@@ -33,11 +38,13 @@ export class AiProviderGallery extends React.PureComponent<Props> {
       <Gallery hasGutter={true} minWidths={{ default: '210px' }} maxWidths={{ default: '280px' }}>
         {sorted.map(provider => (
           <AiProviderEntry
-            key={provider.id}
+            key={provider.providerId}
             provider={provider}
-            isSelected={provider.id === selectedProviderId}
-            hasExistingKey={!!providerKeyExists[provider.id]}
-            onSelect={onSelect}
+            icon={this.getProvider(provider)?.icon}
+            description={this.getProvider(provider)?.description}
+            isSelected={selectedProviderIds.includes(provider.providerId)}
+            hasExistingKey={!!providerKeyExists[provider.providerId]}
+            onToggle={onToggle}
           />
         ))}
       </Gallery>

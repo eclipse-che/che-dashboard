@@ -195,14 +195,14 @@ exports[`AiSelector snapshot 1`] = `
                         AI Provider Gallery
                       </div>
                       <div
-                        data-testid="selected-provider-id"
+                        data-testid="selected-provider-ids"
                       >
-                        claude-code
+                        anthropic/claude
                       </div>
                       <button
                         onClick={[Function]}
                       >
-                        Select Provider
+                        Toggle Provider
                       </button>
                     </div>
                     <p

@@ -10,33 +10,23 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  Button,
-  Content,
-  ContentVariants,
-  FormGroup,
-  FormGroupLabelHelp,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  ModalVariant,
-  Radio,
-} from '@patternfly/react-core';
+import { Button, FormGroup, FormGroupLabelHelp } from '@patternfly/react-core';
 import { PencilAltIcon } from '@patternfly/react-icons';
 import cloneDeep from 'lodash/cloneDeep';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { AiToolInfoModal } from '@/pages/WorkspaceDetails/OverviewTab/AiTool/InfoModal';
+import { AiToolSelectorModal } from '@/pages/WorkspaceDetails/OverviewTab/AiTool/SelectorModal';
 import overviewStyles from '@/pages/WorkspaceDetails/OverviewTab/index.module.css';
 import {
   addAiToolToWorkspace,
-  getInjectedAiToolId,
+  getInjectedAiToolIds,
   removeAiToolFromWorkspace,
 } from '@/services/helpers/aiTools';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
-import { selectAiTools } from '@/store/AiConfig/selectors';
+import { selectAiProviders, selectAiTools } from '@/store/AiConfig/selectors';
 
 export type Props = MappedProps & {
   readonly: boolean;
@@ -47,7 +37,7 @@ export type Props = MappedProps & {
 export type State = {
   isSelectorOpen: boolean;
   isInfoOpen: boolean;
-  selected: string | undefined;
+  selected: string[];
 };
 
 class AiToolFormGroup extends React.PureComponent<Props, State> {
@@ -56,178 +46,71 @@ class AiToolFormGroup extends React.PureComponent<Props, State> {
     this.state = {
       isSelectorOpen: false,
       isInfoOpen: false,
-      selected: getInjectedAiToolId(props.workspace, props.aiTools),
+      selected: getInjectedAiToolIds(props.workspace, props.aiTools),
     };
   }
 
   public componentDidUpdate(prevProps: Props): void {
     const { aiTools, workspace } = this.props;
-    const newToolId = getInjectedAiToolId(workspace, aiTools);
-    if (newToolId !== getInjectedAiToolId(prevProps.workspace, prevProps.aiTools)) {
-      this.setState({ selected: newToolId });
+    const newToolIds = getInjectedAiToolIds(workspace, aiTools);
+    const prevToolIds = getInjectedAiToolIds(prevProps.workspace, prevProps.aiTools);
+    if (newToolIds.join(',') !== prevToolIds.join(',')) {
+      this.setState({ selected: newToolIds });
     }
   }
 
-  private getDisplayName(toolId: string | undefined): string {
+  private getDisplayName(toolIds: string[]): string {
     const { aiTools } = this.props;
-    if (!toolId) {
+    if (toolIds.length === 0) {
       return 'None';
     }
-    return aiTools.find(t => t.id === toolId)?.name ?? toolId;
-  }
-
-  private handleEditToggle(isSelectorOpen: boolean): void {
-    this.setState({ isSelectorOpen });
-  }
-
-  private handleInfoToggle(): void {
-    this.setState(({ isInfoOpen }) => ({ isInfoOpen: !isInfoOpen }));
+    return toolIds.map(id => aiTools.find(t => t.providerId === id)?.name ?? id).join(', ');
   }
 
   private handleCancelChanges(): void {
     const { aiTools, workspace } = this.props;
-    this.setState({ selected: getInjectedAiToolId(workspace, aiTools) });
-    this.handleEditToggle(false);
+    this.setState({
+      selected: getInjectedAiToolIds(workspace, aiTools),
+      isSelectorOpen: false,
+    });
   }
 
   private async handleConfirmChanges(): Promise<void> {
     const { workspace, aiTools, onSave } = this.props;
-    const currentToolId = getInjectedAiToolId(workspace, aiTools);
+    const currentToolIds = getInjectedAiToolIds(workspace, aiTools);
     const { selected } = this.state;
 
-    if (selected === currentToolId) {
+    if (selected.join(',') === currentToolIds.join(',')) {
       this.setState({ isSelectorOpen: false });
       return;
     }
 
     let updatedDw = cloneDeep(workspace.ref);
 
-    if (currentToolId) {
-      updatedDw = removeAiToolFromWorkspace(constructWorkspace(updatedDw), currentToolId);
+    // Remove tools that are no longer selected
+    for (const toolId of currentToolIds) {
+      if (!selected.includes(toolId)) {
+        updatedDw = removeAiToolFromWorkspace(constructWorkspace(updatedDw), toolId, aiTools);
+      }
     }
-    if (selected) {
-      updatedDw = addAiToolToWorkspace(constructWorkspace(updatedDw), selected, aiTools);
+
+    // Add tools that are newly selected
+    for (const toolId of selected) {
+      if (!currentToolIds.includes(toolId)) {
+        updatedDw = addAiToolToWorkspace(constructWorkspace(updatedDw), toolId, aiTools);
+      }
     }
 
     this.setState({ isSelectorOpen: false });
     await onSave(constructWorkspace(updatedDw));
   }
 
-  private getInfoModalContent(): React.ReactNode {
-    const { aiTools } = this.props;
-
-    if (aiTools.length === 0) {
-      return (
-        <Content>
-          <Content component="p">
-            No AI tools are available. Ask your administrator to configure AI tools in the
-            CheCluster custom resource.
-          </Content>
-        </Content>
-      );
-    }
-
-    return (
-      <Content>
-        <Content component="p">
-          AI coding tools are injected into workspace containers at start via init containers. The
-          selected tool binary is copied to a shared volume and added to <code>PATH</code>.
-        </Content>
-        {aiTools.map(def => (
-          <Content key={def.id} component="p">
-            <b>
-              <a href={def.url} target="_blank" rel="noreferrer">
-                {def.name}
-              </a>
-            </b>{' '}
-            — {def.description}
-            {def.envVarName && (
-              <>
-                {' '}
-                Requires <code>{def.envVarName}</code>.
-              </>
-            )}
-          </Content>
-        ))}
-      </Content>
-    );
-  }
-
-  private getSelectorModal(): React.ReactNode {
-    const { aiTools, workspace } = this.props;
-    const { isSelectorOpen, selected } = this.state;
-    const originSelection = getInjectedAiToolId(workspace, aiTools);
-
-    return (
-      <Modal
-        variant={ModalVariant.small}
-        isOpen={isSelectorOpen}
-        onClose={() => this.handleCancelChanges()}
-        elementToFocus="[data-pf-initial-focus]"
-      >
-        <ModalHeader title="Change AI Tool" />
-        <ModalBody>
-          <Content data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
-            {aiTools.length === 0 ? (
-              <Content component="p">
-                No AI tools are available. Ask your administrator to configure AI tools in the
-                CheCluster custom resource.
-              </Content>
-            ) : (
-              <>
-                <Content component={ContentVariants.h6}>Select an AI coding tool</Content>
-                <Content component={ContentVariants.h6}>
-                  <Radio
-                    label="None"
-                    name="ai-tool-none"
-                    id="ai-tool-none-radio"
-                    description="No AI tool will be injected into the workspace."
-                    isChecked={selected === undefined}
-                    onChange={() => this.setState({ selected: undefined })}
-                  />
-                </Content>
-                {aiTools.map(def => (
-                  <Content key={def.id} component={ContentVariants.h6}>
-                    <Radio
-                      label={def.name}
-                      name={`ai-tool-${def.id}`}
-                      id={`ai-tool-${def.id}-radio`}
-                      description={
-                        def.envVarName
-                          ? `${def.description} Requires ${def.envVarName} (set via User Preferences → AI Provider Keys).`
-                          : def.description
-                      }
-                      isChecked={selected === def.id}
-                      onChange={() => this.setState({ selected: def.id })}
-                    />
-                  </Content>
-                ))}
-              </>
-            )}
-          </Content>
-        </ModalBody>
-        <ModalFooter>
-          <Button
-            key="confirm"
-            variant="primary"
-            isDisabled={selected === originSelection}
-            onClick={() => this.handleConfirmChanges()}
-          >
-            Save
-          </Button>
-          <Button key="cancel" variant="secondary" onClick={() => this.handleCancelChanges()}>
-            Cancel
-          </Button>
-        </ModalFooter>
-      </Modal>
-    );
-  }
-
   public render(): React.ReactNode {
-    const { readonly } = this.props;
-    const { selected, isInfoOpen } = this.state;
+    const { aiTools, readonly, workspace } = this.props;
+    const { selected, isSelectorOpen, isInfoOpen } = this.state;
 
     const displayName = this.getDisplayName(selected);
+    const originSelection = getInjectedAiToolIds(workspace, aiTools);
 
     return (
       <FormGroup
@@ -236,7 +119,7 @@ class AiToolFormGroup extends React.PureComponent<Props, State> {
         labelHelp={
           <FormGroupLabelHelp
             aria-label="More info for AI tool"
-            onClick={() => this.handleInfoToggle()}
+            onClick={() => this.setState(prev => ({ isInfoOpen: !prev.isInfoOpen }))}
           />
         }
       >
@@ -247,33 +130,45 @@ class AiToolFormGroup extends React.PureComponent<Props, State> {
             <Button
               data-testid="overview-ai-tool-edit-toggle"
               variant="plain"
-              onClick={() => this.handleEditToggle(true)}
+              onClick={() => this.setState({ isSelectorOpen: true })}
               title="Change AI Tool"
             >
               <PencilAltIcon />
             </Button>
           </span>
         )}
-        {this.getSelectorModal()}
-        <Modal
-          variant={ModalVariant.small}
+        <AiToolSelectorModal
+          isOpen={isSelectorOpen}
+          aiTools={aiTools}
+          aiProviders={this.props.aiProviders}
+          selected={selected}
+          originSelection={originSelection}
+          onToggle={toolId => {
+            this.setState(prev => {
+              const isSelected = prev.selected.includes(toolId);
+              return {
+                selected: isSelected
+                  ? prev.selected.filter(id => id !== toolId)
+                  : [...prev.selected, toolId],
+              };
+            });
+          }}
+          onConfirm={() => this.handleConfirmChanges()}
+          onCancel={() => this.handleCancelChanges()}
+        />
+        <AiToolInfoModal
           isOpen={isInfoOpen}
-          onClose={() => this.handleInfoToggle()}
-          elementToFocus="[data-pf-initial-focus]"
-        >
-          <ModalHeader title="AI Tool Info" />
-          <ModalBody>
-            <div data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
-              {this.getInfoModalContent()}
-            </div>
-          </ModalBody>
-        </Modal>
+          aiTools={aiTools}
+          aiProviders={this.props.aiProviders}
+          onClose={() => this.setState(prev => ({ isInfoOpen: !prev.isInfoOpen }))}
+        />
       </FormGroup>
     );
   }
 }
 
 const mapStateToProps = (state: RootState) => ({
+  aiProviders: selectAiProviders(state),
   aiTools: selectAiTools(state),
 });
 

@@ -22,7 +22,6 @@ import { AppThunk } from '@/store';
 import { selectAiTools } from '@/store/AiConfig/selectors';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
 import { verifyAuthorized } from '@/store/SanityCheck';
-import { selectServerConfigState } from '@/store/ServerConfig/selectors';
 
 function buildKeyExistsMap(
   tools: api.AiToolDefinition[],
@@ -30,19 +29,12 @@ function buildKeyExistsMap(
 ): Record<string, boolean> {
   const keyExists: Record<string, boolean> = {};
   for (const tool of tools) {
-    keyExists[tool.id] = sanitizedIdsWithKey.includes(tool.id.replace(/\//g, '-'));
+    keyExists[tool.providerId] = sanitizedIdsWithKey.includes(tool.providerId.replace(/\//g, '-'));
   }
   return keyExists;
 }
 
 export const aiConfigRequestAction = createAction('aiConfig/request');
-
-export interface AiConfigReceivePayload {
-  providers: api.AiProviderDefinition[];
-  tools: api.AiToolDefinition[];
-  defaultProviderId: string | undefined;
-}
-export const aiConfigReceiveAction = createAction<AiConfigReceivePayload>('aiConfig/receive');
 
 export const aiConfigKeyStatusReceiveAction = createAction<Record<string, boolean>>(
   'aiConfig/keyStatusReceive',
@@ -50,33 +42,25 @@ export const aiConfigKeyStatusReceiveAction = createAction<Record<string, boolea
 
 export const aiConfigErrorAction = createAction<string>('aiConfig/error');
 
+async function refreshKeyStatus(
+  dispatch: Parameters<AppThunk>[0],
+  getState: Parameters<AppThunk>[1],
+): Promise<void> {
+  const state = getState();
+  const namespace = selectDefaultNamespace(state).name;
+  const tools = selectAiTools(state);
+  if (namespace && tools.length > 0) {
+    const sanitizedIds = await fetchAiProviderKeyStatus(namespace);
+    dispatch(aiConfigKeyStatusReceiveAction(buildKeyExistsMap(tools, sanitizedIds)));
+  }
+}
+
 export const actionCreators = {
-  requestAiConfig: (): AppThunk => async (dispatch, getState) => {
+  requestAiProviderKeyStatus: (): AppThunk => async (dispatch, getState) => {
     try {
-      await verifyAuthorized(dispatch, getState);
-
       dispatch(aiConfigRequestAction());
-
-      const state = getState();
-      const serverConfig = selectServerConfigState(state)?.config;
-      const providers = serverConfig?.aiProviders ?? [];
-      const tools = serverConfig?.aiTools ?? [];
-      const defaultProviderId = serverConfig?.defaultAiProvider;
-
-      dispatch(
-        aiConfigReceiveAction({
-          providers,
-          tools,
-          defaultProviderId,
-        }),
-      );
-
-      // Fetch key status keyed by tool id
-      const namespace = selectDefaultNamespace(state).name;
-      if (namespace && tools.length > 0) {
-        const sanitizedIds = await fetchAiProviderKeyStatus(namespace);
-        dispatch(aiConfigKeyStatusReceiveAction(buildKeyExistsMap(tools, sanitizedIds)));
-      }
+      await verifyAuthorized(dispatch, getState);
+      await refreshKeyStatus(dispatch, getState);
     } catch (e) {
       const errorMessage = helpers.errors.getMessage(e);
       dispatch(aiConfigErrorAction(errorMessage));
@@ -87,15 +71,16 @@ export const actionCreators = {
   saveAiProviderKey:
     (toolId: string, apiKey: string): AppThunk =>
     async (dispatch, getState) => {
+      dispatch(aiConfigRequestAction());
       try {
         await verifyAuthorized(dispatch, getState);
-        dispatch(aiConfigRequestAction());
         const state = getState();
         const namespace = selectDefaultNamespace(state).name;
-        await saveAiProviderKey(namespace, toolId, apiKey);
-        const sanitizedIds = await fetchAiProviderKeyStatus(namespace);
         const tools = selectAiTools(state);
-        dispatch(aiConfigKeyStatusReceiveAction(buildKeyExistsMap(tools, sanitizedIds)));
+        const tool = tools.find(t => t.providerId === toolId);
+        const envVarName = tool?.envVarName ?? '';
+        await saveAiProviderKey(namespace, toolId, envVarName, apiKey);
+        await refreshKeyStatus(dispatch, getState);
       } catch (e) {
         const errorMessage = helpers.errors.getMessage(e);
         dispatch(aiConfigErrorAction(errorMessage));
@@ -106,15 +91,12 @@ export const actionCreators = {
   deleteAiProviderKey:
     (toolId: string): AppThunk =>
     async (dispatch, getState) => {
+      dispatch(aiConfigRequestAction());
       try {
         await verifyAuthorized(dispatch, getState);
-        dispatch(aiConfigRequestAction());
-        const state = getState();
-        const namespace = selectDefaultNamespace(state).name;
+        const namespace = selectDefaultNamespace(getState()).name;
         await deleteAiProviderKey(namespace, toolId);
-        const sanitizedIds = await fetchAiProviderKeyStatus(namespace);
-        const tools = selectAiTools(state);
-        dispatch(aiConfigKeyStatusReceiveAction(buildKeyExistsMap(tools, sanitizedIds)));
+        await refreshKeyStatus(dispatch, getState);
       } catch (e) {
         const errorMessage = helpers.errors.getMessage(e);
         dispatch(aiConfigErrorAction(errorMessage));

@@ -190,7 +190,7 @@ export type CheClusterCustomResourceSpecDevEnvironments = {
     urls?: string[];
   };
   aiProviders?: AiProviderDefinition[];
-  defaultAiProvider?: string;
+  defaultAiProviders?: string[];
   aiTools?: AiToolDefinition[];
 };
 
@@ -431,9 +431,9 @@ export interface IServerConfigApi {
   getAiProviders(cheCustomResource: CheClusterCustomResource): AiProviderDefinition[];
 
   /**
-   * Returns the default AI provider ID configured in the CheCluster CR.
+   * Returns the default AI provider IDs configured in the CheCluster CR.
    */
-  getDefaultAiProvider(cheCustomResource: CheClusterCustomResource): string | undefined;
+  getDefaultAiProviders(cheCustomResource: CheClusterCustomResource): string[];
 
   /**
    * Returns the AI tool definitions (from CR if configured, otherwise built-in defaults).
@@ -602,11 +602,10 @@ export interface IShhKeysApi {
 
 export interface IAiProviderKeyApi {
   /**
-   * Returns sanitized provider IDs that have a key Secret in the namespace.
-   * Detects both dashboard-managed Secrets (via che.eclipse.org/ai-provider-id label)
-   * and manually created Secrets (via envVarName data key matching).
+   * Returns sanitized provider IDs that have a dashboard-managed key Secret
+   * in the namespace (identified by the che.eclipse.org/ai-provider-id label).
    */
-  listProviderIdsWithKey(namespace: string, providers?: AiToolDefinition[]): Promise<string[]>;
+  listProviderIdsWithKey(namespace: string): Promise<string[]>;
 
   /**
    * Creates or replaces the API key Secret for the given provider in the given namespace.
@@ -621,10 +620,8 @@ export interface IAiProviderKeyApi {
 
   /**
    * Deletes the API key Secret for the given provider from the given namespace.
-   * If envVarName is provided, also searches for manually-created secrets
-   * (without the ai-provider-id label) that contain the envVarName data key.
    */
-  delete(namespace: string, providerId: string, envVarName?: string): Promise<void>;
+  delete(namespace: string, providerId: string): Promise<void>;
 }
 
 export interface IBackupApi {

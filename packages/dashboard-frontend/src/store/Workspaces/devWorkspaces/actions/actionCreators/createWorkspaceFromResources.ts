@@ -55,11 +55,13 @@ export const createWorkspaceFromResources =
 
       dispatch(devWorkspacesRequestAction());
 
-      // Inject AI tool into the DevWorkspace if selected
-      if (params.aiProvider) {
+      // Inject AI tools into the DevWorkspace if selected
+      if (params.aiProviders && params.aiProviders.length > 0) {
         const aiTools = selectAiTools(state);
         if (aiTools.length > 0) {
-          devWorkspace = addAiToolToWorkspace(devWorkspace, params.aiProvider, aiTools);
+          for (const providerId of params.aiProviders) {
+            devWorkspace = addAiToolToWorkspace(devWorkspace, providerId, aiTools);
+          }
         }
       }
 

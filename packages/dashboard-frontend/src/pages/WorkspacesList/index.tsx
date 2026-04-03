@@ -32,6 +32,7 @@ import devfileApi from '@/services/devfileApi';
 import { Workspace } from '@/services/workspace-adapter';
 
 type Props = {
+  aiProviders: api.AiProviderDefinition[];
   aiTools: api.AiToolDefinition[];
   backupConfig?: BackupConfig;
   backupsByWorkspace: Record<string, BackupInfo>;
@@ -83,8 +84,16 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { aiTools, backupConfig, backupsByWorkspace, branding, editors, navigate, workspaces } =
-      this.props;
+    const {
+      aiProviders,
+      aiTools,
+      backupConfig,
+      backupsByWorkspace,
+      branding,
+      editors,
+      navigate,
+      workspaces,
+    } = this.props;
     const { workspace: workspacesDocsLink } = branding.docs;
     const { viewMode } = this.state;
 
@@ -126,6 +135,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
           <WorkspacesView
             workspaces={workspaces}
             editors={editors}
+            aiProviders={aiProviders}
             aiTools={aiTools}
             backupConfig={backupConfig}
             backupsByWorkspace={backupsByWorkspace}

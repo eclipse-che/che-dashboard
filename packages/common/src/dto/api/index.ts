@@ -104,12 +104,11 @@ export interface IExternalDevfileRegistry {
 }
 
 export interface AiToolDefinition {
-  /** Tool identifier, e.g. 'claude-code' */
-  id: string;
-  /** Links this tool to an AiProviderDefinition.id, e.g. 'google/gemini/latest' */
-  providerId?: string;
+  /** Links this tool to an AiProviderDefinition.id, e.g. 'anthropic/claude' */
+  providerId: string;
+  /** Version tag, e.g. 'latest' */
+  tag: string;
   name: string;
-  description: string;
   url: string;
   /** Binary name available in PATH after injection, e.g. 'claude' */
   binary: string;
@@ -121,10 +120,6 @@ export interface AiToolDefinition {
   envVarName?: string;
   /** One-time setup command run in the editor container at postStart */
   setupCommand?: string;
-  /** Command line to start the AI tool inside the workspace container */
-  runCommandLine: string;
-  /** URL to the tool's SVG icon */
-  icon?: string;
 }
 
 export interface AiProviderDefinition {
@@ -133,6 +128,8 @@ export interface AiProviderDefinition {
   publisher: string;
   description?: string;
   docsUrl?: string;
+  /** URL to the provider's SVG icon */
+  icon?: string;
 }
 
 export interface IServerConfig {
@@ -183,7 +180,7 @@ export interface IServerConfig {
   dashboardLogo?: { base64data: string; mediatype: string };
   allowedSourceUrls: string[];
   aiProviders?: AiProviderDefinition[];
-  defaultAiProvider?: string;
+  defaultAiProviders?: string[];
   aiTools?: AiToolDefinition[];
 }
 

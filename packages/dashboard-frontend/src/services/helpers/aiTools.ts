@@ -22,47 +22,66 @@ import { Workspace } from '@/services/workspace-adapter';
 type DevWorkspaceComponent = V1alpha2DevWorkspaceSpecTemplateComponents;
 type DevWorkspaceCommand = V1alpha2DevWorkspaceSpecTemplateCommands;
 
-/** Command IDs used for a given toolId */
-export function toolCommandIds(toolId: string): { install: string; symlink: string; run: string } {
+/**
+ * Extracts a Kubernetes-compatible slug from the injector image name.
+ * e.g. 'quay.io/okurinny/tools-injector/claude-code:next' → 'claude-code'
+ */
+export function getToolSlug(tool: api.AiToolDefinition): string {
+  const imagePath = tool.injectorImage.split(':')[0];
+  const lastSegment = imagePath.split('/').pop();
+  return lastSegment ?? tool.binary;
+}
+
+/** Command IDs used for a given tool slug */
+export function toolCommandIds(slug: string): {
+  install: string;
+  symlink: string;
+  run: string;
+  cleanup: string;
+} {
   return {
-    install: `install-${toolId}`,
-    symlink: `symlink-${toolId}`,
-    run: `run-${toolId}`,
+    install: `install-${slug}`,
+    symlink: `symlink-${slug}`,
+    run: `run-${slug}`,
+    cleanup: `cleanup-${slug}`,
   };
 }
 
 /**
- * Returns the toolId of the AI tool injected into this workspace, or undefined.
- * Detects by matching the injectorImage prefix from any known tool in `allTools`.
+ * Returns all toolIds of AI tools injected into this workspace.
+ * Detects by matching the injectorImage from any known tool in `allTools`.
  */
-export function getInjectedAiToolId(
+export function getInjectedAiToolIds(
   workspace: Workspace,
   allTools: api.AiToolDefinition[],
-): string | undefined {
+): string[] {
   const components: Array<{ name?: string; container?: { image?: string } }> =
     (workspace.ref.spec?.template?.components as Array<{
       name?: string;
       container?: { image?: string };
     }>) ?? [];
+  const ids: string[] = [];
   for (const comp of components) {
     const image: string = comp.container?.image ?? '';
     const tool = allTools.find(t => t.injectorImage === image);
-    if (tool) {
-      return tool.id;
+    if (tool && !ids.includes(tool.providerId)) {
+      ids.push(tool.providerId);
     }
   }
-  return undefined;
+  return ids;
 }
 
 /**
- * Returns the display name of the injected AI tool, or undefined.
+ * Returns the display names of all injected AI tools.
  */
-export function getInjectedAiToolName(
+export function getInjectedAiToolNames(
   workspace: Workspace,
   allTools: api.AiToolDefinition[],
-): string | undefined {
-  const toolId = getInjectedAiToolId(workspace, allTools);
-  return toolId ? allTools.find(t => t.id === toolId)?.name : undefined;
+): string[] {
+  const toolIds = getInjectedAiToolIds(workspace, allTools);
+  return toolIds
+    .map(id => allTools.find(t => t.providerId === id)?.name)
+    .filter((name): name is string => name !== undefined);
 }
 
 /**
@@ -86,7 +105,8 @@ function findEditorComponentName(
  * bundle pattern: binary is at /injected-tools/<toolId>/bin/<binary> — symlink into /injected-tools/bin/.
  */
 function buildPostStartCommandLine(tool: api.AiToolDefinition): string {
-  const { binary, pattern, id, setupCommand } = tool;
+  const { binary, pattern, setupCommand } = tool;
+  const slug = getToolSlug(tool);
 
   const exportLine = 'export PATH="/injected-tools/bin:$PATH"';
   const pathSetup =
@@ -100,13 +120,33 @@ function buildPostStartCommandLine(tool: api.AiToolDefinition): string {
     mainCmd = pathSetup;
   } else {
     // Symlink bundle binary (and bundled node if present) into /injected-tools/bin/
-    const bundleDir = `/injected-tools/${id}/bin`;
+    const bundleDir = `/injected-tools/${slug}/bin`;
     const symlinkTarget = `${bundleDir}/${binary}`;
     const nodeSymlink = `test -f ${bundleDir}/node && ln -sf ${bundleDir}/node /injected-tools/bin/node; true`;
     mainCmd = `mkdir -p /injected-tools/bin && ln -sf ${symlinkTarget} /injected-tools/bin/${binary} && ${nodeSymlink} && ${pathSetup}`;
   }
 
   return setupCommand ? `${setupCommand} && ${mainCmd}` : mainCmd;
+}
+
+/**
+ * Builds the cleanup command line that removes stale binaries from the shared volume
+ * when a tool is removed from the workspace.
+ */
+function buildCleanupCommandLine(tool: api.AiToolDefinition): string {
+  const { binary, pattern } = tool;
+  const slug = getToolSlug(tool);
+
+  const parts: string[] = [];
+  // Remove binary (and wrapper companion) from /injected-tools/bin/
+  parts.push(`rm -f /injected-tools/bin/${binary}`);
+  parts.push(`rm -f /injected-tools/bin/${binary}-bin`);
+  if (pattern === 'bundle') {
+    // Remove the bundle directory
+    parts.push(`rm -rf /injected-tools/${slug}`);
+  }
+  parts.push('true');
+  return parts.join(' && ');
 }
 
 /**
@@ -122,11 +162,12 @@ export function addAiToolToWorkspace(
   toolId: string,
   allTools: api.AiToolDefinition[],
 ): devfileApi.DevWorkspace {
-  const tool = allTools.find(t => t.id === toolId);
+  const tool = allTools.find(t => t.providerId === toolId);
   if (!tool) {
     throw new Error(`Unknown AI tool: ${toolId}`);
   }
 
+  const slug = getToolSlug(tool);
   const raw =
     'ref' in workspaceOrDevWorkspace ? workspaceOrDevWorkspace.ref : workspaceOrDevWorkspace;
   const cloned: devfileApi.DevWorkspace = JSON.parse(JSON.stringify(raw));
@@ -134,11 +175,28 @@ export function addAiToolToWorkspace(
   template.components = template.components ?? [];
   template.commands = template.commands ?? [];
 
-  const compName = `${toolId}-injector`;
-  const { install: installCmdId, symlink: symlinkCmdId } = toolCommandIds(toolId);
+  const compName = `${slug}-injector`;
+  const {
+    install: installCmdId,
+    symlink: symlinkCmdId,
+    run: runCmdId,
+    cleanup: cleanupCmdId,
+  } = toolCommandIds(slug);
 
   // Remove existing injector for this tool (idempotent)
   template.components = template.components.filter(c => c.name !== compName);
+  template.commands = template.commands.filter(
+    (c: { id?: string }) =>
+      c.id !== installCmdId && c.id !== symlinkCmdId && c.id !== runCmdId && c.id !== cleanupCmdId,
+  );
+  if (template.events?.preStart) {
+    template.events.preStart = template.events.preStart.filter((e: string) => e !== installCmdId);
+  }
+  if (template.events?.postStart) {
+    template.events.postStart = template.events.postStart.filter(
+      (e: string) => e !== symlinkCmdId && e !== cleanupCmdId,
+    );
+  }
 
   // Ensure injected-tools volume exists
   if (!template.components.some(c => c.name === 'injected-tools')) {
@@ -157,9 +215,9 @@ export function addAiToolToWorkspace(
         command: ['/bin/sh'],
         args: [
           '-c',
-          `mkdir -p /injected-tools/bin && cp /usr/local/bin/${tool.binary} /injected-tools/bin/${tool.binary}`,
+          `mkdir -p /injected-tools/bin && cp /usr/local/bin/${tool.binary} /injected-tools/bin/${tool.binary} && { test -f /usr/local/bin/${tool.binary}-bin && cp /usr/local/bin/${tool.binary}-bin /injected-tools/bin/${tool.binary}-bin || true; }`,
         ],
-        memoryLimit: '128Mi',
+        memoryLimit: '512Mi',
         mountSources: false,
         volumeMounts: [{ name: 'injected-tools', path: '/injected-tools' }],
       },
@@ -170,20 +228,13 @@ export function addAiToolToWorkspace(
       container: {
         image: tool.injectorImage,
         command: ['/bin/sh'],
-        args: ['-c', `cp -a /opt/${toolId}/. /injected-tools/${toolId}/`],
-        memoryLimit: '256Mi',
+        args: ['-c', `cp -a /opt/${slug}/. /injected-tools/${slug}/`],
+        memoryLimit: '512Mi',
         mountSources: false,
         volumeMounts: [{ name: 'injected-tools', path: '/injected-tools' }],
       },
     } as unknown as DevWorkspaceComponent);
   }
-
-  const { run: runCmdId } = toolCommandIds(toolId);
-
-  // Remove stale commands (idempotent)
-  template.commands = template.commands.filter(
-    (c: { id?: string }) => c.id !== installCmdId && c.id !== symlinkCmdId && c.id !== runCmdId,
-  );
 
   // preStart: apply command runs the init container
   template.commands.push({
@@ -239,20 +290,6 @@ export function addAiToolToWorkspace(
         label: `Set up ${tool.name}`,
       },
     } as unknown as DevWorkspaceCommand);
-
-    // run: devfile exec command to start the AI tool (group: run)
-    template.commands.push({
-      id: runCmdId,
-      exec: {
-        component: editorName,
-        commandLine: tool.runCommandLine,
-        workingDir: '${PROJECT_SOURCE}',
-        label: `[UD] run ${tool.name}`,
-        group: {
-          kind: 'run',
-        },
-      },
-    } as unknown as DevWorkspaceCommand);
   }
 
   // Events
@@ -283,13 +320,21 @@ export function addAiToolToWorkspace(
 export function removeAiToolFromWorkspace(
   workspaceOrDevWorkspace: Workspace | devfileApi.DevWorkspace,
   toolId: string,
+  allTools: api.AiToolDefinition[],
 ): devfileApi.DevWorkspace {
+  const tool = allTools.find(t => t.providerId === toolId);
+  const slug = tool ? getToolSlug(tool) : toolId;
   const raw =
     'ref' in workspaceOrDevWorkspace ? workspaceOrDevWorkspace.ref : workspaceOrDevWorkspace;
   const cloned: devfileApi.DevWorkspace = JSON.parse(JSON.stringify(raw));
   const template = cloned.spec.template;
-  const compName = `${toolId}-injector`;
-  const { install: installCmdId, symlink: symlinkCmdId, run: runCmdId } = toolCommandIds(toolId);
+  const compName = `${slug}-injector`;
+  const {
+    install: installCmdId,
+    symlink: symlinkCmdId,
+    run: runCmdId,
+    cleanup: cleanupCmdId,
+  } = toolCommandIds(slug);
 
   if (template.components) {
     template.components = template.components.filter(c => c.name !== compName);
@@ -297,7 +342,11 @@ export function removeAiToolFromWorkspace(
 
   if (template.commands) {
     template.commands = template.commands.filter(
-      (c: { id?: string }) => c.id !== installCmdId && c.id !== symlinkCmdId && c.id !== runCmdId,
+      (c: { id?: string }) =>
+        c.id !== installCmdId &&
+        c.id !== symlinkCmdId &&
+        c.id !== runCmdId &&
+        c.id !== cleanupCmdId,
     );
   }
 
@@ -306,7 +355,37 @@ export function removeAiToolFromWorkspace(
   }
 
   if (template.events?.postStart) {
-    template.events.postStart = template.events.postStart.filter((e: string) => e !== symlinkCmdId);
+    template.events.postStart = template.events.postStart.filter(
+      (e: string) => e !== symlinkCmdId && e !== cleanupCmdId,
+    );
+  }
+
+  // Add a postStart cleanup command to remove stale binaries from the shared volume
+  if (tool) {
+    const editorName = findEditorComponentName(
+      (template.components ?? []) as Array<{
+        name?: string;
+        container?: object;
+        volume?: object;
+      }>,
+    );
+    if (editorName) {
+      const cleanupLine = buildCleanupCommandLine(tool);
+      template.commands = template.commands ?? [];
+      template.commands.push({
+        id: cleanupCmdId,
+        exec: {
+          component: editorName,
+          commandLine: cleanupLine,
+          workingDir: '${CHE_PROJECTS_ROOT}',
+          label: `Clean up ${tool.name}`,
+        },
+      } as unknown as DevWorkspaceCommand);
+
+      template.events = template.events ?? {};
+      template.events.postStart = template.events.postStart ?? [];
+      template.events.postStart.push(cleanupCmdId);
+    }
   }
 
   return cloned;

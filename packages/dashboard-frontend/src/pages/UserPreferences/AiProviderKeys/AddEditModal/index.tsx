@@ -44,7 +44,8 @@ export class AiProviderKeysAddEditModal extends React.PureComponent<Props, State
     super(props);
 
     this.state = {
-      providerId: props.fixedProvider?.id ?? (props.availableProviders[0]?.id || ''),
+      providerId:
+        props.fixedProvider?.providerId ?? (props.availableProviders[0]?.providerId || ''),
       apiKey: '',
       isSaveEnabled: false,
     };
@@ -53,7 +54,9 @@ export class AiProviderKeysAddEditModal extends React.PureComponent<Props, State
   public componentDidUpdate(prevProps: Props): void {
     if (prevProps.isOpen !== this.props.isOpen && this.props.isOpen) {
       this.setState({
-        providerId: this.props.fixedProvider?.id ?? (this.props.availableProviders[0]?.id || ''),
+        providerId:
+          this.props.fixedProvider?.providerId ??
+          (this.props.availableProviders[0]?.providerId || ''),
         apiKey: '',
         isSaveEnabled: false,
       });

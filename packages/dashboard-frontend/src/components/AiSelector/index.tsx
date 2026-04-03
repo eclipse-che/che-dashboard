@@ -32,21 +32,20 @@ import { ROUTE } from '@/Routes';
 import { UserPreferencesTab } from '@/services/helpers/types';
 import { RootState } from '@/store';
 import {
-  aiConfigActionCreators,
   selectAiProviderKeyExists,
   selectAiProviders,
   selectAiTools,
-  selectDefaultAiProvider,
+  selectDefaultAiProviders,
 } from '@/store/AiConfig';
 
 type AccordionId = 'none' | 'selector';
 
 export type Props = MappedProps & {
-  onSelect: (providerId: string | undefined) => void;
+  onSelect: (providerIds: string[]) => void;
 };
 
 export type State = {
-  selectedProviderId: string | undefined;
+  selectedProviderIds: string[];
   expandedId: AccordionId | undefined;
 };
 
@@ -55,61 +54,56 @@ class AiSelector extends React.PureComponent<Props, State> {
     super(props);
 
     this.state = {
-      selectedProviderId: undefined,
+      selectedProviderIds: [],
       expandedId: 'none',
     };
   }
 
   public componentDidMount(): void {
-    this.props.requestAiConfig().catch(() => {
-      // error is stored in Redux state via aiConfigErrorAction
-    });
+    this.preselectDefaultTools();
 
-    this.preselectDefaultTool();
-
-    // If tools are already loaded (from bootstrap), notify parent of the default tool
-    const defaultToolId = this.findDefaultToolId();
-    if (defaultToolId) {
-      this.props.onSelect(defaultToolId);
+    // If tools are already loaded (from bootstrap), notify parent of defaults
+    const defaultToolIds = this.findDefaultToolIds();
+    if (defaultToolIds.length > 0) {
+      this.props.onSelect(defaultToolIds);
     }
   }
 
   public componentDidUpdate(prevProps: Props): void {
     if (
       prevProps.aiTools !== this.props.aiTools ||
-      prevProps.defaultProviderId !== this.props.defaultProviderId
+      prevProps.defaultProviderIds !== this.props.defaultProviderIds
     ) {
-      this.preselectDefaultTool();
+      this.preselectDefaultTools();
 
-      // When "Use a Default AI Provider" is active, notify parent of the default tool
+      // When "Use Default AI Providers" is active, notify parent
       if (this.state.expandedId === 'none') {
-        const defaultToolId = this.findDefaultToolId();
-        this.props.onSelect(defaultToolId);
+        const defaultToolIds = this.findDefaultToolIds();
+        this.props.onSelect(defaultToolIds);
       }
     }
   }
 
-  private findDefaultToolId(): string | undefined {
-    const { aiTools, defaultProviderId } = this.props;
+  private findDefaultToolIds(): string[] {
+    const { aiTools, defaultProviderIds } = this.props;
     if (aiTools.length === 0) {
-      return undefined;
+      return [];
     }
-    if (defaultProviderId) {
-      const match = aiTools.find(t => t.providerId === defaultProviderId);
-      if (match) {
-        return match.id;
-      }
+    if (defaultProviderIds.length > 0) {
+      return defaultProviderIds.filter(id => aiTools.some(t => t.providerId === id));
     }
-    return [...aiTools].sort((a, b) => a.name.localeCompare(b.name))[0].id;
+    // Fallback: first tool alphabetically
+    const first = [...aiTools].sort((a, b) => a.name.localeCompare(b.name))[0];
+    return first ? [first.providerId] : [];
   }
 
-  private preselectDefaultTool(): void {
-    if (this.state.selectedProviderId !== undefined) {
+  private preselectDefaultTools(): void {
+    if (this.state.selectedProviderIds.length > 0) {
       return;
     }
-    const toolId = this.findDefaultToolId();
-    if (toolId) {
-      this.setState({ selectedProviderId: toolId });
+    const toolIds = this.findDefaultToolIds();
+    if (toolIds.length > 0) {
+      this.setState({ selectedProviderIds: toolIds });
     }
   }
 
@@ -123,25 +117,49 @@ class AiSelector extends React.PureComponent<Props, State> {
     this.setState({ expandedId });
 
     if (expandedId === 'none') {
-      // "Use a Default AI Provider" — inject the default tool
-      const defaultToolId = this.findDefaultToolId();
-      onSelect(defaultToolId);
+      // "Use Default AI Providers" — reset selections to defaults
+      const defaultToolIds = this.findDefaultToolIds();
+      this.setState({ selectedProviderIds: defaultToolIds });
+      onSelect(defaultToolIds);
     } else {
-      onSelect(this.state.selectedProviderId);
+      onSelect(this.state.selectedProviderIds);
     }
   }
 
-  private handleProviderSelect(providerId: string): void {
-    this.setState({ selectedProviderId: providerId });
+  private handleProviderToggle(providerId: string): void {
+    this.setState(prevState => {
+      const isSelected = prevState.selectedProviderIds.includes(providerId);
+      const selectedProviderIds = isSelected
+        ? prevState.selectedProviderIds.filter(id => id !== providerId)
+        : [...prevState.selectedProviderIds, providerId];
 
-    if (this.state.expandedId === 'selector') {
-      this.props.onSelect(providerId);
+      if (this.state.expandedId === 'selector') {
+        this.props.onSelect(selectedProviderIds);
+      }
+
+      return { selectedProviderIds };
+    });
+  }
+
+  private buildDefaultProviderMessage(): string {
+    const { aiProviders, defaultProviderIds } = this.props;
+    const names = defaultProviderIds
+      .map(id => aiProviders.find(p => p.id === id)?.name)
+      .filter((name): name is string => name !== undefined);
+
+    if (names.length === 0) {
+      return 'The default AI provider configured by your administrator will be used.';
     }
+    if (names.length === 1) {
+      return `The default AI provider "${names[0]}" configured by your administrator will be used.`;
+    }
+    const quoted = names.map(n => `"${n}"`).join(', ');
+    return `The default AI providers ${quoted} configured by your administrator will be used.`;
   }
 
   public render(): React.ReactElement | null {
-    const { aiProviders, aiTools, defaultProviderId, providerKeyExists } = this.props;
-    const { expandedId, selectedProviderId } = this.state;
+    const { aiProviders, aiTools, providerKeyExists } = this.props;
+    const { expandedId, selectedProviderIds } = this.state;
 
     if (aiTools.length === 0) {
       return null;
@@ -171,16 +189,7 @@ class AiSelector extends React.PureComponent<Props, State> {
                   <Panel>
                     <PanelMain>
                       <PanelMainBody>
-                        <Content component="p">
-                          {(() => {
-                            const providerName = defaultProviderId
-                              ? aiProviders.find(p => p.id === defaultProviderId)?.name
-                              : undefined;
-                            return providerName
-                              ? `The default AI provider "${providerName}" configured by your administrator will be used.`
-                              : 'The default AI provider configured by your administrator will be used.';
-                          })()}
-                        </Content>
+                        <Content component="p">{this.buildDefaultProviderMessage()}</Content>
                         <AiSelectorDocsLink />
                       </PanelMainBody>
                     </PanelMain>
@@ -204,9 +213,10 @@ class AiSelector extends React.PureComponent<Props, State> {
                       <PanelMainBody>
                         <AiProviderGallery
                           providers={aiTools}
-                          selectedProviderId={selectedProviderId}
+                          aiProviders={aiProviders}
+                          selectedProviderIds={selectedProviderIds}
                           providerKeyExists={providerKeyExists}
-                          onSelect={providerId => this.handleProviderSelect(providerId)}
+                          onToggle={providerId => this.handleProviderToggle(providerId)}
                         />
                         <Content component="p" style={{ marginTop: '8px' }}>
                           <Button variant="link" isInline component="a" href={manageKeysHref}>
@@ -229,13 +239,11 @@ class AiSelector extends React.PureComponent<Props, State> {
 const mapStateToProps = (state: RootState) => ({
   aiProviders: selectAiProviders(state),
   aiTools: selectAiTools(state),
-  defaultProviderId: selectDefaultAiProvider(state),
+  defaultProviderIds: selectDefaultAiProviders(state),
   providerKeyExists: selectAiProviderKeyExists(state),
 });
 
-const mapDispatchToProps = {
-  requestAiConfig: aiConfigActionCreators.requestAiConfig,
-};
+const mapDispatchToProps = {};
 
 const connector = connect(mapStateToProps, mapDispatchToProps, null, {
   // forwardRef is mandatory for using `@react-mock/state` in unit tests

@@ -30,6 +30,7 @@ type Props = {
   workspaces: Workspace[];
   editors: devfileApi.Devfile[];
   backupsByWorkspace: Record<string, BackupInfo>;
+  aiProviders: api.AiProviderDefinition[];
   aiTools: api.AiToolDefinition[];
   branding: BrandingData;
   navigate: NavigateFunction;
@@ -64,7 +65,7 @@ export class WorkspacesView extends React.PureComponent<Props, State> {
   }
 
   private buildRows(): RowData[] {
-    const { aiTools, backupsByWorkspace, editors, workspaces } = this.props;
+    const { aiProviders, aiTools, backupsByWorkspace, editors, workspaces } = this.props;
     const { filtered, selected, sortBy } = this.state;
 
     return buildRows(
@@ -75,6 +76,7 @@ export class WorkspacesView extends React.PureComponent<Props, State> {
       selected,
       sortBy,
       backupsByWorkspace,
+      aiProviders,
       aiTools,
     );
   }
@@ -196,7 +198,7 @@ export class WorkspacesView extends React.PureComponent<Props, State> {
     const columns = [
       { title: 'Name', dataLabel: 'Name', sortable: true },
       { title: 'Editor', dataLabel: 'Editor', sortable: true },
-      { title: 'AI Provider', dataLabel: 'AI Provider' },
+      { title: 'AI Provider(s)', dataLabel: 'AI Provider(s)' },
       { title: 'Last Modified', dataLabel: 'Last Modified', sortable: true },
       ...(showBackupStatus ? [{ title: 'Backup Status', dataLabel: 'Backup Status' }] : []),
       { title: 'Project(s)', dataLabel: 'Project(s)' },
@@ -250,7 +252,7 @@ export class WorkspacesView extends React.PureComponent<Props, State> {
                   />
                   <Td dataLabel="Name">{row.cells.details}</Td>
                   <Td dataLabel="Editor">{row.cells.editorIcon}</Td>
-                  <Td dataLabel="AI Provider">{row.cells.aiTool}</Td>
+                  <Td dataLabel="AI Provider(s)">{row.cells.aiTool}</Td>
                   <Td dataLabel="Last Modified">{row.cells.lastModifiedDate}</Td>
                   {showBackupStatus && <Td dataLabel="Backup Status">{row.cells.backupStatus}</Td>}
                   <Td dataLabel="Project(s)">{row.cells.projectsList}</Td>

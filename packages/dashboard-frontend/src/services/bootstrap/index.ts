@@ -124,7 +124,7 @@ export default class Bootstrap {
       }),
       this.fetchSshKeys(),
       this.fetchWorkspacePreferences(),
-      this.fetchAiConfig(),
+      this.fetchAiProviderKeyStatus(),
     ]);
 
     const errors = results
@@ -464,16 +464,17 @@ export default class Bootstrap {
     await requestSshKeys()(this.store.dispatch, this.store.getState, undefined);
   }
 
-  private async fetchWorkspacePreferences(): Promise<void> {
-    await workspacePreferencesActionCreators.requestPreferences()(
-      this.store.dispatch,
-      this.store.getState,
-      undefined,
-    );
+  private async fetchAiProviderKeyStatus(): Promise<void> {
+    const { requestAiProviderKeyStatus } = aiConfigActionCreators;
+    try {
+      await requestAiProviderKeyStatus()(this.store.dispatch, this.store.getState, undefined);
+    } catch (e) {
+      console.warn('Unable to fetch AI provider key status.', e);
+    }
   }
 
-  private async fetchAiConfig(): Promise<void> {
-    await aiConfigActionCreators.requestAiConfig()(
+  private async fetchWorkspacePreferences(): Promise<void> {
+    await workspacePreferencesActionCreators.requestPreferences()(
       this.store.dispatch,
       this.store.getState,
       undefined,

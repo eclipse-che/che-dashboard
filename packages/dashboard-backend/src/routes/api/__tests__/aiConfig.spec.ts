@@ -43,32 +43,31 @@ describe('AI Config Routes', () => {
   });
 
   describe('POST /api/namespace/:namespace/ai-provider-key', () => {
-    it('should return 200 with the toolId when tool is found in server config', async () => {
-      const body = { toolId: 'gemini-cli', apiKey: 'AIzaSy12345' };
+    it('should return 201 with the toolId', async () => {
+      const body = { toolId: 'google/gemini', envVarName: 'GEMINI_API_KEY', apiKey: 'AIzaSy12345' };
       const res = await app
         .inject()
         .post(`${baseApiPath}/namespace/${namespace}/ai-provider-key`)
         .payload(body);
 
-      expect(res.statusCode).toEqual(200);
-      expect(res.json()).toEqual({ toolId: 'gemini-cli' });
+      expect(res.statusCode).toEqual(201);
+      expect(res.json()).toEqual({ toolId: 'google/gemini' });
     });
 
-    it('should return 404 when provider is not found in server config', async () => {
-      const body = { toolId: 'unknown-tool', apiKey: 'some-key' };
+    it('should return 400 when envVarName is missing', async () => {
       const res = await app
         .inject()
         .post(`${baseApiPath}/namespace/${namespace}/ai-provider-key`)
-        .payload(body);
+        .payload({ toolId: 'google/gemini', apiKey: 'AIzaSy12345' }); // missing envVarName
 
-      expect(res.statusCode).toEqual(404);
+      expect(res.statusCode).toEqual(400);
     });
 
-    it('should return 400 when body is invalid', async () => {
+    it('should return 400 when apiKey is missing', async () => {
       const res = await app
         .inject()
         .post(`${baseApiPath}/namespace/${namespace}/ai-provider-key`)
-        .payload({ toolId: 'gemini-cli' }); // missing apiKey
+        .payload({ toolId: 'google/gemini', envVarName: 'GEMINI_API_KEY' }); // missing apiKey
 
       expect(res.statusCode).toEqual(400);
     });
@@ -76,10 +75,12 @@ describe('AI Config Routes', () => {
 
   describe('DELETE /api/namespace/:namespace/ai-provider-key/:toolId', () => {
     it('should return 204 on success', async () => {
-      const toolId = 'gemini-cli';
+      const toolId = 'google/gemini';
       const res = await app
         .inject()
-        .delete(`${baseApiPath}/namespace/${namespace}/ai-provider-key/${toolId}`);
+        .delete(
+          `${baseApiPath}/namespace/${namespace}/ai-provider-key/${encodeURIComponent(toolId)}`,
+        );
 
       expect(res.statusCode).toEqual(204);
     });

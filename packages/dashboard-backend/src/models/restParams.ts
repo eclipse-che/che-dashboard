@@ -77,5 +77,6 @@ export interface AiProviderKeyNamespacedParams extends INamespacedParams {
 
 export interface AiProviderKeyBody {
   toolId: string;
+  envVarName: string;
   apiKey: string;
 }

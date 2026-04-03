@@ -53,7 +53,7 @@ export function registerServerConfigRoute(instance: FastifyInstance) {
       const showDeprecated = serverConfigApi.getShowDeprecatedEditors(cheCustomResource);
       const hideById = serverConfigApi.getHideEditorsById(cheCustomResource);
       const aiProviders = serverConfigApi.getAiProviders(cheCustomResource);
-      const defaultAiProvider = serverConfigApi.getDefaultAiProvider(cheCustomResource);
+      const defaultAiProviders = serverConfigApi.getDefaultAiProviders(cheCustomResource);
       const aiTools = serverConfigApi.getAiTools(cheCustomResource);
 
       const serverConfig: api.IServerConfig = {
@@ -108,8 +108,8 @@ export function registerServerConfigRoute(instance: FastifyInstance) {
         serverConfig.aiProviders = aiProviders;
       }
 
-      if (defaultAiProvider !== undefined) {
-        serverConfig.defaultAiProvider = defaultAiProvider;
+      if (defaultAiProviders.length > 0) {
+        serverConfig.defaultAiProviders = defaultAiProviders;
       }
 
       if (aiTools.length > 0) {

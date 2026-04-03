@@ -18,7 +18,7 @@ import {
   CoreV1API,
   prepareCoreV1API,
 } from '@/devworkspaceClient/services/helpers/prepareCoreV1API';
-import { AiToolDefinition, IAiProviderKeyApi } from '@/devworkspaceClient/types';
+import { IAiProviderKeyApi } from '@/devworkspaceClient/types';
 
 const API_ERROR_LABEL = 'CORE_V1_API_ERROR';
 
@@ -50,49 +50,15 @@ export class AiProviderKeyApiService implements IAiProviderKeyApi {
     this.coreV1API = prepareCoreV1API(kc);
   }
 
-  async listProviderIdsWithKey(
-    namespace: string,
-    providers?: AiToolDefinition[],
-  ): Promise<string[]> {
+  async listProviderIdsWithKey(namespace: string): Promise<string[]> {
     try {
-      const ids = new Set<string>();
-
-      // 1. Dashboard-managed secrets: identified by our custom label.
-      const labeledResp = await this.coreV1API.listNamespacedSecret({
+      const resp = await this.coreV1API.listNamespacedSecret({
         namespace,
         labelSelector: AI_PROVIDER_ID_LABEL,
       });
-      for (const secret of labeledResp.items) {
-        const id = secret.metadata?.labels?.[AI_PROVIDER_ID_LABEL];
-        if (id) {
-          ids.add(id);
-        }
-      }
-
-      // 2. Manually-created secrets (e.g. from demo repo): detected by matching
-      //    envVarName as a data key in any DevWorkspace-mounted secret.
-      if (providers && providers.length > 0) {
-        const mountedResp = await this.coreV1API.listNamespacedSecret({
-          namespace,
-          labelSelector: `${MOUNT_TO_DEVWORKSPACE_LABEL}=true`,
-        });
-        for (const secret of mountedResp.items) {
-          if (!secret.data) {
-            continue;
-          }
-          for (const provider of providers) {
-            if (
-              provider.envVarName &&
-              provider.envVarName in secret.data &&
-              !ids.has(toSanitizedProviderId(provider.id))
-            ) {
-              ids.add(toSanitizedProviderId(provider.id));
-            }
-          }
-        }
-      }
-
-      return Array.from(ids);
+      return resp.items
+        .map(secret => secret.metadata?.labels?.[AI_PROVIDER_ID_LABEL])
+        .filter((id): id is string => id !== undefined);
     } catch (error) {
       const additionalMessage = `Unable to list AI provider keys in the namespace "${namespace}"`;
       throw createError(error, API_ERROR_LABEL, additionalMessage);
@@ -152,39 +118,16 @@ export class AiProviderKeyApiService implements IAiProviderKeyApi {
     }
   }
 
-  async delete(namespace: string, providerId: string, envVarName?: string): Promise<void> {
+  async delete(namespace: string, providerId: string): Promise<void> {
     const sanitizedId = toSanitizedProviderId(providerId);
-    const labelSelector = `${AI_PROVIDER_ID_LABEL}=${sanitizedId}`;
     try {
-      // 1. Try to find and delete a dashboard-managed secret (with our custom label).
       const resp = await this.coreV1API.listNamespacedSecret({
         namespace,
-        labelSelector,
+        labelSelector: `${AI_PROVIDER_ID_LABEL}=${sanitizedId}`,
       });
-      if (resp.items.length > 0) {
-        const secretName = resp.items[0].metadata?.name;
-        if (secretName) {
-          await this.coreV1API.deleteNamespacedSecret({ name: secretName, namespace });
-          return;
-        }
-      }
-
-      // 2. If no labeled secret found and envVarName is provided,
-      //    search for manually-created mounted secrets containing the envVarName data key.
-      if (envVarName) {
-        const mountedResp = await this.coreV1API.listNamespacedSecret({
-          namespace,
-          labelSelector: `${MOUNT_TO_DEVWORKSPACE_LABEL}=true`,
-        });
-        for (const secret of mountedResp.items) {
-          if (secret.data && envVarName in secret.data && secret.metadata?.name) {
-            await this.coreV1API.deleteNamespacedSecret({
-              name: secret.metadata.name,
-              namespace,
-            });
-            return;
-          }
-        }
+      const secretName = resp.items[0]?.metadata?.name;
+      if (secretName) {
+        await this.coreV1API.deleteNamespacedSecret({ name: secretName, namespace });
       }
     } catch (error) {
       const additionalMessage = `Unable to delete AI provider key for "${providerId}" in the namespace "${namespace}"`;

@@ -29,13 +29,14 @@ export async function fetchAiProviderKeyStatus(namespace: string): Promise<strin
 export async function saveAiProviderKey(
   namespace: string,
   toolId: string,
+  envVarName: string,
   apiKey: string,
 ): Promise<void> {
   try {
     const encodedKey = btoa(apiKey);
     await AxiosWrapper.createToRetryMissedBearerTokenError().post(
       `${dashboardBackendPrefix}/namespace/${namespace}/ai-provider-key`,
-      { toolId, apiKey: encodedKey },
+      { toolId, envVarName, apiKey: encodedKey },
     );
   } catch (e) {
     throw new Error(`Failed to save AI provider key. ${helpers.errors.getMessage(e)}`);

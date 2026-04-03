@@ -14,42 +14,36 @@
 
 import { AiProviderDefinition } from '@/devworkspaceClient/types';
 
+const ICON_CDN = 'https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons';
+
 export const DEFAULT_AI_PROVIDERS: AiProviderDefinition[] = [
   {
-    id: 'google/gemini/latest',
+    id: 'google/gemini',
     name: 'Gemini',
     publisher: 'Google',
-    description: 'Google Gemini AI assistant for the terminal',
+    description:
+      'Google Gemini AI assistant for the terminal — chat, code generation, and agentic workflows.',
     docsUrl: 'https://ai.google.dev/gemini-api/docs/quickstart',
+    icon: `${ICON_CDN}/geminicli.svg`,
   },
   {
-    id: 'anthropic/claude/latest',
+    id: 'anthropic/claude',
     name: 'Claude',
     publisher: 'Anthropic',
-    description: 'Anthropic Claude AI coding assistant for the terminal',
+    description:
+      'Anthropic Claude AI coding assistant for terminal — autonomous coding, debugging, and codebase exploration.',
     docsUrl: 'https://docs.anthropic.com/claude/reference/getting-started-with-the-api',
+    icon: `${ICON_CDN}/claudecode-color.svg`,
   },
   {
-    id: 'opencode',
+    id: 'opencodeai/opencode',
     name: 'OpenCode',
     publisher: 'opencode.ai',
-    description: 'Open-source terminal AI coding agent supporting 75+ LLM providers',
+    description:
+      'Open-source terminal AI coding agent supporting 75+ LLM providers including Claude, GPT, Gemini, and local models.',
     docsUrl: 'https://opencode.ai',
-  },
-  {
-    id: 'goose',
-    name: 'Goose',
-    publisher: 'Block',
-    description: 'Open-source local AI developer agent',
-    docsUrl: 'https://block.github.io/goose/',
-  },
-  {
-    id: 'kilocode',
-    name: 'KiloCode',
-    publisher: 'Kilo',
-    description: 'Open-source AI coding agent supporting 500+ models',
-    docsUrl: 'https://kilo.ai',
+    icon: `${ICON_CDN}/opencode.svg`,
   },
 ];
 
-export const DEFAULT_AI_PROVIDER_ID = 'google/gemini/latest';
+export const DEFAULT_AI_PROVIDER_IDS: string[] = ['google/gemini'];

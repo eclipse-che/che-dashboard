@@ -20,8 +20,8 @@ export default class AiSelector extends React.PureComponent<Props> {
     return (
       <div data-testid="ai-selector">
         AI Selector
-        <button onClick={() => onSelect('google/gemini/latest')}>Select Gemini</button>
-        <button onClick={() => onSelect(undefined)}>Use No AI</button>
+        <button onClick={() => onSelect(['google/gemini'])}>Select Gemini</button>
+        <button onClick={() => onSelect([])}>Use No AI</button>
       </div>
     );
   }

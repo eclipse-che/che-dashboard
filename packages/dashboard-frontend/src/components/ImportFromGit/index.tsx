@@ -55,7 +55,7 @@ const FIELD_ID = 'git-repo-url';
 export type Props = MappedProps & {
   editorDefinition: string | undefined;
   editorImage: string | undefined;
-  aiProvider?: string | undefined;
+  aiProviders?: string[];
   navigate: NavigateFunction;
 };
 export type State = {
@@ -111,7 +111,7 @@ class ImportFromGit extends React.PureComponent<Props, State> {
   }
 
   private startFactory(): void {
-    const { editorDefinition, editorImage, aiProvider } = this.props;
+    const { editorDefinition, editorImage, aiProviders } = this.props;
     const factory = new FactoryLocationAdapter(this.state.location);
 
     // add the editor definition and editor image to the URL
@@ -124,8 +124,12 @@ class ImportFromGit extends React.PureComponent<Props, State> {
         factory.searchParams.set(EDITOR_IMAGE_ATTR, editorImage);
       }
     }
-    if (aiProvider !== undefined && !factory.searchParams.has(AI_PROVIDER_ATTR)) {
-      factory.searchParams.set(AI_PROVIDER_ATTR, aiProvider);
+    if (
+      aiProviders !== undefined &&
+      aiProviders.length > 0 &&
+      !factory.searchParams.has(AI_PROVIDER_ATTR)
+    ) {
+      factory.searchParams.set(AI_PROVIDER_ATTR, aiProviders.join(','));
     }
     if (this.state.gitBranch && !this.state.location.startsWith('http')) {
       factory.searchParams.set(REVISION_ATTR, this.state.gitBranch);

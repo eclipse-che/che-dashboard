@@ -44,7 +44,7 @@ export class AiProviderKeysAddEditForm extends React.PureComponent<Props, State>
     super(props);
 
     this.state = {
-      selectedProviderId: props.fixedProvider?.id ?? (props.providers[0]?.id || ''),
+      selectedProviderId: props.fixedProvider?.providerId ?? (props.providers[0]?.providerId || ''),
       apiKey: '',
       isProviderSelectOpen: false,
     };
@@ -74,7 +74,7 @@ export class AiProviderKeysAddEditForm extends React.PureComponent<Props, State>
     const { selectedProviderId, apiKey, isProviderSelectOpen } = this.state;
 
     const selectedProvider =
-      fixedProvider ?? providers.find(p => p.id === selectedProviderId) ?? providers[0];
+      fixedProvider ?? providers.find(p => p.providerId === selectedProviderId) ?? providers[0];
 
     const apiKeyValidated =
       apiKey.length === 0 ? ValidatedOptions.default : ValidatedOptions.success;
@@ -103,7 +103,7 @@ export class AiProviderKeysAddEditForm extends React.PureComponent<Props, State>
             >
               <SelectList>
                 {providers.map(p => (
-                  <SelectOption key={p.id} value={p.id}>
+                  <SelectOption key={p.providerId} value={p.providerId}>
                     {p.name}
                   </SelectOption>
                 ))}

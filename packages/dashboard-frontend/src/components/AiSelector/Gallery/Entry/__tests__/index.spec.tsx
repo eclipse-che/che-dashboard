@@ -22,14 +22,13 @@ const { renderComponent } = getComponentRenderer(getComponent);
 const mockOnSelect = jest.fn();
 
 const geminiProvider: api.AiToolDefinition = {
-  id: 'google/gemini/latest',
+  providerId: 'google/gemini',
+  tag: 'latest',
   name: 'Gemini',
-  description: 'Google Gemini AI assistant',
   url: 'https://github.com/google-gemini/gemini-cli',
   binary: 'gemini',
   pattern: 'bundle' as const,
   injectorImage: 'quay.io/okurinny/tools-injector/gemini-cli:next',
-  runCommandLine: 'gemini',
   envVarName: 'GEMINI_API_KEY',
 };
 
@@ -43,24 +42,19 @@ describe('AiProviderEntry', () => {
     expect(screen.getByText('Gemini')).toBeInTheDocument();
   });
 
-  it('renders provider description', () => {
-    renderComponent(geminiProvider, false, false);
-    expect(screen.getByText('Google Gemini AI assistant')).toBeInTheDocument();
-  });
-
   it('calls onSelect when the card is clicked and not already selected', async () => {
     renderComponent(geminiProvider, false, false);
     const card = screen.getByText('Gemini').closest('[class*="pf-v6-c-card"]');
     await userEvent.click(card!);
     expect(mockOnSelect).toHaveBeenCalledTimes(1);
-    expect(mockOnSelect).toHaveBeenCalledWith('google/gemini/latest');
+    expect(mockOnSelect).toHaveBeenCalledWith('google/gemini');
   });
 
-  it('does not call onSelect when already selected', async () => {
+  it('calls onToggle when already selected (to deselect)', async () => {
     renderComponent(geminiProvider, true, false);
-    const radio = screen.getByRole('radio');
-    await userEvent.click(radio);
-    expect(mockOnSelect).not.toHaveBeenCalled();
+    const card = screen.getByText('Gemini').closest('[class*="pf-v6-c-card"]');
+    await userEvent.click(card!);
+    expect(mockOnSelect).toHaveBeenCalledWith('google/gemini');
   });
 
   it('shows "Key configured" badge when key exists', () => {
@@ -84,7 +78,7 @@ function getComponent(
       provider={provider}
       isSelected={isSelected}
       hasExistingKey={hasExistingKey}
-      onSelect={mockOnSelect}
+      onToggle={mockOnSelect}
     />
   );
 }

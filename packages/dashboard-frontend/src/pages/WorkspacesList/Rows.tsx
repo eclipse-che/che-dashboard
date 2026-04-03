@@ -57,6 +57,7 @@ export function buildRows(
   selected: string[],
   sortBy: { index: number; direction: SortDirection },
   backupsByWorkspace: Record<string, BackupInfo> = {},
+  aiProviders: api.AiProviderDefinition[] = [],
   aiTools: api.AiToolDefinition[] = [],
 ): RowData[] {
   const rows: RowData[] = [];
@@ -101,6 +102,7 @@ export function buildRows(
             overviewPageLocation,
             ideLoaderHref,
             backupInfo,
+            aiProviders,
             aiTools,
           ),
         );
@@ -128,6 +130,7 @@ export function buildRow(
   overviewPageLocation: Location,
   ideLoaderHref: string,
   backupInfo?: BackupInfo,
+  aiProviders: api.AiProviderDefinition[] = [],
   aiTools: api.AiToolDefinition[] = [],
 ): RowData {
   if (!workspace.name) {
@@ -156,7 +159,7 @@ export function buildRow(
   const editorIcon = <EditorIcon editors={editors} workspace={workspace} />;
 
   /* injected AI tool */
-  const aiTool = <AiToolIcon workspace={workspace} aiTools={aiTools} />;
+  const aiTool = <AiToolIcon workspace={workspace} aiTools={aiTools} aiProviders={aiProviders} />;
 
   /* last modified time */
   const lastModifiedMs = workspace.updated;

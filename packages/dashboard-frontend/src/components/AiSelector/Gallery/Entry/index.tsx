@@ -19,31 +19,30 @@ import styles from '@/components/AiSelector/Gallery/Entry/index.module.css';
 
 export type Props = {
   provider: api.AiToolDefinition;
+  icon?: string;
+  description?: string;
   isSelected: boolean;
   hasExistingKey: boolean;
-  onSelect: (providerId: string) => void;
+  onToggle: (providerId: string) => void;
 };
 
 export class AiProviderEntry extends React.PureComponent<Props> {
   private get cardId(): string {
-    return `ai-provider-card-${this.props.provider.id.replace(/\//g, '-')}`;
+    return `ai-provider-card-${this.props.provider.providerId.replace(/\//g, '-')}`;
   }
 
   private get selectableActionId(): string {
-    return `ai-provider-input-${this.props.provider.id.replace(/\//g, '-')}`;
+    return `ai-provider-input-${this.props.provider.providerId.replace(/\//g, '-')}`;
   }
 
-  private handleSelectableAction = (): void => {
-    const { isSelected, provider, onSelect } = this.props;
-    if (!isSelected) {
-      onSelect(provider.id);
-    }
+  private handleToggle = (): void => {
+    this.props.onToggle(this.props.provider.providerId);
   };
 
   private handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): void => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      this.handleSelectableAction();
+      this.handleToggle();
       return;
     }
 
@@ -73,7 +72,7 @@ export class AiProviderEntry extends React.PureComponent<Props> {
   };
 
   public render(): React.ReactElement {
-    const { provider, isSelected, hasExistingKey } = this.props;
+    const { provider, icon, description, isSelected, hasExistingKey } = this.props;
 
     const titleClassName = isSelected ? styles.activeCard : '';
 
@@ -84,7 +83,7 @@ export class AiProviderEntry extends React.PureComponent<Props> {
         isClickable
         isSelectable
         isSelected={isSelected}
-        onClick={this.handleSelectableAction}
+        onClick={this.handleToggle}
         onKeyDown={this.handleKeyDown}
         tabIndex={0}
       >
@@ -93,31 +92,27 @@ export class AiProviderEntry extends React.PureComponent<Props> {
             selectableActionId: this.selectableActionId,
             selectableActionAriaLabelledby: this.cardId,
             name: 'ai-provider-selector',
-            variant: 'single',
-            onChange: this.handleSelectableAction,
+            variant: 'multiple',
+            onChange: this.handleToggle,
             hasNoOffset: true,
             isHidden: true,
           }}
         >
           <CardTitle className={titleClassName}>
-            {provider.icon && (
-              <img
-                src={provider.icon}
-                alt={`${provider.name} icon`}
-                className={styles.providerIcon}
-              />
+            {icon && (
+              <img src={icon} alt={`${provider.name} icon`} className={styles.providerIcon} />
             )}
             {provider.name}
             {provider.envVarName && hasExistingKey && (
-              <Badge isRead style={{ marginLeft: '8px' }}>
-                <CheckCircleIcon /> Key configured
+              <Badge isRead style={{ marginLeft: '8px', bottom: '2px' }}>
+                <CheckCircleIcon style={{ verticalAlign: '-.25em' }} /> Key configured
               </Badge>
             )}
           </CardTitle>
         </CardHeader>
-        {provider.description && (
+        {description && (
           <CardFooter>
-            <div className={styles.description}>{provider.description}</div>
+            <div className={styles.description}>{description}</div>
           </CardFooter>
         )}
       </Card>

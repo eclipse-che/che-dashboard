@@ -22,7 +22,6 @@ import {
   actionCreators,
   aiConfigErrorAction,
   aiConfigKeyStatusReceiveAction,
-  aiConfigReceiveAction,
   aiConfigRequestAction,
 } from '@/store/AiConfig/actions';
 import * as infrastructureNamespacesSelectors from '@/store/InfrastructureNamespaces/selectors';
@@ -39,7 +38,7 @@ jest
 
 const mockProviders: api.AiProviderDefinition[] = [
   {
-    id: 'google/gemini/latest',
+    id: 'google/gemini',
     name: 'Gemini',
     publisher: 'Google',
   },
@@ -47,24 +46,20 @@ const mockProviders: api.AiProviderDefinition[] = [
 
 const mockTools: api.AiToolDefinition[] = [
   {
-    id: 'gemini-cli',
+    providerId: 'google/gemini',
+    tag: 'latest',
     name: 'Gemini CLI',
-    description: 'Gemini CLI',
     url: 'https://github.com/google-gemini/gemini-cli',
     binary: 'gemini',
     pattern: 'bundle',
     injectorImage: 'quay.io/okurinny/tools-injector/gemini-cli:next',
     envVarName: 'GEMINI_API_KEY',
-    runCommandLine: 'gemini',
   },
 ];
 
 function buildStore() {
   return createMockStore({
     aiConfig: {
-      providers: mockProviders,
-      tools: mockTools,
-      defaultProviderId: undefined,
       providerKeyExists: {},
       isLoading: false,
       error: undefined,
@@ -74,7 +69,7 @@ function buildStore() {
       config: {
         aiProviders: mockProviders,
         aiTools: mockTools,
-        defaultAiProvider: undefined,
+        defaultAiProviders: undefined,
         containerBuild: {
           disableContainerBuildCapabilities: true,
         },
@@ -119,23 +114,16 @@ describe('AiConfig, actions', () => {
     jest.clearAllMocks();
   });
 
-  describe('requestAiConfig', () => {
-    it('should dispatch receive action reading from server config', async () => {
+  describe('requestAiProviderKeyStatus', () => {
+    it('should dispatch key status receive action', async () => {
       (verifyAuthorized as jest.Mock).mockResolvedValue(true);
       (fetchAiProviderKeyStatus as jest.Mock).mockResolvedValue([]);
 
-      await store.dispatch(actionCreators.requestAiConfig());
+      await store.dispatch(actionCreators.requestAiProviderKeyStatus());
 
       const actions = store.getActions();
       expect(actions[0]).toEqual(aiConfigRequestAction());
-      expect(actions[1]).toEqual(
-        aiConfigReceiveAction({
-          providers: mockProviders,
-          tools: mockTools,
-          defaultProviderId: undefined,
-        }),
-      );
-      expect(actions[2]).toEqual(aiConfigKeyStatusReceiveAction({ 'gemini-cli': false }));
+      expect(actions[1]).toEqual(aiConfigKeyStatusReceiveAction({ 'google/gemini': false }));
     });
 
     it('should dispatch error action on failed key status fetch', async () => {
@@ -145,18 +133,13 @@ describe('AiConfig, actions', () => {
       (fetchAiProviderKeyStatus as jest.Mock).mockRejectedValue(new Error(errorMessage));
       (helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
 
-      await expect(store.dispatch(actionCreators.requestAiConfig())).rejects.toThrow(errorMessage);
+      await expect(store.dispatch(actionCreators.requestAiProviderKeyStatus())).rejects.toThrow(
+        errorMessage,
+      );
 
       const actions = store.getActions();
       expect(actions[0]).toEqual(aiConfigRequestAction());
-      expect(actions[1]).toEqual(
-        aiConfigReceiveAction({
-          providers: mockProviders,
-          tools: mockTools,
-          defaultProviderId: undefined,
-        }),
-      );
-      expect(actions[2]).toEqual(aiConfigErrorAction(errorMessage));
+      expect(actions[1]).toEqual(aiConfigErrorAction(errorMessage));
     });
   });
 
@@ -164,13 +147,19 @@ describe('AiConfig, actions', () => {
     it('should dispatch key status receive action on success', async () => {
       (verifyAuthorized as jest.Mock).mockResolvedValue(true);
       (saveAiProviderKey as jest.Mock).mockResolvedValue(undefined);
-      (fetchAiProviderKeyStatus as jest.Mock).mockResolvedValue(['gemini-cli']);
+      (fetchAiProviderKeyStatus as jest.Mock).mockResolvedValue(['google-gemini']);
 
-      await store.dispatch(actionCreators.saveAiProviderKey('gemini-cli', 'test-api-key'));
+      await store.dispatch(actionCreators.saveAiProviderKey('google/gemini', 'test-api-key'));
 
+      expect(saveAiProviderKey).toHaveBeenCalledWith(
+        mockNamespace,
+        'google/gemini',
+        'GEMINI_API_KEY',
+        'test-api-key',
+      );
       const actions = store.getActions();
       expect(actions[0]).toEqual(aiConfigRequestAction());
-      expect(actions[1]).toEqual(aiConfigKeyStatusReceiveAction({ 'gemini-cli': true }));
+      expect(actions[1]).toEqual(aiConfigKeyStatusReceiveAction({ 'google/gemini': true }));
     });
 
     it('should dispatch error action on failure', async () => {
@@ -181,7 +170,7 @@ describe('AiConfig, actions', () => {
       (helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
 
       await expect(
-        store.dispatch(actionCreators.saveAiProviderKey('gemini-cli', 'key')),
+        store.dispatch(actionCreators.saveAiProviderKey('google/gemini', 'key')),
       ).rejects.toThrow(errorMessage);
 
       const actions = store.getActions();
@@ -196,11 +185,11 @@ describe('AiConfig, actions', () => {
       (deleteAiProviderKey as jest.Mock).mockResolvedValue(undefined);
       (fetchAiProviderKeyStatus as jest.Mock).mockResolvedValue([]);
 
-      await store.dispatch(actionCreators.deleteAiProviderKey('gemini-cli'));
+      await store.dispatch(actionCreators.deleteAiProviderKey('google/gemini'));
 
       const actions = store.getActions();
       expect(actions[0]).toEqual(aiConfigRequestAction());
-      expect(actions[1]).toEqual(aiConfigKeyStatusReceiveAction({ 'gemini-cli': false }));
+      expect(actions[1]).toEqual(aiConfigKeyStatusReceiveAction({ 'google/gemini': false }));
     });
 
     it('should dispatch error action on failure', async () => {
@@ -211,7 +200,7 @@ describe('AiConfig, actions', () => {
       (helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
 
       await expect(
-        store.dispatch(actionCreators.deleteAiProviderKey('gemini-cli')),
+        store.dispatch(actionCreators.deleteAiProviderKey('google/gemini')),
       ).rejects.toThrow(errorMessage);
 
       const actions = store.getActions();

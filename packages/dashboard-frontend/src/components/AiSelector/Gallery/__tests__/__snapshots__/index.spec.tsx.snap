@@ -15,7 +15,7 @@ exports[`AiProviderGallery snapshot 1`] = `
     data-ouia-component-id="OUIA-Generated-Card-1"
     data-ouia-component-type="PF6/Card"
     data-ouia-safe={true}
-    id="ai-provider-card-anthropic-claude-latest"
+    id="ai-provider-card-anthropic-claude"
     onClick={[Function]}
     onKeyDown={[Function]}
     tabIndex={0}
@@ -30,25 +30,26 @@ exports[`AiProviderGallery snapshot 1`] = `
           className="pf-v6-c-card__selectable-actions"
         >
           <div
-            className="pf-v6-c-radio pf-m-standalone"
+            className="pf-v6-c-check pf-m-standalone"
           >
             <input
               aria-invalid={false}
-              aria-labelledby="ai-provider-card-anthropic-claude-latest"
+              aria-labelledby="ai-provider-card-anthropic-claude"
               checked={false}
-              className="pf-v6-c-radio__input pf-v6-screen-reader"
-              data-ouia-component-id="OUIA-Generated-Radio-1"
-              data-ouia-component-type="PF6/Radio"
+              className="pf-v6-c-check__input pf-v6-screen-reader"
+              data-ouia-component-id="OUIA-Generated-Checkbox-1"
+              data-ouia-component-type="PF6/Checkbox"
               data-ouia-safe={true}
               disabled={false}
-              id="ai-provider-input-anthropic-claude-latest"
+              id="ai-provider-input-anthropic-claude"
               name="ai-provider-selector"
               onChange={[Function]}
-              type="radio"
+              required={false}
+              type="checkbox"
             />
             <label
-              className="pf-v6-c-radio__label"
-              htmlFor="ai-provider-input-anthropic-claude-latest"
+              className="pf-v6-c-check__label"
+              htmlFor="ai-provider-input-anthropic-claude"
             />
           </div>
         </div>
@@ -61,20 +62,11 @@ exports[`AiProviderGallery snapshot 1`] = `
         >
           <div
             className="pf-v6-c-card__title-text"
-            id="ai-provider-card-anthropic-claude-latest-title"
+            id="ai-provider-card-anthropic-claude-title"
           >
             Claude
           </div>
         </div>
-      </div>
-    </div>
-    <div
-      className="pf-v6-c-card__footer"
-    >
-      <div
-        className="description"
-      >
-        Anthropic Claude AI assistant
       </div>
     </div>
   </div>
@@ -83,7 +75,7 @@ exports[`AiProviderGallery snapshot 1`] = `
     data-ouia-component-id="OUIA-Generated-Card-2"
     data-ouia-component-type="PF6/Card"
     data-ouia-safe={true}
-    id="ai-provider-card-google-gemini-latest"
+    id="ai-provider-card-google-gemini"
     onClick={[Function]}
     onKeyDown={[Function]}
     tabIndex={0}
@@ -98,25 +90,26 @@ exports[`AiProviderGallery snapshot 1`] = `
           className="pf-v6-c-card__selectable-actions"
         >
           <div
-            className="pf-v6-c-radio pf-m-standalone"
+            className="pf-v6-c-check pf-m-standalone"
           >
             <input
               aria-invalid={false}
-              aria-labelledby="ai-provider-card-google-gemini-latest"
+              aria-labelledby="ai-provider-card-google-gemini"
               checked={false}
-              className="pf-v6-c-radio__input pf-v6-screen-reader"
-              data-ouia-component-id="OUIA-Generated-Radio-2"
-              data-ouia-component-type="PF6/Radio"
+              className="pf-v6-c-check__input pf-v6-screen-reader"
+              data-ouia-component-id="OUIA-Generated-Checkbox-2"
+              data-ouia-component-type="PF6/Checkbox"
               data-ouia-safe={true}
               disabled={false}
-              id="ai-provider-input-google-gemini-latest"
+              id="ai-provider-input-google-gemini"
               name="ai-provider-selector"
               onChange={[Function]}
-              type="radio"
+              required={false}
+              type="checkbox"
             />
             <label
-              className="pf-v6-c-radio__label"
-              htmlFor="ai-provider-input-google-gemini-latest"
+              className="pf-v6-c-check__label"
+              htmlFor="ai-provider-input-google-gemini"
             />
           </div>
         </div>
@@ -129,20 +122,11 @@ exports[`AiProviderGallery snapshot 1`] = `
         >
           <div
             className="pf-v6-c-card__title-text"
-            id="ai-provider-card-google-gemini-latest-title"
+            id="ai-provider-card-google-gemini-title"
           >
             Gemini
           </div>
         </div>
-      </div>
-    </div>
-    <div
-      className="pf-v6-c-card__footer"
-    >
-      <div
-        className="description"
-      >
-        Google Gemini AI assistant
       </div>
     </div>
   </div>

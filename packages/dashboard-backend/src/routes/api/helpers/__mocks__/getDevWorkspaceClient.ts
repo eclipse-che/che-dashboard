@@ -161,11 +161,11 @@ export const stubSshKeysList: api.SshKey[] = [
   },
 ];
 
-export const stubAiProviderKeyIds: string[] = ['google-gemini-latest'];
+export const stubAiProviderKeyIds: string[] = ['google-gemini'];
 
 export const stubAiProviders = [
   {
-    id: 'google/gemini/latest',
+    id: 'google/gemini',
     name: 'Gemini',
     publisher: 'Google',
   },
@@ -173,16 +173,14 @@ export const stubAiProviders = [
 
 export const stubAiTools = [
   {
-    id: 'gemini-cli',
-    providerId: 'google/gemini/latest',
+    providerId: 'google/gemini',
+    tag: 'latest',
     name: 'Gemini CLI',
-    description: 'Gemini CLI',
     url: 'https://github.com/google-gemini/gemini-cli',
     binary: 'gemini',
     pattern: 'bundle',
     injectorImage: 'quay.io/okurinny/tools-injector/gemini-cli:next',
     envVarName: 'GEMINI_API_KEY',
-    runCommandLine: 'gemini',
   },
 ];
 
@@ -234,7 +232,7 @@ export const getDevWorkspaceClient = jest.fn(
         getShowDeprecatedEditors: () => stubShowDeprecatedEditors,
         getHideEditorsById: () => stubHideEditorsById,
         getAiProviders: () => stubAiProviders,
-        getDefaultAiProvider: () => undefined,
+        getDefaultAiProviders: () => [],
         getAiTools: () => stubAiTools,
       } as IServerConfigApi,
       devworkspaceApi: {
@@ -313,7 +311,7 @@ export const getDevWorkspaceClient = jest.fn(
         removeTrustedSources: _namespace => Promise.resolve(),
       } as IWorkspacePreferencesApi,
       aiProviderKeyApi: {
-        listProviderIdsWithKey: (_namespace, _providers) => Promise.resolve(stubAiProviderKeyIds),
+        listProviderIdsWithKey: _namespace => Promise.resolve(stubAiProviderKeyIds),
         createOrReplace: (_namespace, _providerId, _apiKey, _envVarName) => Promise.resolve(),
         delete: (_namespace, _providerId) => Promise.resolve(),
       } as IAiProviderKeyApi,

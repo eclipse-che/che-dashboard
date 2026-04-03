@@ -17,34 +17,67 @@ import { Tooltip } from '@patternfly/react-core';
 import React from 'react';
 
 import styles from '@/components/AiToolIcon/index.module.css';
-import { getInjectedAiToolId } from '@/services/helpers/aiTools';
+import { getInjectedAiToolIds } from '@/services/helpers/aiTools';
 import { Workspace } from '@/services/workspace-adapter';
 
 export type Props = {
   workspace: Workspace;
   aiTools: api.AiToolDefinition[];
+  aiProviders: api.AiProviderDefinition[];
 };
 
 export function AiToolIcon(props: Props): React.ReactElement {
-  const { workspace, aiTools } = props;
-  const toolId = getInjectedAiToolId(workspace, aiTools);
+  const { workspace, aiTools, aiProviders } = props;
+  const toolIds = getInjectedAiToolIds(workspace, aiTools);
 
-  if (!toolId) {
+  if (toolIds.length === 0) {
     return <span>-</span>;
   }
 
-  const tool = aiTools.find(t => t.id === toolId);
-  if (!tool) {
+  const tools = toolIds
+    .map(id => aiTools.find(t => t.providerId === id))
+    .filter((t): t is api.AiToolDefinition => t !== undefined);
+
+  if (tools.length === 0) {
     return <span>-</span>;
   }
 
-  const icon = tool.icon ? <img src={tool.icon} alt={tool.name} className={styles.icon} /> : null;
+  const tooltipContent = tools.map(t => t.name).join(', ');
 
+  if (tools.length === 1) {
+    const tool = tools[0];
+    const providerIcon = aiProviders.find(p => p.id === tool.providerId)?.icon;
+    const icon = providerIcon ? (
+      <img src={providerIcon} alt={tool.name} className={styles.icon} />
+    ) : null;
+
+    return (
+      <Tooltip content={tool.name}>
+        <span className={styles.container}>
+          {icon}
+          <span className={styles.name}>{tool.name}</span>
+        </span>
+      </Tooltip>
+    );
+  }
+
+  // Multiple tools: show icons separated by comma, full names in tooltip
   return (
-    <Tooltip content={tool.description}>
+    <Tooltip content={tooltipContent}>
       <span className={styles.container}>
-        {icon}
-        <span className={styles.name}>{tool.name}</span>
+        {tools.map((tool, index) => {
+          const providerIcon = aiProviders.find(p => p.id === tool.providerId)?.icon;
+          return (
+            <React.Fragment key={tool.providerId}>
+              {index > 0 && <span>, </span>}
+              {providerIcon ? (
+                <img src={providerIcon} alt={tool.name} className={styles.icon} />
+              ) : (
+                <span>{tool.name}</span>
+              )}
+            </React.Fragment>
+          );
+        })}
       </span>
     </Tooltip>
   );

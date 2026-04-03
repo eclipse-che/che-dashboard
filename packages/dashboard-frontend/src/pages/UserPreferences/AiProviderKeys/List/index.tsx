@@ -37,6 +37,7 @@ import styles from '@/pages/UserPreferences/AiProviderKeys/List/index.module.css
 export type Props = {
   isDisabled: boolean;
   providers: api.AiToolDefinition[];
+  aiProviders: api.AiProviderDefinition[];
   providerKeyExists: Record<string, boolean>;
   canAddMore: boolean;
   onAddKey: () => void;
@@ -85,7 +86,7 @@ export class AiProviderKeysList extends React.PureComponent<Props, State> {
 
   private buildActionItems(provider: api.AiToolDefinition): IAction[] {
     const { isDisabled, providerKeyExists } = this.props;
-    const hasKey = !!providerKeyExists[provider.id];
+    const hasKey = providerKeyExists[provider.providerId];
     const requiresKey = !!provider.envVarName;
     const actions: IAction[] = [];
 
@@ -109,17 +110,21 @@ export class AiProviderKeysList extends React.PureComponent<Props, State> {
     return actions;
   }
 
+  private getProviderIcon(tool: api.AiToolDefinition): string | undefined {
+    return this.props.aiProviders.find(p => p.id === tool.providerId)?.icon;
+  }
+
   private buildBodyRow(provider: api.AiToolDefinition, rowIndex: number): React.ReactElement {
     const { isDisabled, providerKeyExists } = this.props;
     const { selectedItems } = this.state;
 
-    const hasKey = !!providerKeyExists[provider.id];
+    const hasKey = providerKeyExists[provider.providerId];
     const requiresKey = !!provider.envVarName;
     const rowDisabled = isDisabled || !hasKey;
     const actionItems = this.buildActionItems(provider);
 
     return (
-      <Tr key={provider.id} data-testid={provider.id}>
+      <Tr key={provider.providerId} data-testid={provider.providerId}>
         <Td
           dataLabel="Select"
           style={rowDisabled ? { opacity: 0.5 } : undefined}
@@ -132,9 +137,9 @@ export class AiProviderKeysList extends React.PureComponent<Props, State> {
         />
         <Td dataLabel="AI Provider">
           <strong>
-            {provider.icon && (
+            {this.getProviderIcon(provider) && (
               <img
-                src={provider.icon}
+                src={this.getProviderIcon(provider)}
                 alt={`${provider.name} icon`}
                 className={styles.providerIcon}
               />
@@ -193,7 +198,7 @@ export class AiProviderKeysList extends React.PureComponent<Props, State> {
           </ToolbarContent>
         </Toolbar>
 
-        <Table aria-label="AI Provider Keys" variant={TableVariant.compact}>
+        <Table aria-label="AI Providers Keys" variant={TableVariant.compact}>
           <Thead>
             <Tr>
               <Th

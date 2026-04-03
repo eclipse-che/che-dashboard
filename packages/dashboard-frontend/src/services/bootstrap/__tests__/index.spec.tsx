@@ -16,7 +16,6 @@ import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import Bootstrap from '@/services/bootstrap';
 import { ResourceFetcherService } from '@/services/resource-fetcher';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
-import { aiConfigActionCreators } from '@/store/AiConfig';
 import { bannerAlertActionCreators } from '@/store/BannerAlert';
 import { brandingActionCreators } from '@/store/Branding';
 import { clusterConfigActionCreators } from '@/store/ClusterConfig';
@@ -97,7 +96,6 @@ jest
   .spyOn(workspacePreferencesActionCreators, 'requestPreferences')
   .mockImplementation(() => jest.fn());
 jest.spyOn(bannerAlertActionCreators, 'addBanner').mockImplementation(() => jest.fn());
-jest.spyOn(aiConfigActionCreators, 'requestAiConfig').mockImplementation(() => jest.fn());
 
 const mockWebsocketClient = {
   connect: jest.fn(),
