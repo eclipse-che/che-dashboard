@@ -115,12 +115,13 @@ export class AiProviderKeysAddEditForm extends React.PureComponent<Props, State>
         <FormGroup
           label={
             <span>
-              API Key{' '}
+              API Key&nbsp;
               {selectedProvider?.url && (
                 <CheTooltip
+                  exitDelay={1500}
                   content={
                     <>
-                      Get your key at{' '}
+                      Get your key at&nbsp;
                       <a href={selectedProvider.url} target="_blank" rel="noreferrer">
                         {selectedProvider.url}
                       </a>
