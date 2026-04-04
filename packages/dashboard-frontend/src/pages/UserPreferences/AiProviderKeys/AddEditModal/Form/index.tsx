@@ -25,6 +25,7 @@ import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 import { CheTooltip } from '@/components/CheTooltip';
+import styles from '@/pages/UserPreferences/AiProviderKeys/AddEditModal/Form/index.module.css';
 
 export type Props = {
   providers: api.AiToolDefinition[];
@@ -128,9 +129,7 @@ export class AiProviderKeysAddEditForm extends React.PureComponent<Props, State>
                     </>
                   }
                 >
-                  <OutlinedQuestionCircleIcon
-                    style={{ cursor: 'pointer', marginLeft: '4px', verticalAlign: 'middle' }}
-                  />
+                  <OutlinedQuestionCircleIcon className={styles.questionIcon} />
                 </CheTooltip>
               )}
             </span>
