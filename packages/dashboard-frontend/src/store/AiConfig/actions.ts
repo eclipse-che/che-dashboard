@@ -58,8 +58,10 @@ async function refreshKeyStatus(
 export const actionCreators = {
   requestAiProviderKeyStatus: (): AppThunk => async (dispatch, getState) => {
     try {
-      dispatch(aiConfigRequestAction());
       await verifyAuthorized(dispatch, getState);
+
+      dispatch(aiConfigRequestAction());
+
       await refreshKeyStatus(dispatch, getState);
     } catch (e) {
       const errorMessage = helpers.errors.getMessage(e);
@@ -71,9 +73,11 @@ export const actionCreators = {
   saveAiProviderKey:
     (toolId: string, apiKey: string): AppThunk =>
     async (dispatch, getState) => {
-      dispatch(aiConfigRequestAction());
       try {
         await verifyAuthorized(dispatch, getState);
+
+        dispatch(aiConfigRequestAction());
+
         const state = getState();
         const namespace = selectDefaultNamespace(state).name;
         const tools = selectAiTools(state);
@@ -91,9 +95,11 @@ export const actionCreators = {
   deleteAiProviderKey:
     (toolId: string): AppThunk =>
     async (dispatch, getState) => {
-      dispatch(aiConfigRequestAction());
       try {
         await verifyAuthorized(dispatch, getState);
+
+        dispatch(aiConfigRequestAction());
+
         const namespace = selectDefaultNamespace(getState()).name;
         await deleteAiProviderKey(namespace, toolId);
         await refreshKeyStatus(dispatch, getState);
