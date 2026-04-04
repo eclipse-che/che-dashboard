@@ -35,6 +35,7 @@ import { ResourceFetcherService } from '@/services/resource-fetcher';
 import { Workspace } from '@/services/workspace-adapter';
 import { hasLoginPage, isForbidden, isUnauthorized } from '@/services/workspace-client/helpers';
 import { RootState } from '@/store';
+import { aiConfigActionCreators } from '@/store/AiConfig';
 import { bannerAlertActionCreators } from '@/store/BannerAlert';
 import { brandingActionCreators } from '@/store/Branding';
 import { clusterConfigActionCreators, selectDashboardFavicon } from '@/store/ClusterConfig';
@@ -123,6 +124,7 @@ export default class Bootstrap {
       }),
       this.fetchSshKeys(),
       this.fetchWorkspacePreferences(),
+      this.fetchAiProviderKeyStatus(),
     ]);
 
     const errors = results
@@ -460,6 +462,15 @@ export default class Bootstrap {
   private async fetchSshKeys(): Promise<void> {
     const { requestSshKeys } = sshKeysActionCreators;
     await requestSshKeys()(this.store.dispatch, this.store.getState, undefined);
+  }
+
+  private async fetchAiProviderKeyStatus(): Promise<void> {
+    const { requestAiProviderKeyStatus } = aiConfigActionCreators;
+    try {
+      await requestAiProviderKeyStatus()(this.store.dispatch, this.store.getState, undefined);
+    } catch (e) {
+      console.warn('Unable to fetch AI provider key status.', e);
+    }
   }
 
   private async fetchWorkspacePreferences(): Promise<void> {

@@ -261,6 +261,43 @@ export const sshKeyParamsSchema: JSONSchema7 = {
   required: ['namespace', 'name'],
 };
 
+export const aiProviderKeyBodySchema: JSONSchema7 = {
+  type: 'object',
+  properties: {
+    toolId: {
+      type: 'string',
+      pattern: '^[a-zA-Z0-9_./:@-]+$',
+      maxLength: 63,
+    },
+    envVarName: {
+      type: 'string',
+      pattern: '^[A-Z][A-Z0-9_]*$',
+      maxLength: 128,
+    },
+    apiKey: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 8192,
+    },
+  },
+  required: ['toolId', 'envVarName', 'apiKey'],
+};
+
+export const aiProviderKeyParamsSchema: JSONSchema7 = {
+  type: 'object',
+  properties: {
+    namespace: {
+      type: 'string',
+    },
+    toolId: {
+      type: 'string',
+      pattern: '^[a-zA-Z0-9_./:@-]+$',
+      maxLength: 63,
+    },
+  },
+  required: ['namespace', 'toolId'],
+};
+
 // namespaced schemas
 
 export const namespacedSchema: JSONSchema7 = {

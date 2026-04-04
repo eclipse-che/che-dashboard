@@ -102,3 +102,8 @@ html.pf-v6-theme-dark .pf-v6-c-page__main-section {
 tbody.pf-v6-c-table__tbody tr.pf-v6-c-table__tr td.pf-v6-c-table__td {
   vertical-align: middle;
 }
+
+.pf-v6-c-table tr:where(.pf-v6-c-table__tr) > :where(th, td):first-child {
+  top: 1px;
+  min-width: 10px;
+}
