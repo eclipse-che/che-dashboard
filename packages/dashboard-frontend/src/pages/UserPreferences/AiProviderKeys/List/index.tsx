@@ -19,17 +19,7 @@ import {
   ToolbarItem,
 } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import {
-  ActionsColumn,
-  IAction,
-  Table,
-  TableVariant,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-} from '@patternfly/react-table';
+import { ActionsColumn, IAction, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import React from 'react';
 
 import styles from '@/pages/UserPreferences/AiProviderKeys/List/index.module.css';
@@ -114,53 +104,6 @@ export class AiProviderKeysList extends React.PureComponent<Props, State> {
     return this.props.aiProviders.find(p => p.id === tool.providerId)?.icon;
   }
 
-  private buildBodyRow(provider: api.AiToolDefinition, rowIndex: number): React.ReactElement {
-    const { isDisabled, providerKeyExists } = this.props;
-    const { selectedItems } = this.state;
-
-    const hasKey = providerKeyExists[provider.providerId];
-    const requiresKey = !!provider.envVarName;
-    const rowDisabled = isDisabled || !hasKey;
-    const actionItems = this.buildActionItems(provider);
-
-    return (
-      <Tr key={provider.providerId} data-testid={provider.providerId}>
-        <Td
-          dataLabel="Select"
-          style={rowDisabled ? { opacity: 0.5 } : undefined}
-          select={{
-            rowIndex,
-            onSelect: (_event, isSelected) => this.handleSelectItem(isSelected, rowIndex),
-            isSelected: selectedItems.includes(provider),
-            isDisabled: rowDisabled,
-          }}
-        />
-        <Td dataLabel="AI Provider">
-          <strong>
-            {this.getProviderIcon(provider) && (
-              <img
-                src={this.getProviderIcon(provider)}
-                alt={`${provider.name} icon`}
-                className={styles.providerIcon}
-              />
-            )}
-            {provider.name}
-          </strong>
-        </Td>
-        <Td dataLabel="Environment Variable">
-          {requiresKey ? (
-            <code>{provider.envVarName}</code>
-          ) : (
-            <span style={{ color: 'var(--pf-v6-global--Color--200)' }}>No API key required</span>
-          )}
-        </Td>
-        <Td dataLabel="Actions" isActionCell>
-          <ActionsColumn isDisabled={actionItems.length === 0 || isDisabled} items={actionItems} />
-        </Td>
-      </Tr>
-    );
-  }
-
   public render(): React.ReactElement {
     const { isDisabled, providers, canAddMore } = this.props;
     const { selectedItems } = this.state;
@@ -198,24 +141,75 @@ export class AiProviderKeysList extends React.PureComponent<Props, State> {
           </ToolbarContent>
         </Toolbar>
 
-        <Table aria-label="AI Providers Keys" variant={TableVariant.compact}>
+        <Table aria-label="AI Provider Keys" variant="compact">
           <Thead>
             <Tr>
               <Th
-                aria-label="Select all rows"
-                style={{ position: 'relative', top: '2px' }}
+                screenReaderText="Select all rows"
                 select={{
                   onSelect: (_event, isSelected) => this.handleSelectItem(isSelected, -1),
                   isSelected: providers.length > 0 && selectedItems.length === providers.length,
                 }}
               />
-              <Th dataLabel="AI Provider">AI Provider</Th>
-              <Th dataLabel="Environment Variable">Environment Variable</Th>
-              <Th dataLabel="Actions" />
+              <Th>AI Provider</Th>
+              <Th className={styles.envVarColumn}>Environment Variable</Th>
+              <Th screenReaderText="Actions" />
             </Tr>
           </Thead>
           <Tbody>
-            {providers.map((provider, rowIndex) => this.buildBodyRow(provider, rowIndex))}
+            {providers.map((provider, rowIndex) => {
+              const hasKey = this.props.providerKeyExists[provider.providerId];
+              const requiresKey = !!provider.envVarName;
+              const rowDisabled = isDisabled || !hasKey;
+              const actionItems = this.buildActionItems(provider);
+
+              return (
+                <Tr
+                  key={provider.providerId}
+                  data-testid={provider.providerId}
+                  style={{ verticalAlign: 'middle' }}
+                >
+                  <Td
+                    style={
+                      rowDisabled
+                        ? { opacity: 0.5, verticalAlign: 'inherit' }
+                        : { verticalAlign: 'inherit' }
+                    }
+                    select={{
+                      rowIndex,
+                      onSelect: (_event, isSelected) => this.handleSelectItem(isSelected, rowIndex),
+                      isSelected: selectedItems.includes(provider),
+                      isDisabled: rowDisabled,
+                    }}
+                  />
+                  <Td dataLabel="AI Provider">
+                    <strong>
+                      {this.getProviderIcon(provider) && (
+                        <img
+                          src={this.getProviderIcon(provider)}
+                          alt={`${provider.name} icon`}
+                          className={styles.providerIcon}
+                        />
+                      )}
+                      {provider.name}
+                    </strong>
+                  </Td>
+                  <Td dataLabel="Environment Variable" className={styles.envVarCell}>
+                    {requiresKey ? (
+                      <code>{provider.envVarName}</code>
+                    ) : (
+                      <span className={styles.noKeyLabel}>No API key required</span>
+                    )}
+                  </Td>
+                  <Td dataLabel="Actions" isActionCell className={styles.actionsCell}>
+                    <ActionsColumn
+                      isDisabled={actionItems.length === 0 || isDisabled}
+                      items={actionItems}
+                    />
+                  </Td>
+                </Tr>
+              );
+            })}
           </Tbody>
         </Table>
       </React.Fragment>
