@@ -107,6 +107,11 @@ class AiToolFormGroup extends React.PureComponent<Props, State> {
 
   public render(): React.ReactNode {
     const { aiTools, readonly, workspace } = this.props;
+
+    if (aiTools.length === 0) {
+      return null;
+    }
+
     const { selected, isSelectorOpen, isInfoOpen } = this.state;
 
     const displayName = this.getDisplayName(selected);

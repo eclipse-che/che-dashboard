@@ -24,6 +24,7 @@ import { Spacer } from '@/components/Spacer';
 import SamplesList from '@/pages/GetStarted/SamplesList';
 import { ROUTE } from '@/Routes';
 import { RootState } from '@/store';
+import { selectAiConfigEnabled } from '@/store/AiConfig/selectors';
 import { selectDefaultEditor } from '@/store/ServerConfig/selectors';
 
 type Props = MappedProps & {
@@ -81,7 +82,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
   }
 
   render(): React.ReactNode {
-    const { defaultEditor, navigate } = this.props;
+    const { aiEnabled, defaultEditor, navigate } = this.props;
     const { editorDefinition, editorImage, aiProviders, presetFilter } = this.state;
 
     const title = 'Create Workspace';
@@ -104,11 +105,15 @@ export class GetStarted extends React.PureComponent<Props, State> {
             }
           />
 
-          <Spacer />
+          {aiEnabled && (
+            <React.Fragment>
+              <Spacer />
 
-          <AiSelectorErrorBoundary>
-            <AiSelector onSelect={providerIds => this.setState({ aiProviders: providerIds })} />
-          </AiSelectorErrorBoundary>
+              <AiSelectorErrorBoundary>
+                <AiSelector onSelect={providerIds => this.setState({ aiProviders: providerIds })} />
+              </AiSelectorErrorBoundary>
+            </React.Fragment>
+          )}
 
           <Spacer />
 
@@ -134,6 +139,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
+  aiEnabled: selectAiConfigEnabled(state),
   defaultEditor: selectDefaultEditor(state),
 });
 

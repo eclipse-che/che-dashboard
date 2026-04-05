@@ -26,6 +26,7 @@ import {
   CheClusterCustomResource,
   DevWorkspaceClient,
   IAiProviderKeyApi,
+  IAiRegistryApi,
   IDevWorkspaceApi,
   IDevWorkspaceClusterApi,
   IDevWorkspaceTemplateApi,
@@ -163,26 +164,28 @@ export const stubSshKeysList: api.SshKey[] = [
 
 export const stubAiProviderKeyIds: string[] = ['google-gemini'];
 
-export const stubAiProviders = [
-  {
-    id: 'google/gemini',
-    name: 'Gemini',
-    publisher: 'Google',
-  },
-];
-
-export const stubAiTools = [
-  {
-    providerId: 'google/gemini',
-    tag: 'latest',
-    name: 'Gemini CLI',
-    url: 'https://github.com/google-gemini/gemini-cli',
-    binary: 'gemini',
-    pattern: 'bundle',
-    injectorImage: 'quay.io/okurinny/tools-injector/gemini-cli:next',
-    envVarName: 'GEMINI_API_KEY',
-  },
-];
+export const stubAiRegistry = {
+  providers: [
+    {
+      id: 'google/gemini',
+      name: 'Gemini',
+      publisher: 'Google',
+    },
+  ],
+  tools: [
+    {
+      providerId: 'google/gemini',
+      tag: 'latest',
+      name: 'Gemini CLI',
+      url: 'https://github.com/google-gemini/gemini-cli',
+      binary: 'gemini',
+      pattern: 'bundle',
+      injectorImage: 'quay.io/okurinny/tools-injector/gemini-cli:next',
+      envVarName: 'GEMINI_API_KEY',
+    },
+  ],
+  defaultAiProviders: ['google/gemini'],
+};
 
 export const stubAutoProvision = true;
 
@@ -231,9 +234,6 @@ export const getDevWorkspaceClient = jest.fn(
         getAllowedSourceUrls: () => stubAllowedSourceUrls,
         getShowDeprecatedEditors: () => stubShowDeprecatedEditors,
         getHideEditorsById: () => stubHideEditorsById,
-        getAiProviders: () => stubAiProviders,
-        getDefaultAiProviders: () => [],
-        getAiTools: () => stubAiTools,
       } as IServerConfigApi,
       devworkspaceApi: {
         create: (_devworkspace, _namespace) =>
@@ -315,6 +315,9 @@ export const getDevWorkspaceClient = jest.fn(
         createOrReplace: (_namespace, _providerId, _apiKey, _envVarName) => Promise.resolve(),
         delete: (_namespace, _providerId) => Promise.resolve(),
       } as IAiProviderKeyApi,
+      aiRegistryApi: {
+        get: () => Promise.resolve(stubAiRegistry),
+      } as IAiRegistryApi,
     } as DevWorkspaceClient;
   },
 );

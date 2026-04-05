@@ -25,6 +25,7 @@ import SshKeys from '@/pages/UserPreferences/SshKeys';
 import { ROUTE } from '@/Routes';
 import { UserPreferencesTab } from '@/services/helpers/types';
 import { RootState } from '@/store';
+import { selectAiConfigEnabled } from '@/store/AiConfig/selectors';
 import { gitOauthConfigActionCreators } from '@/store/GitOauthConfig';
 import { selectIsLoading } from '@/store/GitOauthConfig/selectors';
 
@@ -49,14 +50,15 @@ class UserPreferences extends React.PureComponent<Props, State> {
   }
 
   private getActiveTabKey(): UserPreferencesTab {
-    const { pathname, search } = this.props.location;
+    const { aiEnabled, location } = this.props;
+    const { pathname, search } = location;
 
     if (search) {
       const searchParam = new URLSearchParams(search);
       const tab = searchParam.get('tab');
       if (
         pathname === ROUTE.USER_PREFERENCES &&
-        (tab === UserPreferencesTab.AI_PROVIDER_KEYS ||
+        ((tab === UserPreferencesTab.AI_PROVIDER_KEYS && aiEnabled) ||
           tab === UserPreferencesTab.CONTAINER_REGISTRIES ||
           tab === UserPreferencesTab.GITCONFIG ||
           tab === UserPreferencesTab.GIT_SERVICES ||
@@ -118,9 +120,11 @@ class UserPreferences extends React.PureComponent<Props, State> {
             <Tab eventKey={UserPreferencesTab.SSH_KEYS} title="SSH Keys">
               <SshKeys />
             </Tab>
-            <Tab eventKey={UserPreferencesTab.AI_PROVIDER_KEYS} title="AI Providers Keys">
-              <AiProviderKeys />
-            </Tab>
+            {this.props.aiEnabled && (
+              <Tab eventKey={UserPreferencesTab.AI_PROVIDER_KEYS} title="AI Providers Keys">
+                <AiProviderKeys />
+              </Tab>
+            )}
           </Tabs>
         </PageSection>
       </React.Fragment>
@@ -129,6 +133,7 @@ class UserPreferences extends React.PureComponent<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
+  aiEnabled: selectAiConfigEnabled(state),
   isLoading: selectIsLoading(state),
 });
 

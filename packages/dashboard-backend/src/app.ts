@@ -23,6 +23,7 @@ import { registerStaticServer } from '@/plugins/staticServer';
 import { registerSwagger } from '@/plugins/swagger';
 import { registerWebSocket } from '@/plugins/webSocket';
 import { registerAiConfigRoutes } from '@/routes/api/aiConfig';
+import { registerAiRegistryRoute } from '@/routes/api/aiRegistry';
 import { registerAirGapSampleRoute } from '@/routes/api/airGapSample';
 import { registerBackupRoutes } from '@/routes/api/backup';
 import { registerClusterConfigRoute } from '@/routes/api/clusterConfig';
@@ -146,5 +147,7 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
     registerBackupRoutes(server),
 
     registerAiConfigRoutes(server),
+
+    registerAiRegistryRoute(isLocalRun(), server),
   ]);
 }

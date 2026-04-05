@@ -15,6 +15,7 @@ import { api, helpers } from '@eclipse-che/common';
 import {
   deleteAiProviderKey,
   fetchAiProviderKeyStatus,
+  fetchAiRegistry,
   saveAiProviderKey,
 } from '@/services/backend-client/aiConfigApi';
 import { createMockStore } from '@/store/__mocks__/mockActionsTestStore';
@@ -22,6 +23,7 @@ import {
   actionCreators,
   aiConfigErrorAction,
   aiConfigKeyStatusReceiveAction,
+  aiConfigRegistryReceiveAction,
   aiConfigRequestAction,
 } from '@/store/AiConfig/actions';
 import * as infrastructureNamespacesSelectors from '@/store/InfrastructureNamespaces/selectors';
@@ -60,47 +62,11 @@ const mockTools: api.AiToolDefinition[] = [
 function buildStore() {
   return createMockStore({
     aiConfig: {
+      providers: mockProviders,
+      tools: mockTools,
+      defaultAiProviders: [],
       providerKeyExists: {},
       isLoading: false,
-      error: undefined,
-    },
-    dwServerConfig: {
-      isLoading: false,
-      config: {
-        aiProviders: mockProviders,
-        aiTools: mockTools,
-        defaultAiProviders: undefined,
-        containerBuild: {
-          disableContainerBuildCapabilities: true,
-        },
-        containerRun: {
-          disableContainerRunCapabilities: true,
-        },
-        defaults: {
-          editor: undefined,
-          components: [],
-          plugins: [],
-          pvcStrategy: undefined,
-        },
-        timeouts: {
-          inactivityTimeout: -1,
-          runTimeout: -1,
-          startTimeout: 300,
-          axiosRequestTimeout: 30,
-        },
-        devfileRegistry: {
-          disableInternalRegistry: false,
-          externalDevfileRegistries: [],
-        },
-        defaultNamespace: {
-          autoProvision: true,
-        },
-        pluginRegistry: {},
-        cheNamespace: 'eclipse-che',
-        pluginRegistryURL: '',
-        pluginRegistryInternalURL: '',
-        allowedSourceUrls: [],
-      },
       error: undefined,
     },
   });
@@ -112,6 +78,41 @@ describe('AiConfig, actions', () => {
   beforeEach(() => {
     store = buildStore();
     jest.clearAllMocks();
+  });
+
+  describe('requestAiRegistry', () => {
+    it('should dispatch registry receive action', async () => {
+      const registry: api.IAiRegistry = {
+        providers: mockProviders,
+        tools: mockTools,
+        defaultAiProviders: ['google/gemini'],
+      };
+
+      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+      (fetchAiRegistry as jest.Mock).mockResolvedValue(registry);
+
+      await store.dispatch(actionCreators.requestAiRegistry());
+
+      const actions = store.getActions();
+      expect(actions[0]).toEqual(aiConfigRequestAction());
+      expect(actions[1]).toEqual(aiConfigRegistryReceiveAction(registry));
+    });
+
+    it('should dispatch error action on failure', async () => {
+      const errorMessage = 'Registry fetch failed';
+
+      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+      (fetchAiRegistry as jest.Mock).mockRejectedValue(new Error(errorMessage));
+      (helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
+
+      await expect(store.dispatch(actionCreators.requestAiRegistry())).rejects.toThrow(
+        errorMessage,
+      );
+
+      const actions = store.getActions();
+      expect(actions[0]).toEqual(aiConfigRequestAction());
+      expect(actions[1]).toEqual(aiConfigErrorAction(errorMessage));
+    });
   });
 
   describe('requestAiProviderKeyStatus', () => {

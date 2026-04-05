@@ -160,27 +160,12 @@ function buildStoreWithTools(tools: api.AiToolDefinition[]) {
   return configureStore({
     reducer: rootReducer,
     preloadedState: {
-      dwServerConfig: {
+      aiConfig: {
+        providers: [],
+        tools,
+        defaultAiProviders: [],
+        providerKeyExists: {},
         isLoading: false,
-        config: {
-          aiTools: tools,
-          containerBuild: { disableContainerBuildCapabilities: true },
-          containerRun: { disableContainerRunCapabilities: true },
-          defaults: { editor: undefined, components: [], plugins: [], pvcStrategy: undefined },
-          timeouts: {
-            inactivityTimeout: -1,
-            runTimeout: -1,
-            startTimeout: 300,
-            axiosRequestTimeout: 30,
-          },
-          devfileRegistry: { disableInternalRegistry: false, externalDevfileRegistries: [] },
-          defaultNamespace: { autoProvision: true },
-          pluginRegistry: {},
-          cheNamespace: 'eclipse-che',
-          pluginRegistryURL: '',
-          pluginRegistryInternalURL: '',
-          allowedSourceUrls: [],
-        },
         error: undefined,
       },
     } as Parameters<typeof configureStore>[0]['preloadedState'],
