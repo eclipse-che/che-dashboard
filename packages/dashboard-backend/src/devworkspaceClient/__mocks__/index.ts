@@ -12,6 +12,7 @@
 
 import {
   IAiProviderKeyApi,
+  IAiRegistryApi,
   IAirGapSampleApi,
   IDevWorkspaceApi,
   IDevWorkspaceClusterApi,
@@ -88,6 +89,10 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
   }
 
   get aiProviderKeyApi(): IAiProviderKeyApi {
+    throw new Error('Method not implemented.');
+  }
+
+  get aiRegistryApi(): IAiRegistryApi {
     throw new Error('Method not implemented.');
   }
 }

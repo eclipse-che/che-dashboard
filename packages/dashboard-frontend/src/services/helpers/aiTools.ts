@@ -22,6 +22,28 @@ import { Workspace } from '@/services/workspace-adapter';
 type DevWorkspaceComponent = V1alpha2DevWorkspaceSpecTemplateComponents;
 type DevWorkspaceCommand = V1alpha2DevWorkspaceSpecTemplateCommands;
 
+/** Attribute key used to mark dashboard-managed AI tool components and commands. */
+export const ADMIN_MANAGEABLE_ATTRIBUTE = 'che.eclipse.org/admin-manageable';
+
+/**
+ * Strips the tag or digest suffix from a container image reference.
+ * e.g. 'quay.io/oorel/claude-code:next' → 'quay.io/oorel/claude-code'
+ *      'quay.io/oorel/claude-code@sha256:abc' → 'quay.io/oorel/claude-code'
+ */
+export function stripImageTag(image: string): string {
+  // Remove digest first (@sha256:...), then tag (:...)
+  const atIdx = image.indexOf('@');
+  if (atIdx !== -1) {
+    return image.substring(0, atIdx);
+  }
+  const colonIdx = image.lastIndexOf(':');
+  // Avoid stripping port numbers (e.g. 'registry:5000/repo')
+  if (colonIdx !== -1 && !image.substring(colonIdx).includes('/')) {
+    return image.substring(0, colonIdx);
+  }
+  return image;
+}
+
 /**
  * Extracts a Kubernetes-compatible slug from the injector image name.
  * e.g. 'quay.io/okurinny/tools-injector/claude-code:next' → 'claude-code'
@@ -63,7 +85,7 @@ export function getInjectedAiToolIds(
   const ids: string[] = [];
   for (const comp of components) {
     const image: string = comp.container?.image ?? '';
-    const tool = allTools.find(t => t.injectorImage === image);
+    const tool = allTools.find(t => stripImageTag(t.injectorImage) === stripImageTag(image));
     if (tool && !ids.includes(tool.providerId)) {
       ids.push(tool.providerId);
     }
@@ -202,6 +224,7 @@ export function addAiToolToWorkspace(
   if (!template.components.some(c => c.name === 'injected-tools')) {
     template.components.push({
       name: 'injected-tools',
+      attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
       volume: { size: '256Mi' },
     } as unknown as DevWorkspaceComponent);
   }
@@ -210,6 +233,7 @@ export function addAiToolToWorkspace(
   if (tool.pattern === 'init') {
     template.components.push({
       name: compName,
+      attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
       container: {
         image: tool.injectorImage,
         command: ['/bin/sh'],
@@ -225,6 +249,7 @@ export function addAiToolToWorkspace(
   } else {
     template.components.push({
       name: compName,
+      attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
       container: {
         image: tool.injectorImage,
         command: ['/bin/sh'],
@@ -386,6 +411,136 @@ export function removeAiToolFromWorkspace(
       template.events.postStart = template.events.postStart ?? [];
       template.events.postStart.push(cleanupCmdId);
     }
+  }
+
+  return cloned;
+}
+
+/**
+ * Checks whether a component is an admin-manageable injector component.
+ */
+function isAdminManageable(comp: { attributes?: Record<string, unknown> }): boolean {
+  return comp.attributes?.[ADMIN_MANAGEABLE_ATTRIBUTE] === true;
+}
+
+/**
+ * Returns true if the component's container image matches any known tool (tag-agnostic).
+ */
+function isRecognizedToolImage(
+  comp: { container?: { image?: string } },
+  allTools: api.AiToolDefinition[],
+): boolean {
+  const image = comp.container?.image ?? '';
+  if (image === '') {
+    return false;
+  }
+  return allTools.some(t => stripImageTag(t.injectorImage) === stripImageTag(image));
+}
+
+/**
+ * Removes all admin-manageable AI tool components whose injector image is
+ * no longer recognized (not in `allTools`), along with their commands and events.
+ *
+ * This prevents stale or outdated injector containers from breaking workspace starts.
+ * Volume components with the admin-manageable attribute are preserved if at least one
+ * recognized tool still exists; otherwise they are removed too.
+ *
+ * Returns null if no changes were made, or the patched DevWorkspace if stale tools were removed.
+ */
+export function sanitizeStaleAiTools(
+  devWorkspace: devfileApi.DevWorkspace,
+  allTools: api.AiToolDefinition[],
+): devfileApi.DevWorkspace | null {
+  const template = devWorkspace.spec.template;
+  const components = (template.components ?? []) as Array<{
+    name?: string;
+    attributes?: Record<string, unknown>;
+    container?: { image?: string };
+    volume?: object;
+  }>;
+
+  // Find admin-manageable injector components (with containers) whose image is unrecognized
+  const staleComponents = components.filter(
+    c => isAdminManageable(c) && c.container && !isRecognizedToolImage(c, allTools),
+  );
+
+  if (staleComponents.length === 0) {
+    return null;
+  }
+
+  const cloned: devfileApi.DevWorkspace = JSON.parse(JSON.stringify(devWorkspace));
+  const clonedTemplate = cloned.spec.template;
+  clonedTemplate.components = clonedTemplate.components ?? [];
+  clonedTemplate.commands = clonedTemplate.commands ?? [];
+
+  const staleNames = new Set(staleComponents.map(c => c.name).filter(Boolean));
+
+  // Remove stale injector components
+  clonedTemplate.components = (
+    clonedTemplate.components as unknown as Array<{
+      name?: string;
+      attributes?: Record<string, unknown>;
+      container?: { image?: string };
+      volume?: object;
+    }>
+  ).filter(c => !staleNames.has(c.name)) as unknown as DevWorkspaceComponent[];
+
+  // Collect command IDs that reference stale components (apply commands)
+  const staleCommandIds = new Set<string>();
+  for (const cmd of clonedTemplate.commands as Array<{
+    id?: string;
+    apply?: { component?: string };
+  }>) {
+    if (cmd.apply && cmd.id && staleNames.has(cmd.apply.component)) {
+      staleCommandIds.add(cmd.id);
+    }
+  }
+
+  // Also remove symlink/cleanup commands that match the stale slug pattern
+  for (const staleName of staleNames) {
+    if (staleName && staleName.endsWith('-injector')) {
+      const slug = staleName.replace(/-injector$/, '');
+      const cmdIds = toolCommandIds(slug);
+      staleCommandIds.add(cmdIds.install);
+      staleCommandIds.add(cmdIds.symlink);
+      staleCommandIds.add(cmdIds.run);
+      staleCommandIds.add(cmdIds.cleanup);
+    }
+  }
+
+  // Remove stale commands
+  clonedTemplate.commands = (clonedTemplate.commands as unknown as Array<{ id?: string }>).filter(
+    c => !staleCommandIds.has(c.id ?? ''),
+  ) as unknown as DevWorkspaceCommand[];
+
+  // Clean up events
+  if (clonedTemplate.events?.preStart) {
+    clonedTemplate.events.preStart = clonedTemplate.events.preStart.filter(
+      (e: string) => !staleCommandIds.has(e),
+    );
+  }
+  if (clonedTemplate.events?.postStart) {
+    clonedTemplate.events.postStart = clonedTemplate.events.postStart.filter(
+      (e: string) => !staleCommandIds.has(e),
+    );
+  }
+
+  // Remove admin-manageable volume if no recognized injectors remain
+  const hasRecognizedInjectors = (
+    clonedTemplate.components as Array<{
+      attributes?: Record<string, unknown>;
+      container?: { image?: string };
+    }>
+  ).some(c => isAdminManageable(c) && c.container);
+
+  if (!hasRecognizedInjectors) {
+    clonedTemplate.components = (
+      clonedTemplate.components as unknown as Array<{
+        name?: string;
+        attributes?: Record<string, unknown>;
+        volume?: object;
+      }>
+    ).filter(c => !(isAdminManageable(c) && c.volume)) as unknown as DevWorkspaceComponent[];
   }
 
   return cloned;

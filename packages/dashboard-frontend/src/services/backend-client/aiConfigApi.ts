@@ -10,10 +10,21 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { helpers } from '@eclipse-che/common';
+import { api, helpers } from '@eclipse-che/common';
 
 import { AxiosWrapper } from '@/services/axios-wrapper/axiosWrapper';
 import { dashboardBackendPrefix } from '@/services/backend-client/const';
+
+export async function fetchAiRegistry(): Promise<api.IAiRegistry> {
+  try {
+    const response = await AxiosWrapper.createToRetryMissedBearerTokenError().get(
+      `${dashboardBackendPrefix}/ai-registry`,
+    );
+    return response.data;
+  } catch (e) {
+    throw new Error(`Failed to fetch AI registry. ${helpers.errors.getMessage(e)}`);
+  }
+}
 
 export async function fetchAiProviderKeyStatus(namespace: string): Promise<string[]> {
   try {

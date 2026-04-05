@@ -16,9 +16,12 @@ import { api } from '@eclipse-che/common';
 
 import {
   addAiToolToWorkspace,
+  ADMIN_MANAGEABLE_ATTRIBUTE,
   getInjectedAiToolIds,
   getInjectedAiToolNames,
   removeAiToolFromWorkspace,
+  sanitizeStaleAiTools,
+  stripImageTag,
   toolCommandIds,
 } from '@/services/helpers/aiTools';
 import { constructWorkspace } from '@/services/workspace-adapter';
@@ -67,6 +70,26 @@ function buildWorkspaceWithComponents(
 }
 
 describe('aiTools', () => {
+  describe('stripImageTag', () => {
+    it('should strip tag from image reference', () => {
+      expect(stripImageTag('quay.io/oorel/claude-code:next')).toBe('quay.io/oorel/claude-code');
+    });
+
+    it('should strip digest from image reference', () => {
+      expect(stripImageTag('quay.io/oorel/claude-code@sha256:abc123')).toBe(
+        'quay.io/oorel/claude-code',
+      );
+    });
+
+    it('should preserve image with no tag or digest', () => {
+      expect(stripImageTag('quay.io/oorel/claude-code')).toBe('quay.io/oorel/claude-code');
+    });
+
+    it('should not strip port number from registry', () => {
+      expect(stripImageTag('registry:5000/repo/image:v1')).toBe('registry:5000/repo/image');
+    });
+  });
+
   describe('toolCommandIds', () => {
     it('should return correct command IDs for a tool', () => {
       const ids = toolCommandIds('claude-code');
@@ -118,6 +141,30 @@ describe('aiTools', () => {
         'anthropic/claude',
         'google/gemini',
       ]);
+    });
+
+    it('should detect a tool even when the tag differs (tag-agnostic)', () => {
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+        {
+          name: 'claude-code-injector',
+          container: { image: 'quay.io/okurinny/tools-injector/claude-code:v2.0' },
+        },
+      ]);
+      expect(getInjectedAiToolIds(workspace, ALL_TOOLS)).toEqual(['anthropic/claude']);
+    });
+
+    it('should detect a tool with a digest instead of a tag', () => {
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+        {
+          name: 'claude-code-injector',
+          container: {
+            image: 'quay.io/okurinny/tools-injector/claude-code@sha256:abcdef1234567890',
+          },
+        },
+      ]);
+      expect(getInjectedAiToolIds(workspace, ALL_TOOLS)).toEqual(['anthropic/claude']);
     });
 
     it('should return empty array when no AI tool is injected', () => {
@@ -205,6 +252,30 @@ describe('aiTools', () => {
         '-c',
         'cp -a /opt/gemini-cli/. /injected-tools/gemini-cli/',
       ]);
+    });
+
+    it('should mark injector component with admin-manageable attribute', () => {
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+      ]);
+
+      const patched = addAiToolToWorkspace(workspace, 'anthropic/claude', ALL_TOOLS);
+      const injector = patched.spec.template.components?.find(
+        c => c.name === 'claude-code-injector',
+      ) as { attributes?: Record<string, unknown> } | undefined;
+      expect(injector?.attributes?.[ADMIN_MANAGEABLE_ATTRIBUTE]).toBe(true);
+    });
+
+    it('should mark injected-tools volume with admin-manageable attribute', () => {
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+      ]);
+
+      const patched = addAiToolToWorkspace(workspace, 'anthropic/claude', ALL_TOOLS);
+      const volume = patched.spec.template.components?.find(c => c.name === 'injected-tools') as
+        | { attributes?: Record<string, unknown> }
+        | undefined;
+      expect(volume?.attributes?.[ADMIN_MANAGEABLE_ATTRIBUTE]).toBe(true);
     });
 
     it('should be idempotent — re-injection does not duplicate components', () => {
@@ -510,6 +581,139 @@ describe('aiTools', () => {
       expect(
         reAdded.spec.template.components?.find(c => c.name === 'claude-code-injector'),
       ).toBeDefined();
+    });
+  });
+
+  describe('sanitizeStaleAiTools', () => {
+    it('should return null when no stale tools exist', () => {
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+      ]);
+      const added = addAiToolToWorkspace(workspace, 'anthropic/claude', ALL_TOOLS);
+      expect(sanitizeStaleAiTools(added, ALL_TOOLS)).toBeNull();
+    });
+
+    it('should return null when there are no admin-manageable components', () => {
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+        { name: 'some-injector', container: { image: 'unknown-image:v1' } },
+      ]);
+      expect(sanitizeStaleAiTools(workspace.ref, ALL_TOOLS)).toBeNull();
+    });
+
+    it('should remove admin-manageable components with unrecognized images', () => {
+      // Simulate a workspace with a stale tool: admin-manageable but image not in allTools
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+        {
+          name: 'old-tool-injector',
+          attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
+          container: { image: 'quay.io/oorel/removed-tool:v1' },
+        },
+        {
+          name: 'injected-tools',
+          attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
+          volume: { size: '256Mi' },
+        },
+      ]);
+
+      const result = sanitizeStaleAiTools(workspace.ref, ALL_TOOLS);
+      expect(result).not.toBeNull();
+      expect(
+        result!.spec.template.components?.find(c => c.name === 'old-tool-injector'),
+      ).toBeUndefined();
+      // Volume should also be removed since no recognized injectors remain
+      expect(
+        result!.spec.template.components?.find(c => c.name === 'injected-tools'),
+      ).toBeUndefined();
+      // Editor should be preserved
+      expect(result!.spec.template.components?.find(c => c.name === 'editor')).toBeDefined();
+    });
+
+    it('should preserve volume when a recognized tool still exists', () => {
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+      ]);
+
+      // Add a recognized tool, then manually add a stale one
+      const added = addAiToolToWorkspace(workspace, 'anthropic/claude', ALL_TOOLS);
+      const components = added.spec.template.components as unknown as Array<
+        Record<string, unknown>
+      >;
+      components.push({
+        name: 'old-tool-injector',
+        attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
+        container: { image: 'quay.io/oorel/removed-tool:v1' },
+      });
+
+      const result = sanitizeStaleAiTools(added, ALL_TOOLS);
+      expect(result).not.toBeNull();
+      // Stale component removed
+      expect(
+        result!.spec.template.components?.find(c => c.name === 'old-tool-injector'),
+      ).toBeUndefined();
+      // Volume preserved (recognized tool still present)
+      expect(
+        result!.spec.template.components?.find(c => c.name === 'injected-tools'),
+      ).toBeDefined();
+      // Recognized injector preserved
+      expect(
+        result!.spec.template.components?.find(c => c.name === 'claude-code-injector'),
+      ).toBeDefined();
+    });
+
+    it('should remove stale commands and events', () => {
+      const workspace = buildWorkspaceWithComponents(
+        [
+          { name: 'editor', container: { image: 'che-code:latest' } },
+          {
+            name: 'old-tool-injector',
+            attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
+            container: { image: 'quay.io/oorel/removed-tool:v1' },
+          },
+        ],
+        [
+          { id: 'install-old-tool', apply: { component: 'old-tool-injector' } },
+          { id: 'symlink-old-tool', exec: { component: 'editor' } },
+          { id: 'other-command', exec: { component: 'editor' } },
+        ],
+        {
+          preStart: ['install-old-tool'],
+          postStart: ['symlink-old-tool'],
+        },
+      );
+
+      const result = sanitizeStaleAiTools(workspace.ref, ALL_TOOLS);
+      expect(result).not.toBeNull();
+      // Stale commands removed
+      expect(
+        result!.spec.template.commands?.find((c: { id?: string }) => c.id === 'install-old-tool'),
+      ).toBeUndefined();
+      expect(
+        result!.spec.template.commands?.find((c: { id?: string }) => c.id === 'symlink-old-tool'),
+      ).toBeUndefined();
+      // Non-stale command preserved
+      expect(
+        result!.spec.template.commands?.find((c: { id?: string }) => c.id === 'other-command'),
+      ).toBeDefined();
+      // Stale events removed
+      expect(result!.spec.template.events?.preStart).toHaveLength(0);
+      expect(result!.spec.template.events?.postStart).toHaveLength(0);
+    });
+
+    it('should recognize tools even when tags differ', () => {
+      // Workspace has a recognized tool but with a different tag — should NOT be removed
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+        {
+          name: 'claude-code-injector',
+          attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
+          container: { image: 'quay.io/okurinny/tools-injector/claude-code:v2.0' },
+        },
+      ]);
+
+      const result = sanitizeStaleAiTools(workspace.ref, ALL_TOOLS);
+      expect(result).toBeNull();
     });
   });
 });

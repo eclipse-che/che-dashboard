@@ -124,7 +124,7 @@ export default class Bootstrap {
       }),
       this.fetchSshKeys(),
       this.fetchWorkspacePreferences(),
-      this.fetchAiProviderKeyStatus(),
+      this.fetchAiRegistry().then(() => this.fetchAiProviderKeyStatus()),
     ]);
 
     const errors = results
@@ -462,6 +462,15 @@ export default class Bootstrap {
   private async fetchSshKeys(): Promise<void> {
     const { requestSshKeys } = sshKeysActionCreators;
     await requestSshKeys()(this.store.dispatch, this.store.getState, undefined);
+  }
+
+  private async fetchAiRegistry(): Promise<void> {
+    const { requestAiRegistry } = aiConfigActionCreators;
+    try {
+      await requestAiRegistry()(this.store.dispatch, this.store.getState, undefined);
+    } catch (e) {
+      console.warn('Unable to fetch AI registry.', e);
+    }
   }
 
   private async fetchAiProviderKeyStatus(): Promise<void> {

@@ -16,6 +16,7 @@ import { createAction } from '@reduxjs/toolkit';
 import {
   deleteAiProviderKey,
   fetchAiProviderKeyStatus,
+  fetchAiRegistry,
   saveAiProviderKey,
 } from '@/services/backend-client/aiConfigApi';
 import { AppThunk } from '@/store';
@@ -35,6 +36,10 @@ function buildKeyExistsMap(
 }
 
 export const aiConfigRequestAction = createAction('aiConfig/request');
+
+export const aiConfigRegistryReceiveAction = createAction<api.IAiRegistry>(
+  'aiConfig/registryReceive',
+);
 
 export const aiConfigKeyStatusReceiveAction = createAction<Record<string, boolean>>(
   'aiConfig/keyStatusReceive',
@@ -56,6 +61,21 @@ async function refreshKeyStatus(
 }
 
 export const actionCreators = {
+  requestAiRegistry: (): AppThunk => async (dispatch, getState) => {
+    try {
+      await verifyAuthorized(dispatch, getState);
+
+      dispatch(aiConfigRequestAction());
+
+      const registry = await fetchAiRegistry();
+      dispatch(aiConfigRegistryReceiveAction(registry));
+    } catch (e) {
+      const errorMessage = helpers.errors.getMessage(e);
+      dispatch(aiConfigErrorAction(errorMessage));
+      throw e;
+    }
+  },
+
   requestAiProviderKeyStatus: (): AppThunk => async (dispatch, getState) => {
     try {
       await verifyAuthorized(dispatch, getState);

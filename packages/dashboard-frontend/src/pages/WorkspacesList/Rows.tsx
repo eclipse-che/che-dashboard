@@ -59,6 +59,7 @@ export function buildRows(
   backupsByWorkspace: Record<string, BackupInfo> = {},
   aiProviders: api.AiProviderDefinition[] = [],
   aiTools: api.AiToolDefinition[] = [],
+  lastModifiedColumnIndex = 3,
 ): RowData[] {
   const rows: RowData[] = [];
   workspaces
@@ -75,7 +76,7 @@ export function buildRows(
         const editorB = getEditorName({ editors, workspace: workspaceB }) || '';
         return sort(editorA, editorB, sortBy.direction);
       }
-      if (sortBy.index === 3) {
+      if (sortBy.index === lastModifiedColumnIndex) {
         const updatedA = workspaceA.updated || workspaceA.created || 0;
         const updatedB = workspaceB.updated || workspaceB.created || 0;
         return sort(updatedA, updatedB, sortBy.direction);

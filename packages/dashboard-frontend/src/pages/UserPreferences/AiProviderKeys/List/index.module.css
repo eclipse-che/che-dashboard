@@ -21,16 +21,8 @@
   background-color: var(--pf-t--color--gray--10);
 }
 
-.envVarColumn {
-  min-width: 10em !important;
-}
-
-.envVarCell {
-  white-space: nowrap !important;
-}
-
 .noKeyLabel {
-  color: var(--pf-v6-global--Color--200);
+  color: var(--pf-t--global--color--nonstatus--gray--100);
 }
 
 .actionsCell {
