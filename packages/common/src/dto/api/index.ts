@@ -179,9 +179,17 @@ export interface IServerConfig {
   pluginRegistryInternalURL: string;
   dashboardLogo?: { base64data: string; mediatype: string };
   allowedSourceUrls: string[];
-  aiProviders?: AiProviderDefinition[];
-  defaultAiProviders?: string[];
-  aiTools?: AiToolDefinition[];
+}
+
+/**
+ * AI tool registry read from a cluster ConfigMap.
+ * Contains providers (who makes the tool), tools (how to inject it),
+ * and the default selection for new workspaces.
+ */
+export interface IAiRegistry {
+  providers: AiProviderDefinition[];
+  tools: AiToolDefinition[];
+  defaultAiProviders: string[];
 }
 
 export interface IAdvancedAuthorization {

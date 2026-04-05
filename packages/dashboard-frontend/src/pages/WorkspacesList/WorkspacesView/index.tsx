@@ -52,13 +52,14 @@ export class WorkspacesView extends React.PureComponent<Props, State> {
     super(props);
 
     const filtered = this.props.workspaces.map(workspace => workspace.uid);
+    const lastModifiedIndex = this.props.aiTools.length > 0 ? 3 : 2;
     this.state = {
       filtered,
       selected: [],
       isSelectedAll: false,
       rows: [],
       sortBy: {
-        index: 3, // Last Modified column
+        index: lastModifiedIndex,
         direction: 'asc',
       },
     };
@@ -67,6 +68,7 @@ export class WorkspacesView extends React.PureComponent<Props, State> {
   private buildRows(): RowData[] {
     const { aiProviders, aiTools, backupsByWorkspace, editors, workspaces } = this.props;
     const { filtered, selected, sortBy } = this.state;
+    const lastModifiedColumnIndex = aiTools.length > 0 ? 3 : 2;
 
     return buildRows(
       workspaces,
@@ -78,6 +80,7 @@ export class WorkspacesView extends React.PureComponent<Props, State> {
       backupsByWorkspace,
       aiProviders,
       aiTools,
+      lastModifiedColumnIndex,
     );
   }
 
@@ -194,11 +197,12 @@ export class WorkspacesView extends React.PureComponent<Props, State> {
       emptyState = <NothingFoundEmptyState />;
     }
 
+    const showAiColumn = this.props.aiTools.length > 0;
     const showBackupStatus = !!this.props.backupConfig?.registry;
     const columns = [
       { title: 'Name', dataLabel: 'Name', sortable: true },
       { title: 'Editor', dataLabel: 'Editor', sortable: true },
-      { title: 'AI Provider(s)', dataLabel: 'AI Provider(s)' },
+      ...(showAiColumn ? [{ title: 'AI Provider(s)', dataLabel: 'AI Provider(s)' }] : []),
       { title: 'Last Modified', dataLabel: 'Last Modified', sortable: true },
       ...(showBackupStatus ? [{ title: 'Backup Status', dataLabel: 'Backup Status' }] : []),
       { title: 'Project(s)', dataLabel: 'Project(s)' },
@@ -252,7 +256,7 @@ export class WorkspacesView extends React.PureComponent<Props, State> {
                   />
                   <Td dataLabel="Name">{row.cells.details}</Td>
                   <Td dataLabel="Editor">{row.cells.editorIcon}</Td>
-                  <Td dataLabel="AI Provider(s)">{row.cells.aiTool}</Td>
+                  {showAiColumn && <Td dataLabel="AI Provider(s)">{row.cells.aiTool}</Td>}
                   <Td dataLabel="Last Modified">{row.cells.lastModifiedDate}</Td>
                   {showBackupStatus && <Td dataLabel="Backup Status">{row.cells.backupStatus}</Td>}
                   <Td dataLabel="Project(s)">{row.cells.projectsList}</Td>

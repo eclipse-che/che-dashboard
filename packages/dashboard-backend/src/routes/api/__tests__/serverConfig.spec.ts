@@ -80,25 +80,6 @@ describe('Server Config Route', () => {
         mediatype: 'image/svg+xml',
       },
       allowedSourceUrls: [],
-      aiProviders: [
-        {
-          id: 'google/gemini',
-          name: 'Gemini',
-          publisher: 'Google',
-        },
-      ],
-      aiTools: [
-        {
-          providerId: 'google/gemini',
-          tag: 'latest',
-          name: 'Gemini CLI',
-          url: 'https://github.com/google-gemini/gemini-cli',
-          binary: 'gemini',
-          pattern: 'bundle',
-          injectorImage: 'quay.io/okurinny/tools-injector/gemini-cli:next',
-          envVarName: 'GEMINI_API_KEY',
-        },
-      ],
     });
   });
 });

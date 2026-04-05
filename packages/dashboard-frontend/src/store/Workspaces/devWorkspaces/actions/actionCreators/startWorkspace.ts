@@ -12,10 +12,13 @@
 
 import common from '@eclipse-che/common';
 
+import * as DwApi from '@/services/backend-client/devWorkspaceApi';
 import devfileApi from '@/services/devfileApi';
 import { DEVWORKSPACE_CHE_EDITOR } from '@/services/devfileApi/devWorkspace/metadata';
+import { sanitizeStaleAiTools } from '@/services/helpers/aiTools';
 import { isOAuthResponse, OAuthService } from '@/services/oauth';
 import { AppThunk } from '@/store';
+import { selectAiTools } from '@/store/AiConfig/selectors';
 import {
   checkRunningDevWorkspacesClusterLimitExceeded,
   devWorkspacesClusterActionCreators,
@@ -86,6 +89,19 @@ export const startWorkspace =
       workspace = await getDevWorkspaceClient().manageContainerSccAttribute(workspace, config);
 
       workspace = await getDevWorkspaceClient().manageDebugMode(workspace, debugWorkspace);
+
+      // Remove admin-manageable AI tool components with unrecognized images
+      // to prevent stale or outdated injectors from breaking workspace starts.
+      const aiTools = selectAiTools(getState());
+      const sanitized = sanitizeStaleAiTools(workspace, aiTools);
+      if (sanitized) {
+        const { devWorkspace } = await DwApi.patchWorkspace(
+          workspace.metadata.namespace,
+          workspace.metadata.name,
+          [{ op: 'replace', path: '/spec/template', value: sanitized.spec.template }],
+        );
+        workspace = devWorkspace;
+      }
 
       const editorName = getEditorName(workspace);
       const lifeTimeMs = getLifeTimeMs(workspace);

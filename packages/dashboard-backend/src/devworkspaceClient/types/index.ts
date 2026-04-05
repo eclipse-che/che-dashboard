@@ -158,9 +158,6 @@ export function isCheClusterCustomResource(object: unknown): object is CheCluste
   );
 }
 
-export type AiProviderDefinition = api.AiProviderDefinition;
-export type AiToolDefinition = api.AiToolDefinition;
-
 export type CheClusterCustomResourceSpecDevEnvironments = {
   containerBuildConfiguration?: {
     openShiftSecurityContextConstraint?: string;
@@ -189,9 +186,6 @@ export type CheClusterCustomResourceSpecDevEnvironments = {
   allowedSources?: {
     urls?: string[];
   };
-  aiProviders?: AiProviderDefinition[];
-  defaultAiProviders?: string[];
-  aiTools?: AiToolDefinition[];
 };
 
 export function isCheClusterCustomResourceSpecDevEnvironments(
@@ -424,21 +418,6 @@ export interface IServerConfigApi {
    * The value is determined by executing the `uname -m` command.
    */
   getCurrentArchitecture(): Promise<Architecture | undefined>;
-
-  /**
-   * Returns the list of AI providers configured in the CheCluster CR.
-   */
-  getAiProviders(cheCustomResource: CheClusterCustomResource): AiProviderDefinition[];
-
-  /**
-   * Returns the default AI provider IDs configured in the CheCluster CR.
-   */
-  getDefaultAiProviders(cheCustomResource: CheClusterCustomResource): string[];
-
-  /**
-   * Returns the AI tool definitions (from CR if configured, otherwise built-in defaults).
-   */
-  getAiTools(cheCustomResource: CheClusterCustomResource): AiToolDefinition[];
 }
 
 export interface IKubeConfigApi {
@@ -536,6 +515,7 @@ export interface IDevWorkspaceClient {
   workspacePreferencesApi: IWorkspacePreferencesApi;
   editorsApi: IEditorsApi;
   aiProviderKeyApi: IAiProviderKeyApi;
+  aiRegistryApi: IAiRegistryApi;
 }
 
 export interface IDevWorkspaceSingletonClient {
@@ -598,6 +578,14 @@ export interface IShhKeysApi {
   list(namespace: string): Promise<Array<api.SshKey>>;
   add(namespace: string, sshKey: api.SshKey): Promise<api.SshKey>;
   delete(namespace: string, name: string): Promise<void>;
+}
+
+export interface IAiRegistryApi {
+  /**
+   * Reads the AI tool registry from a ConfigMap in the cluster.
+   * Returns providers, tools, and default provider selections.
+   */
+  get(): Promise<api.IAiRegistry>;
 }
 
 export interface IAiProviderKeyApi {

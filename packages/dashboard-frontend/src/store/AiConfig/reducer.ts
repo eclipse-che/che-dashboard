@@ -10,21 +10,29 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { api } from '@eclipse-che/common';
 import { createReducer } from '@reduxjs/toolkit';
 
 import {
   aiConfigErrorAction,
   aiConfigKeyStatusReceiveAction,
+  aiConfigRegistryReceiveAction,
   aiConfigRequestAction,
 } from '@/store/AiConfig/actions';
 
 export type AiConfigState = {
+  providers: api.AiProviderDefinition[];
+  tools: api.AiToolDefinition[];
+  defaultAiProviders: string[];
   providerKeyExists: Record<string, boolean>;
   isLoading: boolean;
   error: string | undefined;
 };
 
 export const unloadedState: AiConfigState = {
+  providers: [],
+  tools: [],
+  defaultAiProviders: [],
   providerKeyExists: {},
   isLoading: false,
   error: undefined,
@@ -35,6 +43,12 @@ export const reducer = createReducer(unloadedState, builder =>
     .addCase(aiConfigRequestAction, state => {
       state.isLoading = true;
       state.error = undefined;
+    })
+    .addCase(aiConfigRegistryReceiveAction, (state, action) => {
+      state.isLoading = false;
+      state.providers = action.payload.providers;
+      state.tools = action.payload.tools;
+      state.defaultAiProviders = action.payload.defaultAiProviders;
     })
     .addCase(aiConfigKeyStatusReceiveAction, (state, action) => {
       state.isLoading = false;
