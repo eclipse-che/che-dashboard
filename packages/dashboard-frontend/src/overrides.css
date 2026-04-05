@@ -37,12 +37,9 @@ html.pf-v6-theme-dark .outer-fill {
   padding: 0 !important;
 }
 
-html:not(.pf-v6-theme-dark) span[class*='label-required'] {
-  color: var(--pf-t--color--red-orange--60);
-}
-
-html.pf-v6-theme-dark span[class*='label-required'] {
-  color: var(--pf-t--color--red-orange--30);
+span[class*='label-required'] {
+  margin-left: 0;
+  color: var(--pf-t--global--color--status--danger--default);
 }
 
 /* Dark theme label contrast overrides */

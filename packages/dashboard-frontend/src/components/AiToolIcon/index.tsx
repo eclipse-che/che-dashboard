@@ -71,7 +71,12 @@ export function AiToolIcon(props: Props): React.ReactElement {
             <React.Fragment key={tool.providerId}>
               {index > 0 && <span>, </span>}
               {providerIcon ? (
-                <img src={providerIcon} alt={tool.name} className={styles.icon} />
+                <img
+                  src={providerIcon}
+                  alt={tool.name}
+                  className={styles.icon}
+                  style={{ marginRight: '0' }}
+                />
               ) : (
                 <span>{tool.name}</span>
               )}

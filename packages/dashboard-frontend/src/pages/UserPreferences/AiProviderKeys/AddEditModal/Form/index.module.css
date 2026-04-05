@@ -12,10 +12,10 @@
 
 .questionIcon {
   cursor: pointer;
-  margin: 0 5px;
-  vertical-align: middle;
+  color: var(--pf-t--global--icon--color--subtle);
+  vertical-align: -0.2em;
 }
 
 .questionIcon:hover {
-  color: var(--pf-t--global--icon--color--subtle);
+  color: currentcolor;
 }

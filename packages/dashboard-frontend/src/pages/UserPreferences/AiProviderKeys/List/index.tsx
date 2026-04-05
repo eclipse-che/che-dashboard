@@ -124,9 +124,7 @@ export class AiProviderKeysList extends React.PureComponent<Props, State> {
                 Delete
               </Button>
             </ToolbarItem>
-            <ToolbarItem
-              align={{ md: 'alignEnd', lg: 'alignEnd', xl: 'alignEnd', '2xl': 'alignEnd' }}
-            >
+            <ToolbarItem align={{ default: 'alignEnd' }}>
               <Button
                 variant={ButtonVariant.link}
                 icon={<PlusCircleIcon />}
