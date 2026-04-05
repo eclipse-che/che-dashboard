@@ -38,6 +38,7 @@ html.pf-v6-theme-dark .outer-fill {
 }
 
 span[class*='label-required'] {
+  margin-left: 0;
   color: var(--pf-t--global--color--status--danger--default);
 }
 

@@ -100,9 +100,6 @@ class UserPreferences extends React.PureComponent<Props, State> {
             mountOnEnter={true}
             unmountOnExit={true}
           >
-            <Tab eventKey={UserPreferencesTab.AI_PROVIDER_KEYS} title="AI Providers Keys">
-              <AiProviderKeys />
-            </Tab>
             <Tab eventKey={UserPreferencesTab.CONTAINER_REGISTRIES} title="Container Registries">
               <ContainerRegistries />
             </Tab>
@@ -120,6 +117,9 @@ class UserPreferences extends React.PureComponent<Props, State> {
             </Tab>
             <Tab eventKey={UserPreferencesTab.SSH_KEYS} title="SSH Keys">
               <SshKeys />
+            </Tab>
+            <Tab eventKey={UserPreferencesTab.AI_PROVIDER_KEYS} title="AI Providers Keys">
+              <AiProviderKeys />
             </Tab>
           </Tabs>
         </PageSection>
