@@ -227,10 +227,12 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
 
     // test the devfile name to see if a suffix should be added
     // K8s names are namespace-scoped, so only check within the current user namespace
+    // when factoryParams.name is provided, check against that name since it will override the devfile name
+    const effectiveName = factoryParams.name || devfile.metadata.name;
     const nameConflict = allWorkspaces.some(
       w =>
         w.namespace === defaultNamespace.name &&
-        (devfile.metadata.name === w.name || devfile.metadata.name === w.ref.metadata.name),
+        (effectiveName === w.name || effectiveName === w.ref.metadata.name),
     );
 
     const storageType = getStorageType(factoryParams, devfile, preferredStorageType);
