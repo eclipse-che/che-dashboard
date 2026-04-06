@@ -148,7 +148,9 @@ function buildPostStartCommandLine(tool: api.AiToolDefinition): string {
     mainCmd = `mkdir -p /injected-tools/bin && ln -sf ${symlinkTarget} /injected-tools/bin/${binary} && ${nodeSymlink} && ${pathSetup}`;
   }
 
-  return setupCommand ? `${setupCommand} && ${mainCmd}` : mainCmd;
+  // setupCommand is best-effort (e.g. creating config dirs); it must not block
+  // the critical symlink/PATH setup even if it fails (e.g. read-only $HOME).
+  return setupCommand ? `{ ${setupCommand}; } 2>/dev/null; ${mainCmd}` : mainCmd;
 }
 
 /**
