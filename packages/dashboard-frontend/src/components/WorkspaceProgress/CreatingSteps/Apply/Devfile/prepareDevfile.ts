@@ -33,6 +33,7 @@ export function prepareDevfile(
   storageType: che.WorkspaceStorageType | undefined,
   appendSuffix: boolean,
   _parentDevfile?: devfileApi.Devfile | undefined,
+  nameOverride?: string,
 ): devfileApi.Devfile {
   const devfile = cloneDeep(_devfile);
   const parentDevfile = cloneDeep(_parentDevfile);
@@ -53,7 +54,11 @@ export function prepareDevfile(
   attributes[DEVWORKSPACE_METADATA_ANNOTATION][DEVWORKSPACE_DEVFILE_SOURCE] = dump(devfileSource);
 
   // update `metadata.name` in accordance to the policy
-  if (devfile.metadata.generateName) {
+  if (nameOverride) {
+    // apply the name from the factory URL parameter
+    devfile.metadata.name = appendSuffix ? generateWorkspaceName(nameOverride) : nameOverride;
+    delete devfile.metadata.generateName;
+  } else if (devfile.metadata.generateName) {
     devfile.metadata.name = generateWorkspaceName(devfile.metadata.generateName);
     delete devfile.metadata.generateName;
   } else if (appendSuffix) {

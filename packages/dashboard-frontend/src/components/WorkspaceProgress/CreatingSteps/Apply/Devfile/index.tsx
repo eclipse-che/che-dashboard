@@ -244,6 +244,7 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
       storageType,
       appendSuffix,
       parentDevfile,
+      factoryParams.name,
     );
 
     this.setState({
