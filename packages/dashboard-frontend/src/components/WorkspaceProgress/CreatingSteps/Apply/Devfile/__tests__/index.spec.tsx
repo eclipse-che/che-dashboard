@@ -257,6 +257,7 @@ describe('Creating steps, applying a devfile', () => {
           undefined,
           false,
           undefined,
+          undefined,
         ),
       );
       await waitFor(() => expect(mockCreateWorkspaceFromDevfile).toHaveBeenCalled());
@@ -347,6 +348,7 @@ describe('Creating steps, applying a devfile', () => {
           undefined,
           false,
           undefined,
+          undefined,
         ),
       );
       await waitFor(() => expect(mockCreateWorkspaceFromDevfile).toHaveBeenCalled());
@@ -427,6 +429,7 @@ describe('Creating steps, applying a devfile', () => {
           factoryId,
           undefined,
           false,
+          undefined,
           undefined,
         ),
       );
@@ -511,6 +514,7 @@ describe('Creating steps, applying a devfile', () => {
           undefined,
           false,
           undefined,
+          undefined,
         ),
       );
       await waitFor(() => expect(mockCreateWorkspaceFromDevfile).toHaveBeenCalled());
@@ -536,7 +540,14 @@ describe('Creating steps, applying a devfile', () => {
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
       await waitFor(() =>
-        expect(prepareDevfile).toHaveBeenCalledWith(devfile, factoryId, undefined, true, undefined),
+        expect(prepareDevfile).toHaveBeenCalledWith(
+          devfile,
+          factoryId,
+          undefined,
+          true,
+          undefined,
+          undefined,
+        ),
       );
     });
 
@@ -566,7 +577,14 @@ describe('Creating steps, applying a devfile', () => {
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
       await waitFor(() =>
-        expect(prepareDevfile).toHaveBeenCalledWith(devfile, factoryId, undefined, true, undefined),
+        expect(prepareDevfile).toHaveBeenCalledWith(
+          devfile,
+          factoryId,
+          undefined,
+          true,
+          undefined,
+          undefined,
+        ),
       );
     });
 
@@ -597,6 +615,7 @@ describe('Creating steps, applying a devfile', () => {
           undefined,
           false,
           undefined,
+          undefined,
         ),
       );
     });
@@ -622,7 +641,14 @@ describe('Creating steps, applying a devfile', () => {
 
       // Should append suffix when there's a name conflict with perclick policy
       await waitFor(() =>
-        expect(prepareDevfile).toHaveBeenCalledWith(devfile, factoryId, undefined, true, undefined),
+        expect(prepareDevfile).toHaveBeenCalledWith(
+          devfile,
+          factoryId,
+          undefined,
+          true,
+          undefined,
+          undefined,
+        ),
       );
     });
 
@@ -654,6 +680,7 @@ describe('Creating steps, applying a devfile', () => {
           undefined,
           false,
           undefined,
+          undefined,
         ),
       );
     });
@@ -681,6 +708,7 @@ describe('Creating steps, applying a devfile', () => {
           factoryId,
           undefined,
           false,
+          undefined,
           undefined,
         ),
       );
