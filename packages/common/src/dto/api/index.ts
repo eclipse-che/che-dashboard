@@ -114,7 +114,7 @@ export interface AiToolDefinition {
   binary: string;
   /** init: single binary copied; bundle: full runtime dir copied */
   pattern: 'init' | 'bundle';
-  /** Full injector image, e.g. 'quay.io/okurinny/tools-injector/claude-code:next' */
+  /** Full injector image, e.g. 'quay.io/oorel/claude-code:next' */
   injectorImage: string;
   /** API key env var required by this tool, if any */
   envVarName?: string;

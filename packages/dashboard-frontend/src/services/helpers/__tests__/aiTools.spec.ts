@@ -34,7 +34,7 @@ const CLAUDE_TOOL: api.AiToolDefinition = {
   url: 'https://claude.ai/code',
   binary: 'claude',
   pattern: 'init',
-  injectorImage: 'quay.io/okurinny/tools-injector/claude-code:next',
+  injectorImage: 'quay.io/oorel/claude-code:next',
   envVarName: 'ANTHROPIC_API_KEY',
 };
 
@@ -45,7 +45,7 @@ const GEMINI_TOOL: api.AiToolDefinition = {
   url: 'https://github.com/google-gemini/gemini-cli',
   binary: 'gemini',
   pattern: 'bundle',
-  injectorImage: 'quay.io/okurinny/tools-injector/gemini-cli:next',
+  injectorImage: 'quay.io/oorel/gemini-cli:next',
   envVarName: 'GEMINI_API_KEY',
   setupCommand: 'mkdir -p /tmp/gemini-home/.gemini',
 };
@@ -108,7 +108,7 @@ describe('aiTools', () => {
         { name: 'editor', container: { image: 'che-code:latest' } },
         {
           name: 'claude-code-injector',
-          container: { image: 'quay.io/okurinny/tools-injector/claude-code:next' },
+          container: { image: 'quay.io/oorel/claude-code:next' },
         },
       ]);
       expect(getInjectedAiToolIds(workspace, ALL_TOOLS)).toEqual(['anthropic/claude']);
@@ -119,7 +119,7 @@ describe('aiTools', () => {
         { name: 'editor', container: { image: 'che-code:latest' } },
         {
           name: 'gemini-cli-injector',
-          container: { image: 'quay.io/okurinny/tools-injector/gemini-cli:next' },
+          container: { image: 'quay.io/oorel/gemini-cli:next' },
         },
       ]);
       expect(getInjectedAiToolIds(workspace, ALL_TOOLS)).toEqual(['google/gemini']);
@@ -130,11 +130,11 @@ describe('aiTools', () => {
         { name: 'editor', container: { image: 'che-code:latest' } },
         {
           name: 'claude-code-injector',
-          container: { image: 'quay.io/okurinny/tools-injector/claude-code:next' },
+          container: { image: 'quay.io/oorel/claude-code:next' },
         },
         {
           name: 'gemini-cli-injector',
-          container: { image: 'quay.io/okurinny/tools-injector/gemini-cli:next' },
+          container: { image: 'quay.io/oorel/gemini-cli:next' },
         },
       ]);
       expect(getInjectedAiToolIds(workspace, ALL_TOOLS)).toEqual([
@@ -148,7 +148,7 @@ describe('aiTools', () => {
         { name: 'editor', container: { image: 'che-code:latest' } },
         {
           name: 'claude-code-injector',
-          container: { image: 'quay.io/okurinny/tools-injector/claude-code:v2.0' },
+          container: { image: 'quay.io/oorel/claude-code:v2.0' },
         },
       ]);
       expect(getInjectedAiToolIds(workspace, ALL_TOOLS)).toEqual(['anthropic/claude']);
@@ -160,7 +160,7 @@ describe('aiTools', () => {
         {
           name: 'claude-code-injector',
           container: {
-            image: 'quay.io/okurinny/tools-injector/claude-code@sha256:abcdef1234567890',
+            image: 'quay.io/oorel/claude-code@sha256:abcdef1234567890',
           },
         },
       ]);
@@ -185,7 +185,7 @@ describe('aiTools', () => {
       const workspace = buildWorkspaceWithComponents([
         {
           name: 'claude-code-injector',
-          container: { image: 'quay.io/okurinny/tools-injector/claude-code:next' },
+          container: { image: 'quay.io/oorel/claude-code:next' },
         },
       ]);
       expect(getInjectedAiToolNames(workspace, ALL_TOOLS)).toEqual(['Claude Code']);
@@ -708,7 +708,7 @@ describe('aiTools', () => {
         {
           name: 'claude-code-injector',
           attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
-          container: { image: 'quay.io/okurinny/tools-injector/claude-code:v2.0' },
+          container: { image: 'quay.io/oorel/claude-code:v2.0' },
         },
       ]);
 

@@ -46,7 +46,7 @@ export function stripImageTag(image: string): string {
 
 /**
  * Extracts a Kubernetes-compatible slug from the injector image name.
- * e.g. 'quay.io/okurinny/tools-injector/claude-code:next' → 'claude-code'
+ * e.g. 'quay.io/oorel/claude-code:next' → 'claude-code'
  */
 export function getToolSlug(tool: api.AiToolDefinition): string {
   const imagePath = tool.injectorImage.split(':')[0];
