@@ -83,6 +83,14 @@ describe('devWorkspaces, actions', () => {
         dwServerConfig: {
           config: {},
         },
+        aiConfig: {
+          providers: [],
+          tools: [],
+          defaultAiProviders: [],
+          providerKeyExists: {},
+          isLoading: false,
+          error: undefined,
+        },
         devWorkspaces: {
           isLoading: false,
           resourceVersion: '',
@@ -90,7 +98,7 @@ describe('devWorkspaces, actions', () => {
           startedWorkspaces: {},
           warnings: {},
         },
-      } as Partial<RootState> as RootState);
+      } as unknown as RootState);
 
       (getDevWorkspaceClient as jest.Mock).mockReturnValue({
         changeWorkspaceStatus: mockChangeWorkspaceStatus,
@@ -144,7 +152,7 @@ describe('devWorkspaces, actions', () => {
           startedWorkspaces: {},
           warnings: {},
         },
-      } as Partial<RootState> as RootState);
+      } as unknown as RootState);
 
       await storeWithStartedWorkspace.dispatch(startWorkspace(mockWorkspace));
 
