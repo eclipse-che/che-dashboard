@@ -266,7 +266,7 @@ export const aiProviderKeyBodySchema: JSONSchema7 = {
   properties: {
     toolId: {
       type: 'string',
-      pattern: '^[a-zA-Z0-9_./:@-]+$',
+      pattern: '^[a-zA-Z0-9_./-]+$',
       maxLength: 63,
     },
     envVarName: {
@@ -291,7 +291,7 @@ export const aiProviderKeyParamsSchema: JSONSchema7 = {
     },
     toolId: {
       type: 'string',
-      pattern: '^[a-zA-Z0-9_./:@-]+$',
+      pattern: '^[a-zA-Z0-9_./-]+$',
       maxLength: 63,
     },
   },

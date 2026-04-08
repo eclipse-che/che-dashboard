@@ -90,27 +90,17 @@ export const startWorkspace =
 
       workspace = await getDevWorkspaceClient().manageDebugMode(workspace, debugWorkspace);
 
-      // Remove admin-manageable AI tool components with unrecognized images
-      // to prevent stale or outdated injectors from breaking workspace starts.
+      // Sanitize stale AI tools and update outdated ones in a single PATCH.
       const aiTools = selectAiTools(getState());
-      const sanitized = sanitizeStaleAiTools(workspace, aiTools);
-      if (sanitized) {
+      const aiPatched = sanitizeStaleAiTools(workspace, aiTools);
+      const updateSource = aiPatched ?? workspace;
+      const aiUpdated = updateOutdatedAiTools(updateSource, aiTools);
+      const aiResult = aiUpdated ?? aiPatched;
+      if (aiResult) {
         const { devWorkspace } = await DwApi.patchWorkspace(
           workspace.metadata.namespace,
           workspace.metadata.name,
-          [{ op: 'replace', path: '/spec/template', value: sanitized.spec.template }],
-        );
-        workspace = devWorkspace;
-      }
-
-      // Update recognized AI tool injectors whose image tag has changed
-      // in the registry (e.g. admin pushed a newer version).
-      const updated = updateOutdatedAiTools(workspace, aiTools);
-      if (updated) {
-        const { devWorkspace } = await DwApi.patchWorkspace(
-          workspace.metadata.namespace,
-          workspace.metadata.name,
-          [{ op: 'replace', path: '/spec/template', value: updated.spec.template }],
+          [{ op: 'replace', path: '/spec/template', value: aiResult.spec.template }],
         );
         workspace = devWorkspace;
       }

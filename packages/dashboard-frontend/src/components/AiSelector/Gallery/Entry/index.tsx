@@ -100,7 +100,14 @@ export class AiProviderEntry extends React.PureComponent<Props> {
         >
           <CardTitle className={titleClassName}>
             {icon && (
-              <img src={icon} alt={`${provider.name} icon`} className={styles.providerIcon} />
+              <img
+                src={icon}
+                alt={`${provider.name} icon`}
+                className={styles.providerIcon}
+                onError={e => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
             )}
             {provider.name}
             {provider.envVarName && hasExistingKey && (
