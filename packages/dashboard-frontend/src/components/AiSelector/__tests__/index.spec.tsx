@@ -36,7 +36,7 @@ const mockTools: api.AiToolDefinition[] = [
     url: 'https://github.com/google-gemini/gemini-cli',
     binary: 'gemini',
     pattern: 'bundle' as const,
-    injectorImage: 'quay.io/oorel/gemini-cli:next',
+    injectorImage: 'quay.io/example/gemini-cli:next',
     envVarName: 'GEMINI_API_KEY',
   },
   {
@@ -46,7 +46,7 @@ const mockTools: api.AiToolDefinition[] = [
     url: 'https://claude.ai/code',
     binary: 'claude',
     pattern: 'init' as const,
-    injectorImage: 'quay.io/oorel/claude-code:next',
+    injectorImage: 'quay.io/example/claude-code:next',
     envVarName: 'ANTHROPIC_API_KEY',
   },
 ];

@@ -32,7 +32,7 @@ export type Props = {
   canAddMore: boolean;
   onAddKey: () => void;
   onUpdateKey: (provider: api.AiToolDefinition) => void;
-  onDeleteKey: (provider: api.AiToolDefinition) => void;
+  onDeleteKey: (providers: api.AiToolDefinition[]) => void;
 };
 
 type State = {
@@ -70,7 +70,7 @@ export class AiProviderKeysList extends React.PureComponent<Props, State> {
 
   private handleDeleteSelected(): void {
     const { selectedItems } = this.state;
-    selectedItems.forEach(p => this.props.onDeleteKey(p));
+    this.props.onDeleteKey(selectedItems);
     this.deselectItems(selectedItems);
   }
 
@@ -92,7 +92,7 @@ export class AiProviderKeysList extends React.PureComponent<Props, State> {
         title: 'Delete',
         isDisabled,
         onClick: () => {
-          this.props.onDeleteKey(provider);
+          this.props.onDeleteKey([provider]);
           this.deselectItems([provider]);
         },
       });

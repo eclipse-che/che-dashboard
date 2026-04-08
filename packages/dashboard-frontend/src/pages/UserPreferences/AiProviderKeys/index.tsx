@@ -38,7 +38,7 @@ export type State = {
   isAddEditOpen: boolean;
   isDeleteOpen: boolean;
   editingProvider: api.AiToolDefinition | undefined;
-  deletingProvider: api.AiToolDefinition | undefined;
+  deletingProviders: api.AiToolDefinition[];
 };
 
 class AiProviderKeys extends React.PureComponent<Props, State> {
@@ -51,7 +51,7 @@ class AiProviderKeys extends React.PureComponent<Props, State> {
       isAddEditOpen: false,
       isDeleteOpen: false,
       editingProvider: undefined,
-      deletingProvider: undefined,
+      deletingProviders: [],
     };
   }
 
@@ -93,12 +93,12 @@ class AiProviderKeys extends React.PureComponent<Props, State> {
     this.setState({ isAddEditOpen: false, editingProvider: undefined });
   }
 
-  private handleShowDeleteModal(provider: api.AiToolDefinition): void {
-    this.setState({ isDeleteOpen: true, deletingProvider: provider });
+  private handleShowDeleteModal(providers: api.AiToolDefinition[]): void {
+    this.setState({ isDeleteOpen: true, deletingProviders: providers });
   }
 
   private handleCloseDeleteModal(): void {
-    this.setState({ isDeleteOpen: false, deletingProvider: undefined });
+    this.setState({ isDeleteOpen: false, deletingProviders: [] });
   }
 
   private async handleSave(toolId: string, apiKey: string): Promise<void> {
@@ -123,12 +123,18 @@ class AiProviderKeys extends React.PureComponent<Props, State> {
     }
   }
 
-  private async handleDelete(provider: api.AiToolDefinition): Promise<void> {
+  private async handleDelete(providers: api.AiToolDefinition[]): Promise<void> {
     try {
-      await this.props.deleteAiProviderKey(provider.providerId);
+      for (const provider of providers) {
+        await this.props.deleteAiProviderKey(provider.providerId);
+      }
+      const names = providers.map(p => p.name).join(', ');
       this.appAlerts.showAlert({
         key: 'ai-provider-key-deleted',
-        title: `${provider.name} API key deleted successfully.`,
+        title:
+          providers.length === 1
+            ? `${names} API key deleted successfully.`
+            : `${providers.length} API keys deleted successfully: ${names}.`,
         variant: AlertVariant.success,
       });
     } catch (e) {
@@ -138,13 +144,13 @@ class AiProviderKeys extends React.PureComponent<Props, State> {
         variant: AlertVariant.danger,
       });
     } finally {
-      this.setState({ isDeleteOpen: false, deletingProvider: undefined });
+      this.setState({ isDeleteOpen: false, deletingProviders: [] });
     }
   }
 
   public render(): React.ReactElement {
     const { tools, providerKeyExists, isLoading } = this.props;
-    const { isAddEditOpen, isDeleteOpen, editingProvider, deletingProvider } = this.state;
+    const { isAddEditOpen, isDeleteOpen, editingProvider, deletingProviders } = this.state;
 
     // Only show tools that require an API key (have envVarName)
     const keyTools = tools.filter(t => !!t.envVarName);
@@ -168,9 +174,9 @@ class AiProviderKeys extends React.PureComponent<Props, State> {
 
           <AiProviderKeysDeleteModal
             isOpen={isDeleteOpen}
-            provider={deletingProvider}
+            providers={deletingProviders}
             onCloseModal={() => this.handleCloseDeleteModal()}
-            onDelete={provider => this.handleDelete(provider)}
+            onDelete={providers => this.handleDelete(providers)}
           />
 
           {listTools.length === 0 ? (
@@ -188,7 +194,7 @@ class AiProviderKeys extends React.PureComponent<Props, State> {
               canAddMore={canAddMore}
               onAddKey={() => this.handleShowAddModal()}
               onUpdateKey={provider => this.handleShowUpdateModal(provider)}
-              onDeleteKey={provider => this.handleShowDeleteModal(provider)}
+              onDeleteKey={providers => this.handleShowDeleteModal(providers)}
             />
           )}
         </PageSection>

@@ -15,7 +15,7 @@ import common from '@eclipse-che/common';
 import * as DwApi from '@/services/backend-client/devWorkspaceApi';
 import devfileApi from '@/services/devfileApi';
 import { DEVWORKSPACE_CHE_EDITOR } from '@/services/devfileApi/devWorkspace/metadata';
-import { sanitizeStaleAiTools } from '@/services/helpers/aiTools';
+import { sanitizeStaleAiTools, updateOutdatedAiTools } from '@/services/helpers/aiTools';
 import { isOAuthResponse, OAuthService } from '@/services/oauth';
 import { AppThunk } from '@/store';
 import { selectAiTools } from '@/store/AiConfig/selectors';
@@ -99,6 +99,18 @@ export const startWorkspace =
           workspace.metadata.namespace,
           workspace.metadata.name,
           [{ op: 'replace', path: '/spec/template', value: sanitized.spec.template }],
+        );
+        workspace = devWorkspace;
+      }
+
+      // Update recognized AI tool injectors whose image tag has changed
+      // in the registry (e.g. admin pushed a newer version).
+      const updated = updateOutdatedAiTools(workspace, aiTools);
+      if (updated) {
+        const { devWorkspace } = await DwApi.patchWorkspace(
+          workspace.metadata.namespace,
+          workspace.metadata.name,
+          [{ op: 'replace', path: '/spec/template', value: updated.spec.template }],
         );
         workspace = devWorkspace;
       }

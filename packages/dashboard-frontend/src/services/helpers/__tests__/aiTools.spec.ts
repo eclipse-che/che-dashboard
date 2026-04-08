@@ -23,6 +23,7 @@ import {
   sanitizeStaleAiTools,
   stripImageTag,
   toolCommandIds,
+  updateOutdatedAiTools,
 } from '@/services/helpers/aiTools';
 import { constructWorkspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
@@ -34,7 +35,7 @@ const CLAUDE_TOOL: api.AiToolDefinition = {
   url: 'https://claude.ai/code',
   binary: 'claude',
   pattern: 'init',
-  injectorImage: 'quay.io/oorel/claude-code:next',
+  injectorImage: 'quay.io/example/claude-code:next',
   envVarName: 'ANTHROPIC_API_KEY',
 };
 
@@ -45,7 +46,7 @@ const GEMINI_TOOL: api.AiToolDefinition = {
   url: 'https://github.com/google-gemini/gemini-cli',
   binary: 'gemini',
   pattern: 'bundle',
-  injectorImage: 'quay.io/oorel/gemini-cli:next',
+  injectorImage: 'quay.io/example/gemini-cli:next',
   envVarName: 'GEMINI_API_KEY',
   setupCommand: 'mkdir -p /tmp/gemini-home/.gemini',
 };
@@ -72,17 +73,17 @@ function buildWorkspaceWithComponents(
 describe('aiTools', () => {
   describe('stripImageTag', () => {
     it('should strip tag from image reference', () => {
-      expect(stripImageTag('quay.io/oorel/claude-code:next')).toBe('quay.io/oorel/claude-code');
+      expect(stripImageTag('quay.io/example/claude-code:next')).toBe('quay.io/example/claude-code');
     });
 
     it('should strip digest from image reference', () => {
-      expect(stripImageTag('quay.io/oorel/claude-code@sha256:abc123')).toBe(
-        'quay.io/oorel/claude-code',
+      expect(stripImageTag('quay.io/example/claude-code@sha256:abc123')).toBe(
+        'quay.io/example/claude-code',
       );
     });
 
     it('should preserve image with no tag or digest', () => {
-      expect(stripImageTag('quay.io/oorel/claude-code')).toBe('quay.io/oorel/claude-code');
+      expect(stripImageTag('quay.io/example/claude-code')).toBe('quay.io/example/claude-code');
     });
 
     it('should not strip port number from registry', () => {
@@ -108,7 +109,7 @@ describe('aiTools', () => {
         { name: 'editor', container: { image: 'che-code:latest' } },
         {
           name: 'claude-code-injector',
-          container: { image: 'quay.io/oorel/claude-code:next' },
+          container: { image: 'quay.io/example/claude-code:next' },
         },
       ]);
       expect(getInjectedAiToolIds(workspace, ALL_TOOLS)).toEqual(['anthropic/claude']);
@@ -119,7 +120,7 @@ describe('aiTools', () => {
         { name: 'editor', container: { image: 'che-code:latest' } },
         {
           name: 'gemini-cli-injector',
-          container: { image: 'quay.io/oorel/gemini-cli:next' },
+          container: { image: 'quay.io/example/gemini-cli:next' },
         },
       ]);
       expect(getInjectedAiToolIds(workspace, ALL_TOOLS)).toEqual(['google/gemini']);
@@ -130,11 +131,11 @@ describe('aiTools', () => {
         { name: 'editor', container: { image: 'che-code:latest' } },
         {
           name: 'claude-code-injector',
-          container: { image: 'quay.io/oorel/claude-code:next' },
+          container: { image: 'quay.io/example/claude-code:next' },
         },
         {
           name: 'gemini-cli-injector',
-          container: { image: 'quay.io/oorel/gemini-cli:next' },
+          container: { image: 'quay.io/example/gemini-cli:next' },
         },
       ]);
       expect(getInjectedAiToolIds(workspace, ALL_TOOLS)).toEqual([
@@ -148,7 +149,7 @@ describe('aiTools', () => {
         { name: 'editor', container: { image: 'che-code:latest' } },
         {
           name: 'claude-code-injector',
-          container: { image: 'quay.io/oorel/claude-code:v2.0' },
+          container: { image: 'quay.io/example/claude-code:v2.0' },
         },
       ]);
       expect(getInjectedAiToolIds(workspace, ALL_TOOLS)).toEqual(['anthropic/claude']);
@@ -160,7 +161,7 @@ describe('aiTools', () => {
         {
           name: 'claude-code-injector',
           container: {
-            image: 'quay.io/oorel/claude-code@sha256:abcdef1234567890',
+            image: 'quay.io/example/claude-code@sha256:abcdef1234567890',
           },
         },
       ]);
@@ -185,7 +186,7 @@ describe('aiTools', () => {
       const workspace = buildWorkspaceWithComponents([
         {
           name: 'claude-code-injector',
-          container: { image: 'quay.io/oorel/claude-code:next' },
+          container: { image: 'quay.io/example/claude-code:next' },
         },
       ]);
       expect(getInjectedAiToolNames(workspace, ALL_TOOLS)).toEqual(['Claude Code']);
@@ -608,7 +609,7 @@ describe('aiTools', () => {
         {
           name: 'old-tool-injector',
           attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
-          container: { image: 'quay.io/oorel/removed-tool:v1' },
+          container: { image: 'quay.io/example/removed-tool:v1' },
         },
         {
           name: 'injected-tools',
@@ -643,7 +644,7 @@ describe('aiTools', () => {
       components.push({
         name: 'old-tool-injector',
         attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
-        container: { image: 'quay.io/oorel/removed-tool:v1' },
+        container: { image: 'quay.io/example/removed-tool:v1' },
       });
 
       const result = sanitizeStaleAiTools(added, ALL_TOOLS);
@@ -669,7 +670,7 @@ describe('aiTools', () => {
           {
             name: 'old-tool-injector',
             attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
-            container: { image: 'quay.io/oorel/removed-tool:v1' },
+            container: { image: 'quay.io/example/removed-tool:v1' },
           },
         ],
         [
@@ -708,12 +709,137 @@ describe('aiTools', () => {
         {
           name: 'claude-code-injector',
           attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
-          container: { image: 'quay.io/oorel/claude-code:v2.0' },
+          container: { image: 'quay.io/example/claude-code:v2.0' },
         },
       ]);
 
       const result = sanitizeStaleAiTools(workspace.ref, ALL_TOOLS);
       expect(result).toBeNull();
+    });
+  });
+
+  describe('updateOutdatedAiTools', () => {
+    it('should return null when all injected tools are up-to-date', () => {
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+      ]);
+      const added = addAiToolToWorkspace(workspace, 'anthropic/claude', ALL_TOOLS);
+
+      const result = updateOutdatedAiTools(added, ALL_TOOLS);
+      expect(result).toBeNull();
+    });
+
+    it('should return null when no admin-manageable components exist', () => {
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+      ]);
+
+      const result = updateOutdatedAiTools(workspace.ref, ALL_TOOLS);
+      expect(result).toBeNull();
+    });
+
+    it('should update a tool when the tag has changed in the registry', () => {
+      // Simulate a workspace with an old tag
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+        {
+          name: 'claude-code-injector',
+          attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
+          container: { image: 'quay.io/example/claude-code:old-tag' },
+          volumeMounts: [{ name: 'injected-tools', path: '/injected-tools' }],
+        },
+        {
+          name: 'injected-tools',
+          attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
+          volume: { size: '256Mi' },
+        },
+      ]);
+
+      const result = updateOutdatedAiTools(workspace.ref, ALL_TOOLS);
+      expect(result).not.toBeNull();
+
+      // The injector should now have the current image from the registry
+      const injector = result!.spec.template.components?.find(
+        c => c.name === 'claude-code-injector',
+      ) as { container?: { image?: string } } | undefined;
+      expect(injector).toBeDefined();
+      expect(injector!.container!.image).toBe('quay.io/example/claude-code:next');
+    });
+
+    it('should not update unrecognized tools (handled by sanitize)', () => {
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+        {
+          name: 'unknown-injector',
+          attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
+          container: { image: 'quay.io/example/unknown-tool:v1' },
+        },
+      ]);
+
+      const result = updateOutdatedAiTools(workspace.ref, ALL_TOOLS);
+      expect(result).toBeNull();
+    });
+
+    it('should select the best tool by tag priority when multiple tools share a providerId', () => {
+      const toolsWithMultipleVersions: api.AiToolDefinition[] = [
+        { ...CLAUDE_TOOL, tag: '1.0.0', injectorImage: 'quay.io/example/claude-code:1.0.0' },
+        { ...CLAUDE_TOOL, tag: 'next', injectorImage: 'quay.io/example/claude-code:next' },
+        { ...CLAUDE_TOOL, tag: 'latest', injectorImage: 'quay.io/example/claude-code:latest' },
+      ];
+
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+        {
+          name: 'claude-code-injector',
+          attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
+          container: { image: 'quay.io/example/claude-code:old' },
+        },
+        {
+          name: 'injected-tools',
+          attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
+          volume: { size: '256Mi' },
+        },
+      ]);
+
+      const result = updateOutdatedAiTools(workspace.ref, toolsWithMultipleVersions);
+      expect(result).not.toBeNull();
+
+      // "next" has highest priority
+      const injector = result!.spec.template.components?.find(
+        c => c.name === 'claude-code-injector',
+      ) as { container?: { image?: string } } | undefined;
+      expect(injector!.container!.image).toBe('quay.io/example/claude-code:next');
+    });
+
+    it('should select the highest semver when no named tags are present', () => {
+      const toolsWithSemver: api.AiToolDefinition[] = [
+        { ...CLAUDE_TOOL, tag: '1.0.0', injectorImage: 'quay.io/example/claude-code:1.0.0' },
+        { ...CLAUDE_TOOL, tag: '3.21', injectorImage: 'quay.io/example/claude-code:3.21' },
+        { ...CLAUDE_TOOL, tag: '2.55', injectorImage: 'quay.io/example/claude-code:2.55' },
+      ];
+
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+        {
+          name: 'claude-code-injector',
+          attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
+          container: { image: 'quay.io/example/claude-code:old' },
+        },
+        {
+          name: 'injected-tools',
+          attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
+          volume: { size: '256Mi' },
+        },
+      ]);
+
+      const result = updateOutdatedAiTools(workspace.ref, toolsWithSemver);
+      expect(result).not.toBeNull();
+
+      // 3.21 is the highest semver
+      const injector = result!.spec.template.components?.find(
+        c => c.name === 'claude-code-injector',
+      ) as { container?: { image?: string } } | undefined;
+      expect(injector!.container!.image).toBe('quay.io/example/claude-code:3.21');
     });
   });
 });
