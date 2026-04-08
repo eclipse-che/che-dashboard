@@ -544,6 +544,21 @@ describe('aiTools', () => {
       expect(removed.spec.template.events?.postStart).toEqual(['cleanup-claude-code']);
     });
 
+    it('should run cleanup command in the background to avoid blocking workspace start', () => {
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+      ]);
+
+      const added = addAiToolToWorkspace(workspace, 'anthropic/claude', ALL_TOOLS);
+      const addedWorkspace = constructWorkspace(added);
+      const removed = removeAiToolFromWorkspace(addedWorkspace, 'anthropic/claude', ALL_TOOLS);
+
+      const cleanupCmd = removed.spec.template.commands?.find(
+        (c: { id?: string }) => c.id === 'cleanup-claude-code',
+      ) as { exec?: { commandLine?: string } } | undefined;
+      expect(cleanupCmd?.exec?.commandLine).toMatch(/^nohup sh -c '.*' >\/dev\/null 2>&1 &$/);
+    });
+
     it('should add cleanup that removes bundle directory for bundle-pattern tools', () => {
       const workspace = buildWorkspaceWithComponents([
         { name: 'editor', container: { image: 'che-code:latest' } },
