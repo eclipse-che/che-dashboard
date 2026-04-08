@@ -26,9 +26,9 @@ import React from 'react';
 
 export type Props = {
   isOpen: boolean;
-  provider: api.AiToolDefinition | undefined;
+  providers: api.AiToolDefinition[];
   onCloseModal: () => void;
-  onDelete: (provider: api.AiToolDefinition) => void;
+  onDelete: (providers: api.AiToolDefinition[]) => void;
 };
 
 export type State = {
@@ -42,10 +42,10 @@ export class AiProviderKeysDeleteModal extends React.PureComponent<Props, State>
   }
 
   private handleDelete(): void {
-    const { provider } = this.props;
-    if (provider) {
+    const { providers } = this.props;
+    if (providers.length > 0) {
       this.setState({ isChecked: false });
-      this.props.onDelete(provider);
+      this.props.onDelete(providers);
     }
   }
 
@@ -55,10 +55,26 @@ export class AiProviderKeysDeleteModal extends React.PureComponent<Props, State>
   }
 
   public render(): React.ReactElement {
-    const { isOpen, provider } = this.props;
+    const { isOpen, providers } = this.props;
     const { isChecked } = this.state;
 
-    const modalTitle = provider ? `Delete ${provider.name} API Key` : 'Delete API Key';
+    const count = providers.length;
+    const modalTitle =
+      count === 1 ? `Delete ${providers[0].name} API Key` : `Delete ${count} API Keys`;
+
+    const bodyText =
+      count === 1 ? (
+        <Content component="p">
+          Are you sure you want to delete the <strong>{providers[0].name}</strong> API key? The key
+          will be removed from all your workspaces immediately.
+        </Content>
+      ) : (
+        <Content component="p">
+          Are you sure you want to delete <strong>{count}</strong> API keys (
+          {providers.map(p => p.name).join(', ')})? The keys will be removed from all your
+          workspaces immediately.
+        </Content>
+      );
 
     return (
       <Modal
@@ -71,10 +87,7 @@ export class AiProviderKeysDeleteModal extends React.PureComponent<Props, State>
         <ModalHeader title={modalTitle} titleIconVariant="warning" />
         <ModalBody>
           <Content data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
-            <Content component="p">
-              Are you sure you want to delete the <strong>{provider?.name}</strong> API key? The key
-              will be removed from all your workspaces immediately.
-            </Content>
+            {bodyText}
             <Checkbox
               id="delete-ai-key-warning-checkbox"
               isChecked={isChecked}

@@ -208,6 +208,70 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
 
       expect(newDevfile.metadata.name).toEqual('wksp-1234');
     });
+
+    test('should apply the nameOverride', () => {
+      const factoryId = 'url=https://devfile-location';
+      const devfile = {
+        schemaVersion: '2.2.0',
+        metadata: {
+          name: 'wksp-test',
+        },
+      } as devfileApi.Devfile;
+
+      const newDevfile = prepareDevfile(
+        devfile,
+        factoryId,
+        undefined,
+        false,
+        undefined,
+        'custom-name',
+      );
+
+      expect(newDevfile.metadata.name).toEqual('custom-name');
+    });
+
+    test('should apply the nameOverride with suffix when there is a name conflict', () => {
+      const factoryId = 'url=https://devfile-location';
+      const devfile = {
+        schemaVersion: '2.2.0',
+        metadata: {
+          name: 'wksp-test',
+        },
+      } as devfileApi.Devfile;
+
+      const newDevfile = prepareDevfile(
+        devfile,
+        factoryId,
+        undefined,
+        true,
+        undefined,
+        'custom-name',
+      );
+
+      expect(newDevfile.metadata.name).toEqual('custom-name1234');
+    });
+
+    test('should apply the nameOverride over generateName', () => {
+      const factoryId = 'url=https://devfile-location';
+      const devfile = {
+        schemaVersion: '2.2.0',
+        metadata: {
+          generateName: 'wksp-',
+        },
+      } as devfileApi.Devfile;
+
+      const newDevfile = prepareDevfile(
+        devfile,
+        factoryId,
+        undefined,
+        false,
+        undefined,
+        'custom-name',
+      );
+
+      expect(newDevfile.metadata.name).toEqual('custom-name');
+      expect(newDevfile.metadata.generateName).toBeUndefined();
+    });
   });
 
   describe('storage type', () => {

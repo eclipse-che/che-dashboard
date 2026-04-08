@@ -54,7 +54,7 @@ const mockTools: api.AiToolDefinition[] = [
     url: 'https://github.com/google-gemini/gemini-cli',
     binary: 'gemini',
     pattern: 'bundle',
-    injectorImage: 'quay.io/oorel/gemini-cli:next',
+    injectorImage: 'quay.io/example/gemini-cli:next',
     envVarName: 'GEMINI_API_KEY',
   },
 ];
