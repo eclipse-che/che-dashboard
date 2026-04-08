@@ -27,8 +27,8 @@ export const ADMIN_MANAGEABLE_ATTRIBUTE = 'che.eclipse.org/admin-manageable';
 
 /**
  * Strips the tag or digest suffix from a container image reference.
- * e.g. 'quay.io/oorel/claude-code:next' → 'quay.io/oorel/claude-code'
- *      'quay.io/oorel/claude-code@sha256:abc' → 'quay.io/oorel/claude-code'
+ * e.g. 'quay.io/example/claude-code:next' → 'quay.io/example/claude-code'
+ *      'quay.io/example/claude-code@sha256:abc' → 'quay.io/example/claude-code'
  */
 export function stripImageTag(image: string): string {
   // Remove digest first (@sha256:...), then tag (:...)
@@ -46,7 +46,7 @@ export function stripImageTag(image: string): string {
 
 /**
  * Extracts a Kubernetes-compatible slug from the injector image name.
- * e.g. 'quay.io/oorel/claude-code:next' → 'claude-code'
+ * e.g. 'quay.io/example/claude-code:next' → 'claude-code'
  */
 export function getToolSlug(tool: api.AiToolDefinition): string {
   const imagePath = tool.injectorImage.split(':')[0];
@@ -546,4 +546,121 @@ export function sanitizeStaleAiTools(
   }
 
   return cloned;
+}
+
+/**
+ * Updates admin-manageable AI tool components whose injector image is recognized
+ * (same image name without tag) but outdated (different tag from the registry).
+ *
+ * For each outdated component the tool is removed and re-added using the
+ * current registry definition, which updates the injector image, commands,
+ * and lifecycle hooks to the latest version.
+ *
+ * When multiple tools share the same providerId the best match is selected
+ * by tag priority: "next" > "latest" > highest semver > first in list.
+ *
+ * Returns null if no updates were needed, or the patched DevWorkspace.
+ */
+export function updateOutdatedAiTools(
+  devWorkspace: devfileApi.DevWorkspace,
+  allTools: api.AiToolDefinition[],
+): devfileApi.DevWorkspace | null {
+  const components = (devWorkspace.spec.template.components ?? []) as Array<{
+    name?: string;
+    attributes?: Record<string, unknown>;
+    container?: { image?: string };
+  }>;
+
+  // Collect providerIds of outdated injectors
+  const outdatedProviderIds: string[] = [];
+
+  for (const comp of components) {
+    if (!isAdminManageable(comp) || !comp.container?.image) {
+      continue;
+    }
+    const image = comp.container.image;
+    const imageBase = stripImageTag(image);
+
+    // Find tools whose base image matches (recognized) but full image differs (outdated)
+    const matchingTools = allTools.filter(t => stripImageTag(t.injectorImage) === imageBase);
+    if (matchingTools.length === 0) {
+      // Not recognized — handled by sanitizeStaleAiTools
+      continue;
+    }
+
+    // If any matching tool has the exact same full image, this component is up-to-date
+    if (matchingTools.some(t => t.injectorImage === image)) {
+      continue;
+    }
+
+    // Component is outdated — pick the best replacement by providerId
+    const providerId = matchingTools[0].providerId;
+    if (!outdatedProviderIds.includes(providerId)) {
+      outdatedProviderIds.push(providerId);
+    }
+  }
+
+  if (outdatedProviderIds.length === 0) {
+    return null;
+  }
+
+  let result: devfileApi.DevWorkspace = JSON.parse(JSON.stringify(devWorkspace));
+
+  for (const providerId of outdatedProviderIds) {
+    // Select the best tool for this provider
+    const candidateTools = allTools.filter(t => t.providerId === providerId);
+    const bestTool = selectBestTool(candidateTools);
+
+    // Remove old, add new — pass a filtered tools list so addAiToolToWorkspace
+    // picks the best version (find() returns the first match by providerId).
+    const toolsWithBest = [bestTool, ...allTools.filter(t => t.providerId !== providerId)];
+    result = removeAiToolFromWorkspace(result, providerId, allTools);
+    result = addAiToolToWorkspace(result, bestTool.providerId, toolsWithBest);
+  }
+
+  return result;
+}
+
+/**
+ * Selects the best tool from a list of candidates sharing the same providerId.
+ * Priority: "next" > "latest" > highest semver > first in list.
+ */
+function selectBestTool(candidates: api.AiToolDefinition[]): api.AiToolDefinition {
+  if (candidates.length === 1) {
+    return candidates[0];
+  }
+
+  const priority: Record<string, number> = { next: 3, latest: 2 };
+
+  let best = candidates[0];
+  let bestScore = tagScore(best.tag, priority);
+
+  for (let i = 1; i < candidates.length; i++) {
+    const score = tagScore(candidates[i].tag, priority);
+    if (score > bestScore) {
+      best = candidates[i];
+      bestScore = score;
+    }
+  }
+
+  return best;
+}
+
+/**
+ * Returns a numeric score for a tag to enable comparison.
+ * Named tags ("next", "latest") get fixed high scores.
+ * Semver-like tags get a score derived from their numeric components.
+ */
+function tagScore(tag: string, priority: Record<string, number>): number {
+  if (priority[tag] !== undefined) {
+    // Named tags always rank above any semver version
+    return 1_000_000 + priority[tag];
+  }
+  // Try to parse as semver (e.g. "3.21", "2.55", "1.0.0")
+  const parts = tag.split('.').map(Number);
+  if (parts.length > 0 && parts.every(p => !isNaN(p))) {
+    // Weight: major * 10000 + minor * 100 + patch
+    return (parts[0] ?? 0) * 10000 + (parts[1] ?? 0) * 100 + (parts[2] ?? 0);
+  }
+  return 0;
 }
