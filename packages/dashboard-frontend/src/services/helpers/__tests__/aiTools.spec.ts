@@ -735,8 +735,9 @@ describe('aiTools', () => {
       expect(result).toBeNull();
     });
 
-    it('should preserve cleanup commands whose injector no longer exists', () => {
-      // Cleanup commands must run at least once to remove stale binaries
+    it('should remove orphaned cleanup commands whose injector no longer exists', () => {
+      // Cleanup commands run in background on postStart, so by the next start
+      // they have already executed and can be safely removed
       const workspace = buildWorkspaceWithComponents(
         [{ name: 'editor', container: { image: 'che-code:latest' } }],
         [
@@ -751,12 +752,22 @@ describe('aiTools', () => {
         },
       );
 
-      // No stale components and no orphaned install/symlink/run commands → null
       const result = sanitizeStaleAiTools(workspace.ref, ALL_TOOLS);
-      expect(result).toBeNull();
+      expect(result).not.toBeNull();
+      // Cleanup command removed
+      expect(
+        result!.spec.template.commands?.find(
+          (c: { id?: string }) => c.id === 'cleanup-claude-code',
+        ),
+      ).toBeUndefined();
+      // Other command preserved
+      expect(
+        result!.spec.template.commands?.find((c: { id?: string }) => c.id === 'other-command'),
+      ).toBeDefined();
+      expect(result!.spec.template.events?.postStart).toHaveLength(0);
     });
 
-    it('should remove orphaned install/symlink/run commands but preserve cleanup', () => {
+    it('should remove all orphaned commands including cleanup', () => {
       const workspace = buildWorkspaceWithComponents(
         [{ name: 'editor', container: { image: 'che-code:latest' } }],
         [
@@ -776,7 +787,7 @@ describe('aiTools', () => {
 
       const result = sanitizeStaleAiTools(workspace.ref, ALL_TOOLS);
       expect(result).not.toBeNull();
-      // Orphaned install/symlink removed
+      // All orphaned commands removed (install, symlink, cleanup)
       expect(
         result!.spec.template.commands?.find(
           (c: { id?: string }) => c.id === 'install-claude-code',
@@ -787,19 +798,18 @@ describe('aiTools', () => {
           (c: { id?: string }) => c.id === 'symlink-claude-code',
         ),
       ).toBeUndefined();
-      // Cleanup command preserved
       expect(
         result!.spec.template.commands?.find(
           (c: { id?: string }) => c.id === 'cleanup-claude-code',
         ),
-      ).toBeDefined();
+      ).toBeUndefined();
       // Other command preserved
       expect(
         result!.spec.template.commands?.find((c: { id?: string }) => c.id === 'other-command'),
       ).toBeDefined();
-      // Events: preStart cleaned, postStart keeps cleanup
+      // Events cleaned
       expect(result!.spec.template.events?.preStart).toHaveLength(0);
-      expect(result!.spec.template.events?.postStart).toEqual(['cleanup-claude-code']);
+      expect(result!.spec.template.events?.postStart).toHaveLength(0);
     });
 
     it('should not remove tool commands when their injector component exists', () => {
