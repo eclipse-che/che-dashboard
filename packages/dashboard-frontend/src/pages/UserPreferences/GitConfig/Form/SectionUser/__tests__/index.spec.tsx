@@ -91,6 +91,84 @@ describe('GitConfigSectionUser', () => {
       true,
     );
   });
+
+  it('should report invalid when email is invalid and name changes', () => {
+    renderComponent({
+      config: {
+        user: {
+          name: 'user',
+          email: 'user@che',
+        },
+      },
+      isLoading: false,
+      onChange: mockOnChange,
+    });
+
+    // First, make email invalid
+    screen.getByText('Change Email Invalid').click();
+
+    expect(mockOnChange).toHaveBeenLastCalledWith(
+      {
+        user: {
+          name: 'user',
+          email: 'new-user@che',
+        },
+      },
+      false,
+    );
+
+    // Then change name - should still be invalid because email is invalid
+    screen.getByText('Change Name Valid').click();
+
+    expect(mockOnChange).toHaveBeenLastCalledWith(
+      {
+        user: {
+          name: 'new user',
+          email: 'user@che', // email returns to original props value
+        },
+      },
+      false, // but form is still invalid because email field's validity is tracked
+    );
+  });
+
+  it('should report invalid when name is invalid and email changes', () => {
+    renderComponent({
+      config: {
+        user: {
+          name: 'user',
+          email: 'user@che',
+        },
+      },
+      isLoading: false,
+      onChange: mockOnChange,
+    });
+
+    // First, make name invalid
+    screen.getByText('Change Name Invalid').click();
+
+    expect(mockOnChange).toHaveBeenLastCalledWith(
+      {
+        user: {
+          name: 'new user',
+          email: 'user@che',
+        },
+      },
+      false,
+    );
+
+    // Then change email - should still be invalid because name is invalid
+    screen.getByText('Change Email Valid').click();
+
+    expect(mockOnChange).toHaveBeenLastCalledWith(
+      {
+        user: {
+          name: 'user', // name returns to original props value
+          email: 'new-user@che',
+        },
+      },
+      false, // but form is still invalid because name field's validity is tracked
+    );
+  });
 });
 
 function getComponent(props: Props): React.ReactElement {
