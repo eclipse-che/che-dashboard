@@ -30,7 +30,9 @@ function buildKeyExistsMap(
 ): Record<string, boolean> {
   const keyExists: Record<string, boolean> = {};
   for (const tool of tools) {
-    keyExists[tool.providerId] = sanitizedIdsWithKey.includes(tool.providerId.replace(/\//g, '-'));
+    keyExists[tool.providerId] = sanitizedIdsWithKey.includes(
+      tool.providerId.replace(/[^a-zA-Z0-9._-]/g, '-'),
+    );
   }
   return keyExists;
 }
@@ -57,6 +59,8 @@ async function refreshKeyStatus(
   if (namespace && tools.length > 0) {
     const sanitizedIds = await fetchAiProviderKeyStatus(namespace);
     dispatch(aiConfigKeyStatusReceiveAction(buildKeyExistsMap(tools, sanitizedIds)));
+  } else {
+    dispatch(aiConfigKeyStatusReceiveAction({}));
   }
 }
 

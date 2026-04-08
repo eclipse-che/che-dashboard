@@ -32,7 +32,7 @@ function toSecretName(envVarName: string): string {
 }
 
 function toSanitizedProviderId(providerId: string): string {
-  return providerId.replace(/\//g, '-');
+  return providerId.replace(/[^a-zA-Z0-9._-]/g, '-');
 }
 
 function buildSecretLabels(providerId: string): Record<string, string> {
