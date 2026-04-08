@@ -156,7 +156,7 @@ describe('AI Provider Key API Service', () => {
                 [MOUNT_AS_ANNOTATION]: 'env',
               }),
             }),
-            data: expect.objectContaining({
+            stringData: expect.objectContaining({
               [envVarName]: 'new-api-key',
             }),
           }),
@@ -192,7 +192,7 @@ describe('AI Provider Key API Service', () => {
                 [MOUNT_AS_ANNOTATION]: 'env',
               }),
             }),
-            data: expect.objectContaining({
+            stringData: expect.objectContaining({
               [envVarName]: 'new-api-key',
             }),
           }),
