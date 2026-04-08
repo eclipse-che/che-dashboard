@@ -148,6 +148,8 @@ function buildPostStartCommandLine(tool: api.AiToolDefinition): string {
     mainCmd = `mkdir -p /injected-tools/bin && ln -sf ${symlinkTarget} /injected-tools/bin/${binary} && ${nodeSymlink} && ${pathSetup}`;
   }
 
+  // SECURITY NOTE: setupCommand is sourced from an admin-managed ConfigMap.
+  // If this ever accepts user input, it must be sanitized to prevent command injection.
   // setupCommand is best-effort (e.g. creating config dirs); it must not block
   // the critical symlink/PATH setup even if it fails (e.g. read-only $HOME).
   return setupCommand ? `{ ${setupCommand}; } 2>/dev/null; ${mainCmd}` : mainCmd;
