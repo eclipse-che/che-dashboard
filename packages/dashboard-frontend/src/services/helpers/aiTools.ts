@@ -449,10 +449,10 @@ function isRecognizedToolImage(
 /**
  * Removes all admin-manageable AI tool components whose injector image is
  * no longer recognized (not in `allTools`), along with their commands and events.
- * Also removes orphaned tool commands (install/symlink/run) whose
+ * Also removes orphaned tool commands (install/symlink/run/cleanup) whose
  * corresponding `*-injector` component no longer exists in the spec.
- * Cleanup commands are intentionally preserved — they must run at least
- * once to remove stale binaries from the shared volume.
+ * Cleanup commands run in the background on postStart, so by the next
+ * workspace start they have already executed and can be safely removed.
  *
  * This prevents stale or outdated injector containers from breaking workspace starts.
  * Volume components with the admin-manageable attribute are preserved if at least one
@@ -486,9 +486,10 @@ export function sanitizeStaleAiTools(
   );
 
   // Find orphaned tool commands whose injector component no longer exists.
-  // Cleanup commands are excluded — they must run at least once to remove stale binaries.
+  // Cleanup commands are included — by the next workspace start they have already
+  // executed (they run as background postStart on the previous start).
   const commands = (template.commands ?? []) as Array<{ id?: string }>;
-  const toolCmdPattern = /^(install|symlink|run)-(.+)$/;
+  const toolCmdPattern = /^(install|symlink|run|cleanup)-(.+)$/;
   const orphanedCommandIds = new Set<string>();
   for (const cmd of commands) {
     if (!cmd.id) {
