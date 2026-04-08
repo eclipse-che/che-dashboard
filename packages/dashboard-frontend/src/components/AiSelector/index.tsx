@@ -127,18 +127,20 @@ class AiSelector extends React.PureComponent<Props, State> {
   }
 
   private handleProviderToggle(providerId: string): void {
-    this.setState(prevState => {
-      const isSelected = prevState.selectedProviderIds.includes(providerId);
-      const selectedProviderIds = isSelected
-        ? prevState.selectedProviderIds.filter(id => id !== providerId)
-        : [...prevState.selectedProviderIds, providerId];
-
-      if (this.state.expandedId === 'selector') {
-        this.props.onSelect(selectedProviderIds);
-      }
-
-      return { selectedProviderIds };
-    });
+    this.setState(
+      prevState => {
+        const isSelected = prevState.selectedProviderIds.includes(providerId);
+        const selectedProviderIds = isSelected
+          ? prevState.selectedProviderIds.filter(id => id !== providerId)
+          : [...prevState.selectedProviderIds, providerId];
+        return { selectedProviderIds };
+      },
+      () => {
+        if (this.state.expandedId === 'selector') {
+          this.props.onSelect(this.state.selectedProviderIds);
+        }
+      },
+    );
   }
 
   private buildDefaultProviderMessage(): string {
