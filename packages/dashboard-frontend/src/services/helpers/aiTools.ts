@@ -156,6 +156,24 @@ function buildPostStartCommandLine(tool: api.AiToolDefinition): string {
 }
 
 /**
+ * Builds the cleanup command line that removes stale binaries from the shared volume
+ * when a tool is removed from the workspace. Runs once on the next workspace start.
+ */
+function buildCleanupCommandLine(tool: api.AiToolDefinition): string {
+  const { binary, pattern } = tool;
+  const slug = getToolSlug(tool);
+
+  const parts: string[] = [];
+  parts.push(`rm -f /injected-tools/bin/${binary}`);
+  parts.push(`rm -f /injected-tools/bin/${binary}-bin`);
+  if (pattern === 'bundle') {
+    parts.push(`rm -rf /injected-tools/${slug}`);
+  }
+  parts.push('true');
+  return parts.join(' && ');
+}
+
+/**
  * Returns a cloned DevWorkspace spec with the given AI tool injector added.
  *
  * preStart  → install-{toolId}  apply command  (copies binary via init container)
@@ -372,6 +390,36 @@ export function removeAiToolFromWorkspace(
     );
   }
 
+  // Add a postStart cleanup command to remove stale binaries from the shared volume.
+  // The command is idempotent (rm -f) and will be removed by sanitizeStaleAiTools
+  // once its corresponding injector component no longer exists AND no cleanup is pending.
+  if (tool) {
+    const editorName = findEditorComponentName(
+      (template.components ?? []) as Array<{
+        name?: string;
+        container?: object;
+        volume?: object;
+      }>,
+    );
+    if (editorName) {
+      const cleanupLine = buildCleanupCommandLine(tool);
+      template.commands = template.commands ?? [];
+      template.commands.push({
+        id: cleanupCmdId,
+        exec: {
+          component: editorName,
+          commandLine: cleanupLine,
+          workingDir: '${CHE_PROJECTS_ROOT}',
+          label: `Clean up ${tool.name}`,
+        },
+      } as unknown as DevWorkspaceCommand);
+
+      template.events = template.events ?? {};
+      template.events.postStart = template.events.postStart ?? [];
+      template.events.postStart.push(cleanupCmdId);
+    }
+  }
+
   return cloned;
 }
 
@@ -399,8 +447,10 @@ function isRecognizedToolImage(
 /**
  * Removes all admin-manageable AI tool components whose injector image is
  * no longer recognized (not in `allTools`), along with their commands and events.
- * Also removes orphaned tool commands (install/symlink/run/cleanup) whose
+ * Also removes orphaned tool commands (install/symlink/run) whose
  * corresponding `*-injector` component no longer exists in the spec.
+ * Cleanup commands are intentionally preserved — they must run at least
+ * once to remove stale binaries from the shared volume.
  *
  * This prevents stale or outdated injector containers from breaking workspace starts.
  * Volume components with the admin-manageable attribute are preserved if at least one
@@ -433,9 +483,10 @@ export function sanitizeStaleAiTools(
       .map(c => c.name!.replace(/-injector$/, '')),
   );
 
-  // Find orphaned tool commands whose injector component no longer exists
+  // Find orphaned tool commands whose injector component no longer exists.
+  // Cleanup commands are excluded — they must run at least once to remove stale binaries.
   const commands = (template.commands ?? []) as Array<{ id?: string }>;
-  const toolCmdPattern = /^(install|symlink|run|cleanup)-(.+)$/;
+  const toolCmdPattern = /^(install|symlink|run)-(.+)$/;
   const orphanedCommandIds = new Set<string>();
   for (const cmd of commands) {
     if (!cmd.id) {
