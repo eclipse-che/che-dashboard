@@ -86,7 +86,7 @@ export class AiProviderKeyApiService implements IAiProviderKeyApi {
         },
       },
       type: 'Opaque',
-      data: {
+      stringData: {
         [envVarName]: apiKey,
       },
     };
