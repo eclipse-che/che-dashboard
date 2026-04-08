@@ -114,14 +114,13 @@ class AiSelector extends React.PureComponent<Props, State> {
       return;
     }
 
-    this.setState({ expandedId });
-
     if (expandedId === 'none') {
       // "Use Default AI Providers" — reset selections to defaults
       const defaultToolIds = this.findDefaultToolIds();
-      this.setState({ selectedProviderIds: defaultToolIds });
+      this.setState({ expandedId, selectedProviderIds: defaultToolIds });
       onSelect(defaultToolIds);
     } else {
+      this.setState({ expandedId });
       onSelect(this.state.selectedProviderIds);
     }
   }

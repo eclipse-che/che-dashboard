@@ -58,13 +58,15 @@ export class AiProviderKeysList extends React.PureComponent<Props, State> {
     this.setState((prev: State) => ({
       selectedItems: isSelected
         ? [...prev.selectedItems, item]
-        : prev.selectedItems.filter(s => s !== item),
+        : prev.selectedItems.filter(s => s.providerId !== item.providerId),
     }));
   }
 
   private deselectItems(items: api.AiToolDefinition[]): void {
     this.setState(prev => ({
-      selectedItems: prev.selectedItems.filter(s => !items.includes(s)),
+      selectedItems: prev.selectedItems.filter(
+        s => !items.some(i => i.providerId === s.providerId),
+      ),
     }));
   }
 
@@ -187,6 +189,9 @@ export class AiProviderKeysList extends React.PureComponent<Props, State> {
                           src={this.getProviderIcon(provider)}
                           alt={`${provider.name} icon`}
                           className={styles.providerIcon}
+                          onError={e => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
                         />
                       )}
                       {provider.name}

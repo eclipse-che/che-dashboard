@@ -36,17 +36,20 @@ export class AiProviderGallery extends React.PureComponent<Props> {
 
     return (
       <Gallery hasGutter={true} minWidths={{ default: '210px' }} maxWidths={{ default: '280px' }}>
-        {sorted.map(provider => (
-          <AiProviderEntry
-            key={provider.providerId}
-            provider={provider}
-            icon={this.getProvider(provider)?.icon}
-            description={this.getProvider(provider)?.description}
-            isSelected={selectedProviderIds.includes(provider.providerId)}
-            hasExistingKey={!!providerKeyExists[provider.providerId]}
-            onToggle={onToggle}
-          />
-        ))}
+        {sorted.map(provider => {
+          const providerDef = this.getProvider(provider);
+          return (
+            <AiProviderEntry
+              key={provider.providerId}
+              provider={provider}
+              icon={providerDef?.icon}
+              description={providerDef?.description}
+              isSelected={selectedProviderIds.includes(provider.providerId)}
+              hasExistingKey={!!providerKeyExists[provider.providerId]}
+              onToggle={onToggle}
+            />
+          );
+        })}
       </Gallery>
     );
   }

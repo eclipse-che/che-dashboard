@@ -48,7 +48,14 @@ export function AiToolIcon(props: Props): React.ReactElement {
     const tool = tools[0];
     const providerIcon = aiProviders.find(p => p.id === tool.providerId)?.icon;
     const icon = providerIcon ? (
-      <img src={providerIcon} alt={tool.name} className={styles.icon} />
+      <img
+        src={providerIcon}
+        alt={tool.name}
+        className={styles.icon}
+        onError={e => {
+          (e.target as HTMLImageElement).style.display = 'none';
+        }}
+      />
     ) : null;
 
     return (
@@ -76,6 +83,9 @@ export function AiToolIcon(props: Props): React.ReactElement {
                   alt={tool.name}
                   className={styles.icon}
                   style={{ marginRight: '0' }}
+                  onError={e => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
                 />
               ) : (
                 <span>{tool.name}</span>
