@@ -154,26 +154,6 @@ function buildPostStartCommandLine(tool: api.AiToolDefinition): string {
 }
 
 /**
- * Builds the cleanup command line that removes stale binaries from the shared volume
- * when a tool is removed from the workspace.
- */
-function buildCleanupCommandLine(tool: api.AiToolDefinition): string {
-  const { binary, pattern } = tool;
-  const slug = getToolSlug(tool);
-
-  const parts: string[] = [];
-  // Remove binary (and wrapper companion) from /injected-tools/bin/
-  parts.push(`rm -f /injected-tools/bin/${binary}`);
-  parts.push(`rm -f /injected-tools/bin/${binary}-bin`);
-  if (pattern === 'bundle') {
-    // Remove the bundle directory
-    parts.push(`rm -rf /injected-tools/${slug}`);
-  }
-  parts.push('true');
-  return parts.join(' && ');
-}
-
-/**
  * Returns a cloned DevWorkspace spec with the given AI tool injector added.
  *
  * preStart  → install-{toolId}  apply command  (copies binary via init container)
@@ -241,7 +221,7 @@ export function addAiToolToWorkspace(
         command: ['/bin/sh'],
         args: [
           '-c',
-          `mkdir -p /injected-tools/bin && cp /usr/local/bin/${tool.binary} /injected-tools/bin/${tool.binary} && { test -f /usr/local/bin/${tool.binary}-bin && cp /usr/local/bin/${tool.binary}-bin /injected-tools/bin/${tool.binary}-bin || true; }`,
+          `rm -f /injected-tools/bin/${tool.binary} /injected-tools/bin/${tool.binary}-bin 2>/dev/null; mkdir -p /injected-tools/bin && cp /usr/local/bin/${tool.binary} /injected-tools/bin/${tool.binary} && { test -f /usr/local/bin/${tool.binary}-bin && cp /usr/local/bin/${tool.binary}-bin /injected-tools/bin/${tool.binary}-bin || true; }`,
         ],
         memoryLimit: '512Mi',
         mountSources: false,
@@ -255,7 +235,10 @@ export function addAiToolToWorkspace(
       container: {
         image: tool.injectorImage,
         command: ['/bin/sh'],
-        args: ['-c', `cp -a /opt/${slug}/. /injected-tools/${slug}/`],
+        args: [
+          '-c',
+          `rm -rf /injected-tools/${slug} 2>/dev/null; cp -a /opt/${slug}/. /injected-tools/${slug}/`,
+        ],
         memoryLimit: '512Mi',
         mountSources: false,
         volumeMounts: [{ name: 'injected-tools', path: '/injected-tools' }],
@@ -387,34 +370,6 @@ export function removeAiToolFromWorkspace(
     );
   }
 
-  // Add a postStart cleanup command to remove stale binaries from the shared volume
-  if (tool) {
-    const editorName = findEditorComponentName(
-      (template.components ?? []) as Array<{
-        name?: string;
-        container?: object;
-        volume?: object;
-      }>,
-    );
-    if (editorName) {
-      const cleanupLine = buildCleanupCommandLine(tool);
-      template.commands = template.commands ?? [];
-      template.commands.push({
-        id: cleanupCmdId,
-        exec: {
-          component: editorName,
-          commandLine: cleanupLine,
-          workingDir: '${CHE_PROJECTS_ROOT}',
-          label: `Clean up ${tool.name}`,
-        },
-      } as unknown as DevWorkspaceCommand);
-
-      template.events = template.events ?? {};
-      template.events.postStart = template.events.postStart ?? [];
-      template.events.postStart.push(cleanupCmdId);
-    }
-  }
-
   return cloned;
 }
 
@@ -442,6 +397,8 @@ function isRecognizedToolImage(
 /**
  * Removes all admin-manageable AI tool components whose injector image is
  * no longer recognized (not in `allTools`), along with their commands and events.
+ * Also removes orphaned tool commands (install/symlink/run/cleanup) whose
+ * corresponding `*-injector` component no longer exists in the spec.
  *
  * This prevents stale or outdated injector containers from breaking workspace starts.
  * Volume components with the admin-manageable attribute are preserved if at least one
@@ -466,7 +423,29 @@ export function sanitizeStaleAiTools(
     c => isAdminManageable(c) && c.container && !isRecognizedToolImage(c, allTools),
   );
 
-  if (staleComponents.length === 0) {
+  // Collect slugs of all injector components that will remain after stale removal
+  const staleNames = new Set(staleComponents.map(c => c.name).filter(Boolean));
+  const remainingInjectorSlugs = new Set(
+    components
+      .filter(c => c.name?.endsWith('-injector') && !staleNames.has(c.name))
+      .map(c => c.name!.replace(/-injector$/, '')),
+  );
+
+  // Find orphaned tool commands whose injector component no longer exists
+  const commands = (template.commands ?? []) as Array<{ id?: string }>;
+  const toolCmdPattern = /^(install|symlink|run|cleanup)-(.+)$/;
+  const orphanedCommandIds = new Set<string>();
+  for (const cmd of commands) {
+    if (!cmd.id) {
+      continue;
+    }
+    const match = cmd.id.match(toolCmdPattern);
+    if (match && !remainingInjectorSlugs.has(match[2])) {
+      orphanedCommandIds.add(cmd.id);
+    }
+  }
+
+  if (staleComponents.length === 0 && orphanedCommandIds.size === 0) {
     return null;
   }
 
@@ -474,8 +453,6 @@ export function sanitizeStaleAiTools(
   const clonedTemplate = cloned.spec.template;
   clonedTemplate.components = clonedTemplate.components ?? [];
   clonedTemplate.commands = clonedTemplate.commands ?? [];
-
-  const staleNames = new Set(staleComponents.map(c => c.name).filter(Boolean));
 
   // Remove stale injector components
   clonedTemplate.components = (
@@ -487,8 +464,8 @@ export function sanitizeStaleAiTools(
     }>
   ).filter(c => !staleNames.has(c.name)) as unknown as DevWorkspaceComponent[];
 
-  // Collect command IDs that reference stale components (apply commands)
-  const staleCommandIds = new Set<string>();
+  // Collect command IDs to remove: stale component commands + orphaned commands
+  const staleCommandIds = new Set<string>(orphanedCommandIds);
   for (const cmd of clonedTemplate.commands as Array<{
     id?: string;
     apply?: { component?: string };
@@ -498,7 +475,6 @@ export function sanitizeStaleAiTools(
     }
   }
 
-  // Also remove symlink/cleanup commands that match the stale slug pattern
   for (const staleName of staleNames) {
     if (staleName && staleName.endsWith('-injector')) {
       const slug = staleName.replace(/-injector$/, '');

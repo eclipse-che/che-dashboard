@@ -215,7 +215,10 @@ describe('aiTools', () => {
       expect(injector?.container?.image).toBe(CLAUDE_TOOL.injectorImage);
       expect(injector?.container?.command).toEqual(['/bin/sh']);
       expect(injector?.container?.args?.[1]).toContain(
-        'mkdir -p /injected-tools/bin && cp /usr/local/bin/claude /injected-tools/bin/claude &&',
+        'rm -f /injected-tools/bin/claude /injected-tools/bin/claude-bin 2>/dev/null;',
+      );
+      expect(injector?.container?.args?.[1]).toContain(
+        'mkdir -p /injected-tools/bin && cp /usr/local/bin/claude /injected-tools/bin/claude',
       );
 
       // Volume added
@@ -251,7 +254,7 @@ describe('aiTools', () => {
       expect(injector?.container?.command).toEqual(['/bin/sh']);
       expect(injector?.container?.args).toEqual([
         '-c',
-        'cp -a /opt/gemini-cli/. /injected-tools/gemini-cli/',
+        'rm -rf /injected-tools/gemini-cli 2>/dev/null; cp -a /opt/gemini-cli/. /injected-tools/gemini-cli/',
       ]);
     });
 
@@ -432,7 +435,7 @@ describe('aiTools', () => {
   });
 
   describe('removeAiToolFromWorkspace', () => {
-    it('should remove injector component, commands, and events, and add cleanup command', () => {
+    it('should remove injector component, commands, and events without adding cleanup commands', () => {
       const workspace = buildWorkspaceWithComponents([
         { name: 'editor', container: { image: 'che-code:latest' } },
       ]);
@@ -461,13 +464,12 @@ describe('aiTools', () => {
       expect(removed.spec.template.events?.preStart).not.toContain('install-claude-code');
       expect(removed.spec.template.events?.postStart).not.toContain('symlink-claude-code');
 
-      // Cleanup command should be added
-      const cleanupCmd = removed.spec.template.commands?.find(
-        (c: { id?: string }) => c.id === 'cleanup-claude-code',
-      ) as { exec?: { commandLine?: string } } | undefined;
-      expect(cleanupCmd).toBeDefined();
-      expect(cleanupCmd?.exec?.commandLine).toContain('rm -f /injected-tools/bin/claude');
-      expect(removed.spec.template.events?.postStart).toContain('cleanup-claude-code');
+      // No cleanup command should be added — init containers handle cleanup
+      expect(
+        removed.spec.template.commands?.find(
+          (c: { id?: string }) => c.id === 'cleanup-claude-code',
+        ),
+      ).toBeUndefined();
     });
 
     it('should preserve the injected-tools volume (shared by other tools)', () => {
@@ -497,7 +499,7 @@ describe('aiTools', () => {
       expect(removed.spec.template.components?.find(c => c.name === 'editor')).toBeDefined();
     });
 
-    it('should add cleanup command when tool was never added', () => {
+    it('should not add cleanup command when tool was never added', () => {
       const workspace = buildWorkspaceWithComponents([
         { name: 'editor', container: { image: 'che-code:latest' } },
       ]);
@@ -505,11 +507,8 @@ describe('aiTools', () => {
       const removed = removeAiToolFromWorkspace(workspace, 'anthropic/claude', ALL_TOOLS);
       // Original component preserved
       expect(removed.spec.template.components).toHaveLength(1);
-      // Cleanup command added
-      const cleanupCmd = removed.spec.template.commands?.find(
-        (c: { id?: string }) => c.id === 'cleanup-claude-code',
-      );
-      expect(cleanupCmd).toBeDefined();
+      // No cleanup command — init containers handle cleanup
+      expect(removed.spec.template.commands ?? []).toHaveLength(0);
     });
 
     it('should remove stale commands from previous injection', () => {
@@ -534,14 +533,13 @@ describe('aiTools', () => {
       expect(
         removed.spec.template.components?.find(c => c.name === 'claude-code-injector'),
       ).toBeUndefined();
-      // Only cleanup command should remain
-      expect(removed.spec.template.commands).toHaveLength(1);
-      expect(removed.spec.template.commands?.[0]).toHaveProperty('id', 'cleanup-claude-code');
+      // No commands should remain — no cleanup commands added
+      expect(removed.spec.template.commands).toHaveLength(0);
       expect(removed.spec.template.events?.preStart).toHaveLength(0);
-      expect(removed.spec.template.events?.postStart).toEqual(['cleanup-claude-code']);
+      expect(removed.spec.template.events?.postStart).toHaveLength(0);
     });
 
-    it('should add cleanup that removes bundle directory for bundle-pattern tools', () => {
+    it('should not add cleanup commands for bundle-pattern tools', () => {
       const workspace = buildWorkspaceWithComponents([
         { name: 'editor', container: { image: 'che-code:latest' } },
       ]);
@@ -550,38 +548,10 @@ describe('aiTools', () => {
       const addedWorkspace = constructWorkspace(added);
       const removed = removeAiToolFromWorkspace(addedWorkspace, 'google/gemini', ALL_TOOLS);
 
-      const cleanupCmd = removed.spec.template.commands?.find(
-        (c: { id?: string }) => c.id === 'cleanup-gemini-cli',
-      ) as { exec?: { commandLine?: string } } | undefined;
-      expect(cleanupCmd).toBeDefined();
-      expect(cleanupCmd?.exec?.commandLine).toContain('rm -rf /injected-tools/gemini-cli');
-      expect(cleanupCmd?.exec?.commandLine).toContain('rm -f /injected-tools/bin/gemini');
-    });
-
-    it('should remove cleanup command when re-adding a previously removed tool', () => {
-      const workspace = buildWorkspaceWithComponents([
-        { name: 'editor', container: { image: 'che-code:latest' } },
-      ]);
-
-      // Add, remove (adds cleanup), then re-add (should remove cleanup)
-      const added = addAiToolToWorkspace(workspace, 'anthropic/claude', ALL_TOOLS);
-      const addedWorkspace = constructWorkspace(added);
-      const removed = removeAiToolFromWorkspace(addedWorkspace, 'anthropic/claude', ALL_TOOLS);
-      const removedWorkspace = constructWorkspace(removed);
-      const reAdded = addAiToolToWorkspace(removedWorkspace, 'anthropic/claude', ALL_TOOLS);
-
-      // Cleanup command should be gone
+      // No cleanup command — init containers handle cleanup on next add
       expect(
-        reAdded.spec.template.commands?.find(
-          (c: { id?: string }) => c.id === 'cleanup-claude-code',
-        ),
+        removed.spec.template.commands?.find((c: { id?: string }) => c.id === 'cleanup-gemini-cli'),
       ).toBeUndefined();
-      expect(reAdded.spec.template.events?.postStart).not.toContain('cleanup-claude-code');
-
-      // Injector should be back
-      expect(
-        reAdded.spec.template.components?.find(c => c.name === 'claude-code-injector'),
-      ).toBeDefined();
     });
   });
 
@@ -712,6 +682,62 @@ describe('aiTools', () => {
           container: { image: 'quay.io/example/claude-code:v2.0' },
         },
       ]);
+
+      const result = sanitizeStaleAiTools(workspace.ref, ALL_TOOLS);
+      expect(result).toBeNull();
+    });
+
+    it('should remove orphaned cleanup commands whose injector no longer exists', () => {
+      // Simulate a workspace left with orphaned cleanup commands from old code
+      const workspace = buildWorkspaceWithComponents(
+        [{ name: 'editor', container: { image: 'che-code:latest' } }],
+        [
+          {
+            id: 'cleanup-claude-code',
+            exec: { component: 'editor', commandLine: 'rm -f /injected-tools/bin/claude' },
+          },
+          { id: 'other-command', exec: { component: 'editor' } },
+        ],
+        {
+          postStart: ['cleanup-claude-code'],
+        },
+      );
+
+      const result = sanitizeStaleAiTools(workspace.ref, ALL_TOOLS);
+      expect(result).not.toBeNull();
+      // Orphaned cleanup command removed
+      expect(
+        result!.spec.template.commands?.find(
+          (c: { id?: string }) => c.id === 'cleanup-claude-code',
+        ),
+      ).toBeUndefined();
+      // Non-tool command preserved
+      expect(
+        result!.spec.template.commands?.find((c: { id?: string }) => c.id === 'other-command'),
+      ).toBeDefined();
+      // Orphaned event removed
+      expect(result!.spec.template.events?.postStart).toHaveLength(0);
+    });
+
+    it('should not remove tool commands when their injector component exists', () => {
+      const workspace = buildWorkspaceWithComponents(
+        [
+          { name: 'editor', container: { image: 'che-code:latest' } },
+          {
+            name: 'claude-code-injector',
+            attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
+            container: { image: 'quay.io/example/claude-code:next' },
+          },
+        ],
+        [
+          { id: 'install-claude-code', apply: { component: 'claude-code-injector' } },
+          { id: 'symlink-claude-code', exec: { component: 'editor' } },
+        ],
+        {
+          preStart: ['install-claude-code'],
+          postStart: ['symlink-claude-code'],
+        },
+      );
 
       const result = sanitizeStaleAiTools(workspace.ref, ALL_TOOLS);
       expect(result).toBeNull();
