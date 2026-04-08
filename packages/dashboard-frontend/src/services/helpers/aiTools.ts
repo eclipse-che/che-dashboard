@@ -157,7 +157,9 @@ function buildPostStartCommandLine(tool: api.AiToolDefinition): string {
 
 /**
  * Builds the cleanup command line that removes stale binaries from the shared volume
- * when a tool is removed from the workspace. Runs once on the next workspace start.
+ * when a tool is removed from the workspace. Runs in the background (nohup ... &)
+ * so it never blocks or freezes workspace startup. If a removal fails, the command
+ * is idempotent and will retry on the next start.
  */
 function buildCleanupCommandLine(tool: api.AiToolDefinition): string {
   const { binary, pattern } = tool;
@@ -169,8 +171,8 @@ function buildCleanupCommandLine(tool: api.AiToolDefinition): string {
   if (pattern === 'bundle') {
     parts.push(`rm -rf /injected-tools/${slug}`);
   }
-  parts.push('true');
-  return parts.join(' && ');
+  // Run in background so it never blocks workspace startup
+  return `nohup sh -c '${parts.join(' && ')}' >/dev/null 2>&1 &`;
 }
 
 /**
