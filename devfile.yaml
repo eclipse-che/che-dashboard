@@ -115,3 +115,15 @@ commands:
       commandLine: "yarn --cwd  packages/dashboard-backend build --env bundleAnalyzer=true"
       group:
         kind: build
+  - id: install-claude-code
+    exec:
+      label: "[UD] install Claude Code"
+      component: tools
+      workingDir: ${PROJECT_SOURCE}
+      commandLine: "npm install -g @anthropic-ai/claude-code"
+  - id: install-gemini-cli
+    exec:
+      label: "[UD] install Gemini CLI"
+      component: tools
+      workingDir: ${PROJECT_SOURCE}
+      commandLine: "npm install -g @google/gemini-cli"
