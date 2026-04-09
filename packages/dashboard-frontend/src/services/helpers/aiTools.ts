@@ -575,6 +575,34 @@ export function sanitizeStaleAiTools(
         volume?: object;
       }>
     ).filter(c => !(isAdminManageable(c) && c.volume)) as unknown as DevWorkspaceComponent[];
+
+    // Remove injected-tools volume mounts and PATH env vars from editor containers
+    for (const comp of clonedTemplate.components as unknown as Array<{
+      name?: string;
+      container?: {
+        volumeMounts?: Array<{ name: string; path: string }>;
+        env?: Array<{ name: string; value: string }>;
+      };
+    }>) {
+      if (!comp.container) {
+        continue;
+      }
+      if (comp.container.volumeMounts) {
+        comp.container.volumeMounts = comp.container.volumeMounts.filter(
+          vm => vm.name !== 'injected-tools',
+        );
+      }
+      if (comp.container.env) {
+        const pathEntry = comp.container.env.find(e => e.name === 'PATH');
+        if (pathEntry?.value.includes('/injected-tools/bin:')) {
+          pathEntry.value = pathEntry.value.replace('/injected-tools/bin:', '');
+          // If PATH is now just the default, remove the override entirely
+          if (pathEntry.value === '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin') {
+            comp.container.env = comp.container.env.filter(e => e.name !== 'PATH');
+          }
+        }
+      }
+    }
   }
 
   return cloned;
