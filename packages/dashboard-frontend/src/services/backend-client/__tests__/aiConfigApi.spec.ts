@@ -17,6 +17,7 @@ import mockAxios from 'axios';
 import {
   deleteAiProviderKey,
   fetchAiProviderKeyStatus,
+  fetchAiRegistry,
   saveAiProviderKey,
 } from '@/services/backend-client/aiConfigApi';
 
@@ -27,6 +28,32 @@ const mockDelete = mockAxios.delete as jest.Mock;
 describe('AiConfig API client', () => {
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('fetchAiRegistry', () => {
+    it('should fetch AI registry', async () => {
+      const data = { providers: [], tools: [], defaultAiProviders: [] };
+      mockGet.mockResolvedValueOnce({ data });
+
+      const result = await fetchAiRegistry();
+      expect(result).toEqual(data);
+    });
+
+    it('should throw error when fetch fails', async () => {
+      mockGet.mockRejectedValueOnce({
+        code: '500',
+        message: 'error message',
+      } as AxiosError);
+
+      let errorMessage: string | undefined;
+      try {
+        await fetchAiRegistry();
+      } catch (err) {
+        errorMessage = common.helpers.errors.getMessage(err);
+      }
+
+      expect(errorMessage).toEqual('Failed to fetch AI registry. error message');
+    });
   });
 
   describe('fetchAiProviderKeyStatus', () => {
