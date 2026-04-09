@@ -26,6 +26,7 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `fastify@5.7.4` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/5.7.4) |
 | `jsep@1.3.9` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsep/1.3.9) |
 | `light-my-request@6.6.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/light-my-request/6.6.0) |
+| `lodash@4.18.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lodash/4.18.1) |
 | `pino@10.3.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pino/10.3.1) |
 | `qs@6.15.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/qs/6.15.0) |
 | `real-require@0.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/real-require/0.2.0) |
