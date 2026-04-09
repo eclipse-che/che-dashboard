@@ -19,6 +19,7 @@ import {
   ADMIN_MANAGEABLE_ATTRIBUTE,
   getInjectedAiToolIds,
   getInjectedAiToolNames,
+  PENDING_CLEANUP_ANNOTATION,
   removeAiToolFromWorkspace,
   sanitizeStaleAiTools,
   stripImageTag,
@@ -57,16 +58,20 @@ function buildWorkspaceWithComponents(
   components: Array<Record<string, unknown>>,
   commands?: Array<Record<string, unknown>>,
   events?: Record<string, string[]>,
+  annotations?: Record<string, string>,
 ) {
-  const devWorkspace = new DevWorkspaceBuilder()
+  const builder = new DevWorkspaceBuilder()
     .withName('test-wksp')
     .withNamespace('user-che')
     .withTemplate({
       components: components as never,
       commands: commands as never,
       events,
-    })
-    .build();
+    });
+  if (annotations) {
+    builder.withMetadata({ annotations });
+  }
+  const devWorkspace = builder.build();
   return constructWorkspace(devWorkspace);
 }
 
@@ -601,6 +606,39 @@ describe('aiTools', () => {
         reAdded.spec.template.components?.find(c => c.name === 'claude-code-injector'),
       ).toBeDefined();
     });
+
+    it('should set pending-cleanup annotation when adding cleanup command', () => {
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+      ]);
+
+      const added = addAiToolToWorkspace(workspace, 'anthropic/claude', ALL_TOOLS);
+      const addedWorkspace = constructWorkspace(added);
+      const removed = removeAiToolFromWorkspace(addedWorkspace, 'anthropic/claude', ALL_TOOLS);
+
+      expect(removed.metadata?.annotations?.[PENDING_CLEANUP_ANNOTATION]).toBe('claude-code');
+    });
+
+    it('should append to existing pending-cleanup annotation', () => {
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+      ]);
+
+      const withBoth = addAiToolToWorkspace(
+        addAiToolToWorkspace(workspace, 'anthropic/claude', ALL_TOOLS),
+        'google/gemini',
+        ALL_TOOLS,
+      );
+      const withBothWs = constructWorkspace(withBoth);
+      const removedClaude = removeAiToolFromWorkspace(withBothWs, 'anthropic/claude', ALL_TOOLS);
+      const removedClaudeWs = constructWorkspace(removedClaude);
+      const removedBoth = removeAiToolFromWorkspace(removedClaudeWs, 'google/gemini', ALL_TOOLS);
+
+      const annotation = removedBoth.metadata?.annotations?.[PENDING_CLEANUP_ANNOTATION] ?? '';
+      const slugs = annotation.split(',');
+      expect(slugs).toContain('claude-code');
+      expect(slugs).toContain('gemini-cli');
+    });
   });
 
   describe('sanitizeStaleAiTools', () => {
@@ -862,6 +900,72 @@ describe('aiTools', () => {
       ).toBeDefined();
       // Events cleaned
       expect(result!.spec.template.events?.preStart).toHaveLength(0);
+      expect(result!.spec.template.events?.postStart).toHaveLength(0);
+    });
+
+    it('should keep cleanup command when pending-cleanup annotation is present', () => {
+      // First cold start after tool removal: annotation marks cleanup as pending,
+      // so the command must survive this start cycle to execute during postStart.
+      const workspace = buildWorkspaceWithComponents(
+        [{ name: 'editor', container: { image: 'che-code:latest' } }],
+        [
+          {
+            id: 'cleanup-claude-code',
+            exec: { component: 'editor', commandLine: 'rm -f /injected-tools/bin/claude' },
+          },
+          { id: 'other-command', exec: { component: 'editor' } },
+        ],
+        {
+          postStart: ['cleanup-claude-code'],
+        },
+        {
+          [PENDING_CLEANUP_ANNOTATION]: 'claude-code',
+        },
+      );
+
+      const result = sanitizeStaleAiTools(workspace.ref, ALL_TOOLS);
+      expect(result).not.toBeNull();
+      // Cleanup command preserved
+      expect(
+        result!.spec.template.commands?.find(
+          (c: { id?: string }) => c.id === 'cleanup-claude-code',
+        ),
+      ).toBeDefined();
+      // Other command preserved
+      expect(
+        result!.spec.template.commands?.find((c: { id?: string }) => c.id === 'other-command'),
+      ).toBeDefined();
+      // postStart still has cleanup
+      expect(result!.spec.template.events?.postStart).toContain('cleanup-claude-code');
+      // Annotation cleared so next start will remove cleanup
+      expect(result!.metadata?.annotations?.[PENDING_CLEANUP_ANNOTATION]).toBeUndefined();
+    });
+
+    it('should remove cleanup command on second start after annotation was cleared', () => {
+      // Second cold start: annotation was cleared on first start, so cleanup is
+      // now a completed orphan and should be removed.
+      const workspace = buildWorkspaceWithComponents(
+        [{ name: 'editor', container: { image: 'che-code:latest' } }],
+        [
+          {
+            id: 'cleanup-claude-code',
+            exec: { component: 'editor', commandLine: 'rm -f /injected-tools/bin/claude' },
+          },
+        ],
+        {
+          postStart: ['cleanup-claude-code'],
+        },
+        // No annotation — cleanup already executed
+      );
+
+      const result = sanitizeStaleAiTools(workspace.ref, ALL_TOOLS);
+      expect(result).not.toBeNull();
+      // Cleanup command removed
+      expect(
+        result!.spec.template.commands?.find(
+          (c: { id?: string }) => c.id === 'cleanup-claude-code',
+        ),
+      ).toBeUndefined();
       expect(result!.spec.template.events?.postStart).toHaveLength(0);
     });
 

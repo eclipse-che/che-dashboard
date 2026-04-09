@@ -26,6 +26,15 @@ type DevWorkspaceCommand = V1alpha2DevWorkspaceSpecTemplateCommands;
 export const ADMIN_MANAGEABLE_ATTRIBUTE = 'che.eclipse.org/admin-manageable';
 
 /**
+ * Annotation key used to track pending cleanup commands.
+ * Stores a comma-separated list of tool slugs whose cleanup commands
+ * have not yet executed. After one start cycle (the cleanup runs during
+ * postStart), sanitizeStaleAiTools removes the slug from this annotation
+ * and deletes the cleanup command.
+ */
+export const PENDING_CLEANUP_ANNOTATION = 'che.eclipse.org/pending-ai-cleanup';
+
+/**
  * Strips the tag or digest suffix from a container image reference.
  * e.g. 'quay.io/example/claude-code:next' → 'quay.io/example/claude-code'
  *      'quay.io/example/claude-code@sha256:abc' → 'quay.io/example/claude-code'
@@ -304,6 +313,9 @@ export function addAiToolToWorkspace(
           pathEntry.value = `/injected-tools/bin:${pathEntry.value}`;
         }
       } else {
+        // $(PATH) substitution cannot be used here — it is resolved by the operator
+        // after container startup, causing entrypoint failures. The fallback value
+        // matches the default PATH of the che-code editor image.
         editorComp.container.env.push({
           name: 'PATH',
           value: '/injected-tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
@@ -393,8 +405,10 @@ export function removeAiToolFromWorkspace(
   }
 
   // Add a postStart cleanup command to remove stale binaries from the shared volume.
-  // The command is idempotent (rm -f) and will be removed by sanitizeStaleAiTools
-  // once its corresponding injector component no longer exists AND no cleanup is pending.
+  // The cleanup command survives one cold start so it can execute during postStart.
+  // sanitizeStaleAiTools tracks this via the PENDING_CLEANUP_ANNOTATION: on the first
+  // cold start the annotation is present so the command is kept; after execution,
+  // the next start removes both the command and the annotation.
   if (tool) {
     const editorName = findEditorComponentName(
       (template.components ?? []) as Array<{
@@ -419,6 +433,17 @@ export function removeAiToolFromWorkspace(
       template.events = template.events ?? {};
       template.events.postStart = template.events.postStart ?? [];
       template.events.postStart.push(cleanupCmdId);
+
+      // Mark this slug as pending cleanup so sanitizeStaleAiTools
+      // keeps the cleanup command alive for one start cycle.
+      cloned.metadata = cloned.metadata ?? {};
+      cloned.metadata.annotations = cloned.metadata.annotations ?? {};
+      const existing = cloned.metadata.annotations[PENDING_CLEANUP_ANNOTATION] ?? '';
+      const slugs = existing ? existing.split(',').filter(Boolean) : [];
+      if (!slugs.includes(slug)) {
+        slugs.push(slug);
+      }
+      cloned.metadata.annotations[PENDING_CLEANUP_ANNOTATION] = slugs.join(',');
     }
   }
 
@@ -486,10 +511,9 @@ export function sanitizeStaleAiTools(
   );
 
   // Find orphaned tool commands whose injector component no longer exists.
-  // Cleanup commands are included — by the next workspace start they have already
-  // executed (they run as background postStart on the previous start).
   const commands = (template.commands ?? []) as Array<{ id?: string }>;
-  const toolCmdPattern = /^(install|symlink|run|cleanup)-(.+)$/;
+  const toolCmdPattern = /^(install|symlink|run)-(.+)$/;
+  const cleanupCmdPattern = /^cleanup-(.+)$/;
   const orphanedCommandIds = new Set<string>();
   for (const cmd of commands) {
     if (!cmd.id) {
@@ -501,7 +525,38 @@ export function sanitizeStaleAiTools(
     }
   }
 
-  if (staleComponents.length === 0 && orphanedCommandIds.size === 0) {
+  // Handle cleanup commands separately using the pending-cleanup annotation.
+  // When a tool is removed, the cleanup command is added along with an annotation
+  // marking the slug as "pending". On the first cold start, the annotation is
+  // present so the cleanup command is kept (it needs to execute). The annotation
+  // is cleared for that slug so that on the next start the cleanup command is
+  // removed as a completed orphan.
+  const pendingAnnotation = devWorkspace.metadata?.annotations?.[PENDING_CLEANUP_ANNOTATION] ?? '';
+  const pendingSlugs = new Set(pendingAnnotation.split(',').filter(Boolean));
+  const cleanupSlugsToRemove: string[] = [];
+  const cleanupSlugsToKeep: string[] = [];
+
+  for (const cmd of commands) {
+    if (!cmd.id) {
+      continue;
+    }
+    const match = cmd.id.match(cleanupCmdPattern);
+    if (match && !remainingInjectorSlugs.has(match[1])) {
+      const slug = match[1];
+      if (pendingSlugs.has(slug)) {
+        // Cleanup has not yet executed — keep the command, clear the annotation
+        cleanupSlugsToKeep.push(slug);
+      } else {
+        // Cleanup already executed (or was never pending) — remove the command
+        orphanedCommandIds.add(cmd.id);
+        cleanupSlugsToRemove.push(slug);
+      }
+    }
+  }
+
+  const hasCleanupChanges = cleanupSlugsToKeep.length > 0 || cleanupSlugsToRemove.length > 0;
+
+  if (staleComponents.length === 0 && orphanedCommandIds.size === 0 && !hasCleanupChanges) {
     return null;
   }
 
@@ -557,6 +612,21 @@ export function sanitizeStaleAiTools(
     clonedTemplate.events.postStart = clonedTemplate.events.postStart.filter(
       (e: string) => !staleCommandIds.has(e),
     );
+  }
+
+  // Update the pending-cleanup annotation: remove slugs whose cleanup command
+  // was kept (they will execute this start cycle) so next start removes them.
+  if (cleanupSlugsToKeep.length > 0 || cleanupSlugsToRemove.length > 0) {
+    cloned.metadata = cloned.metadata ?? {};
+    cloned.metadata.annotations = cloned.metadata.annotations ?? {};
+    const updatedSlugs = [...pendingSlugs].filter(
+      s => !cleanupSlugsToKeep.includes(s) && !cleanupSlugsToRemove.includes(s),
+    );
+    if (updatedSlugs.length > 0) {
+      cloned.metadata.annotations[PENDING_CLEANUP_ANNOTATION] = updatedSlugs.join(',');
+    } else {
+      delete cloned.metadata.annotations[PENDING_CLEANUP_ANNOTATION];
+    }
   }
 
   // Remove admin-manageable volume if no recognized injectors remain
