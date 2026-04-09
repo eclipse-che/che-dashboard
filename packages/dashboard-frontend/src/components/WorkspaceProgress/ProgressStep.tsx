@@ -25,6 +25,7 @@ export type ProgressStepProps = {
   location: Location;
   navigate: NavigateFunction;
   onError: (alertItem: AlertItem) => void;
+  onWarning: (alertItem: AlertItem) => void;
   onHideError: (key: string) => void;
   onNextStep: () => void;
   onRestart: (tabName?: LoaderTab) => void;
@@ -81,6 +82,10 @@ export abstract class ProgressStep<
     });
     const alertItem = this.buildAlertItem(error);
     this.props.onError(alertItem);
+  }
+
+  protected handleWarning(alertItem: AlertItem) {
+    this.props.onWarning(alertItem);
   }
 
   protected clearStepError() {
