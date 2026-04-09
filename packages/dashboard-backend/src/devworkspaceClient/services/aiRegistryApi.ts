@@ -70,12 +70,16 @@ export class AiRegistryApiService implements IAiRegistryApi {
 
       for (const key in cm.data) {
         try {
-          const parsed = JSON.parse(cm.data[key]) as Record<string, unknown>;
+          const parsed: unknown = JSON.parse(cm.data[key]);
+          if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+            continue;
+          }
+          const registry = parsed as Record<string, unknown>;
           return {
-            providers: Array.isArray(parsed.providers) ? parsed.providers : [],
-            tools: Array.isArray(parsed.tools) ? parsed.tools : [],
-            defaultAiProviders: Array.isArray(parsed.defaultAiProviders)
-              ? parsed.defaultAiProviders
+            providers: Array.isArray(registry.providers) ? registry.providers : [],
+            tools: Array.isArray(registry.tools) ? registry.tools : [],
+            defaultAiProviders: Array.isArray(registry.defaultAiProviders)
+              ? registry.defaultAiProviders
               : [],
           };
         } catch (error) {
