@@ -649,6 +649,59 @@ describe('aiTools', () => {
       expect(result!.spec.template.components?.find(c => c.name === 'editor')).toBeDefined();
     });
 
+    it('should remove injected-tools volume mount and PATH from editor when all tools removed', () => {
+      const workspace = buildWorkspaceWithComponents([
+        {
+          name: 'editor',
+          container: {
+            image: 'che-code:latest',
+            volumeMounts: [{ name: 'injected-tools', path: '/injected-tools' }],
+            env: [
+              {
+                name: 'PATH',
+                value:
+                  '/injected-tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+              },
+            ],
+          },
+        },
+        {
+          name: 'old-tool-injector',
+          attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
+          container: { image: 'quay.io/example/removed-tool:v1' },
+        },
+        {
+          name: 'injected-tools',
+          attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
+          volume: { size: '256Mi' },
+        },
+      ]);
+
+      const result = sanitizeStaleAiTools(workspace.ref, ALL_TOOLS);
+      expect(result).not.toBeNull();
+
+      // Volume component removed
+      expect(
+        result!.spec.template.components?.find(c => c.name === 'injected-tools'),
+      ).toBeUndefined();
+
+      // Editor volume mount cleaned
+      const editorComp = result!.spec.template.components?.find(c => c.name === 'editor') as
+        | {
+            container?: {
+              volumeMounts?: Array<{ name: string }>;
+              env?: Array<{ name: string; value: string }>;
+            };
+          }
+        | undefined;
+      expect(
+        editorComp?.container?.volumeMounts?.find(vm => vm.name === 'injected-tools'),
+      ).toBeUndefined();
+
+      // PATH env var removed (was just the default with injected-tools prepended)
+      expect(editorComp?.container?.env?.find(e => e.name === 'PATH')).toBeUndefined();
+    });
+
     it('should preserve volume when a recognized tool still exists', () => {
       const workspace = buildWorkspaceWithComponents([
         { name: 'editor', container: { image: 'che-code:latest' } },
