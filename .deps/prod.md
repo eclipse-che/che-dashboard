@@ -282,7 +282,7 @@
 | `jsonschema@1.4.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsonschema/1.4.1) |
 | `leven@2.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/leven/2.1.0) |
 | `light-my-request@6.6.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/light-my-request/6.6.0) |
-| `lodash@4.17.23` | CC0-1.0 AND MIT | #2096 |
+| `lodash@4.18.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lodash/4.18.1) |
 | `loose-envify@1.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/loose-envify/1.4.0) |
 | `lru-cache@10.4.3` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lru-cache/10.4.3) |
 | `lru-cache@11.2.4` | BlueOak-1.0.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lru-cache/11.2.4) |
