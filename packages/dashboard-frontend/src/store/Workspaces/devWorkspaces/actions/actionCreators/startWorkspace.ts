@@ -97,10 +97,21 @@ export const startWorkspace =
       const aiUpdated = updateOutdatedAiTools(updateSource, aiTools);
       const aiResult = aiUpdated ?? aiPatched;
       if (aiResult) {
+        const patchOps: { op: string; path: string; value: unknown }[] = [
+          { op: 'replace', path: '/spec/template', value: aiResult.spec.template },
+        ];
+        // Persist annotation changes (e.g. clearing PENDING_CLEANUP_ANNOTATION)
+        if (aiResult.metadata?.annotations) {
+          patchOps.push({
+            op: 'replace',
+            path: '/metadata/annotations',
+            value: aiResult.metadata.annotations,
+          });
+        }
         const { devWorkspace } = await DwApi.patchWorkspace(
           workspace.metadata.namespace,
           workspace.metadata.name,
-          [{ op: 'replace', path: '/spec/template', value: aiResult.spec.template }],
+          patchOps,
         );
         workspace = devWorkspace;
       }
