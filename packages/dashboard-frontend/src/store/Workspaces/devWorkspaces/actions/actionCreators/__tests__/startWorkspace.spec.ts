@@ -47,6 +47,18 @@ jest.mock('@/store/DevWorkspacesCluster');
 jest.mock('@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/updateEditor');
 jest.mock('@eclipse-che/common');
 
+const mockPatchWorkspace = jest.fn();
+jest.mock('@/services/backend-client/devWorkspaceApi', () => ({
+  patchWorkspace: (...args: unknown[]) => mockPatchWorkspace(...args),
+}));
+
+const mockSanitizeStaleAiTools = jest.fn().mockReturnValue(null);
+const mockUpdateOutdatedAiTools = jest.fn().mockReturnValue(null);
+jest.mock('@/services/helpers/aiTools', () => ({
+  sanitizeStaleAiTools: (...args: unknown[]) => mockSanitizeStaleAiTools(...args),
+  updateOutdatedAiTools: (...args: unknown[]) => mockUpdateOutdatedAiTools(...args),
+}));
+
 const mockNamespace = 'test-namespace';
 const mockName = 'test-workspace';
 const mockWorkspace = {
@@ -264,6 +276,52 @@ describe('devWorkspaces, actions', () => {
           `Failed to start the workspace ${mockWorkspace.metadata.name}, reason: ${errorMessage}`,
         ),
       );
+    });
+
+    it('should patch workspace with template and annotations when AI tools are sanitized', async () => {
+      const patchedWorkspace = {
+        ...mockWorkspace,
+        metadata: {
+          ...mockWorkspace.metadata,
+          annotations: { 'che.eclipse.org/pending-ai-cleanup': '' },
+        },
+        spec: {
+          ...mockWorkspace.spec,
+          template: { components: [] },
+        },
+      };
+      mockSanitizeStaleAiTools.mockReturnValueOnce(patchedWorkspace);
+      mockPatchWorkspace.mockResolvedValueOnce({ devWorkspace: mockWorkspace });
+
+      await store.dispatch(startWorkspace(mockWorkspace));
+
+      expect(mockPatchWorkspace).toHaveBeenCalledWith(mockNamespace, mockName, [
+        { op: 'replace', path: '/spec/template', value: patchedWorkspace.spec.template },
+        {
+          op: 'replace',
+          path: '/metadata/annotations',
+          value: patchedWorkspace.metadata.annotations,
+        },
+      ]);
+    });
+
+    it('should patch workspace with template only when annotations are absent', async () => {
+      const patchedWorkspace = {
+        ...mockWorkspace,
+        metadata: { ...mockWorkspace.metadata, annotations: undefined },
+        spec: {
+          ...mockWorkspace.spec,
+          template: { components: [] },
+        },
+      };
+      mockSanitizeStaleAiTools.mockReturnValueOnce(patchedWorkspace);
+      mockPatchWorkspace.mockResolvedValueOnce({ devWorkspace: mockWorkspace });
+
+      await store.dispatch(startWorkspace(mockWorkspace));
+
+      expect(mockPatchWorkspace).toHaveBeenCalledWith(mockNamespace, mockName, [
+        { op: 'replace', path: '/spec/template', value: patchedWorkspace.spec.template },
+      ]);
     });
   });
 });
