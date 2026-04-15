@@ -99,8 +99,8 @@
 | `atomic-sleep@1.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/atomic-sleep/1.0.0) |
 | `attr-accept@1.1.3` | MIT | CQ22348 |
 | `available-typed-arrays@1.0.7` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/available-typed-arrays/1.0.7) |
-| `avvio@9.2.0` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/avvio/9.2.0) |
-| `axios@1.13.5` | MIT | #25792 |
+| `avvio@9.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/avvio/9.2.0) |
+| `axios@1.15.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios/1.15.0) |
 | `b4a@1.7.3` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/b4a/1.7.3) |
 | `bare-events@2.8.2` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/bare-events/2.8.2) |
 | `bare-fs@4.5.2` | Apache-2.0 | #24516 |
