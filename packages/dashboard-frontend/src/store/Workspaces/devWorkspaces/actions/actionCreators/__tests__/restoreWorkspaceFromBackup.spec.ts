@@ -237,6 +237,23 @@ describe('restoreWorkspaceFromBackup', () => {
     expect(fetchCall.devfileContent).toContain('universal-developer-image');
   });
 
+  test('should create workspace with started set to false', async () => {
+    await store.dispatch(
+      restoreWorkspaceFromBackup(
+        'user-ns',
+        'my-ws',
+        'quay.io/user-ns/my-ws:latest',
+        'che-incubator/che-code/latest',
+      ),
+    );
+
+    expect(DwApi.createWorkspace).toHaveBeenCalledWith(
+      expect.objectContaining({
+        spec: expect.objectContaining({ started: false }),
+      }),
+    );
+  });
+
   test('should include default components without resource limits when not specified', async () => {
     await store.dispatch(
       restoreWorkspaceFromBackup(
