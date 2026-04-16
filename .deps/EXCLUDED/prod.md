@@ -5,9 +5,9 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `@eclipse-che/che-devworkspace-generator@7.113.0-next-7b6a101` | ecd.che |
 | `@fastify/busboy@3.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/busboy/3.0.1) |
 | `@fastify/cors@11.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/cors/11.2.0) |
-| `@fastify/http-proxy@11.4.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/http-proxy/11.4.1) |
+| `@fastify/http-proxy@11.4.4` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/http-proxy/11.4.4) |
 | `@fastify/oauth2@8.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/oauth2/8.2.0) |
-| `@fastify/reply-from@12.6.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/reply-from/12.6.0) |
+| `@fastify/reply-from@12.6.2` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/reply-from/12.6.2) |
 | `@fastify/static@9.0.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/static/9.0.0) |
 | `@fastify/swagger-ui@5.2.5` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/swagger-ui/5.2.5) |
 | `@fastify/swagger@9.7.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/swagger/9.7.0) |
