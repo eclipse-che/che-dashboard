@@ -10,7 +10,16 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FormGroup, TextInput, TextInputTypes, ValidatedOptions } from '@patternfly/react-core';
+import {
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  TextInput,
+  TextInputTypes,
+  ValidatedOptions,
+} from '@patternfly/react-core';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 export type Props = {
@@ -96,10 +105,16 @@ export class GitProviderEndpoint extends React.PureComponent<Props, State> {
     validated: ValidatedOptions;
     sanitized: string;
   } {
-    const validationRe =
+    if (providerEndpoint.length === 0) {
+      return {
+        validated: ValidatedOptions.error,
+        sanitized: '',
+      };
+    }
+    const validationRegexp =
       /^https?:\/\/(?:(?:[a-z\d]+(?:-[a-z\d]+)*)\.)+[a-z]{2,}(?::\d{1,5})?(?:\/[^\s]*)?$/i;
 
-    if (validationRe.test(providerEndpoint) === false) {
+    if (!validationRegexp.test(providerEndpoint)) {
       return {
         validated: ValidatedOptions.error,
         sanitized: providerEndpoint,
@@ -121,11 +136,21 @@ export class GitProviderEndpoint extends React.PureComponent<Props, State> {
     }
   }
 
+  private getErrorMessage(providerEndpoint: string): string {
+    if (providerEndpoint.length === 0) {
+      return 'Git provider endpoint is required.';
+    }
+    return 'Invalid URL format. Must be a valid URL starting with http:// or https://';
+  }
+
   public render(): React.ReactElement {
-    const { providerEndpoint = '' } = this.state;
+    const { providerEndpoint = '', validated } = this.state;
+
+    const errorMessage = this.getErrorMessage(providerEndpoint);
+    const hasError = validated === ValidatedOptions.error;
 
     return (
-      <FormGroup fieldId="git-provider-endpoint-label" label="Git Provider Endpoint" isRequired>
+      <FormGroup fieldId="git-provider-endpoint-label" isRequired label="Git Provider Endpoint">
         <TextInput
           aria-describedby="git-provider-endpoint-label"
           aria-label="Git Provider Endpoint"
@@ -134,8 +159,18 @@ export class GitProviderEndpoint extends React.PureComponent<Props, State> {
           placeholder="Enter a Git Provider Endpoint"
           ref={this.textInputRef}
           type={TextInputTypes.url}
+          validated={hasError ? 'error' : 'default'}
           value={providerEndpoint}
         />
+        {hasError && (
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem variant="error" icon={<ExclamationCircleIcon />}>
+                {errorMessage}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+        )}
       </FormGroup>
     );
   }

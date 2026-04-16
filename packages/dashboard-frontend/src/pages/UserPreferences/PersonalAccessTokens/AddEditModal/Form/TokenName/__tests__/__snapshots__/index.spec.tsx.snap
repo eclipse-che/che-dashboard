@@ -7,7 +7,6 @@ exports[`TokenName snapshot w/o token name 1`] = `
 >
   <div
     className="pf-v6-c-form__group"
-    helperText="Alphanumeric characters, "-" or ".", starting and ending with an alphanumeric character."
   >
     <div
       className="pf-v6-c-form__group-label"
@@ -54,6 +53,23 @@ exports[`TokenName snapshot w/o token name 1`] = `
           value=""
         />
       </span>
+      <div
+        className="pf-v6-c-form__helper-text"
+      >
+        <div
+          className="pf-v6-c-helper-text"
+        >
+          <div
+            className="pf-v6-c-helper-text__item"
+          >
+            <span
+              className="pf-v6-c-helper-text__item-text"
+            >
+              Must use alphanumeric characters, "-" or ".", starting and ending with an alphanumeric character.
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </form>
@@ -113,6 +129,23 @@ exports[`TokenName snapshot with token name 1`] = `
           value="github-token"
         />
       </span>
+      <div
+        className="pf-v6-c-form__helper-text"
+      >
+        <div
+          className="pf-v6-c-helper-text"
+        >
+          <div
+            className="pf-v6-c-helper-text__item"
+          >
+            <span
+              className="pf-v6-c-helper-text__item-text"
+            >
+              Must use alphanumeric characters, "-" or ".", starting and ending with an alphanumeric character.
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </form>
