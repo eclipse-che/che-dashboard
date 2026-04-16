@@ -22,7 +22,7 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon, ExclamationTriangleIcon } from '@patternfly/react-icons';
-import React from 'react';
+import React, { useState } from 'react';
 
 export type Props = {
   fieldId: string;
@@ -45,21 +45,36 @@ export const WorkspaceNameField: React.FC<Props> = ({
   onChange,
   actionButton,
 }) => {
+  const [dirty, setDirty] = useState(false);
+
+  const isDirtyEmpty = dirty && !value;
+  const effectiveValidated = isDirtyEmpty ? ValidatedOptions.error : validated;
+
   const helperTextInvalid = error || warning || '';
   const helperTextInvalidIcon =
-    validated === ValidatedOptions.warning ? (
+    effectiveValidated === ValidatedOptions.warning ? (
       <ExclamationTriangleIcon />
     ) : (
       <ExclamationCircleIcon />
     );
   const effectiveHelperText =
-    validated === ValidatedOptions.warning && warning ? warning : helperText;
+    effectiveValidated === ValidatedOptions.warning && warning ? warning : helperText;
 
   const getHelperContent = (): React.ReactNode => {
-    if (validated === ValidatedOptions.error || validated === ValidatedOptions.warning) {
+    if (isDirtyEmpty) {
+      return (
+        <HelperTextItem variant="error" icon={<ExclamationCircleIcon />}>
+          Workspace name is required.
+        </HelperTextItem>
+      );
+    }
+    if (
+      effectiveValidated === ValidatedOptions.error ||
+      effectiveValidated === ValidatedOptions.warning
+    ) {
       return (
         <HelperTextItem
-          variant={validated === ValidatedOptions.error ? 'error' : 'warning'}
+          variant={effectiveValidated === ValidatedOptions.error ? 'error' : 'warning'}
           icon={helperTextInvalidIcon}
         >
           {helperTextInvalid}
@@ -67,6 +82,11 @@ export const WorkspaceNameField: React.FC<Props> = ({
       );
     }
     return <HelperTextItem>{effectiveHelperText}</HelperTextItem>;
+  };
+
+  const handleChange = (_event: React.FormEvent, _value: string) => {
+    setDirty(true);
+    onChange(_value);
   };
 
   return (
@@ -78,13 +98,13 @@ export const WorkspaceNameField: React.FC<Props> = ({
           placeholder="my-workspace"
           value={value}
           validated={
-            validated === ValidatedOptions.error
+            effectiveValidated === ValidatedOptions.error
               ? 'error'
-              : validated === ValidatedOptions.warning
+              : effectiveValidated === ValidatedOptions.warning
                 ? 'warning'
                 : 'default'
           }
-          onChange={(_event, _value: string) => onChange(_value)}
+          onChange={handleChange}
         />
         {actionButton}
       </InputGroup>
