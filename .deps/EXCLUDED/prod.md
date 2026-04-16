@@ -9,7 +9,8 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `@uiw/codemirror-theme-github@4.25.9` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/codemirror-theme-github/4.25.9) |
 | `@uiw/codemirror-themes@4.25.9` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/codemirror-themes/4.25.9) |
 | `@fastify/cors@11.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/cors/11.2.0) |
-| `@fastify/reply-from@12.6.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/reply-from/12.6.0) |
+| `@fastify/http-proxy@11.4.4` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/http-proxy/11.4.4) |
+| `@fastify/reply-from@12.6.2` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/reply-from/12.6.2) |
 | `@fastify/static@9.0.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/static/9.0.0) |
 | `@isaacs/brace-expansion@5.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@isaacs/brace-expansion/5.0.1) |
 | `any-signal@4.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/any-signal/4.2.0) |
