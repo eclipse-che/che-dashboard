@@ -1060,7 +1060,7 @@ __metadata:
   dependencies:
     "@eslint/eslintrc": "npm:3.3.4"
     "@yarnpkg/parsers": "npm:^3.0.3"
-    axios: "npm:^1.13.5"
+    axios: "npm:^1.15.0"
     chalk: "npm:^4.1.2"
     loglevel: "npm:^1.9.2"
   bin:

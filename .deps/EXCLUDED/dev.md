@@ -4,3 +4,4 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 | --- | --- |
 | `@eclipse-che/api@7.86.0` | ecd.che |
 | `@eclipse-che/license-tool@2.0.0` | ecd.che |
+| `eslint-visitor-keys@4.2.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/eslint-visitor-keys/4.2.1) |
