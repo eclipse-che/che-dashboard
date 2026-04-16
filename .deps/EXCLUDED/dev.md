@@ -3,4 +3,4 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 | Packages | Resolved CQs |
 | --- | --- |
 | `@eclipse-che/api@7.86.0` | ecd.che |
-| `@types/stream-buffers@3.0.8` | #24674 |
+| `@eclipse-che/license-tool@2.0.0` | ecd.che |
