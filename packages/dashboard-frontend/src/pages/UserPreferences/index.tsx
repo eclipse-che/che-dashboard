@@ -16,6 +16,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Location, NavigateFunction } from 'react-router-dom';
 
 import Head from '@/components/Head';
+import AiProviderKeys from '@/pages/UserPreferences/AiProviderKeys';
 import ContainerRegistries from '@/pages/UserPreferences/ContainerRegistriesTab';
 import GitConfig from '@/pages/UserPreferences/GitConfig';
 import GitServices from '@/pages/UserPreferences/GitServices';
@@ -24,6 +25,7 @@ import SshKeys from '@/pages/UserPreferences/SshKeys';
 import { ROUTE } from '@/Routes';
 import { UserPreferencesTab } from '@/services/helpers/types';
 import { RootState } from '@/store';
+import { selectAiConfigEnabled } from '@/store/AiConfig/selectors';
 import { gitOauthConfigActionCreators } from '@/store/GitOauthConfig';
 import { selectIsLoading } from '@/store/GitOauthConfig/selectors';
 
@@ -48,14 +50,16 @@ class UserPreferences extends React.PureComponent<Props, State> {
   }
 
   private getActiveTabKey(): UserPreferencesTab {
-    const { pathname, search } = this.props.location;
+    const { aiEnabled, location } = this.props;
+    const { pathname, search } = location;
 
     if (search) {
       const searchParam = new URLSearchParams(search);
       const tab = searchParam.get('tab');
       if (
         pathname === ROUTE.USER_PREFERENCES &&
-        (tab === UserPreferencesTab.CONTAINER_REGISTRIES ||
+        ((tab === UserPreferencesTab.AI_PROVIDER_KEYS && aiEnabled) ||
+          tab === UserPreferencesTab.CONTAINER_REGISTRIES ||
           tab === UserPreferencesTab.GITCONFIG ||
           tab === UserPreferencesTab.GIT_SERVICES ||
           tab === UserPreferencesTab.PERSONAL_ACCESS_TOKENS ||
@@ -116,6 +120,11 @@ class UserPreferences extends React.PureComponent<Props, State> {
             <Tab eventKey={UserPreferencesTab.SSH_KEYS} title="SSH Keys">
               <SshKeys />
             </Tab>
+            {this.props.aiEnabled && (
+              <Tab eventKey={UserPreferencesTab.AI_PROVIDER_KEYS} title="AI Providers Keys">
+                <AiProviderKeys />
+              </Tab>
+            )}
           </Tabs>
         </PageSection>
       </React.Fragment>
@@ -124,6 +133,7 @@ class UserPreferences extends React.PureComponent<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
+  aiEnabled: selectAiConfigEnabled(state),
   isLoading: selectIsLoading(state),
 });
 

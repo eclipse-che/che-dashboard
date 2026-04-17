@@ -52,7 +52,6 @@ export function registerServerConfigRoute(instance: FastifyInstance) {
       const axiosRequestTimeout = serverConfigApi.getAxiosRequestTimeout();
       const showDeprecated = serverConfigApi.getShowDeprecatedEditors(cheCustomResource);
       const hideById = serverConfigApi.getHideEditorsById(cheCustomResource);
-
       const serverConfig: api.IServerConfig = {
         containerBuild,
         containerRun,
