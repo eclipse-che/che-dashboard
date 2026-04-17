@@ -139,6 +139,9 @@ export const RestoreFromBackupPage: React.FC<Props> = props => {
 
       const location = buildIdeLoaderLocation({ namespace, name: workspaceName } as Workspace);
       window.open(toHref(location), '_blank');
+
+      // Navigate current tab back to the backups list — the restore form is now stale.
+      navigate('/workspaces?view=backups');
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Failed to initiate restore.';
       setIsSubmitting(false);
