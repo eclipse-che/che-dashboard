@@ -70,8 +70,7 @@ describe('SshPrivateKey', () => {
       await userEvent.clear(input);
 
       expect(mockOnChange).toHaveBeenCalledWith(sshPrivateKey, false);
-      // SshPrivateKey component validates but doesn't render error messages
-      // expect(screen.queryByText(WRONG_TYPE_ERROR)).toBeTruthy();
+      expect(screen.queryByText(WRONG_TYPE_ERROR)).toBeTruthy();
       expect(screen.queryByText(REQUIRED_ERROR)).toBeFalsy();
       expect(screen.queryByText(MAX_LENGTH_ERROR)).toBeFalsy();
     });
@@ -90,8 +89,7 @@ describe('SshPrivateKey', () => {
       const expectedSshPrivateKey = btoa(sshPrivateKey.trim() + '\n');
 
       expect(mockOnChange).toHaveBeenCalledWith(expectedSshPrivateKey, false);
-      // SshPrivateKey component validates but doesn't render error messages
-      // expect(screen.queryByText(MAX_LENGTH_ERROR)).toBeTruthy();
+      expect(screen.queryByText(MAX_LENGTH_ERROR)).toBeTruthy();
       expect(screen.queryByText(WRONG_TYPE_ERROR)).toBeFalsy();
       expect(screen.queryByText(REQUIRED_ERROR)).toBeFalsy();
     });
@@ -136,10 +134,8 @@ describe('SshPrivateKey', () => {
       await userEvent.clear(input);
 
       expect(mockOnChange).toHaveBeenCalledWith('', false);
-      // SshPrivateKey component validates but doesn't render error messages
-      // expect(screen.queryByText(REQUIRED_ERROR)).toBeTruthy();
-
       expect(screen.queryByText(WRONG_TYPE_ERROR)).toBeFalsy();
+      expect(screen.queryByText(REQUIRED_ERROR)).toBeTruthy();
       expect(screen.queryByText(MAX_LENGTH_ERROR)).toBeFalsy();
     });
 
@@ -158,9 +154,7 @@ describe('SshPrivateKey', () => {
       const expectedSshPrivateKey = btoa(sshPrivateKey.trim() + '\n');
 
       expect(mockOnChange).toHaveBeenCalledWith(expectedSshPrivateKey, false);
-      // SshPrivateKey component validates but doesn't render error messages in text area mode
-      expect(screen.queryByText(MAX_LENGTH_ERROR)).toBeFalsy();
-
+      expect(screen.queryByText(MAX_LENGTH_ERROR)).toBeTruthy();
       expect(screen.queryByText(WRONG_TYPE_ERROR)).toBeFalsy();
       expect(screen.queryByText(REQUIRED_ERROR)).toBeFalsy();
     });
