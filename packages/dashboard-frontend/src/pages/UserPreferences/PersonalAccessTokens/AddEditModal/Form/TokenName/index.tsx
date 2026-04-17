@@ -10,13 +10,19 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FormGroup, TextInput, TextInputTypes, ValidatedOptions } from '@patternfly/react-core';
+import {
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  TextInput,
+  TextInputTypes,
+  ValidatedOptions,
+} from '@patternfly/react-core';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 const MAX_LENGTH = 255;
-const ALLOWED_CHARACTERS =
-  'Alphanumeric characters, "-" or ".", starting and ending with an alphanumeric character.';
-
 const REGEXP = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/;
 
 export type Props = {
@@ -54,22 +60,34 @@ export class TokenName extends React.PureComponent<Props, State> {
       return ValidatedOptions.error;
     } else if (tokenName.length === 0) {
       return ValidatedOptions.error;
-    } else if (REGEXP.test(tokenName) === false) {
+    } else if (!REGEXP.test(tokenName)) {
       return ValidatedOptions.error;
     } else {
       return ValidatedOptions.success;
     }
   }
 
+  private getErrorMessage(tokenName: string): string {
+    if (tokenName.length === 0) {
+      return 'Token name is required.';
+    } else if (tokenName.length > MAX_LENGTH) {
+      return `Token name must be ${MAX_LENGTH} characters or less.`;
+    } else if (!REGEXP.test(tokenName)) {
+      return 'Invalid token name format. Must use alphanumeric characters, "-" or ".", starting and ending with an alphanumeric character.';
+    }
+    return '';
+  }
+
   public render(): React.ReactElement {
     const { isEdit } = this.props;
-    const { tokenName = '' } = this.state;
+    const { tokenName = '', validated } = this.state;
 
     const readOnlyAttr = isEdit ? { isReadOnly: true } : {};
-    const helperText = isEdit ? {} : { helperText: ALLOWED_CHARACTERS };
+    const errorMessage = this.getErrorMessage(tokenName);
+    const hasError = validated === ValidatedOptions.error;
 
     return (
-      <FormGroup fieldId="token-name-label" isRequired label="Token Name" {...helperText}>
+      <FormGroup fieldId="token-name-label" isRequired label="Token Name">
         <TextInput
           aria-describedby="token-name-label"
           aria-label="Token Name"
@@ -77,9 +95,19 @@ export class TokenName extends React.PureComponent<Props, State> {
           onChange={(_event, tokenName) => this.onChange(tokenName)}
           placeholder="Enter a Token Name"
           type={TextInputTypes.text}
+          validated={hasError ? 'error' : 'default'}
           value={tokenName}
           {...readOnlyAttr}
         />
+        {hasError && (
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem variant="error" icon={<ExclamationCircleIcon />}>
+                {errorMessage}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+        )}
       </FormGroup>
     );
   }

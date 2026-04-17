@@ -130,6 +130,123 @@ describe('TokenName', () => {
     //   ),
     // ).toBeTruthy();
   });
+
+  describe('helper text behavior', () => {
+    it('should not show helper text when token name is valid', () => {
+      renderComponent(false);
+
+      const input = screen.getByRole('textbox');
+
+      const validTokenName = 'github-token';
+      fireEvent.change(input, { target: { value: validTokenName } });
+
+      // Helper text should not be present
+      expect(screen.queryByText('Token name is required.')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Token name must be \d+ characters or less./),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          /Invalid token name format. Must use alphanumeric characters, "-" or ".", starting and ending with an alphanumeric character./,
+        ),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should show error helper text when token name is empty', () => {
+      renderComponent(false);
+
+      const input = screen.getByRole('textbox');
+
+      // First set a valid value
+      fireEvent.change(input, { target: { value: 'github-token' } });
+
+      // Then clear it to trigger validation
+      fireEvent.change(input, { target: { value: '' } });
+
+      // Error helper text should be visible
+      expect(screen.getByText('Token name is required.')).toBeInTheDocument();
+    });
+
+    it('should show error helper text when token name is too long', () => {
+      renderComponent(false);
+
+      const input = screen.getByRole('textbox');
+
+      // Create a token name that exceeds MAX_LENGTH (255)
+      const tooLongTokenName = 'a'.repeat(256);
+      fireEvent.change(input, { target: { value: tooLongTokenName } });
+
+      // Error helper text should be visible
+      expect(screen.getByText('Token name must be 255 characters or less.')).toBeInTheDocument();
+    });
+
+    it('should show error helper text when token name has invalid format', () => {
+      renderComponent(false);
+
+      const input = screen.getByRole('textbox');
+
+      // Use invalid character (+)
+      const invalidTokenName = 'github+token';
+      fireEvent.change(input, { target: { value: invalidTokenName } });
+
+      // Error helper text should be visible
+      expect(
+        screen.getByText(
+          'Invalid token name format. Must use alphanumeric characters, "-" or ".", starting and ending with an alphanumeric character.',
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('should hide helper text when correcting an invalid token name', () => {
+      renderComponent(false);
+
+      const input = screen.getByRole('textbox');
+
+      // First set an invalid value
+      const invalidTokenName = 'github+token';
+      fireEvent.change(input, { target: { value: invalidTokenName } });
+
+      // Error helper text should be visible
+      expect(
+        screen.getByText(
+          'Invalid token name format. Must use alphanumeric characters, "-" or ".", starting and ending with an alphanumeric character.',
+        ),
+      ).toBeInTheDocument();
+
+      // Now correct it
+      const validTokenName = 'github-token';
+      fireEvent.change(input, { target: { value: validTokenName } });
+
+      // Helper text should no longer be visible
+      expect(
+        screen.queryByText(
+          'Invalid token name format. Must use alphanumeric characters, "-" or ".", starting and ending with an alphanumeric character.',
+        ),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should not show helper text on initial render with valid token name', () => {
+      renderComponent(false, 'github-token');
+
+      // No helper text should be visible
+      expect(screen.queryByText('Token name is required.')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Token name must be \d+ characters or less./),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          /Invalid token name format. Must use alphanumeric characters, "-" or ".", starting and ending with an alphanumeric character./,
+        ),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should not show helper text on initial render without token name', () => {
+      renderComponent(false);
+
+      // No helper text should be visible initially (validation state is 'default')
+      expect(screen.queryByText('Token name is required.')).not.toBeInTheDocument();
+    });
+  });
 });
 
 function getComponent(isEdit: boolean, tokenName?: string): React.ReactElement {

@@ -7,7 +7,6 @@ exports[`TokenName snapshot w/o token name 1`] = `
 >
   <div
     className="pf-v6-c-form__group"
-    helperText="Alphanumeric characters, "-" or ".", starting and ending with an alphanumeric character."
   >
     <div
       className="pf-v6-c-form__group-label"
