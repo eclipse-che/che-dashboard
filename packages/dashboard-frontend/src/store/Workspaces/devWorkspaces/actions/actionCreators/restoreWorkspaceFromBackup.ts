@@ -166,6 +166,10 @@ export const restoreWorkspaceFromBackup =
       }
       devWorkspaceTemplateResource.metadata.namespace = namespace;
 
+      // Create with started=false so the IDE loader's CheckRunningWorkspacesLimit step
+      // enforces maxNumberOfRunningWorkspacesPerUser before starting the workspace.
+      devWorkspaceResource.spec.started = false;
+
       // Create the DevWorkspaceTemplate first, then set ownerReference once we have the DW uid
       const createdTemplate = await DwtApi.createTemplate(devWorkspaceTemplateResource);
 
