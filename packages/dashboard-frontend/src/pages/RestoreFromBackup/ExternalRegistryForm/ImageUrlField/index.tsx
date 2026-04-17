@@ -21,7 +21,7 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { CheckCircleIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
-import React from 'react';
+import React, { useState } from 'react';
 
 export type Props = {
   value: string;
@@ -31,15 +31,27 @@ export type Props = {
 };
 
 export const ImageUrlField: React.FC<Props> = ({ value, validated, error, onChange }) => {
+  const [dirty, setDirty] = useState(false);
+
+  const isDirtyEmpty = dirty && !value;
+  const effectiveValidated = isDirtyEmpty ? ValidatedOptions.error : validated;
+
   const getHelperContent = (): React.ReactNode => {
-    if (validated === ValidatedOptions.error) {
+    if (isDirtyEmpty) {
+      return (
+        <HelperTextItem variant="error" icon={<ExclamationCircleIcon />}>
+          Backup image URL is required.
+        </HelperTextItem>
+      );
+    }
+    if (effectiveValidated === ValidatedOptions.error) {
       return (
         <HelperTextItem variant="error" icon={<ExclamationCircleIcon />}>
           {error}
         </HelperTextItem>
       );
     }
-    if (validated === ValidatedOptions.success) {
+    if (effectiveValidated === ValidatedOptions.success) {
       return (
         <HelperTextItem
           variant="success"
@@ -56,6 +68,11 @@ export const ImageUrlField: React.FC<Props> = ({ value, validated, error, onChan
     );
   };
 
+  const handleChange = (_event: React.FormEvent, val: string) => {
+    setDirty(true);
+    onChange(val);
+  };
+
   return (
     <FormGroup fieldId="restore-image-url" label="Backup image URL" isRequired>
       <TextInput
@@ -64,13 +81,13 @@ export const ImageUrlField: React.FC<Props> = ({ value, validated, error, onChan
         placeholder="registry.example.com/namespace/workspace:latest"
         value={value}
         validated={
-          validated === ValidatedOptions.error
+          effectiveValidated === ValidatedOptions.error
             ? 'error'
-            : validated === ValidatedOptions.success
+            : effectiveValidated === ValidatedOptions.success
               ? 'success'
               : 'default'
         }
-        onChange={(_event, val) => onChange(val)}
+        onChange={handleChange}
       />
       <FormHelperText>
         <HelperText>{getHelperContent()}</HelperText>
