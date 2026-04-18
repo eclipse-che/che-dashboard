@@ -108,12 +108,16 @@ const agentCreateBodySchema = {
     memoryLimit: {
       type: 'string',
       pattern: '^[0-9]+(Mi|Gi)$',
-      description: 'Memory limit for the agent container (e.g. "2Gi")',
+      maxLength: 10,
+      default: '4Gi',
+      description: 'Memory limit for the agent container (e.g. "4Gi", "512Mi")',
     },
     cpuLimit: {
       type: 'string',
       pattern: '^[0-9]+(m)?$',
-      description: 'CPU limit for the agent container (e.g. "1000m")',
+      maxLength: 10,
+      default: '1',
+      description: 'CPU limit for the agent container (e.g. "1", "1000m")',
     },
     terminalPort: {
       type: 'integer',
