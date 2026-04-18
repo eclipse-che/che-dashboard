@@ -22,13 +22,14 @@ import { registerCors } from '@/plugins/cors';
 import { registerStaticServer } from '@/plugins/staticServer';
 import { registerSwagger } from '@/plugins/swagger';
 import { registerWebSocket } from '@/plugins/webSocket';
+import { registerAgentsRoute } from '@/routes/api/agents';
 import { registerAiAgentRegistryRoute } from '@/routes/api/aiAgentRegistry';
 import { registerAirGapSampleRoute } from '@/routes/api/airGapSample';
 import { registerBackupRoutes } from '@/routes/api/backup';
 import { registerClusterConfigRoute } from '@/routes/api/clusterConfig';
 import { registerClusterInfoRoute } from '@/routes/api/clusterInfo';
 import { registerDataResolverRoute } from '@/routes/api/dataResolver';
-import { registerDevfileCreatorRoute } from '@/routes/api/devfileCreator';
+import { registerDevfilesRoute } from '@/routes/api/devfiles';
 import { registerDevfileSchemaRoute } from '@/routes/api/devfileSchema';
 import { registerDevWorkspaceClusterRoutes } from '@/routes/api/devworkspaceCluster';
 import { registerDevworkspaceResourcesRoute } from '@/routes/api/devworkspaceResources';
@@ -147,7 +148,9 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
 
     registerBackupRoutes(server),
 
-    registerDevfileCreatorRoute(server),
+    registerDevfilesRoute(server),
+
+    registerAgentsRoute(server),
 
     registerDevfileSchemaRoute(server),
 

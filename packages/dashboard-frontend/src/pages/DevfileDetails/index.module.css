@@ -98,3 +98,13 @@
 .spacer16 {
   height: 16px;
 }
+
+.agentIdHeader {
+  padding: 4px 12px;
+
+  font-family: var(--pf-t--global--font--family--mono);
+  font-size: 12px;
+  color: var(--pf-t--global--text--color--subtle);
+
+  border-bottom: 1px solid var(--pf-t--global--border--color--default);
+}

@@ -213,6 +213,7 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
         isDarkTheme={isDarkTheme}
         agentEnabled={agentEnabled}
         agentInitCommand={defaultAgent?.initCommand}
+        agentInstanceId={this.agentInstanceId}
       />
     );
   }

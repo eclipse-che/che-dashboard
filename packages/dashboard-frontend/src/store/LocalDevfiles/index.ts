@@ -116,7 +116,8 @@ export const localDevfilesReducer = createReducer(initialState, builder =>
     .addDefaultCase(state => state),
 );
 
-const API_BASE = '/dashboard/api/devfile-creator/namespace';
+const DEVFILES_API_BASE = '/dashboard/api/devfiles/namespace';
+const AGENTS_API_BASE = '/dashboard/api/namespace';
 
 function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -222,7 +223,7 @@ export const actionCreators = {
     dispatch(requestStart());
     try {
       const namespace = selectDefaultNamespace(getState()).name;
-      const response = await fetch(`${API_BASE}/${namespace}`);
+      const response = await fetch(`${DEVFILES_API_BASE}/${namespace}`);
       if (!response.ok) {
         throw new Error(`Failed to fetch devfiles: ${response.statusText}`);
       }
@@ -242,7 +243,7 @@ export const actionCreators = {
     (name: string, description: string, content: string): AppThunk<Promise<string>> =>
     async (dispatch, getState) => {
       const namespace = selectDefaultNamespace(getState()).name;
-      const response = await fetch(`${API_BASE}/${namespace}`, {
+      const response = await fetch(`${DEVFILES_API_BASE}/${namespace}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content }),
@@ -268,7 +269,7 @@ export const actionCreators = {
     (id: string, content: string): AppThunk =>
     async (dispatch, getState) => {
       const namespace = selectDefaultNamespace(getState()).name;
-      const response = await fetch(`${API_BASE}/${namespace}/${id}`, {
+      const response = await fetch(`${DEVFILES_API_BASE}/${namespace}/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content }),
@@ -292,7 +293,7 @@ export const actionCreators = {
     (id: string): AppThunk =>
     async (dispatch, getState) => {
       const namespace = selectDefaultNamespace(getState()).name;
-      const response = await fetch(`${API_BASE}/${namespace}/${id}`, {
+      const response = await fetch(`${DEVFILES_API_BASE}/${namespace}/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -319,7 +320,7 @@ export const actionCreators = {
       );
 
       for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-        const response = await fetch(`${API_BASE}/${namespace}/agent`, {
+        const response = await fetch(`${AGENTS_API_BASE}/${namespace}/agent`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -358,7 +359,7 @@ export const actionCreators = {
       dispatch(setAgentTerminalUrl(undefined));
       dispatch(removeAgentPodStatus(agentId));
 
-      await fetch(`${API_BASE}/${namespace}/agent/${encodeURIComponent(agentId)}`, {
+      await fetch(`${AGENTS_API_BASE}/${namespace}/agent/${encodeURIComponent(agentId)}`, {
         method: 'DELETE',
       });
     },
@@ -370,7 +371,7 @@ export const actionCreators = {
         const namespace = selectDefaultNamespace(getState()).name;
         const params = new URLSearchParams({ terminalPort: String(terminalPort) });
         const response = await fetch(
-          `${API_BASE}/${namespace}/agent/${encodeURIComponent(agentId)}?${params.toString()}`,
+          `${AGENTS_API_BASE}/${namespace}/agent/${encodeURIComponent(agentId)}?${params.toString()}`,
         );
         if (!response.ok) {
           return;
@@ -387,9 +388,12 @@ export const actionCreators = {
     async (_dispatch, getState) => {
       try {
         const namespace = selectDefaultNamespace(getState()).name;
-        await fetch(`${API_BASE}/${namespace}/agent/${encodeURIComponent(agentId)}/heartbeat`, {
-          method: 'POST',
-        });
+        await fetch(
+          `${AGENTS_API_BASE}/${namespace}/agent/${encodeURIComponent(agentId)}/heartbeat`,
+          {
+            method: 'POST',
+          },
+        );
       } catch {
         // heartbeat failure is non-fatal
       }
@@ -405,13 +409,13 @@ export const actionCreators = {
           terminalPort: String(terminalPort),
         });
         const response = await fetch(
-          `${API_BASE}/${namespace}/agent-terminal-url?${params.toString()}`,
+          `${AGENTS_API_BASE}/${namespace}/agent-terminal-url?${params.toString()}`,
         );
         if (!response.ok) {
           dispatch(setAgentTerminalUrl(undefined));
           return;
         }
-        const terminalUrl = `${API_BASE}/${namespace}/t/?${params.toString()}`;
+        const terminalUrl = `${AGENTS_API_BASE}/${namespace}/agent/t/?${params.toString()}`;
         dispatch(setAgentTerminalUrl(terminalUrl));
       } catch {
         dispatch(setAgentTerminalUrl(undefined));

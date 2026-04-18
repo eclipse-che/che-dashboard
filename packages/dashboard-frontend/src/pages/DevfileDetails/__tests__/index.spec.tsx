@@ -48,6 +48,11 @@ jest.mock('@/components/EditorTools', () => {
     return <div data-testid="editor-tools">Editor Tools</div>;
   };
 });
+jest.mock('@/components/TerminalTools', () => {
+  return function MockTerminalTools() {
+    return <div data-testid="terminal-tools">Terminal Tools</div>;
+  };
+});
 
 const mockDevfile: LocalDevfile = {
   id: 'test-uuid-123',
@@ -123,9 +128,7 @@ describe('DevfileDetails', () => {
     const callArg = mockNavigate.mock.calls[0][0] as { search: string };
     const params = new URLSearchParams(callArg.search);
     const url = params.get('url');
-    expect(url).toContain(
-      '/dashboard/api/devfile-creator/namespace/test-namespace/test-uuid-123/raw',
-    );
+    expect(url).toContain('/dashboard/api/devfiles/namespace/test-namespace/test-uuid-123/raw');
   });
 
   test('Copy Link copies raw API URL', async () => {
@@ -139,9 +142,7 @@ describe('DevfileDetails', () => {
     await userEvent.click(copyLink);
 
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      expect.stringContaining(
-        '/dashboard/api/devfile-creator/namespace/test-namespace/test-uuid-123/raw',
-      ),
+      expect.stringContaining('/dashboard/api/devfiles/namespace/test-namespace/test-uuid-123/raw'),
     );
   });
 

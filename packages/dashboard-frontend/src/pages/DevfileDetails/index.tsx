@@ -43,6 +43,7 @@ import AgentTerminal from '@/components/AgentTerminal';
 import { DevfileEditor } from '@/components/DevfileEditor';
 import EditorTools from '@/components/EditorTools';
 import Head from '@/components/Head';
+import TerminalTools from '@/components/TerminalTools';
 import { DropdownActions } from '@/pages/DevfileDetails/DropdownActions';
 import styles from '@/pages/DevfileDetails/index.module.css';
 import { DevfileSchema } from '@/services/backend-client/devfileSchemaApi';
@@ -63,6 +64,7 @@ interface Props {
   isDarkTheme: boolean;
   agentEnabled: boolean;
   agentInitCommand?: string;
+  agentInstanceId?: string;
 }
 
 interface State {
@@ -73,6 +75,7 @@ interface State {
   agentError: string | undefined;
   hasValidationError: boolean;
   isEditorExpanded: boolean;
+  isTerminalExpanded: boolean;
 }
 
 export default class DevfileDetails extends React.PureComponent<Props, State> {
@@ -86,6 +89,7 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
       agentError: undefined,
       hasValidationError: false,
       isEditorExpanded: false,
+      isTerminalExpanded: false,
     };
   }
 
@@ -155,9 +159,13 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
     this.setState({ isEditorExpanded: isExpanded });
   };
 
+  private handleTerminalExpandToggle = () => {
+    this.setState(prev => ({ isTerminalExpanded: !prev.isTerminalExpanded }));
+  };
+
   private buildRawDevfileUrl(): string {
     const { devfile, namespace } = this.props;
-    return `${window.location.origin}/dashboard/api/devfile-creator/namespace/${namespace}/${devfile.id}/raw`;
+    return `${window.location.origin}/dashboard/api/devfiles/namespace/${namespace}/${devfile.id}/raw`;
   }
 
   private handleCopyLink = () => {
@@ -224,8 +232,14 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
       const isPending = phase === 'Pending';
 
       if (isRunning && agentTerminalUrl) {
+        const agentDisplayId = this.props.agentInstanceId || agentPodStatus.agentId;
         return (
           <div className={styles.agentPanelTerminal}>
+            <TerminalTools
+              isExpanded={this.state.isTerminalExpanded}
+              onToggleExpand={this.handleTerminalExpandToggle}
+            />
+            <div className={styles.agentIdHeader}>{agentDisplayId}</div>
             <AgentTerminal
               terminalUrl={agentTerminalUrl}
               namespace={this.props.namespace}
@@ -304,9 +318,12 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
 
   render(): React.ReactElement {
     const { devfile, agentPodStatus, agentTerminalUrl, agentEnabled } = this.props;
-    const { editorContent, isSaved, saveError, hasValidationError } = this.state;
+    const { editorContent, isSaved, saveError, hasValidationError, isTerminalExpanded } =
+      this.state;
     const isAgentConnected =
-      agentPodStatus?.phase === 'Running' && agentPodStatus?.ready && agentTerminalUrl;
+      agentPodStatus?.phase === 'Running' &&
+      agentPodStatus?.ready === true &&
+      agentTerminalUrl !== undefined;
 
     return (
       <React.Fragment>
@@ -339,67 +356,75 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
         </PageSection>
         <PageSection isFilled style={{ overflow: 'hidden' }}>
           <Split hasGutter style={{ height: '100%' }}>
-            <SplitItem isFilled className={styles.editorPanel}>
-              {saveError && (
-                <Alert
-                  variant="danger"
-                  isInline
-                  title="Save failed"
-                  style={{ marginBottom: '8px' }}
-                >
-                  {saveError}
-                </Alert>
-              )}
-              <EditorTools
-                contentText={editorContent}
-                workspaceName={devfile.name}
-                handleExpand={this.handleEditorExpand}
-              />
-              <div className={styles.editorContainer}>
-                <DevfileEditor
-                  id="devfile-editor-id"
-                  value={editorContent}
-                  schema={this.props.devfileSchema}
-                  onChange={this.handleEditorChange}
-                  onValidation={this.handleValidation}
+            {!(isAgentConnected && isTerminalExpanded) && (
+              <SplitItem isFilled className={styles.editorPanel}>
+                {saveError && (
+                  <Alert
+                    variant="danger"
+                    isInline
+                    title="Save failed"
+                    style={{ marginBottom: '8px' }}
+                  >
+                    {saveError}
+                  </Alert>
+                )}
+                <EditorTools
+                  contentText={editorContent}
+                  workspaceName={devfile.name}
+                  handleExpand={this.handleEditorExpand}
                 />
-              </div>
-              <div className={styles.spacer8} />
-              <Toolbar className={styles.editorToolbar}>
-                <ToolbarContent className={styles.editorToolbarContent}>
-                  <ToolbarItem>
-                    <Button variant="secondary" onClick={this.handleRefresh}>
-                      Refresh
-                    </Button>
-                  </ToolbarItem>
-                  <ToolbarItem>
-                    <Button
-                      variant="primary"
-                      onClick={this.handleSave}
-                      isDisabled={isSaved || hasValidationError}
-                    >
-                      Save
-                    </Button>
-                  </ToolbarItem>
-                  <ToolbarItem>
-                    <Button
-                      variant="secondary"
-                      icon={<RocketIcon />}
-                      iconPosition="left"
-                      isDisabled={!isSaved || hasValidationError}
-                      onClick={this.handleCreateWorkspace}
-                    >
-                      Create Workspace
-                    </Button>
-                  </ToolbarItem>
-                </ToolbarContent>
-              </Toolbar>
-            </SplitItem>
+                <div className={styles.editorContainer}>
+                  <DevfileEditor
+                    id="devfile-editor-id"
+                    value={editorContent}
+                    schema={this.props.devfileSchema}
+                    onChange={this.handleEditorChange}
+                    onValidation={this.handleValidation}
+                  />
+                </div>
+                <div className={styles.spacer8} />
+                <Toolbar className={styles.editorToolbar}>
+                  <ToolbarContent className={styles.editorToolbarContent}>
+                    <ToolbarItem>
+                      <Button variant="secondary" onClick={this.handleRefresh}>
+                        Refresh
+                      </Button>
+                    </ToolbarItem>
+                    <ToolbarItem>
+                      <Button
+                        variant="primary"
+                        onClick={this.handleSave}
+                        isDisabled={isSaved || hasValidationError}
+                      >
+                        Save
+                      </Button>
+                    </ToolbarItem>
+                    <ToolbarItem>
+                      <Button
+                        variant="secondary"
+                        icon={<RocketIcon />}
+                        iconPosition="left"
+                        isDisabled={!isSaved || hasValidationError}
+                        onClick={this.handleCreateWorkspace}
+                      >
+                        Create Workspace
+                      </Button>
+                    </ToolbarItem>
+                  </ToolbarContent>
+                </Toolbar>
+              </SplitItem>
+            )}
 
             {agentEnabled && (
               <SplitItem
+                isFilled={isAgentConnected && isTerminalExpanded}
                 style={{
-                  width: isAgentConnected ? '50%' : '500px',
+                  width:
+                    isAgentConnected && isTerminalExpanded
+                      ? '100%'
+                      : isAgentConnected
+                        ? '50%'
+                        : '500px',
                   minWidth: '350px',
                   transition: 'width 0.3s ease',
                 }}

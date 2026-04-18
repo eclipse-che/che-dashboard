@@ -435,7 +435,7 @@ describe('GitRepoLocationInput', () => {
 
   describe('presetUrl', () => {
     test('pre-fills the input with the preset URL', () => {
-      const presetUrl = 'https://example.com/dashboard/api/devfile-creator/namespace/ns/id/raw';
+      const presetUrl = 'https://example.com/dashboard/api/devfiles/namespace/ns/id/raw';
       const store = new MockStoreBuilder()
         .withDwServerConfig({
           defaults: {

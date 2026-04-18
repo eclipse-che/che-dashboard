@@ -271,7 +271,7 @@ export default class DevfilesList extends React.PureComponent<Props, State> {
     {
       title: 'Copy Link',
       onClick: () => {
-        const url = `${window.location.origin}/dashboard/api/devfile-creator/namespace/${this.props.namespace}/${devfile.id}/raw`;
+        const url = `${window.location.origin}/dashboard/api/devfiles/namespace/${this.props.namespace}/${devfile.id}/raw`;
         navigator.clipboard.writeText(url);
       },
     },
