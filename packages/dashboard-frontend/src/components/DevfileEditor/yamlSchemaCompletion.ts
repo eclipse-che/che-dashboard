@@ -32,6 +32,7 @@ interface JsonSchemaProperty {
   anyOf?: JsonSchemaProperty[];
   required?: string[];
   additionalProperties?: boolean | JsonSchemaProperty;
+  [key: string]: unknown;
 }
 
 interface JsonSchema extends JsonSchemaProperty {
@@ -43,15 +44,15 @@ function resolveRef(schema: JsonSchema, ref: string): JsonSchemaProperty | undef
     return undefined;
   }
   const path = ref.substring(2).split('/');
-  let current: Record<string, unknown> = schema as unknown as Record<string, unknown>;
+  let current: JsonSchemaProperty = schema;
   for (const segment of path) {
     if (current && typeof current === 'object' && segment in current) {
-      current = current[segment] as Record<string, unknown>;
+      current = current[segment] as JsonSchemaProperty;
     } else {
       return undefined;
     }
   }
-  return current as unknown as JsonSchemaProperty;
+  return current;
 }
 
 function resolveSchema(root: JsonSchema, s: JsonSchemaProperty): JsonSchemaProperty {

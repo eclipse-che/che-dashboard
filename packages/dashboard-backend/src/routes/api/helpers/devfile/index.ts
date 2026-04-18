@@ -73,20 +73,26 @@ export function countProjects(content: string): number {
   return parsed.projects.filter(p => typeof p?.name === 'string').length;
 }
 
-export function parseEntries(data: Record<string, string> | undefined): DevfileEntry[] {
+export const MODIFIED_ANNOTATION_PREFIX = 'che.eclipse.org/modified-';
+
+export function parseEntries(
+  data: Record<string, string> | undefined,
+  annotations?: Record<string, string>,
+): DevfileEntry[] {
   if (!data) return [];
   return Object.entries(data).map(([id, content]) => {
     const parsed = parseDevfileYaml(content);
     const name = parsed.metadata?.name;
     const description = parsed.metadata?.description;
     const projects = Array.isArray(parsed.projects) ? parsed.projects : [];
+    const storedTimestamp = annotations?.[`${MODIFIED_ANNOTATION_PREFIX}${id}`];
     return {
       id,
       name: typeof name === 'string' && name.length > 0 ? name : 'untitled',
       description: typeof description === 'string' ? description : '',
       content,
       projectCount: projects.filter(p => typeof p?.name === 'string').length,
-      lastModified: new Date().toISOString(),
+      lastModified: storedTimestamp || new Date().toISOString(),
     };
   });
 }

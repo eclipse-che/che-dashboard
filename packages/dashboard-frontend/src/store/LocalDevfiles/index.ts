@@ -141,8 +141,8 @@ export const clearAgentTerminalUrl = (): AppThunk => async dispatch => {
 
 const AGENT_LABEL_COMPONENT = 'app.kubernetes.io/component';
 
-let configMapListenerRegistered = false;
-let agentPodListenerRegistered = false;
+let configMapListener: ChannelListener | undefined;
+let agentPodListener: ChannelListener | undefined;
 
 function handleAgentPodWebSocketMessage(
   dispatch: (action: unknown) => void,
@@ -175,6 +175,8 @@ function handleAgentPodWebSocketMessage(
   );
 }
 
+const MODIFIED_ANNOTATION_PREFIX = 'che.eclipse.org/modified-';
+
 function handleConfigMapWebSocketMessage(
   dispatch: (action: unknown) => void,
   message: api.webSocket.NotificationMessage,
@@ -185,21 +187,27 @@ function handleConfigMapWebSocketMessage(
     if (resourceVersion) {
       dispatch(setConfigMapResourceVersion(resourceVersion));
     }
-    const devfiles = parseConfigMapData(configMap.data);
+    const devfiles = parseConfigMapData(configMap.data, configMap.metadata?.annotations);
     dispatch(requestSuccess(devfiles));
   }
 }
 
-function parseConfigMapData(data: Record<string, string> | undefined): LocalDevfile[] {
+function parseConfigMapData(
+  data: Record<string, string> | undefined,
+  annotations?: Record<string, string>,
+): LocalDevfile[] {
   if (!data) return [];
-  return Object.entries(data).map(([id, content]) => ({
-    id,
-    name: extractName(content),
-    description: extractDescription(content),
-    content,
-    projectNames: extractProjectNames(content),
-    lastModified: new Date().toISOString(),
-  }));
+  return Object.entries(data).map(([id, content]) => {
+    const storedTimestamp = annotations?.[`${MODIFIED_ANNOTATION_PREFIX}${id}`];
+    return {
+      id,
+      name: extractName(content),
+      description: extractDescription(content),
+      content,
+      projectNames: extractProjectNames(content),
+      lastModified: storedTimestamp || new Date().toISOString(),
+    };
+  });
 }
 
 export const actionCreators = {
@@ -433,7 +441,7 @@ export const actionCreators = {
     },
 
   subscribeToConfigMapChanges: (): AppThunk => async (dispatch, getState) => {
-    if (configMapListenerRegistered) return;
+    if (configMapListener) return;
 
     const websocketClient = container.get(WebsocketClient);
     const namespace = selectDefaultNamespace(getState()).name;
@@ -441,28 +449,29 @@ export const actionCreators = {
     const listener: ChannelListener = message => {
       handleConfigMapWebSocketMessage(dispatch, message);
     };
-    if (!websocketClient.hasChannelMessageListener(api.webSocket.Channel.CONFIGMAP)) {
-      websocketClient.addChannelMessageListener(api.webSocket.Channel.CONFIGMAP, listener);
-    }
+    websocketClient.addChannelMessageListener(api.webSocket.Channel.CONFIGMAP, listener);
+    configMapListener = listener;
 
     const resourceVersion = getState().localDevfiles.configMapResourceVersion;
     websocketClient.subscribeToChannel(api.webSocket.Channel.CONFIGMAP, namespace, {
       getResourceVersion: () => resourceVersion || '',
     });
-
-    configMapListenerRegistered = true;
   },
 
   unsubscribeFromConfigMapChanges: (): AppThunk => async () => {
-    if (!configMapListenerRegistered) return;
+    if (!configMapListener) return;
 
     const websocketClient = container.get(WebsocketClient);
+    websocketClient.removeChannelMessageListener(
+      api.webSocket.Channel.CONFIGMAP,
+      configMapListener,
+    );
     websocketClient.unsubscribeFromChannel(api.webSocket.Channel.CONFIGMAP);
-    configMapListenerRegistered = false;
+    configMapListener = undefined;
   },
 
   subscribeToAgentPodChanges: (): AppThunk => async (dispatch, getState) => {
-    if (agentPodListenerRegistered) return;
+    if (agentPodListener) return;
 
     const websocketClient = container.get(WebsocketClient);
 
@@ -470,7 +479,7 @@ export const actionCreators = {
       handleAgentPodWebSocketMessage(dispatch, message);
     };
     websocketClient.addChannelMessageListener(api.webSocket.Channel.POD, listener);
-    agentPodListenerRegistered = true;
+    agentPodListener = listener;
 
     const pods = getState().pods.pods;
     for (const pod of pods) {

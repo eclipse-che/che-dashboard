@@ -38,6 +38,7 @@ import {
   DevfileIdParams,
   getCoreV1Api,
   getOrCreateConfigMap,
+  MODIFIED_ANNOTATION_PREFIX,
   parseEntries,
 } from '@/routes/api/helpers/devfile';
 import { getToken } from '@/routes/api/helpers/getToken';
@@ -60,7 +61,7 @@ function validateTerminalPort(port: number): number {
 }
 
 const terminalUrlCache = new Map<string, { url: string; timestamp: number }>();
-const TERMINAL_URL_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const TERMINAL_URL_CACHE_TTL = 30 * 1000; // 30 seconds
 
 function terminalCacheKey(namespace: string, agentId: string): string {
   return `${namespace}/${agentId}`;
@@ -130,6 +131,17 @@ const agentCreateBodySchema = {
   additionalProperties: false,
 };
 
+const MAX_DEVFILE_CONTENT_SIZE = 524288; // 512 KiB
+
+const devfileContentBodySchema = {
+  type: 'object',
+  required: ['content'],
+  properties: {
+    content: { type: 'string', minLength: 1, maxLength: MAX_DEVFILE_CONTENT_SIZE },
+  },
+  additionalProperties: false,
+};
+
 export function registerDevfileCreatorRoute(instance: FastifyInstance) {
   instance.register(async server => {
     // List all devfiles
@@ -142,7 +154,7 @@ export function registerDevfileCreatorRoute(instance: FastifyInstance) {
         const coreV1Api = getCoreV1Api(token);
 
         const configMap = await getOrCreateConfigMap(coreV1Api, namespace);
-        return { devfiles: parseEntries(configMap.data) };
+        return { devfiles: parseEntries(configMap.data, configMap.metadata?.annotations) };
       },
     );
 
@@ -395,7 +407,7 @@ export function registerDevfileCreatorRoute(instance: FastifyInstance) {
     // Create new devfile
     server.post(
       `${baseApiPath}/devfile-creator/namespace/:namespace`,
-      getSchema({ tags, params: namespacedSchema }),
+      getSchema({ tags, params: namespacedSchema, body: devfileContentBodySchema }),
       async function (request: FastifyRequest) {
         const { namespace } = request.params as restParams.INamespacedParams;
         const body = request.body as { content: string };
@@ -405,12 +417,18 @@ export function registerDevfileCreatorRoute(instance: FastifyInstance) {
         const id = randomUUID();
         const configMap = await getOrCreateConfigMap(coreV1Api, namespace);
         const data = { ...configMap.data, [id]: body.content };
+        const now = new Date().toISOString();
 
         await coreV1Api.patchNamespacedConfigMap(
           {
             name: CONFIGMAP_NAME,
             namespace,
-            body: { data },
+            body: {
+              metadata: {
+                annotations: { [`${MODIFIED_ANNOTATION_PREFIX}${id}`]: now },
+              },
+              data,
+            },
           },
           STRATEGIC_MERGE_PATCH_OPTIONS,
         );
@@ -422,7 +440,7 @@ export function registerDevfileCreatorRoute(instance: FastifyInstance) {
     // Update devfile
     server.put(
       `${baseApiPath}/devfile-creator/namespace/:namespace/:id`,
-      getSchema({ tags, params: namespacedIdSchema }),
+      getSchema({ tags, params: namespacedIdSchema, body: devfileContentBodySchema }),
       async function (request: FastifyRequest) {
         const { namespace, id } = request.params as DevfileIdParams;
         const body = request.body as { content: string };
@@ -435,11 +453,18 @@ export function registerDevfileCreatorRoute(instance: FastifyInstance) {
         }
 
         const data = { ...configMap.data, [id]: body.content };
+        const now = new Date().toISOString();
+
         await coreV1Api.patchNamespacedConfigMap(
           {
             name: CONFIGMAP_NAME,
             namespace,
-            body: { data },
+            body: {
+              metadata: {
+                annotations: { [`${MODIFIED_ANNOTATION_PREFIX}${id}`]: now },
+              },
+              data,
+            },
           },
           STRATEGIC_MERGE_PATCH_OPTIONS,
         );

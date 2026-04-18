@@ -462,6 +462,7 @@ export function watchAndInjectKubeConfig(token: string, namespace: string, agent
 }
 
 const SAFE_PATH_PATTERN = /^\/[a-zA-Z0-9._/-]+$/;
+const PATH_TRAVERSAL_PATTERN = /\.\./;
 
 async function injectKubeConfigToAgent(
   podName: string,
@@ -480,7 +481,7 @@ async function injectKubeConfigToAgent(
   );
   const homeDir = homeResult.stdOut.trim() || '/home/user';
 
-  if (!SAFE_PATH_PATTERN.test(homeDir)) {
+  if (!SAFE_PATH_PATTERN.test(homeDir) || PATH_TRAVERSAL_PATTERN.test(homeDir)) {
     throw new Error(`Unsafe HOME path detected: ${homeDir}`);
   }
 

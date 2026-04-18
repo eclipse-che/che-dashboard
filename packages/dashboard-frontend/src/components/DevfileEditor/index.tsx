@@ -86,15 +86,14 @@ const cheLightHighlightStyle = HighlightStyle.define([
 
 const cheLight = [cheLightTheme, syntaxHighlighting(cheLightHighlightStyle)];
 
-const themeCompartment = new Compartment();
-const readOnlyCompartment = new Compartment();
+interface EditorCallbackRefs {
+  onValidation: React.MutableRefObject<((errorMessage: string) => void) | undefined>;
+  onChange: React.MutableRefObject<((value: string) => void) | undefined>;
+  setError: React.MutableRefObject<((msg: string) => void) | undefined>;
+  isProgrammaticChange: React.MutableRefObject<boolean>;
+}
 
-const onValidationRef: { current?: (errorMessage: string) => void } = { current: undefined };
-const onChangeRef: { current?: (value: string) => void } = { current: undefined };
-const setErrorRef: { current?: (msg: string) => void } = { current: undefined };
-const isProgrammaticChangeRef = { current: false };
-
-function diagnosticsReporter() {
+function diagnosticsReporter(refs: EditorCallbackRefs) {
   return EditorView.updateListener.of(update => {
     if (!update.transactions.some(tr => tr.effects.length > 0) && !update.docChanged) {
       return;
@@ -113,27 +112,19 @@ function diagnosticsReporter() {
           firstError = `Error on line ${line.number}, column ${col}: ${diag.message}`;
         }
       });
-      if (onValidationRef.current) {
-        onValidationRef.current(firstError || '');
-      }
-      if (setErrorRef.current) {
-        setErrorRef.current(firstError || '');
-      }
+      refs.onValidation.current?.(firstError || '');
+      refs.setError.current?.(firstError || '');
     } else {
-      if (onValidationRef.current) {
-        onValidationRef.current('');
-      }
-      if (setErrorRef.current) {
-        setErrorRef.current('');
-      }
+      refs.onValidation.current?.('');
+      refs.setError.current?.('');
     }
   });
 }
 
-function changeListener() {
+function changeListener(refs: EditorCallbackRefs) {
   return EditorView.updateListener.of(update => {
-    if (update.docChanged && onChangeRef.current && !isProgrammaticChangeRef.current) {
-      onChangeRef.current(update.state.doc.toString());
+    if (update.docChanged && refs.onChange.current && !refs.isProgrammaticChange.current) {
+      refs.onChange.current(update.state.doc.toString());
     }
   });
 }
@@ -152,14 +143,24 @@ export const DevfileEditor: React.FC<Props> = ({
   const prevValueRef = useRef<string>(value);
   const [errorMessage, setErrorMessage] = useState('');
 
-  onValidationRef.current = readOnly ? undefined : onValidation;
-  onChangeRef.current = onChange;
-  setErrorRef.current = readOnly ? undefined : setErrorMessage;
+  const themeCompartmentRef = useRef(new Compartment());
+  const readOnlyCompartmentRef = useRef(new Compartment());
+
+  const callbackRefs = useRef<EditorCallbackRefs>({
+    onValidation: { current: undefined },
+    onChange: { current: undefined },
+    setError: { current: undefined },
+    isProgrammaticChange: { current: false },
+  });
+
+  callbackRefs.current.onValidation.current = readOnly ? undefined : onValidation;
+  callbackRefs.current.onChange.current = onChange;
+  callbackRefs.current.setError.current = readOnly ? undefined : setErrorMessage;
 
   useEffect(() => {
     if (viewRef.current) {
       viewRef.current.dispatch({
-        effects: themeCompartment.reconfigure(isDarkTheme ? oneDark : cheLight),
+        effects: themeCompartmentRef.current.reconfigure(isDarkTheme ? oneDark : cheLight),
       });
     }
   }, [isDarkTheme]);
@@ -167,7 +168,7 @@ export const DevfileEditor: React.FC<Props> = ({
   useEffect(() => {
     if (viewRef.current) {
       viewRef.current.dispatch({
-        effects: readOnlyCompartment.reconfigure(EditorState.readOnly.of(readOnly)),
+        effects: readOnlyCompartmentRef.current.reconfigure(EditorState.readOnly.of(readOnly)),
       });
     }
   }, [readOnly]);
@@ -176,11 +177,11 @@ export const DevfileEditor: React.FC<Props> = ({
     if (viewRef.current && value !== prevValueRef.current) {
       const currentContent = viewRef.current.state.doc.toString();
       if (value !== currentContent) {
-        isProgrammaticChangeRef.current = true;
+        callbackRefs.current.isProgrammaticChange.current = true;
         viewRef.current.dispatch({
           changes: { from: 0, to: currentContent.length, insert: value },
         });
-        isProgrammaticChangeRef.current = false;
+        callbackRefs.current.isProgrammaticChange.current = false;
       }
       prevValueRef.current = value;
     }
@@ -206,16 +207,16 @@ export const DevfileEditor: React.FC<Props> = ({
         basicSetup,
         yaml(),
         keymap.of([indentWithTab]),
-        themeCompartment.of(isDarkTheme ? oneDark : cheLight),
-        readOnlyCompartment.of(EditorState.readOnly.of(readOnly)),
-        changeListener(),
+        themeCompartmentRef.current.of(isDarkTheme ? oneDark : cheLight),
+        readOnlyCompartmentRef.current.of(EditorState.readOnly.of(readOnly)),
+        changeListener(callbackRefs.current),
         EditorView.lineWrapping,
       ];
 
       if (!readOnly) {
         extensions.push(createDevfileSchemaLinter(schema));
         extensions.push(createDevfileSchemaCompletion(schema));
-        extensions.push(diagnosticsReporter());
+        extensions.push(diagnosticsReporter(callbackRefs.current));
       }
 
       const state = EditorState.create({
