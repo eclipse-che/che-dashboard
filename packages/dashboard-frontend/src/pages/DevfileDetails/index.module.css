@@ -15,8 +15,8 @@
 }
 
 .agentEmptyState {
-  background-color: inherit;
   margin-top: 33px;
+  background-color: inherit;
 }
 
 :global(html.pf-v6-theme-dark) .agentEmptyState {
@@ -100,7 +100,6 @@
 
 .agentIdLabel {
   overflow: hidden;
-
   color: var(--pf-t--global--text--color--subtle);
   text-overflow: ellipsis;
   white-space: nowrap;

@@ -41,9 +41,10 @@ import { NavigateFunction } from 'react-router-dom';
 import AgentPodEvents from '@/components/AgentPodEvents';
 import AgentTerminal from '@/components/AgentTerminal';
 import { DevfileEditor } from '@/components/DevfileEditor';
-import EditorTools from '@/components/EditorTools';
+import DevfileEditorTools from '@/components/DevfileEditorTools';
 import Head from '@/components/Head';
 import TerminalTools from '@/components/TerminalTools';
+import { DeleteConfirmation } from '@/pages/DevfileDetails/DeleteConfirmation';
 import { DropdownActions } from '@/pages/DevfileDetails/DropdownActions';
 import styles from '@/pages/DevfileDetails/index.module.css';
 import { DevfileSchema } from '@/services/backend-client/devfileSchemaApi';
@@ -76,6 +77,7 @@ interface State {
   hasValidationError: boolean;
   isEditorExpanded: boolean;
   isTerminalExpanded: boolean;
+  isDeleteConfirmOpen: boolean;
 }
 
 export default class DevfileDetails extends React.PureComponent<Props, State> {
@@ -90,6 +92,7 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
       hasValidationError: false,
       isEditorExpanded: false,
       isTerminalExpanded: false,
+      isDeleteConfirmOpen: false,
     };
   }
 
@@ -155,8 +158,8 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
     }
   };
 
-  private handleEditorExpand = (isExpanded: boolean) => {
-    this.setState({ isEditorExpanded: isExpanded });
+  private handleEditorExpandToggle = () => {
+    this.setState(prev => ({ isEditorExpanded: !prev.isEditorExpanded }));
   };
 
   private handleTerminalExpandToggle = () => {
@@ -194,9 +197,17 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
     });
   };
 
-  private handleDelete = () => {
+  private handleDeleteClick = () => {
+    this.setState({ isDeleteConfirmOpen: true });
+  };
+
+  private handleDeleteConfirm = () => {
     const { devfile, onDelete } = this.props;
     onDelete(devfile.id);
+  };
+
+  private handleDeleteConfirmClose = () => {
+    this.setState({ isDeleteConfirmOpen: false });
   };
 
   private renderStartButton(): React.ReactElement {
@@ -236,7 +247,9 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
         return (
           <div className={styles.agentPanelTerminal}>
             <div className={styles.terminalToolbar}>
-              <span className={styles.agentIdLabel}>Agent ID:<b>{agentDisplayId}</b></span>
+              <span className={styles.agentIdLabel}>
+                Agent ID:<b>{agentDisplayId}</b>
+              </span>
               <TerminalTools
                 isExpanded={this.state.isTerminalExpanded}
                 onToggleExpand={this.handleTerminalExpandToggle}
@@ -320,8 +333,15 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
 
   render(): React.ReactElement {
     const { devfile, agentPodStatus, agentTerminalUrl, agentEnabled } = this.props;
-    const { editorContent, isSaved, saveError, hasValidationError, isTerminalExpanded } =
-      this.state;
+    const {
+      editorContent,
+      isSaved,
+      saveError,
+      hasValidationError,
+      isEditorExpanded,
+      isTerminalExpanded,
+      isDeleteConfirmOpen,
+    } = this.state;
     const isAgentConnected =
       agentPodStatus?.phase === 'Running' &&
       agentPodStatus?.ready === true &&
@@ -349,7 +369,7 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
                   <DropdownActions
                     onCopyLink={this.handleCopyLink}
                     onDownload={this.handleDownload}
-                    onDelete={this.handleDelete}
+                    onDelete={this.handleDeleteClick}
                   />
                 </FlexItem>
               </Flex>
@@ -370,10 +390,11 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
                     {saveError}
                   </Alert>
                 )}
-                <EditorTools
+                <DevfileEditorTools
                   contentText={editorContent}
                   workspaceName={devfile.name}
-                  handleExpand={this.handleEditorExpand}
+                  isExpanded={isEditorExpanded}
+                  onToggleExpand={this.handleEditorExpandToggle}
                 />
                 <div className={styles.editorContainer}>
                   <DevfileEditor
@@ -412,12 +433,17 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
                         Create Workspace
                       </Button>
                     </ToolbarItem>
+                    <ToolbarItem align={{ default: 'alignEnd' }}>
+                      <Button variant="secondary" isDanger onClick={this.handleDeleteClick}>
+                        Delete
+                      </Button>
+                    </ToolbarItem>
                   </ToolbarContent>
                 </Toolbar>
               </SplitItem>
             )}
 
-            {agentEnabled && (
+            {agentEnabled && !isEditorExpanded && (
               <SplitItem
                 isFilled={isAgentConnected && isTerminalExpanded}
                 className={isAgentConnected ? styles.agentPanel : undefined}
@@ -443,6 +469,12 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
               </SplitItem>
             )}
           </Split>
+          <DeleteConfirmation
+            devfileName={devfile.name}
+            isOpen={isDeleteConfirmOpen}
+            onConfirm={this.handleDeleteConfirm}
+            onClose={this.handleDeleteConfirmClose}
+          />
         </PageSection>
       </React.Fragment>
     );

@@ -17,9 +17,7 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-
   height: calc(100% - 37px);
-
   border: 1px solid var(--pf-t--global--border--color--default);
 }
 

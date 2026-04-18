@@ -43,9 +43,9 @@ jest.mock('@/components/Head', () => {
     return null;
   };
 });
-jest.mock('@/components/EditorTools', () => {
-  return function MockEditorTools() {
-    return <div data-testid="editor-tools">Editor Tools</div>;
+jest.mock('@/components/DevfileEditorTools', () => {
+  return function MockDevfileEditorTools() {
+    return <div data-testid="devfile-editor-tools">Devfile Editor Tools</div>;
   };
 });
 jest.mock('@/components/TerminalTools', () => {
@@ -146,14 +146,24 @@ describe('DevfileDetails', () => {
     );
   });
 
-  test('Delete calls onDelete with devfile id', async () => {
+  test('Delete opens confirmation dialog and calls onDelete after confirm', async () => {
     renderComponent();
 
     const actionsToggle = screen.getByLabelText('Devfile actions');
     await userEvent.click(actionsToggle);
 
-    const deleteItem = screen.getByText('Delete');
-    await userEvent.click(deleteItem);
+    const dropdownDeleteItem = screen.getByRole('menuitem', { name: /Delete/i });
+    await userEvent.click(dropdownDeleteItem);
+
+    expect(mockOnDelete).not.toHaveBeenCalled();
+
+    expect(screen.getByText(/Would you like to delete devfile "my-devfile"\?/)).toBeDefined();
+
+    const checkbox = screen.getByTestId('confirmation-checkbox');
+    await userEvent.click(checkbox);
+
+    const confirmButton = screen.getByTestId('delete-devfile-button');
+    await userEvent.click(confirmButton);
 
     expect(mockOnDelete).toHaveBeenCalledWith('test-uuid-123');
   });

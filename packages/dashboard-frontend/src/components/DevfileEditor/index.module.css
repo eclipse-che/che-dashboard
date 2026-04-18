@@ -36,6 +36,13 @@
   white-space: nowrap;
 }
 
+.errorMessage :global(.pf-v6-c-helper-text__item.pf-m-error) {
+  overflow: hidden;
+  display: inline-block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .docsLink {
   float: right;
   display: block;

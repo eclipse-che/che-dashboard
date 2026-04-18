@@ -239,7 +239,7 @@ export const DevfileEditor: React.FC<Props> = ({
     <React.Fragment>
       <div className={styles.devfileEditor} id={id} ref={containerRefCallback} />
       {!readOnly && errorMessage && (
-        <FormHelperText>
+        <FormHelperText className={styles.errorMessage}>
           <HelperText>
             <HelperTextItem icon={<ExclamationCircleIcon />} variant="error">
               {errorMessage}
