@@ -28,10 +28,10 @@ import { PostStartInjector } from '@/services/PostStartInjector';
 
 const tags = ['Devworkspace'];
 
-const WORKSPACE_TYPE_LABEL = 'che.eclipse.org/workspace-type';
+const RESOURCE_TYPE_LABEL = 'che.eclipse.org/type';
 
 function isAgentWorkspace(labels: Record<string, string> | undefined): boolean {
-  return labels?.[WORKSPACE_TYPE_LABEL] === 'agent';
+  return labels?.[RESOURCE_TYPE_LABEL] === 'agent';
 }
 
 export function registerDevworkspacesRoutes(instance: FastifyInstance) {

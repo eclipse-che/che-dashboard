@@ -248,7 +248,7 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
           <div className={styles.agentPanelTerminal}>
             <div className={styles.terminalToolbar}>
               <span className={styles.agentIdLabel}>
-                Agent ID:<b>{agentDisplayId}</b>
+                Agent ID: <b>{agentDisplayId}</b>
               </span>
               <TerminalTools
                 isExpanded={this.state.isTerminalExpanded}
