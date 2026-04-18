@@ -236,7 +236,7 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
         return (
           <div className={styles.agentPanelTerminal}>
             <div className={styles.terminalToolbar}>
-              <span className={styles.agentIdLabel}>{agentDisplayId}</span>
+              <span className={styles.agentIdLabel}>Agent ID:<b>{agentDisplayId}</b></span>
               <TerminalTools
                 isExpanded={this.state.isTerminalExpanded}
                 onToggleExpand={this.handleTerminalExpandToggle}
@@ -356,8 +356,8 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
             </StackItem>
           </Stack>
         </PageSection>
-        <PageSection isFilled style={{ overflow: 'hidden' }}>
-          <Split hasGutter style={{ height: '100%' }}>
+        <PageSection style={{ overflow: 'hidden' }}>
+          <Split hasGutter style={{ height: 'calc(100vh - 270px)' }}>
             {!(isAgentConnected && isTerminalExpanded) && (
               <SplitItem isFilled className={styles.editorPanel}>
                 {saveError && (
