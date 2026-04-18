@@ -11,18 +11,7 @@
  */
 
 .terminalTools {
-  height: 33px;
-  margin: 5px 0;
-}
-
-.terminalTools > * {
   user-select: none;
-
-  float: right;
-
-  height: inherit;
-  margin: 0;
-
   font-size: small;
 }
 

@@ -54,8 +54,8 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
       this.props.requestDevfileSchema();
     }
     if (this.props.defaultAgent) {
-      const suffix = String(Math.floor(Math.random() * 900) + 100);
-      this.agentInstanceId = `${this.props.defaultAgent.id}-${suffix}`;
+      const hash = this.computeLocationHash();
+      this.agentInstanceId = `${this.props.defaultAgent.id}-${hash}`;
     }
     this.fetchTerminalUrlIfNeeded();
     this.props.subscribeToConfigMapChanges();
@@ -78,6 +78,16 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
       this.configMapSubscribed = false;
     }
     this.props.clearAgentTerminalUrl();
+  }
+
+  private computeLocationHash(): string {
+    const input = window.location.hash || window.location.pathname;
+    let hash = 0;
+    for (let i = 0; i < input.length; i++) {
+      const ch = input.charCodeAt(i);
+      hash = ((hash << 5) - hash + ch) | 0;
+    }
+    return Math.abs(hash).toString(36).slice(0, 6);
   }
 
   private get agentPodStatus(): AgentPodStatus | undefined {

@@ -31,12 +31,8 @@
 
 .agentPanelTerminal {
   overflow: hidden;
-
   height: 100%;
   min-height: 225px;
-  margin-bottom: 45px;
-
-  border: 1px solid var(--pf-t--global--border--color--default);
 }
 
 .agentPanelEmpty {
@@ -44,9 +40,7 @@
   align-items: center;
   justify-content: center;
 
-  height: 100%;
   min-height: 225px;
-  margin-bottom: 45px;
   padding: 16px;
 
   border: 1px solid var(--pf-t--global--border--color--default);
@@ -99,12 +93,28 @@
   height: 16px;
 }
 
-.agentIdHeader {
-  padding: 4px 12px;
+.terminalToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  height: 33px;
+  padding: 0 4px 0 12px;
+
+  border-bottom: 1px solid var(--pf-t--global--border--color--default);
+}
+
+.agentIdLabel {
+  overflow: hidden;
 
   font-family: var(--pf-t--global--font--family--mono);
   font-size: 12px;
   color: var(--pf-t--global--text--color--subtle);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-  border-bottom: 1px solid var(--pf-t--global--border--color--default);
+.terminalStopButton {
+  padding: 4px 12px;
+  border-top: 1px solid var(--pf-t--global--border--color--default);
 }

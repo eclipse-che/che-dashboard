@@ -170,6 +170,12 @@ function handleAgentPodWebSocketMessage(
   }
 
   const phase = pod.status?.phase || 'Unknown';
+
+  if (phase === 'Succeeded' || phase === 'Failed') {
+    dispatch(removeAgentPodStatus(podAgentId));
+    return;
+  }
+
   const containerReady = pod.status?.containerStatuses?.some(c => c.ready === true) || false;
 
   dispatch(
@@ -466,20 +472,23 @@ export const actionCreators = {
     const pods = getState().pods.pods;
     for (const pod of pods) {
       const labels = pod.metadata?.labels || {};
-      if (labels[AGENT_LABEL_COMPONENT] === 'ai-agent' && !pod.metadata?.deletionTimestamp) {
-        const agentId = pod.metadata?.annotations?.['che.eclipse.org/ai-agent-id'] || '';
-        const phase = pod.status?.phase || 'Unknown';
-        const containerReady = pod.status?.containerStatuses?.some(c => c.ready === true) || false;
-        dispatch(
-          upsertAgentPodStatus({
-            agentId,
-            name: pod.metadata?.name || '',
-            phase,
-            ready: phase === 'Running' && containerReady,
-            serviceUrl: undefined,
-          }),
-        );
-      }
+      if (labels[AGENT_LABEL_COMPONENT] !== 'ai-agent') continue;
+      if (pod.metadata?.deletionTimestamp) continue;
+
+      const phase = pod.status?.phase || 'Unknown';
+      if (phase === 'Succeeded' || phase === 'Failed') continue;
+
+      const agentId = pod.metadata?.annotations?.['che.eclipse.org/ai-agent-id'] || '';
+      const containerReady = pod.status?.containerStatuses?.some(c => c.ready === true) || false;
+      dispatch(
+        upsertAgentPodStatus({
+          agentId,
+          name: pod.metadata?.name || '',
+          phase,
+          ready: phase === 'Running' && containerReady,
+          serviceUrl: undefined,
+        }),
+      );
     }
   },
 };

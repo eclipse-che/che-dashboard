@@ -235,11 +235,13 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
         const agentDisplayId = this.props.agentInstanceId || agentPodStatus.agentId;
         return (
           <div className={styles.agentPanelTerminal}>
-            <TerminalTools
-              isExpanded={this.state.isTerminalExpanded}
-              onToggleExpand={this.handleTerminalExpandToggle}
-            />
-            <div className={styles.agentIdHeader}>{agentDisplayId}</div>
+            <div className={styles.terminalToolbar}>
+              <span className={styles.agentIdLabel}>{agentDisplayId}</span>
+              <TerminalTools
+                isExpanded={this.state.isTerminalExpanded}
+                onToggleExpand={this.handleTerminalExpandToggle}
+              />
+            </div>
             <AgentTerminal
               terminalUrl={agentTerminalUrl}
               namespace={this.props.namespace}
@@ -247,6 +249,7 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
               isDarkTheme={this.props.isDarkTheme}
               initCommand={this.props.agentInitCommand}
             />
+            <div className={styles.terminalStopButton}>{this.renderStopButton()}</div>
           </div>
         );
       }

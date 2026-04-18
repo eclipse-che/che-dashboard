@@ -17,8 +17,11 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  height: 100%;
+
+  height: calc(100% - 75px);
   padding: 1px;
+
+  border: 1px solid var(--pf-t--global--border--color--default);
 }
 
 .statusMessage {
