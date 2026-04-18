@@ -15,13 +15,9 @@
 import React from 'react';
 
 import styles from '@/components/AgentTerminal/index.module.css';
+import StatusConnecting from '@/components/AgentTerminal/StatusConnecting';
+import StatusError from '@/components/AgentTerminal/StatusError';
 import { AGENT_TERMINAL_THEMES } from '@/components/AgentTerminal/themes';
-
-const DARK_BG_COLOR = '#1e1e1e';
-const LIGHT_BG_COLOR = '#fafafa';
-const DARK_STATUS_COLOR = '#f0ab00';
-const LIGHT_STATUS_COLOR = '#c58c00';
-const ERROR_COLOR = '#c9190b';
 
 const READY_TIMEOUT_MS = 30_000;
 
@@ -123,34 +119,16 @@ export default class AgentTerminal extends React.PureComponent<Props, State> {
   };
 
   render(): React.ReactElement {
-    const { isDarkTheme } = this.props;
     const { connectionStatus } = this.state;
-    const bgColor = isDarkTheme ? DARK_BG_COLOR : LIGHT_BG_COLOR;
-    const statusColor = isDarkTheme ? DARK_STATUS_COLOR : LIGHT_STATUS_COLOR;
 
     return (
       <div className={styles.wrapper}>
-        {connectionStatus === 'connecting' && (
-          <div
-            className={styles.statusMessage}
-            style={{ color: statusColor, backgroundColor: bgColor }}
-          >
-            Connecting to agent...
-          </div>
-        )}
-        {connectionStatus === 'error' && (
-          <div
-            className={styles.statusMessage}
-            style={{ color: ERROR_COLOR, backgroundColor: bgColor }}
-          >
-            Failed to load terminal
-          </div>
-        )}
+        {connectionStatus === 'connecting' && <StatusConnecting />}
+        {connectionStatus === 'error' && <StatusError />}
         <iframe
           ref={this.iframeRef}
           src={this.initialSrc}
           className={`${styles.terminalContainer} ${styles.iframe}`}
-          style={{ backgroundColor: bgColor }}
           title="Agent Terminal"
           onError={this.handleError}
         />
