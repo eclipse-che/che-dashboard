@@ -249,7 +249,6 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
               isDarkTheme={this.props.isDarkTheme}
               initCommand={this.props.agentInitCommand}
             />
-            <div className={styles.terminalStopButton}>{this.renderStopButton()}</div>
           </div>
         );
       }
@@ -421,6 +420,7 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
             {agentEnabled && (
               <SplitItem
                 isFilled={isAgentConnected && isTerminalExpanded}
+                className={isAgentConnected ? styles.agentPanel : undefined}
                 style={{
                   width:
                     isAgentConnected && isTerminalExpanded
@@ -433,6 +433,13 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
                 }}
               >
                 {this.renderAgentPanel()}
+                {isAgentConnected && (
+                  <Toolbar className={styles.editorToolbar}>
+                    <ToolbarContent>
+                      <ToolbarItem>{this.renderStopButton()}</ToolbarItem>
+                    </ToolbarContent>
+                  </Toolbar>
+                )}
               </SplitItem>
             )}
           </Split>

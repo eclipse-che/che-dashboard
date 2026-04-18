@@ -23,15 +23,13 @@
 }
 
 .agentPanel {
-  height: 100%;
-  min-height: 225px;
-  margin-bottom: 45px;
-  border: 1px solid var(--pf-t--global--border--color--default);
+  display: flex;
+  flex-direction: column;
 }
 
 .agentPanelTerminal {
   overflow: hidden;
-  height: 100%;
+  flex: 1;
   min-height: 225px;
 }
 
@@ -97,11 +95,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   height: 33px;
-  padding: 0 4px 0 12px;
-
-  border-bottom: 1px solid var(--pf-t--global--border--color--default);
 }
 
 .agentIdLabel {
@@ -112,9 +106,4 @@
   color: var(--pf-t--global--text--color--subtle);
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.terminalStopButton {
-  padding: 4px 12px;
-  border-top: 1px solid var(--pf-t--global--border--color--default);
 }
