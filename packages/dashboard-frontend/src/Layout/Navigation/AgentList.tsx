@@ -44,6 +44,7 @@ function mapPhaseToStatus(phase: string, ready: boolean): DevWorkspaceStatus {
   if (phase === 'Failed') return DevWorkspaceStatus.FAILED;
   if (phase === 'Stopped') return DevWorkspaceStatus.STOPPED;
   if (phase === 'Succeeded') return DevWorkspaceStatus.STOPPED;
+  if (phase === 'Unknown') return DevWorkspaceStatus.FAILED;
   return DevWorkspaceStatus.STARTING;
 }
 
@@ -95,14 +96,6 @@ export class NavigationAgentList extends React.PureComponent<Props, State> {
     }
   };
 
-  private handleDelete = () => {
-    this.setState({ isDropdownOpen: false });
-    const { agentPodStatus } = this.props;
-    if (agentPodStatus) {
-      this.props.deleteAgent(agentPodStatus.agentId);
-    }
-  };
-
   render(): React.ReactElement {
     const { agentPodStatus } = this.props;
     const { isDropdownOpen, isHovered, isFocused } = this.state;
@@ -112,16 +105,17 @@ export class NavigationAgentList extends React.PureComponent<Props, State> {
     }
 
     const isRunning = agentPodStatus.phase === 'Running' && agentPodStatus.ready;
-    const isStopped =
+    const isTerminal =
       agentPodStatus.phase === 'Stopped' ||
       agentPodStatus.phase === 'Failed' ||
-      agentPodStatus.phase === 'Succeeded';
+      agentPodStatus.phase === 'Succeeded' ||
+      agentPodStatus.phase === 'Unknown';
     const displayName = agentPodStatus.name.replace(/^agent-/, '') || agentPodStatus.agentId;
     const isActionsVisible = isHovered || isFocused || isDropdownOpen;
 
     return (
       <NavList>
-        <NavGroup title="AGENTS" style={{ marginTop: '25px' }}>
+        <NavGroup title="AGENT PODS" style={{ marginTop: '25px' }}>
           <NavItem
             className={styles.navItem}
             preventDefault={true}
@@ -170,14 +164,11 @@ export class NavigationAgentList extends React.PureComponent<Props, State> {
                 popperProps={{ position: 'right' }}
               >
                 <DropdownList>
-                  <DropdownItem key="start" isDisabled={!isStopped} onClick={this.handleStart}>
+                  <DropdownItem key="start" isDisabled={!isTerminal} onClick={this.handleStart}>
                     Start
                   </DropdownItem>
                   <DropdownItem key="stop" isDisabled={!isRunning} onClick={this.handleStop}>
                     Stop
-                  </DropdownItem>
-                  <DropdownItem key="delete" onClick={this.handleDelete}>
-                    Delete
                   </DropdownItem>
                 </DropdownList>
               </Dropdown>
@@ -197,7 +188,6 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps = {
   startAgent: actionCreators.startAgent,
   stopAgent: actionCreators.stopAgent,
-  deleteAgent: actionCreators.deleteAgent,
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

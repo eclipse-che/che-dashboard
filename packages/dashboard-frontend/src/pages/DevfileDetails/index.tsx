@@ -220,7 +220,7 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
     if (agentPodStatus) {
       const phase = agentPodStatus.phase;
       const isRunning = phase === 'Running' && agentPodStatus.ready;
-      const isFailed = phase === 'Failed' || phase === 'Succeeded';
+      const isFailed = phase === 'Failed' || phase === 'Succeeded' || phase === 'Unknown';
       const isPending = phase === 'Pending';
 
       if (isRunning && agentTerminalUrl) {

@@ -31,7 +31,6 @@ import {
   getAgentPodStatus,
   getAgentServiceUrl,
   heartbeatAgentPod,
-  watchAndInjectKubeConfig,
 } from '@/routes/api/helpers/agentPod';
 import {
   CONFIGMAP_NAME,
@@ -183,8 +182,6 @@ export function registerDevfileCreatorRoute(instance: FastifyInstance) {
           terminalPort: validateTerminalPort(body.terminalPort),
           env: body.env || [],
         });
-
-        watchAndInjectKubeConfig(token, namespace, body.agentId);
 
         if (status.serviceUrl) {
           setCachedTerminalUrl(namespace, body.agentId, status.serviceUrl);
