@@ -13,6 +13,7 @@
 import * as k8s from '@kubernetes/client-node';
 
 import { AirGapSampleApiService } from '@/devworkspaceClient/services/airGapSampleApi';
+import { ConfigMapWatchApiService } from '@/devworkspaceClient/services/configMapWatchApi';
 import { DevWorkspaceApiService } from '@/devworkspaceClient/services/devWorkspaceApi';
 import { DevWorkspaceClusterApiService } from '@/devworkspaceClient/services/devWorkspaceClusterApiService';
 import { DevWorkspaceTemplateApiService } from '@/devworkspaceClient/services/devWorkspaceTemplateApi';
@@ -59,6 +60,10 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
 
   constructor(kc: k8s.KubeConfig) {
     this.kubeConfig = kc;
+  }
+
+  get configMapWatchApi(): ConfigMapWatchApiService {
+    return new ConfigMapWatchApiService(this.kubeConfig);
   }
 
   get eventApi(): IEventApi {

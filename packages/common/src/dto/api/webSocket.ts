@@ -11,13 +11,19 @@
  */
 
 import { V1alpha2DevWorkspace } from '@devfile/api';
-import { CoreV1Event, V1Pod, V1Status } from '@kubernetes/client-node';
+import {
+  CoreV1Event,
+  V1ConfigMap,
+  V1Pod,
+  V1Status,
+} from '@kubernetes/client-node';
 
 export enum Channel {
   DEV_WORKSPACE = 'devWorkspace',
   EVENT = 'event',
   POD = 'pod',
   LOGS = 'logs',
+  CONFIGMAP = 'configmap',
 }
 
 export function isWebSocketChannel(channel: unknown): channel is Channel {
@@ -26,7 +32,8 @@ export function isWebSocketChannel(channel: unknown): channel is Channel {
       ((channel as Channel) === Channel.DEV_WORKSPACE ||
         (channel as Channel) === Channel.EVENT)) ||
     (channel as Channel) === Channel.POD ||
-    (channel as Channel) === Channel.LOGS
+    (channel as Channel) === Channel.LOGS ||
+    (channel as Channel) === Channel.CONFIGMAP
   );
 }
 
@@ -44,7 +51,11 @@ export type SubscribeMessage = {
   method: 'SUBSCRIBE';
 } & (
   | {
-      channel: Channel.DEV_WORKSPACE | Channel.EVENT | Channel.POD;
+      channel:
+        | Channel.DEV_WORKSPACE
+        | Channel.EVENT
+        | Channel.POD
+        | Channel.CONFIGMAP;
       params: SubscribeParams;
     }
   | {
@@ -138,6 +149,10 @@ export type PodMessage = {
   eventPhase: EventPhase.ADDED | EventPhase.MODIFIED | EventPhase.DELETED;
   pod: V1Pod;
 };
+export type ConfigMapMessage = {
+  eventPhase: EventPhase.ADDED | EventPhase.MODIFIED | EventPhase.DELETED;
+  configMap: V1ConfigMap;
+};
 export type LogsMessage = {
   eventPhase: EventPhase.ADDED;
   podName: string;
@@ -153,6 +168,7 @@ export type NotificationMessage =
   | EventMessage
   | DevWorkspaceMessage
   | PodMessage
+  | ConfigMapMessage
   | LogsMessage
   | StatusMessage;
 export type EventData = {
@@ -217,6 +233,18 @@ export function isStatusMessage(message: unknown): message is StatusMessage {
     message !== undefined &&
     (message as StatusMessage).eventPhase === EventPhase.ERROR &&
     (message as StatusMessage).status !== undefined
+  );
+}
+
+export function isConfigMapMessage(
+  message: unknown,
+): message is ConfigMapMessage {
+  return (
+    message !== undefined &&
+    ((message as ConfigMapMessage).eventPhase === EventPhase.ADDED ||
+      (message as ConfigMapMessage).eventPhase === EventPhase.MODIFIED ||
+      (message as ConfigMapMessage).eventPhase === EventPhase.DELETED) &&
+    (message as ConfigMapMessage).configMap !== undefined
   );
 }
 

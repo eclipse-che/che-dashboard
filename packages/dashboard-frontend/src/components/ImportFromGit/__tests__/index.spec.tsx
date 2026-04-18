@@ -17,7 +17,11 @@ import { Provider } from 'react-redux';
 import { Store } from 'redux';
 
 import ImportFromGit from '@/components/ImportFromGit';
-import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
+import getComponentRenderer, {
+  render,
+  screen,
+  waitFor,
+} from '@/services/__mocks__/getComponentRenderer';
 import { fetchGitBranches } from '@/services/backend-client/gitBranchesApi';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
@@ -426,6 +430,83 @@ describe('GitRepoLocationInput', () => {
         'http://localhost/f?revision=test&url=git%2540github.com%253Auser%252Frepo.git',
         '_blank',
       );
+    });
+  });
+
+  describe('presetUrl', () => {
+    test('pre-fills the input with the preset URL', () => {
+      const presetUrl = 'https://example.com/dashboard/api/devfile-creator/namespace/ns/id/raw';
+      const store = new MockStoreBuilder()
+        .withDwServerConfig({
+          defaults: {
+            editor: defaultEditorId,
+            components: [],
+            plugins: [],
+            pvcStrategy: 'per-workspace',
+          },
+        })
+        .withWorkspacePreferences({
+          'trusted-sources': '*',
+        })
+        .build();
+
+      render(
+        <Provider store={store}>
+          <ImportFromGit
+            navigate={mockNavigate}
+            editorDefinition={undefined}
+            editorImage={undefined}
+            presetUrl={presetUrl}
+          />
+        </Provider>,
+      );
+
+      const input = screen.getByRole('textbox');
+      expect(input).toHaveValue(presetUrl);
+      expect(input).toBeValid();
+    });
+
+    test('clears url parameter from browser URL on mount', () => {
+      const replaceStateSpy = jest.spyOn(window.history, 'replaceState');
+      const presetUrl = 'https://example.com/devfile.yaml';
+
+      // Set up hash-based URL with ?url= param
+      Object.defineProperty(window, 'location', {
+        writable: true,
+        value: {
+          ...window.location,
+          href: 'http://localhost/#/create-workspace?url=' + encodeURIComponent(presetUrl),
+          hash: '#/create-workspace?url=' + encodeURIComponent(presetUrl),
+        },
+      });
+
+      const store = new MockStoreBuilder()
+        .withDwServerConfig({
+          defaults: {
+            editor: defaultEditorId,
+            components: [],
+            plugins: [],
+            pvcStrategy: 'per-workspace',
+          },
+        })
+        .withWorkspacePreferences({
+          'trusted-sources': '*',
+        })
+        .build();
+
+      render(
+        <Provider store={store}>
+          <ImportFromGit
+            navigate={mockNavigate}
+            editorDefinition={undefined}
+            editorImage={undefined}
+            presetUrl={presetUrl}
+          />
+        </Provider>,
+      );
+
+      expect(replaceStateSpy).toHaveBeenCalled();
+      replaceStateSpy.mockRestore();
     });
   });
 });

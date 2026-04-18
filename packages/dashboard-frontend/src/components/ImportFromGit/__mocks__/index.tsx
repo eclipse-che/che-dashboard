@@ -23,6 +23,7 @@ export default class ImportFromGit extends React.PureComponent<Props> {
           {this.props.editorDefinition ? this.props.editorDefinition : ''}
         </div>
         <div data-testid="editor-image">{this.props.editorImage ? this.props.editorImage : ''}</div>
+        <div data-testid="preset-url">{this.props.presetUrl ? this.props.presetUrl : ''}</div>
       </div>
     );
   }

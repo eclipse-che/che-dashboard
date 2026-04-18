@@ -35,6 +35,7 @@ import { ResourceFetcherService } from '@/services/resource-fetcher';
 import { Workspace } from '@/services/workspace-adapter';
 import { hasLoginPage, isForbidden, isUnauthorized } from '@/services/workspace-client/helpers';
 import { RootState } from '@/store';
+import { aiAgentRegistryActionCreators } from '@/store/AiAgentRegistry';
 import { bannerAlertActionCreators } from '@/store/BannerAlert';
 import { brandingActionCreators } from '@/store/Branding';
 import { clusterConfigActionCreators, selectDashboardFavicon } from '@/store/ClusterConfig';
@@ -49,6 +50,7 @@ import {
   infrastructureNamespacesActionCreators,
   selectDefaultNamespace,
 } from '@/store/InfrastructureNamespaces';
+import { actionCreators as localDevfilesActionCreators } from '@/store/LocalDevfiles';
 import { chePluginsActionCreators } from '@/store/Plugins/chePlugins';
 import { devWorkspacePluginsActionCreators } from '@/store/Plugins/devWorkspacePlugins';
 import { podsActionCreators, selectPodsResourceVersion } from '@/store/Pods';
@@ -120,9 +122,12 @@ export default class Bootstrap {
       }),
       this.fetchPods().then(() => {
         this.watchWebSocketPods();
+        this.subscribeToAgentPodChanges();
       }),
       this.fetchSshKeys(),
       this.fetchWorkspacePreferences(),
+      this.fetchLocalDevfiles(),
+      this.fetchAiAgentRegistry(),
     ]);
 
     const errors = results
@@ -273,6 +278,11 @@ export default class Bootstrap {
     this.websocketClient.subscribeToChannel(api.webSocket.Channel.POD, namespace, {
       getResourceVersion,
     });
+  }
+
+  private async subscribeToAgentPodChanges(): Promise<void> {
+    const { subscribeToAgentPodChanges } = localDevfilesActionCreators;
+    await subscribeToAgentPodChanges()(this.store.dispatch, this.store.getState, undefined);
   }
 
   private async fetchWorkspaces(): Promise<void> {
@@ -468,5 +478,22 @@ export default class Bootstrap {
       this.store.getState,
       undefined,
     );
+  }
+
+  private async fetchLocalDevfiles(): Promise<void> {
+    await localDevfilesActionCreators.requestDevfiles()(
+      this.store.dispatch,
+      this.store.getState,
+      undefined,
+    );
+  }
+
+  private async fetchAiAgentRegistry(): Promise<void> {
+    const { requestAiAgentRegistry } = aiAgentRegistryActionCreators;
+    try {
+      await requestAiAgentRegistry()(this.store.dispatch, this.store.getState, undefined);
+    } catch (e) {
+      console.warn('Unable to fetch AI agent registry.', e);
+    }
   }
 }

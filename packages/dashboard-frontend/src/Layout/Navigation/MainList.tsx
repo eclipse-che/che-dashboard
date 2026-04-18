@@ -17,6 +17,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import NavigationMainItem from '@/Layout/Navigation/MainItem';
 import { ROUTE } from '@/Routes';
 import { RootState } from '@/store';
+import { selectLocalDevfiles } from '@/store/LocalDevfiles/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 import { NavigationItemObject } from '.';
@@ -27,12 +28,14 @@ type Props = MappedProps & {
 
 export class NavigationMainList extends React.PureComponent<Props> {
   private get items(): NavigationItemObject[] {
-    const { allWorkspaces } = this.props;
+    const { workspaces, devfiles } = this.props;
 
-    const allWorkspacesNumber = allWorkspaces.length;
+    const allWorkspacesNumber = workspaces.length;
+    const devfilesNumber = devfiles.length;
 
     return [
       { to: ROUTE.GET_STARTED, label: 'Create Workspace' },
+      { to: ROUTE.DEVFILE_CREATOR, label: `Devfiles (${devfilesNumber})` },
       { to: ROUTE.WORKSPACES, label: `Workspaces (${allWorkspacesNumber})` },
     ];
   }
@@ -49,7 +52,8 @@ export class NavigationMainList extends React.PureComponent<Props> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  allWorkspaces: selectAllWorkspaces(state),
+  workspaces: selectAllWorkspaces(state),
+  devfiles: selectLocalDevfiles(state),
 });
 
 const connector = connect(mapStateToProps);

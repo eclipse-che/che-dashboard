@@ -261,6 +261,17 @@ export const sshKeyParamsSchema: JSONSchema7 = {
   required: ['namespace', 'name'],
 };
 
+export const devfileVersionSchema: JSONSchema7 = {
+  type: 'object',
+  properties: {
+    version: {
+      type: 'string',
+      pattern: '^(2\\.[0-3]\\.[0-2]|latest)$',
+    },
+  },
+  required: ['version'],
+};
+
 // namespaced schemas
 
 export const namespacedSchema: JSONSchema7 = {

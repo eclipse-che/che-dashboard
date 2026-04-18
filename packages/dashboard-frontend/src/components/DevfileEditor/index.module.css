@@ -1,0 +1,47 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+.devfileEditor {
+  overflow: auto;
+
+  width: 100%;
+  height: 100%;
+  min-height: 50vh;
+
+  border: 1px solid var(--pf-t--global--border--color--default);
+}
+
+.devfileEditor > * {
+  height: inherit;
+}
+
+.error {
+  overflow: hidden;
+
+  padding: 4px 8px;
+
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--pf-t--global--color--status--danger--default);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.docsLink {
+  float: right;
+  display: block;
+
+  padding: 4px 8px;
+
+  font-size: 13px;
+  color: var(--pf-t--global--text--color--link--default);
+}

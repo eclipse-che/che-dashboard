@@ -16,6 +16,7 @@ import { Provider } from 'react-redux';
 
 import GetStarted from '@/pages/GetStarted';
 import getComponentRenderer, {
+  render,
   screen,
   waitFor,
   within,
@@ -33,6 +34,29 @@ describe('GetStarted', () => {
   test('snapshot', () => {
     const snapshot = createSnapshot();
     expect(snapshot.toJSON()).toMatchSnapshot();
+  });
+
+  test('passes url parameter as presetUrl to ImportFromGit', () => {
+    const store = new MockStoreBuilder().build();
+    const location = buildFactoryLocation();
+    // Simulate /create-workspace?url=https://example.com/devfile.yaml
+    location.pathname = '/create-workspace';
+    location.search = '?url=https%3A%2F%2Fexample.com%2Fdevfile.yaml';
+    render(
+      <Provider store={store}>
+        <GetStarted location={location} navigate={jest.fn()} />
+      </Provider>,
+    );
+
+    const presetUrl = screen.getByTestId('preset-url');
+    expect(presetUrl).toHaveTextContent('https://example.com/devfile.yaml');
+  });
+
+  test('does not pass presetUrl when no url parameter', () => {
+    renderComponent();
+
+    const presetUrl = screen.getByTestId('preset-url');
+    expect(presetUrl).toHaveTextContent('');
   });
 
   test('editor definition change', async () => {

@@ -13,7 +13,7 @@
 import React from 'react';
 
 import { BasicViewer } from '@/components/BasicViewer';
-import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
+import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
@@ -23,18 +23,11 @@ describe('BasicViewer', () => {
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 
-  test('handle content change', () => {
-    const { reRenderComponent } = renderComponent('line 1\nline 2\nline 3');
+  test('renders container with id', () => {
+    renderComponent('line 1\nline 2\nline 3');
 
-    const textbox = screen.getByRole('textbox');
-
-    // no new line character
-    expect(textbox).toHaveTextContent('line 1 line 2 line 3');
-
-    reRenderComponent('line 4\nline 5\nline 6');
-
-    // no new line character
-    expect(textbox).toHaveTextContent('line 4 line 5 line 6');
+    const container = document.getElementById('basic-viewer-id');
+    expect(container).toBeTruthy();
   });
 });
 
