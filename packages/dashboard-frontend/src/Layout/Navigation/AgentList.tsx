@@ -33,7 +33,6 @@ import statusStyles from '@/components/Workspace/Status/index.module.css';
 import styles from '@/Layout/Navigation/index.module.css';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { RootState } from '@/store';
-import { selectDefaultAgent } from '@/store/AiAgentRegistry';
 import { actionCreators } from '@/store/LocalDevfiles';
 import { selectAgentPodStatus } from '@/store/LocalDevfiles/selectors';
 
@@ -80,14 +79,6 @@ export class NavigationAgentList extends React.PureComponent<Props, State> {
     };
   }
 
-  private handleStart = () => {
-    this.setState({ isDropdownOpen: false });
-    const { defaultAgent } = this.props;
-    if (defaultAgent) {
-      this.props.startAgent(defaultAgent);
-    }
-  };
-
   private handleStop = () => {
     this.setState({ isDropdownOpen: false });
     const { agentPodStatus } = this.props;
@@ -104,12 +95,6 @@ export class NavigationAgentList extends React.PureComponent<Props, State> {
       return <React.Fragment />;
     }
 
-    const isRunning = agentPodStatus.phase === 'Running' && agentPodStatus.ready;
-    const isTerminal =
-      agentPodStatus.phase === 'Stopped' ||
-      agentPodStatus.phase === 'Failed' ||
-      agentPodStatus.phase === 'Succeeded' ||
-      agentPodStatus.phase === 'Unknown';
     const displayName = agentPodStatus.name.replace(/^agent-/, '') || agentPodStatus.agentId;
     const isActionsVisible = isHovered || isFocused || isDropdownOpen;
 
@@ -164,10 +149,7 @@ export class NavigationAgentList extends React.PureComponent<Props, State> {
                 popperProps={{ position: 'right' }}
               >
                 <DropdownList>
-                  <DropdownItem key="start" isDisabled={!isTerminal} onClick={this.handleStart}>
-                    Start
-                  </DropdownItem>
-                  <DropdownItem key="stop" isDisabled={!isRunning} onClick={this.handleStop}>
+                  <DropdownItem key="stop" onClick={this.handleStop}>
                     Stop
                   </DropdownItem>
                 </DropdownList>
@@ -182,11 +164,9 @@ export class NavigationAgentList extends React.PureComponent<Props, State> {
 
 const mapStateToProps = (state: RootState) => ({
   agentPodStatus: selectAgentPodStatus(state),
-  defaultAgent: selectDefaultAgent(state),
 });
 
 const mapDispatchToProps = {
-  startAgent: actionCreators.startAgent,
   stopAgent: actionCreators.stopAgent,
 };
 
