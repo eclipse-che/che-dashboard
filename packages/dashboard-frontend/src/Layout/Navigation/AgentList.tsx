@@ -33,8 +33,8 @@ import statusStyles from '@/components/Workspace/Status/index.module.css';
 import styles from '@/Layout/Navigation/index.module.css';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { RootState } from '@/store';
-import { actionCreators } from '@/store/LocalDevfiles';
-import { selectAgentPodStatus } from '@/store/LocalDevfiles/selectors';
+import { actionCreators, AgentPodStatus } from '@/store/LocalDevfiles';
+import { selectAgentPodStatuses } from '@/store/LocalDevfiles/selectors';
 
 function mapPhaseToStatus(phase: string, ready: boolean): DevWorkspaceStatus {
   if (phase === 'Running' && ready) return DevWorkspaceStatus.RUNNING;
@@ -59,18 +59,19 @@ function AgentStatusIndicator(props: { phase: string; ready: boolean }): React.R
   );
 }
 
-type Props = MappedProps & {
-  activePath: string;
-};
+interface AgentPodItemProps {
+  status: AgentPodStatus;
+  onStop: (agentId: string) => void;
+}
 
-type State = {
+interface AgentPodItemState {
   isDropdownOpen: boolean;
   isHovered: boolean;
   isFocused: boolean;
-};
+}
 
-export class NavigationAgentList extends React.PureComponent<Props, State> {
-  constructor(props: Props) {
+class AgentPodItem extends React.PureComponent<AgentPodItemProps, AgentPodItemState> {
+  constructor(props: AgentPodItemProps) {
     super(props);
     this.state = {
       isDropdownOpen: false,
@@ -81,81 +82,97 @@ export class NavigationAgentList extends React.PureComponent<Props, State> {
 
   private handleStop = () => {
     this.setState({ isDropdownOpen: false });
-    const { agentPodStatus } = this.props;
-    if (agentPodStatus) {
-      this.props.stopAgent(agentPodStatus.agentId);
-    }
+    this.props.onStop(this.props.status.agentId);
   };
 
   render(): React.ReactElement {
-    const { agentPodStatus } = this.props;
+    const { status } = this.props;
     const { isDropdownOpen, isHovered, isFocused } = this.state;
+    const displayName = status.name.replace(/^agent-/, '') || status.agentId;
+    const isActionsVisible = isHovered || isFocused || isDropdownOpen;
 
-    if (!agentPodStatus) {
+    return (
+      <NavItem
+        className={styles.navItem}
+        preventDefault={true}
+        onMouseEnter={() => this.setState({ isHovered: true })}
+        onMouseLeave={() => this.setState({ isHovered: false })}
+        onFocus={() => this.setState({ isFocused: true })}
+        onBlur={e => {
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+            this.setState({ isFocused: false });
+          }
+        }}
+      >
+        <span data-testid="agent-pod-item">
+          <AgentStatusIndicator phase={status.phase} ready={status.ready} />
+          {displayName.length > 25 ? (
+            <Tooltip content={displayName}>
+              <span className={styles.titleHover}>{displayName}</span>
+            </Tooltip>
+          ) : (
+            <span className={styles.titleHover}>{displayName}</span>
+          )}
+        </span>
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            visibility: isActionsVisible ? 'visible' : 'hidden',
+          }}
+          onClick={e => e.stopPropagation()}
+        >
+          <Dropdown
+            isOpen={isDropdownOpen}
+            onOpenChange={open => this.setState({ isDropdownOpen: open })}
+            toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+              <MenuToggle
+                ref={toggleRef}
+                variant="plain"
+                onClick={() => this.setState({ isDropdownOpen: !isDropdownOpen })}
+                isExpanded={isDropdownOpen}
+                aria-label="Agent actions"
+              >
+                <EllipsisVIcon />
+              </MenuToggle>
+            )}
+            popperProps={{ position: 'right' }}
+          >
+            <DropdownList>
+              <DropdownItem key="stop" onClick={this.handleStop}>
+                Stop
+              </DropdownItem>
+            </DropdownList>
+          </Dropdown>
+        </div>
+      </NavItem>
+    );
+  }
+}
+
+type Props = MappedProps & {
+  activePath: string;
+};
+
+export class NavigationAgentList extends React.PureComponent<Props> {
+  private handleStop = (agentId: string) => {
+    this.props.stopAgent(agentId);
+  };
+
+  render(): React.ReactElement {
+    const { agentPodStatuses } = this.props;
+
+    if (agentPodStatuses.length === 0) {
       return <React.Fragment />;
     }
-
-    const displayName = agentPodStatus.name.replace(/^agent-/, '') || agentPodStatus.agentId;
-    const isActionsVisible = isHovered || isFocused || isDropdownOpen;
 
     return (
       <NavList>
         <NavGroup title="AGENT PODS" style={{ marginTop: '25px' }}>
-          <NavItem
-            className={styles.navItem}
-            preventDefault={true}
-            onMouseEnter={() => this.setState({ isHovered: true })}
-            onMouseLeave={() => this.setState({ isHovered: false })}
-            onFocus={() => this.setState({ isFocused: true })}
-            onBlur={e => {
-              if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-                this.setState({ isFocused: false });
-              }
-            }}
-          >
-            <span data-testid="agent-pod-item">
-              <AgentStatusIndicator phase={agentPodStatus.phase} ready={agentPodStatus.ready} />
-              {displayName.length > 25 ? (
-                <Tooltip content={displayName}>
-                  <span className={styles.titleHover}>{displayName}</span>
-                </Tooltip>
-              ) : (
-                <span className={styles.titleHover}>{displayName}</span>
-              )}
-            </span>
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                visibility: isActionsVisible ? 'visible' : 'hidden',
-              }}
-              onClick={e => e.stopPropagation()}
-            >
-              <Dropdown
-                isOpen={isDropdownOpen}
-                onOpenChange={open => this.setState({ isDropdownOpen: open })}
-                toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                  <MenuToggle
-                    ref={toggleRef}
-                    variant="plain"
-                    onClick={() => this.setState({ isDropdownOpen: !isDropdownOpen })}
-                    isExpanded={isDropdownOpen}
-                    aria-label="Agent actions"
-                  >
-                    <EllipsisVIcon />
-                  </MenuToggle>
-                )}
-                popperProps={{ position: 'right' }}
-              >
-                <DropdownList>
-                  <DropdownItem key="stop" onClick={this.handleStop}>
-                    Stop
-                  </DropdownItem>
-                </DropdownList>
-              </Dropdown>
-            </div>
-          </NavItem>
+          {agentPodStatuses.map(status => (
+            <AgentPodItem key={status.agentId} status={status} onStop={this.handleStop} />
+          ))}
         </NavGroup>
       </NavList>
     );
@@ -163,7 +180,7 @@ export class NavigationAgentList extends React.PureComponent<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  agentPodStatus: selectAgentPodStatus(state),
+  agentPodStatuses: selectAgentPodStatuses(state),
 });
 
 const mapDispatchToProps = {

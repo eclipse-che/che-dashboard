@@ -44,7 +44,7 @@ export interface LocalDevfilesState {
   isLoading: boolean;
   error: string | undefined;
   agentTerminalUrl: string | undefined;
-  agentPodStatus: AgentPodStatus | undefined;
+  agentPodStatuses: AgentPodStatus[];
   configMapResourceVersion: string;
 }
 
@@ -53,7 +53,7 @@ const initialState: LocalDevfilesState = {
   isLoading: false,
   error: undefined,
   agentTerminalUrl: undefined,
-  agentPodStatus: undefined,
+  agentPodStatuses: [],
   configMapResourceVersion: '',
 };
 
@@ -64,9 +64,8 @@ const addDevfile = createAction<LocalDevfile>('localDevfiles/addDevfile');
 const updateDevfileAction = createAction<LocalDevfile>('localDevfiles/updateDevfile');
 const removeDevfile = createAction<string>('localDevfiles/removeDevfile');
 const setAgentTerminalUrl = createAction<string | undefined>('localDevfiles/setAgentTerminalUrl');
-const setAgentPodStatus = createAction<AgentPodStatus | undefined>(
-  'localDevfiles/setAgentPodStatus',
-);
+const upsertAgentPodStatus = createAction<AgentPodStatus>('localDevfiles/upsertAgentPodStatus');
+const removeAgentPodStatus = createAction<string>('localDevfiles/removeAgentPodStatus');
 const setConfigMapResourceVersion = createAction<string>(
   'localDevfiles/setConfigMapResourceVersion',
 );
@@ -100,8 +99,16 @@ export const localDevfilesReducer = createReducer(initialState, builder =>
     .addCase(setAgentTerminalUrl, (state, action) => {
       state.agentTerminalUrl = action.payload;
     })
-    .addCase(setAgentPodStatus, (state, action) => {
-      state.agentPodStatus = action.payload;
+    .addCase(upsertAgentPodStatus, (state, action) => {
+      const idx = state.agentPodStatuses.findIndex(s => s.agentId === action.payload.agentId);
+      if (idx >= 0) {
+        state.agentPodStatuses[idx] = action.payload;
+      } else {
+        state.agentPodStatuses.push(action.payload);
+      }
+    })
+    .addCase(removeAgentPodStatus, (state, action) => {
+      state.agentPodStatuses = state.agentPodStatuses.filter(s => s.agentId !== action.payload);
     })
     .addCase(setConfigMapResourceVersion, (state, action) => {
       state.configMapResourceVersion = action.payload;
@@ -146,7 +153,6 @@ let agentPodListener: ChannelListener | undefined;
 
 function handleAgentPodWebSocketMessage(
   dispatch: (action: unknown) => void,
-  getState: () => { localDevfiles: LocalDevfilesState },
   message: api.webSocket.NotificationMessage,
 ): void {
   if (!api.webSocket.isPodMessage(message)) return;
@@ -156,13 +162,9 @@ function handleAgentPodWebSocketMessage(
   if (labels[AGENT_LABEL_COMPONENT] !== 'ai-agent') return;
 
   const podAgentId = pod.metadata?.annotations?.['che.eclipse.org/ai-agent-id'] || '';
-  const currentAgentId = getState().localDevfiles.agentPodStatus?.agentId;
-
-  if (currentAgentId && podAgentId !== currentAgentId) return;
 
   if (eventPhase === api.webSocket.EventPhase.DELETED || pod.metadata?.deletionTimestamp) {
-    dispatch(setAgentPodStatus(undefined));
-    dispatch(setAgentTerminalUrl(undefined));
+    dispatch(removeAgentPodStatus(podAgentId));
     return;
   }
 
@@ -170,7 +172,7 @@ function handleAgentPodWebSocketMessage(
   const containerReady = pod.status?.containerStatuses?.some(c => c.ready === true) || false;
 
   dispatch(
-    setAgentPodStatus({
+    upsertAgentPodStatus({
       agentId: podAgentId,
       name: pod.metadata?.name || '',
       phase,
@@ -307,7 +309,7 @@ export const actionCreators = {
       const agentId = instanceId || agent.id;
 
       dispatch(
-        setAgentPodStatus({
+        upsertAgentPodStatus({
           agentId,
           name: '',
           phase: 'Pending',
@@ -339,20 +341,12 @@ export const actionCreators = {
 
         if (!response.ok) {
           const text = await response.text();
-          dispatch(
-            setAgentPodStatus({
-              agentId,
-              name: '',
-              phase: 'Failed',
-              ready: false,
-              serviceUrl: undefined,
-            }),
-          );
+          dispatch(removeAgentPodStatus(agentId));
           throw new Error(`Failed to start agent: ${text}`);
         }
 
         const status = (await response.json()) as AgentPodStatus;
-        dispatch(setAgentPodStatus(status));
+        dispatch(upsertAgentPodStatus(status));
         return;
       }
     },
@@ -362,33 +356,11 @@ export const actionCreators = {
     async (dispatch, getState) => {
       const namespace = selectDefaultNamespace(getState()).name;
       dispatch(setAgentTerminalUrl(undefined));
+      dispatch(removeAgentPodStatus(agentId));
 
       await fetch(`${API_BASE}/${namespace}/agent/${encodeURIComponent(agentId)}`, {
         method: 'DELETE',
       });
-
-      dispatch(
-        setAgentPodStatus({
-          agentId,
-          name: '',
-          phase: 'Stopped',
-          ready: false,
-          serviceUrl: undefined,
-        }),
-      );
-    },
-
-  deleteAgent:
-    (agentId: string): AppThunk =>
-    async (dispatch, getState) => {
-      const namespace = selectDefaultNamespace(getState()).name;
-      dispatch(setAgentTerminalUrl(undefined));
-
-      await fetch(`${API_BASE}/${namespace}/agent/${encodeURIComponent(agentId)}`, {
-        method: 'DELETE',
-      });
-
-      dispatch(setAgentPodStatus(undefined));
     },
 
   fetchAgentStatus:
@@ -404,7 +376,7 @@ export const actionCreators = {
           return;
         }
         const status = (await response.json()) as AgentPodStatus;
-        dispatch(setAgentPodStatus(status));
+        dispatch(upsertAgentPodStatus(status));
       } catch {
         // network error — keep current status
       }
@@ -482,7 +454,7 @@ export const actionCreators = {
     const websocketClient = container.get(WebsocketClient);
 
     const listener: ChannelListener = message => {
-      handleAgentPodWebSocketMessage(dispatch, getState, message);
+      handleAgentPodWebSocketMessage(dispatch, message);
     };
     websocketClient.addChannelMessageListener(api.webSocket.Channel.POD, listener);
     agentPodListener = listener;
@@ -495,7 +467,7 @@ export const actionCreators = {
         const phase = pod.status?.phase || 'Unknown';
         const containerReady = pod.status?.containerStatuses?.some(c => c.ready === true) || false;
         dispatch(
-          setAgentPodStatus({
+          upsertAgentPodStatus({
             agentId,
             name: pod.metadata?.name || '',
             phase,
@@ -503,7 +475,6 @@ export const actionCreators = {
             serviceUrl: undefined,
           }),
         );
-        break;
       }
     }
   },

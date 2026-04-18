@@ -26,6 +26,7 @@ import {
 } from '@/devworkspaceClient/services/helpers/patchOptions';
 import { restParams } from '@/models';
 import {
+  cleanupExpiredAgentPods,
   createAgentPod,
   deleteAgentPod,
   getAgentPodStatus,
@@ -243,6 +244,9 @@ export function registerDevfileCreatorRoute(instance: FastifyInstance) {
         const { agentId } = request.params as { agentId: string };
 
         await heartbeatAgentPod(token, namespace, agentId);
+        cleanupExpiredAgentPods(token, namespace).catch(e =>
+          logger.warn(e, 'Heartbeat-triggered cleanup failed'),
+        );
         return { ok: true };
       },
     );

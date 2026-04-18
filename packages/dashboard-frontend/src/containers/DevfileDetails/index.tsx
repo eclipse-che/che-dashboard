@@ -22,9 +22,9 @@ import DevfileDetails from '@/pages/DevfileDetails';
 import { RootState } from '@/store';
 import { selectAiAgentRegistryEnabled, selectDefaultAgent } from '@/store/AiAgentRegistry';
 import { devfileSchemaActionCreators, selectDevfileSchema } from '@/store/DevfileSchema';
-import { actionCreators, clearAgentTerminalUrl } from '@/store/LocalDevfiles';
+import { actionCreators, AgentPodStatus, clearAgentTerminalUrl } from '@/store/LocalDevfiles';
 import {
-  selectAgentPodStatus,
+  selectAgentPodStatuses,
   selectAgentTerminalUrl,
   selectLocalDevfiles,
   selectLocalDevfilesIsLoading,
@@ -70,7 +70,7 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
   componentWillUnmount() {
     this.clearPollTimer();
     this.clearHeartbeat();
-    if (this.agentInstanceId && this.props.agentPodStatus) {
+    if (this.agentInstanceId && this.agentPodStatus) {
       this.props.stopAgent(this.agentInstanceId);
     }
     if (this.configMapSubscribed) {
@@ -78,6 +78,10 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
       this.configMapSubscribed = false;
     }
     this.props.clearAgentTerminalUrl();
+  }
+
+  private get agentPodStatus(): AgentPodStatus | undefined {
+    return this.props.agentPodStatuses.find(s => s.agentId === this.agentInstanceId);
   }
 
   private clearPollTimer() {
@@ -95,7 +99,7 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
   }
 
   private manageHeartbeat() {
-    const { agentPodStatus } = this.props;
+    const agentPodStatus = this.agentPodStatus;
     const isRunning = agentPodStatus?.phase === 'Running' && agentPodStatus?.ready;
 
     if (isRunning && this.agentInstanceId && !this.heartbeatTimer) {
@@ -112,7 +116,8 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
   }
 
   private fetchTerminalUrlIfNeeded() {
-    const { agentPodStatus, agentTerminalUrl } = this.props;
+    const { agentTerminalUrl } = this.props;
+    const agentPodStatus = this.agentPodStatus;
     const isRunning = agentPodStatus?.phase === 'Running' && agentPodStatus?.ready;
 
     if (isRunning && !agentTerminalUrl && !this.terminalPollTimer) {
@@ -133,7 +138,8 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
 
   private startTerminalPolling() {
     const poll = () => {
-      const { agentPodStatus, agentTerminalUrl, defaultAgent } = this.props;
+      const { agentTerminalUrl, defaultAgent } = this.props;
+      const agentPodStatus = this.agentPodStatus;
       const isRunning = agentPodStatus?.phase === 'Running' && agentPodStatus?.ready;
       if (!isRunning || agentTerminalUrl) {
         this.clearPollTimer();
@@ -164,7 +170,6 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
     const {
       devfiles,
       devfileSchema,
-      agentPodStatus,
       agentTerminalUrl,
       isLoading,
       devfileName,
@@ -174,6 +179,7 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
       agentEnabled,
       defaultAgent,
     } = this.props;
+    const agentPodStatus = this.agentPodStatus;
 
     let devfile = devfiles.find(d => d.name === devfileName);
     if (!devfile && this.lastDevfileId) {
@@ -234,7 +240,7 @@ const mapStateToProps = (state: RootState) => ({
   devfiles: selectLocalDevfiles(state),
   devfileSchema: selectDevfileSchema(state),
   isLoading: selectLocalDevfilesIsLoading(state),
-  agentPodStatus: selectAgentPodStatus(state),
+  agentPodStatuses: selectAgentPodStatuses(state),
   agentTerminalUrl: selectAgentTerminalUrl(state),
   agentEnabled: selectAiAgentRegistryEnabled(state),
   defaultAgent: selectDefaultAgent(state),

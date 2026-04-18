@@ -24,6 +24,7 @@ const AGENT_LABEL_PART_OF = 'app.kubernetes.io/part-of';
 const AGENT_LABEL_AGENT_ID = 'che.eclipse.org/agent-id';
 const HEARTBEAT_ANNOTATION = 'che.eclipse.org/last-heartbeat';
 const AGENT_TTL_MINUTES = 10;
+export const MAX_AGENT_PODS_PER_USER = 3;
 const TOKEN_SECRET_VOLUME = 'che-user-token';
 const TOKEN_MOUNT_PATH = '/var/run/secrets/che/token';
 
@@ -156,6 +157,9 @@ export async function createAgentPod(
   const secretName = agentTokenSecretName(agentId);
   const labels = agentLabels(agentId);
 
+  // Clean up expired pods before checking limits
+  await cleanupExpiredAgentPods(token, namespace);
+
   const existing = await findAgentPod(coreV1Api, namespace, agentId);
   if (existing) {
     const phase = existing.status?.phase || 'Unknown';
@@ -164,6 +168,26 @@ export async function createAgentPod(
     } else {
       return podToStatus(existing, agentId, namespace, config.terminalPort);
     }
+  }
+
+  // Check active pod count against limit
+  const activePods = await coreV1Api.listNamespacedPod({
+    namespace,
+    labelSelector: `${AGENT_LABEL_COMPONENT}=ai-agent`,
+  });
+  const runningCount = activePods.items.filter(
+    p =>
+      !p.metadata?.deletionTimestamp &&
+      p.status?.phase !== 'Failed' &&
+      p.status?.phase !== 'Succeeded',
+  ).length;
+  if (runningCount >= MAX_AGENT_PODS_PER_USER) {
+    throw Object.assign(
+      new Error(
+        `Maximum number of agent pods (${MAX_AGENT_PODS_PER_USER}) reached. Stop an existing agent before starting a new one.`,
+      ),
+      { statusCode: 409 },
+    );
   }
 
   const dwMounts = await discoverDevWorkspaceMounts(coreV1Api, namespace);

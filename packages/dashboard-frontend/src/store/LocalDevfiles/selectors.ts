@@ -44,7 +44,7 @@ export const selectAgentTerminalUrl = createSelector(
   state => state.agentTerminalUrl,
 );
 
-export const selectAgentPodStatus = createSelector(
+export const selectAgentPodStatuses = createSelector(
   selectLocalDevfilesState,
-  state => state.agentPodStatus,
+  state => state.agentPodStatuses,
 );
