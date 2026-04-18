@@ -146,6 +146,7 @@ let agentPodListener: ChannelListener | undefined;
 
 function handleAgentPodWebSocketMessage(
   dispatch: (action: unknown) => void,
+  getState: () => { localDevfiles: LocalDevfilesState },
   message: api.webSocket.NotificationMessage,
 ): void {
   if (!api.webSocket.isPodMessage(message)) return;
@@ -154,19 +155,23 @@ function handleAgentPodWebSocketMessage(
   const labels = pod.metadata?.labels || {};
   if (labels[AGENT_LABEL_COMPONENT] !== 'ai-agent') return;
 
+  const podAgentId = pod.metadata?.annotations?.['che.eclipse.org/ai-agent-id'] || '';
+  const currentAgentId = getState().localDevfiles.agentPodStatus?.agentId;
+
+  if (currentAgentId && podAgentId !== currentAgentId) return;
+
   if (eventPhase === api.webSocket.EventPhase.DELETED || pod.metadata?.deletionTimestamp) {
     dispatch(setAgentPodStatus(undefined));
     dispatch(setAgentTerminalUrl(undefined));
     return;
   }
 
-  const agentId = pod.metadata?.annotations?.['che.eclipse.org/ai-agent-id'] || '';
   const phase = pod.status?.phase || 'Unknown';
   const containerReady = pod.status?.containerStatuses?.some(c => c.ready === true) || false;
 
   dispatch(
     setAgentPodStatus({
-      agentId,
+      agentId: podAgentId,
       name: pod.metadata?.name || '',
       phase,
       ready: phase === 'Running' && containerReady,
@@ -295,14 +300,15 @@ export const actionCreators = {
     },
 
   startAgent:
-    (agent: api.AiAgentDefinition): AppThunk =>
+    (agent: api.AiAgentDefinition, instanceId?: string): AppThunk =>
     async (dispatch, getState) => {
       const namespace = selectDefaultNamespace(getState()).name;
       const MAX_RETRIES = 3;
+      const agentId = instanceId || agent.id;
 
       dispatch(
         setAgentPodStatus({
-          agentId: agent.id,
+          agentId,
           name: '',
           phase: 'Pending',
           ready: false,
@@ -315,7 +321,7 @@ export const actionCreators = {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            agentId: agent.id,
+            agentId,
             image: agent.image,
             tag: agent.tag,
             memoryLimit: agent.memoryLimit,
@@ -335,7 +341,7 @@ export const actionCreators = {
           const text = await response.text();
           dispatch(
             setAgentPodStatus({
-              agentId: agent.id,
+              agentId,
               name: '',
               phase: 'Failed',
               ready: false,
@@ -476,7 +482,7 @@ export const actionCreators = {
     const websocketClient = container.get(WebsocketClient);
 
     const listener: ChannelListener = message => {
-      handleAgentPodWebSocketMessage(dispatch, message);
+      handleAgentPodWebSocketMessage(dispatch, getState, message);
     };
     websocketClient.addChannelMessageListener(api.webSocket.Channel.POD, listener);
     agentPodListener = listener;

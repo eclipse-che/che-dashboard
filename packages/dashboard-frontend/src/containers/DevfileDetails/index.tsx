@@ -44,6 +44,7 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
   private heartbeatTimer: ReturnType<typeof setInterval> | undefined;
   private configMapSubscribed = false;
   private lastDevfileId: string | undefined;
+  private agentInstanceId: string | undefined;
 
   componentDidMount() {
     if (this.props.devfiles.length === 0) {
@@ -51,6 +52,10 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
     }
     if (!this.props.devfileSchema) {
       this.props.requestDevfileSchema();
+    }
+    if (this.props.defaultAgent) {
+      const suffix = String(Math.floor(Math.random() * 900) + 100);
+      this.agentInstanceId = `${this.props.defaultAgent.id}-${suffix}`;
     }
     this.fetchTerminalUrlIfNeeded();
     this.props.subscribeToConfigMapChanges();
@@ -65,6 +70,9 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
   componentWillUnmount() {
     this.clearPollTimer();
     this.clearHeartbeat();
+    if (this.agentInstanceId && this.props.agentPodStatus) {
+      this.props.stopAgent(this.agentInstanceId);
+    }
     if (this.configMapSubscribed) {
       this.props.unsubscribeFromConfigMapChanges();
       this.configMapSubscribed = false;
@@ -87,14 +95,14 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
   }
 
   private manageHeartbeat() {
-    const { agentPodStatus, defaultAgent } = this.props;
+    const { agentPodStatus } = this.props;
     const isRunning = agentPodStatus?.phase === 'Running' && agentPodStatus?.ready;
-    const agentId = defaultAgent?.id;
 
-    if (isRunning && agentId && !this.heartbeatTimer) {
-      this.props.sendHeartbeat(agentId);
+    if (isRunning && this.agentInstanceId && !this.heartbeatTimer) {
+      const instanceId = this.agentInstanceId;
+      this.props.sendHeartbeat(instanceId);
       this.heartbeatTimer = setInterval(() => {
-        this.props.sendHeartbeat(agentId);
+        this.props.sendHeartbeat(instanceId);
       }, 60_000);
     }
 
@@ -131,8 +139,8 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
         this.clearPollTimer();
         return;
       }
-      if (defaultAgent) {
-        this.props.fetchAgentTerminalUrl(defaultAgent.id, defaultAgent.terminalPort);
+      if (defaultAgent && this.agentInstanceId) {
+        this.props.fetchAgentTerminalUrl(this.agentInstanceId, defaultAgent.terminalPort);
       }
       this.terminalPollTimer = setTimeout(poll, 3000);
     };
@@ -141,15 +149,14 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
 
   private handleStartAgent = async () => {
     const { defaultAgent } = this.props;
-    if (defaultAgent) {
-      return this.props.startAgent(defaultAgent);
+    if (defaultAgent && this.agentInstanceId) {
+      return this.props.startAgent(defaultAgent, this.agentInstanceId);
     }
   };
 
   private handleStopAgent = () => {
-    const { defaultAgent } = this.props;
-    if (defaultAgent) {
-      this.props.stopAgent(defaultAgent.id);
+    if (this.agentInstanceId) {
+      this.props.stopAgent(this.agentInstanceId);
     }
   };
 
