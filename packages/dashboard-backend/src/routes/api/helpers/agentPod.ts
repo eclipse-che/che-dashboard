@@ -176,7 +176,7 @@ export async function createAgentPod(
         },
       },
       spec: {
-        automountServiceAccountToken: true,
+        automountServiceAccountToken: false,
         volumes: dwMounts.volumes.length > 0 ? dwMounts.volumes : undefined,
         containers: [
           {
@@ -206,6 +206,7 @@ export async function createAgentPod(
               allowPrivilegeEscalation: false,
               runAsUser: 1000,
               runAsNonRoot: true,
+              readOnlyRootFilesystem: false,
             },
           },
         ],
@@ -460,6 +461,8 @@ export function watchAndInjectKubeConfig(token: string, namespace: string, agent
   activeAgentWatches.set(key, new AbortController());
 }
 
+const SAFE_PATH_PATTERN = /^\/[a-zA-Z0-9._/-]+$/;
+
 async function injectKubeConfigToAgent(
   podName: string,
   namespace: string,
@@ -476,16 +479,21 @@ async function injectKubeConfigToAgent(
     serverConfig,
   );
   const homeDir = homeResult.stdOut.trim() || '/home/user';
+
+  if (!SAFE_PATH_PATTERN.test(homeDir)) {
+    throw new Error(`Unsafe HOME path detected: ${homeDir}`);
+  }
+
   const kubeDir = homeDir.endsWith('/') ? `${homeDir}.kube` : `${homeDir}/.kube`;
 
-  await exec(podName, namespace, containerName, ['sh', '-c', `mkdir -p ${kubeDir}`], serverConfig);
+  await exec(podName, namespace, containerName, ['mkdir', '-p', kubeDir], serverConfig);
 
-  const escapedConfig = kubeConfigYaml.replace(/'/g, "'\\''");
+  const b64Config = Buffer.from(kubeConfigYaml).toString('base64');
   await exec(
     podName,
     namespace,
     containerName,
-    ['sh', '-c', `echo '${escapedConfig}' > ${kubeDir}/config`],
+    ['sh', '-c', `echo '${b64Config}' | base64 -d > ${kubeDir}/config`],
     serverConfig,
   );
 }

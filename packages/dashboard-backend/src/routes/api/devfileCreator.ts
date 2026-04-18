@@ -47,23 +47,43 @@ import { logger } from '@/utils/logger';
 
 const tags = ['Devfile Creator'];
 
-// Cache resolved terminal service URLs so that subsequent requests
-// (asset loads, WebSocket upgrades) can reuse them.
+const MIN_TERMINAL_PORT = 1024;
+const MAX_TERMINAL_PORT = 65535;
+
+function validateTerminalPort(port: number): number {
+  if (!Number.isInteger(port) || port < MIN_TERMINAL_PORT || port > MAX_TERMINAL_PORT) {
+    throw new Error(
+      `terminalPort must be an integer between ${MIN_TERMINAL_PORT} and ${MAX_TERMINAL_PORT}`,
+    );
+  }
+  return port;
+}
+
 const terminalUrlCache = new Map<string, { url: string; timestamp: number }>();
 const TERMINAL_URL_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-function getCachedTerminalUrl(namespace: string): string | undefined {
-  const entry = terminalUrlCache.get(namespace);
+function terminalCacheKey(namespace: string, agentId: string): string {
+  return `${namespace}/${agentId}`;
+}
+
+function getCachedTerminalUrl(namespace: string, agentId: string): string | undefined {
+  const key = terminalCacheKey(namespace, agentId);
+  const entry = terminalUrlCache.get(key);
   if (!entry) return undefined;
   if (Date.now() - entry.timestamp > TERMINAL_URL_CACHE_TTL) {
-    terminalUrlCache.delete(namespace);
+    terminalUrlCache.delete(key);
     return undefined;
   }
   return entry.url;
 }
 
-function setCachedTerminalUrl(namespace: string, url: string): void {
-  terminalUrlCache.set(namespace, { url, timestamp: Date.now() });
+function setCachedTerminalUrl(namespace: string, agentId: string, url: string): void {
+  const key = terminalCacheKey(namespace, agentId);
+  terminalUrlCache.set(key, { url, timestamp: Date.now() });
+}
+
+function clearCachedTerminalUrl(namespace: string, agentId: string): void {
+  terminalUrlCache.delete(terminalCacheKey(namespace, agentId));
 }
 
 const namespacedIdSchema = {
@@ -82,6 +102,32 @@ const namespacedAgentIdSchema = {
     namespace: { type: 'string' },
     agentId: { type: 'string' },
   },
+};
+
+const agentCreateBodySchema = {
+  type: 'object',
+  required: ['agentId', 'image', 'tag', 'memoryLimit', 'cpuLimit', 'terminalPort'],
+  properties: {
+    agentId: { type: 'string', minLength: 1, maxLength: 128 },
+    image: { type: 'string', minLength: 1, maxLength: 512 },
+    tag: { type: 'string', minLength: 1, maxLength: 128 },
+    memoryLimit: { type: 'string', pattern: '^[0-9]+(Mi|Gi)$' },
+    cpuLimit: { type: 'string', pattern: '^[0-9]+(m)?$' },
+    terminalPort: { type: 'integer', minimum: MIN_TERMINAL_PORT, maximum: MAX_TERMINAL_PORT },
+    env: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: ['name', 'value'],
+        properties: {
+          name: { type: 'string', minLength: 1 },
+          value: { type: 'string' },
+        },
+        additionalProperties: false,
+      },
+    },
+  },
+  additionalProperties: false,
 };
 
 export function registerDevfileCreatorRoute(instance: FastifyInstance) {
@@ -103,7 +149,7 @@ export function registerDevfileCreatorRoute(instance: FastifyInstance) {
     // Create agent pod + service
     server.post(
       `${baseApiPath}/devfile-creator/namespace/:namespace/agent`,
-      getSchema({ tags, params: namespacedSchema }),
+      getSchema({ tags, params: namespacedSchema, body: agentCreateBodySchema }),
       async function (request: FastifyRequest) {
         const { namespace } = request.params as restParams.INamespacedParams;
         const token = getToken(request);
@@ -122,14 +168,14 @@ export function registerDevfileCreatorRoute(instance: FastifyInstance) {
           tag: body.tag,
           memoryLimit: body.memoryLimit,
           cpuLimit: body.cpuLimit,
-          terminalPort: body.terminalPort,
-          env: body.env,
+          terminalPort: validateTerminalPort(body.terminalPort),
+          env: body.env || [],
         });
 
         watchAndInjectKubeConfig(token, namespace, body.agentId);
 
         if (status.serviceUrl) {
-          setCachedTerminalUrl(namespace, status.serviceUrl);
+          setCachedTerminalUrl(namespace, body.agentId, status.serviceUrl);
         }
 
         return status;
@@ -145,7 +191,9 @@ export function registerDevfileCreatorRoute(instance: FastifyInstance) {
         const token = getToken(request);
         const { agentId } = request.params as { agentId: string };
         const query = request.query as Record<string, string | undefined>;
-        const terminalPort = query.terminalPort ? parseInt(query.terminalPort, 10) : 8080;
+        const terminalPort = query.terminalPort
+          ? validateTerminalPort(parseInt(query.terminalPort, 10))
+          : 8080;
 
         const status = await getAgentPodStatus(token, namespace, agentId, terminalPort);
         if (!status) {
@@ -154,7 +202,7 @@ export function registerDevfileCreatorRoute(instance: FastifyInstance) {
         }
 
         if (status.serviceUrl) {
-          setCachedTerminalUrl(namespace, status.serviceUrl);
+          setCachedTerminalUrl(namespace, agentId, status.serviceUrl);
         }
 
         return status;
@@ -171,7 +219,7 @@ export function registerDevfileCreatorRoute(instance: FastifyInstance) {
         const { agentId } = request.params as { agentId: string };
 
         await deleteAgentPod(token, namespace, agentId);
-        terminalUrlCache.delete(namespace);
+        clearCachedTerminalUrl(namespace, agentId);
         reply.code(204).send();
       },
     );
@@ -196,12 +244,18 @@ export function registerDevfileCreatorRoute(instance: FastifyInstance) {
       getSchema({ tags, params: namespacedSchema }),
       async function (request: FastifyRequest) {
         const { namespace } = request.params as restParams.INamespacedParams;
+        const token = getToken(request);
+        if (!token) {
+          throw new Error('Authentication required');
+        }
         const query = request.query as Record<string, string | undefined>;
         const agentId = query.agentId || 'anthropic/claude-code';
-        const terminalPort = query.terminalPort ? parseInt(query.terminalPort, 10) : 8080;
+        const terminalPort = query.terminalPort
+          ? validateTerminalPort(parseInt(query.terminalPort, 10))
+          : 8080;
 
         const serviceUrl = getAgentServiceUrl(namespace, agentId, terminalPort);
-        setCachedTerminalUrl(namespace, serviceUrl);
+        setCachedTerminalUrl(namespace, agentId, serviceUrl);
 
         await new Promise<void>((resolve, reject) => {
           const url = new URL('/', serviceUrl);
@@ -235,8 +289,15 @@ export function registerDevfileCreatorRoute(instance: FastifyInstance) {
       `${baseApiPath}/devfile-creator/namespace/:namespace/t/ws`,
       { websocket: true, schema: { tags } },
       (socket: WebSocket, request: FastifyRequest) => {
+        const token = getToken(request);
+        if (!token) {
+          socket.close(1008, 'Authentication required');
+          return;
+        }
         const { namespace } = request.params as restParams.INamespacedParams;
-        const cached = getCachedTerminalUrl(namespace);
+        const requestUrl = new URL(request.url, 'http://localhost');
+        const agentId = requestUrl.searchParams.get('agentId') || 'anthropic/claude-code';
+        const cached = getCachedTerminalUrl(namespace, agentId);
         if (!cached) {
           socket.close(1011, 'Terminal service URL not found');
           return;
@@ -291,20 +352,25 @@ export function registerDevfileCreatorRoute(instance: FastifyInstance) {
     // HTTP reverse proxy for ttyd — serves HTML, JS, CSS, and other static
     // assets through the dashboard origin so the iframe can load them.
     const terminalProxyHandler = async function (request: FastifyRequest, reply: FastifyReply) {
+      const token = getToken(request);
+      if (!token) {
+        reply.code(401).send({ message: 'Authentication required' });
+        return;
+      }
       const { namespace } = request.params as restParams.INamespacedParams;
       const requestUrl = new URL(request.url, 'http://localhost');
       const agentId = requestUrl.searchParams.get('agentId') || 'anthropic/claude-code';
       const terminalPort = requestUrl.searchParams.get('terminalPort')
-        ? parseInt(requestUrl.searchParams.get('terminalPort') as string, 10)
+        ? validateTerminalPort(parseInt(requestUrl.searchParams.get('terminalPort') as string, 10))
         : 8080;
 
       let serviceUrl: string;
-      const cached = getCachedTerminalUrl(namespace);
+      const cached = getCachedTerminalUrl(namespace, agentId);
       if (cached) {
         serviceUrl = cached;
       } else {
         serviceUrl = getAgentServiceUrl(namespace, agentId, terminalPort);
-        setCachedTerminalUrl(namespace, serviceUrl);
+        setCachedTerminalUrl(namespace, agentId, serviceUrl);
       }
 
       const prefix = `${baseApiPath}/devfile-creator/namespace/${namespace}/t`;
@@ -322,7 +388,7 @@ export function registerDevfileCreatorRoute(instance: FastifyInstance) {
 
     server.get(
       `${baseApiPath}/devfile-creator/namespace/:namespace/t/*`,
-      { schema: { tags } },
+      getSchema({ tags, params: namespacedSchema }),
       terminalProxyHandler,
     );
 

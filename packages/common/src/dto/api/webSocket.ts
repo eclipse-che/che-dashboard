@@ -28,12 +28,12 @@ export enum Channel {
 
 export function isWebSocketChannel(channel: unknown): channel is Channel {
   return (
-    (channel !== undefined &&
-      ((channel as Channel) === Channel.DEV_WORKSPACE ||
-        (channel as Channel) === Channel.EVENT)) ||
-    (channel as Channel) === Channel.POD ||
-    (channel as Channel) === Channel.LOGS ||
-    (channel as Channel) === Channel.CONFIGMAP
+    channel !== undefined &&
+    ((channel as Channel) === Channel.DEV_WORKSPACE ||
+      (channel as Channel) === Channel.EVENT ||
+      (channel as Channel) === Channel.POD ||
+      (channel as Channel) === Channel.LOGS ||
+      (channel as Channel) === Channel.CONFIGMAP)
   );
 }
 

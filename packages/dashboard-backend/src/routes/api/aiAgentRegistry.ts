@@ -29,6 +29,9 @@ const AI_AGENT_REGISTRY_LABEL_SELECTOR =
 
 const EMPTY_REGISTRY: api.IAiAgentRegistry = { agents: [], defaultAgentId: '' };
 
+const REGISTRY_CACHE_TTL_MS = 60 * 1000;
+let registryCache: { data: api.IAiAgentRegistry; timestamp: number } | undefined;
+
 function isValidAgent(obj: unknown): obj is api.AiAgentDefinition {
   if (typeof obj !== 'object' || obj === null) return false;
   const agent = obj as Record<string, unknown>;
@@ -54,6 +57,10 @@ export function registerAiAgentRegistryRoute(instance: FastifyInstance) {
       `${baseApiPath}/ai-agent-registry`,
       getSchema({ tags }),
       async function (): Promise<api.IAiAgentRegistry> {
+        if (registryCache && Date.now() - registryCache.timestamp < REGISTRY_CACHE_TTL_MS) {
+          return registryCache.data;
+        }
+
         const cheNamespace = process.env.CHECLUSTER_CR_NAMESPACE;
         if (!cheNamespace) {
           logger.warn('CHECLUSTER_CR_NAMESPACE not set, returning empty AI agent registry');
@@ -73,20 +80,25 @@ export function registerAiAgentRegistryRoute(instance: FastifyInstance) {
 
           const configMaps = response.items;
           if (configMaps.length === 0) {
+            registryCache = { data: EMPTY_REGISTRY, timestamp: Date.now() };
             return EMPTY_REGISTRY;
           }
 
           const data = configMaps[0].data;
           if (!data) {
+            registryCache = { data: EMPTY_REGISTRY, timestamp: Date.now() };
             return EMPTY_REGISTRY;
           }
 
           const registryJson = data['registry.json'];
           if (!registryJson) {
+            registryCache = { data: EMPTY_REGISTRY, timestamp: Date.now() };
             return EMPTY_REGISTRY;
           }
 
-          return parseRegistryJson(registryJson);
+          const result = parseRegistryJson(registryJson);
+          registryCache = { data: result, timestamp: Date.now() };
+          return result;
         } catch (error) {
           logger.error(error, 'Failed to read AI agent registry ConfigMap');
           return EMPTY_REGISTRY;

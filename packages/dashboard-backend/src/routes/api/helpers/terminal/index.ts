@@ -14,57 +14,10 @@
 
 import http from 'node:http';
 
-import * as k8s from '@kubernetes/client-node';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
 import { AGENT_TERMINAL_THEMES } from '@/constants/terminal-themes';
-import { getKubeConfig } from '@/routes/api/helpers/getDevWorkspaceClient';
 
-export interface DevWorkspaceItem {
-  metadata: { name: string; uid: string };
-  status?: { devworkspaceId?: string };
-}
-
-/**
- * Returns the in-cluster service URL for the agent terminal (HTTP, no TLS).
- */
-export async function getTerminalServiceUrl(
-  token: string,
-  namespace: string,
-  workspaceName = 'devfile-agent',
-  terminalPort = 8080,
-): Promise<string> {
-  const kubeConfig = getKubeConfig(token);
-  const customObjectsApi = kubeConfig.makeApiClient(k8s.CustomObjectsApi);
-
-  const dwList = await customObjectsApi.listNamespacedCustomObject({
-    group: 'workspace.devfile.io',
-    version: 'v1alpha2',
-    namespace,
-    plural: 'devworkspaces',
-  });
-
-  const workspaces = (dwList as { items: Array<DevWorkspaceItem> }).items;
-  const agentWs = workspaces.find(ws => ws.metadata.name === workspaceName);
-
-  if (!agentWs?.status?.devworkspaceId) {
-    throw new Error(`Agent DevWorkspace '${workspaceName}' not found or not ready`);
-  }
-
-  const workspaceId = agentWs.status.devworkspaceId;
-  return `http://${workspaceId}-service.${namespace}.svc:${terminalPort}`;
-}
-
-/**
- * Bridge script injected into ttyd's HTML to enable postMessage
- * communication between the dashboard iframe and the terminal.
- * Intercepts WebSocket to detect connection state, send input,
- * and update theme/fontSize via ttyd's CMD_SET_PREFERENCES protocol.
- *
- * Embeds both dark and light themes so the iframe can use
- * CSS prefers-color-scheme to auto-select the initial theme.
- * The parent frame can still override via terminal-theme postMessage.
- */
 function buildBridgeScript(darkThemeJson: string, lightThemeJson: string): string {
   return `<script>
 (function() {
@@ -91,7 +44,7 @@ function buildBridgeScript(darkThemeJson: string, lightThemeJson: string): strin
           notifiedReady = true;
           setTimeout(function() {
             applyTheme(currentTheme());
-            try { window.parent.postMessage({ type: 'ttyd-ready' }, '*'); } catch(ex) {}
+            try { window.parent.postMessage({ type: 'ttyd-ready' }, document.location.origin); } catch(ex) {}
           }, 50);
         }
       });
@@ -140,11 +93,6 @@ function buildBridgeScript(darkThemeJson: string, lightThemeJson: string): strin
 </script>`;
 }
 
-/**
- * Proxies an HTTP request to the ttyd terminal server using node:http.
- * Rewrites HTML responses to fix asset paths and inject a postMessage
- * bridge for init commands and theme updates.
- */
 export function proxyToTerminal(
   serviceUrl: string,
   path: string,

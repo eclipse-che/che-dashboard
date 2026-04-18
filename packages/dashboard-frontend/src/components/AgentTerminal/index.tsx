@@ -93,7 +93,7 @@ export default class AgentTerminal extends React.PureComponent<Props, State> {
   private postToIframe(message: Record<string, unknown>) {
     const iframe = this.iframeRef.current;
     if (!iframe?.contentWindow) return;
-    iframe.contentWindow.postMessage(message, '*');
+    iframe.contentWindow.postMessage(message, window.location.origin);
   }
 
   private sendThemeUpdate() {
@@ -103,14 +103,14 @@ export default class AgentTerminal extends React.PureComponent<Props, State> {
 
   private buildInitCommand(): string {
     const { namespace, devfileName, initCommand } = this.props;
-    const baseCommand =
-      initCommand ||
-      'claude --bare --dangerously-skip-permissions --append-system-prompt-file "$HOME/CLAUDE.md"';
+    if (!initCommand) {
+      return '';
+    }
     const context =
       `'You are working in namespace "${namespace}" on a devfile named "${devfileName}". ` +
       `It is stored in a Kubernetes ConfigMap named "devfile-creator-storage" in namespace "${namespace}". ` +
       `Find the entry whose YAML content has "name: ${devfileName}"'`;
-    return `${baseCommand} ${context}\r`;
+    return `${initCommand} ${context}\r`;
   }
 
   private sendInitCommand() {

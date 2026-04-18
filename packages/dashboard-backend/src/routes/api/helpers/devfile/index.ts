@@ -14,6 +14,7 @@
 
 import { helpers } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
+import { load } from 'js-yaml';
 
 import { getKubeConfig } from '@/routes/api/helpers/getDevWorkspaceClient';
 
@@ -22,6 +23,11 @@ const CONFIGMAP_LABELS = {
   'app.kubernetes.io/component': 'devfile-creator',
   'app.kubernetes.io/part-of': 'che.eclipse.org',
 };
+
+interface ParsedDevfile {
+  metadata?: { name?: string; description?: string };
+  projects?: Array<{ name?: string }>;
+}
 
 export interface DevfileEntry {
   id: string;
@@ -37,33 +43,52 @@ export interface DevfileIdParams {
   id: string;
 }
 
+function parseDevfileYaml(content: string): ParsedDevfile {
+  try {
+    const parsed = load(content);
+    if (typeof parsed === 'object' && parsed !== null) {
+      return parsed as ParsedDevfile;
+    }
+  } catch {
+    // invalid YAML
+  }
+  return {};
+}
+
 export function extractDevfileName(content: string): string {
-  const match = content.match(/^\s*name:\s*(.+)$/m);
-  return match ? match[1].trim() : 'untitled';
+  const parsed = parseDevfileYaml(content);
+  const name = parsed.metadata?.name;
+  return typeof name === 'string' && name.length > 0 ? name : 'untitled';
 }
 
 export function extractDevfileDescription(content: string): string {
-  const match = content.match(/^\s*description:\s*(.+)$/m);
-  return match ? match[1].trim() : '';
+  const parsed = parseDevfileYaml(content);
+  const description = parsed.metadata?.description;
+  return typeof description === 'string' ? description : '';
 }
 
 export function countProjects(content: string): number {
-  const projectsSectionMatch = content.match(/^projects:\s*\n((?:\s+.+\n)*)/m);
-  if (!projectsSectionMatch) return 0;
-  const projectNames = projectsSectionMatch[1].match(/^\s+- name:/gm);
-  return projectNames ? projectNames.length : 0;
+  const parsed = parseDevfileYaml(content);
+  if (!Array.isArray(parsed.projects)) return 0;
+  return parsed.projects.filter(p => typeof p?.name === 'string').length;
 }
 
 export function parseEntries(data: Record<string, string> | undefined): DevfileEntry[] {
   if (!data) return [];
-  return Object.entries(data).map(([id, content]) => ({
-    id,
-    name: extractDevfileName(content),
-    description: extractDevfileDescription(content),
-    content,
-    projectCount: countProjects(content),
-    lastModified: new Date().toISOString(),
-  }));
+  return Object.entries(data).map(([id, content]) => {
+    const parsed = parseDevfileYaml(content);
+    const name = parsed.metadata?.name;
+    const description = parsed.metadata?.description;
+    const projects = Array.isArray(parsed.projects) ? parsed.projects : [];
+    return {
+      id,
+      name: typeof name === 'string' && name.length > 0 ? name : 'untitled',
+      description: typeof description === 'string' ? description : '',
+      content,
+      projectCount: projects.filter(p => typeof p?.name === 'string').length,
+      lastModified: new Date().toISOString(),
+    };
+  });
 }
 
 export async function getOrCreateConfigMap(
