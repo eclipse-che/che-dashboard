@@ -52,7 +52,7 @@
   min-height: 225px;
   max-height: 465px;
   margin-bottom: 45px;
-  padding: 16px;
+  padding: 45px;
 
   border: 1px solid var(--pf-t--global--border--color--default);
 }
@@ -103,4 +103,5 @@
   color: var(--pf-t--global--text--color--subtle);
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-weight: bold;
 }
