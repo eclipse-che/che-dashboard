@@ -1,0 +1,119 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+.events > * {
+  padding: 0;
+}
+
+.agentEmptyState {
+  margin-top: 33px;
+  background-color: inherit;
+}
+
+:global(html.pf-v6-theme-dark) .agentEmptyState {
+  background-color: inherit;
+}
+
+.agentPanel {
+  display: flex;
+  flex-direction: column;
+}
+
+.agentPanelTerminal {
+  overflow: hidden;
+  flex: 1;
+  min-height: 225px;
+}
+
+.agentPanelEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 225px;
+  padding: 16px;
+
+  border: 1px solid var(--pf-t--global--border--color--default);
+}
+
+.agentPanelEvents {
+  top: 33px;
+
+  overflow-x: auto;
+
+  height: 100%;
+  min-height: 225px;
+  max-height: calc(100% - 123px);
+  padding: 15px;
+
+  border: 1px solid var(--pf-t--global--border--color--default);
+}
+
+.agentPanelEvents .pf-m-gutter > *:last-child {
+  padding: 0;
+}
+
+.editorPanel {
+  display: flex;
+  flex-direction: column;
+  min-width: 30%;
+}
+
+.editorContainer {
+  flex: 1;
+  min-height: 225px;
+}
+
+.editorToolbar {
+  top: 20px;
+  padding: 0;
+}
+
+.editorToolbarContent {
+  display: flex;
+  justify-content: space-between;
+  padding: 0;
+}
+
+.spacer8 {
+  height: 8px;
+}
+
+.spacer16 {
+  height: 16px;
+}
+
+.terminalToolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  height: 33px;
+}
+
+.toolbarSpacer {
+  flex: 1;
+}
+
+.terminalBottomToolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+.agentIdLabel {
+  overflow: hidden;
+
+  font-weight: bold;
+  color: var(--pf-t--global--text--color--subtle);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

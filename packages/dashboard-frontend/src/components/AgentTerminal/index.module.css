@@ -1,0 +1,32 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+.terminalContainer :global(.xterm) {
+  margin: 0 5px;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 40px);
+  border: 1px solid var(--pf-t--global--border--color--default);
+}
+
+.iframe {
+  flex: 1;
+
+  width: 100%;
+  min-height: 0;
+
+  background-color: var(--pf-t--global--background--color--primary--default);
+  border: none;
+}

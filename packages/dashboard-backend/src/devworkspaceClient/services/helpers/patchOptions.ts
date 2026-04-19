@@ -49,3 +49,12 @@ export const STRATEGIC_MERGE_PATCH_OPTIONS: ConfigurationOptions = wrapOptions({
 export const JSON_PATCH_OPTIONS: ConfigurationOptions = wrapOptions({
   middleware: [createPatchMiddleware(PatchStrategy.JsonPatch)],
 })!;
+
+/**
+ * Configuration options for patch operations that need to delete keys from objects.
+ * Uses json-merge-patch (RFC 7396): setting a key to null removes it.
+ * Required for deleting keys from ConfigMap data (strategic merge patch can't delete keys).
+ */
+export const JSON_MERGE_PATCH_OPTIONS: ConfigurationOptions = wrapOptions({
+  middleware: [createPatchMiddleware(PatchStrategy.MergePatch)],
+})!;

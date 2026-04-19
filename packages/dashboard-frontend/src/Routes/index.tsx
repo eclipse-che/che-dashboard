@@ -20,6 +20,9 @@ import WorkspaceDetailsContainer from '@/containers/WorkspaceDetails';
 import WorkspacesListContainer from '@/containers/WorkspacesList';
 import { Redirects } from '@/Routes/Redirects';
 
+const DevfilesListContainer = React.lazy(() => import('@/containers/DevfilesList'));
+const DevfileDetailsContainer = React.lazy(() => import('@/containers/DevfileDetails'));
+
 export enum ROUTE {
   HOME = '/',
   GET_STARTED = '/create-workspace',
@@ -33,6 +36,8 @@ export enum ROUTE {
   FACTORY_LOADER_URL = '/load-factory?url=:url',
   USER_PREFERENCES = '/user-preferences',
   USER_PREFERENCES_TAB = '/user-preferences?tab=:tabId',
+  DEVFILE_CREATOR = '/devfiles',
+  DEVFILE_DETAILS = '/devfile/:namespace/:devfileName',
 }
 
 export type WorkspaceRouteParams = Params<'namespace' | 'workspaceName'>;
@@ -60,6 +65,16 @@ export function AppRoutes(): React.ReactElement {
         key="user-preferences"
         path={ROUTE.USER_PREFERENCES}
         element={<UserPreferencesContainer />}
+      />
+      <Route
+        key="devfile-creator"
+        path={ROUTE.DEVFILE_CREATOR}
+        element={<DevfilesListContainer />}
+      />
+      <Route
+        key="devfile-details"
+        path={ROUTE.DEVFILE_DETAILS}
+        element={<DevfileDetailsContainer />}
       />
       <Route key="redirects" path="*" element={<Redirects />} />
     </Routes>

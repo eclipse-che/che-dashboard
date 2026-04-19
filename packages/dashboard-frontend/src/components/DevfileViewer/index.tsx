@@ -12,11 +12,12 @@
 
 import { yaml } from '@codemirror/lang-yaml';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
+import { Compartment, EditorState } from '@codemirror/state';
+import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorView } from '@codemirror/view';
 import { tags as t } from '@lezer/highlight';
-import { githubDark } from '@uiw/codemirror-theme-github';
-import CodeMirror from '@uiw/react-codemirror';
-import React, { useMemo } from 'react';
+import { basicSetup } from 'codemirror';
+import React, { useCallback, useEffect, useRef } from 'react';
 
 import styles from '@/components/DevfileViewer/index.module.css';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -28,66 +29,100 @@ export type Props = {
   id: string;
 };
 
-const createLightTheme = () => {
-  return EditorView.theme(
-    {
-      '&': {
-        color: '#2e3440',
-        backgroundColor: '#fff',
-      },
-      '.cm-activeLine': {
-        backgroundColor: 'inherit',
-      },
-      '.cm-gutters': {
-        backgroundColor: '#f7f7f7',
-        color: '#999',
-      },
-      '.cm-activeLineGutter': {
-        backgroundColor: '#f7f7f7',
-      },
-    },
-    { dark: false },
-  );
-};
+const themeCompartment = new Compartment();
 
-const createLightHighlightStyle = () => {
-  return HighlightStyle.define([
-    { tag: t.keyword, color: '#5e81ac' },
-    { tag: [t.string], color: '#5e81ac' },
-    { tag: [t.variableName], color: '#008080' },
-    {
-      tag: [t.name, t.deleted, t.character, t.propertyName, t.macroName],
-      color: '#008080',
+const lightTheme = EditorView.theme(
+  {
+    '&': {
+      color: '#2e3440',
+      backgroundColor: '#fff',
     },
-  ]);
-};
+    '.cm-activeLine': {
+      backgroundColor: 'inherit',
+    },
+    '.cm-gutters': {
+      backgroundColor: '#f7f7f7',
+      color: '#999',
+    },
+    '.cm-activeLineGutter': {
+      backgroundColor: '#f7f7f7',
+    },
+  },
+  { dark: false },
+);
+
+const lightHighlightStyle = HighlightStyle.define([
+  { tag: t.keyword, color: '#5e81ac' },
+  { tag: [t.string], color: '#5e81ac' },
+  { tag: [t.variableName], color: '#008080' },
+  {
+    tag: [t.name, t.deleted, t.character, t.propertyName, t.macroName],
+    color: '#008080',
+  },
+]);
+
+const cheLight = [lightTheme, syntaxHighlighting(lightHighlightStyle)];
 
 export const DevfileViewer: React.FC<Props> = ({ value, id }) => {
   const { isDarkTheme } = useTheme();
+  const viewRef = useRef<EditorView | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const lightTheme = useMemo(() => createLightTheme(), []);
-  const lightHighlightStyle = useMemo(() => createLightHighlightStyle(), []);
+  useEffect(() => {
+    if (viewRef.current) {
+      viewRef.current.dispatch({
+        effects: themeCompartment.reconfigure(isDarkTheme ? oneDark : cheLight),
+      });
+    }
+  }, [isDarkTheme]);
 
-  const extensions = useMemo(() => {
-    const baseExtensions = [
-      EditorView.contentAttributes.of({ 'aria-label': 'Devfile content' }),
-      yaml(),
-    ];
-    return isDarkTheme
-      ? baseExtensions
-      : [lightTheme, syntaxHighlighting(lightHighlightStyle), ...baseExtensions];
-  }, [isDarkTheme, lightTheme, lightHighlightStyle]);
+  useEffect(() => {
+    if (viewRef.current) {
+      const currentContent = viewRef.current.state.doc.toString();
+      if (value !== currentContent) {
+        viewRef.current.dispatch({
+          changes: { from: 0, to: currentContent.length, insert: value },
+        });
+      }
+    }
+  }, [value]);
+
+  const containerRefCallback = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (containerRef.current === node) {
+        return;
+      }
+      containerRef.current = node;
+
+      if (viewRef.current) {
+        viewRef.current.destroy();
+        viewRef.current = null;
+      }
+
+      if (!node) {
+        return;
+      }
+
+      const state = EditorState.create({
+        doc: value,
+        extensions: [
+          basicSetup,
+          yaml(),
+          themeCompartment.of(isDarkTheme ? oneDark : cheLight),
+          EditorState.readOnly.of(true),
+          EditorView.lineWrapping,
+        ],
+      });
+
+      viewRef.current = new EditorView({ state, parent: node });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   return (
     <div className={styles.devfileViewer}>
-      <CodeMirror
-        className={styles.codeMirror}
-        readOnly={true}
-        id={id}
-        value={value}
-        theme={isDarkTheme ? githubDark : undefined}
-        extensions={extensions}
-      />
+      <div id={id} ref={containerRefCallback} />
     </div>
   );
 };

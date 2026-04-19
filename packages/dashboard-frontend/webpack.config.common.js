@@ -44,7 +44,7 @@ const config = {
   optimization: {
     splitChunks: {
       chunks: (chunk) => {
-        // exclude preload chunks from being split (they should be standalone)
+        // exclude preload and worker chunks from being split (they should be standalone)
         return (
           chunk.name !== 'accept-factory-link' &&
           chunk.name !== 'branding-loader'

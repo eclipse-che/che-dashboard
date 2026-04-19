@@ -1,0 +1,90 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+.wrapper {
+  height: 100%;
+}
+
+.terminalPanel {
+  overflow: hidden;
+  height: calc(100vh - 270px);
+}
+
+.terminalToolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  height: 33px;
+}
+
+.toolbarSpacer {
+  flex: 1;
+}
+
+.terminalBottomToolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+.statusLabel {
+  text-transform: capitalize;
+}
+
+.rotate {
+  animation: spinnerRotate 1s ease-in-out infinite;
+}
+
+@keyframes spinnerRotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.agentIdLabel {
+  overflow: hidden;
+
+  font-weight: bold;
+  color: var(--pf-t--global--text--color--subtle);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.eventsPanel {
+  overflow: auto;
+
+  height: 100%;
+  min-height: 225px;
+  max-height: 465px;
+  padding: 24px;
+
+  border: 1px solid var(--pf-t--global--border--color--default);
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 225px;
+  padding: 16px;
+
+  border: 1px solid var(--pf-t--global--border--color--default);
+}
+
+.spacer16 {
+  height: 16px;
+}
