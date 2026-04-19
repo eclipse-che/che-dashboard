@@ -140,6 +140,8 @@ function getComponent(
         agentEnabled={false}
         agentInitCommand={undefined}
         agentInstanceId={undefined}
+        agentName={undefined}
+        agentDescription={undefined}
         isDarkTheme={false}
         onStartAgent={jest.fn()}
         onStopAgent={jest.fn()}

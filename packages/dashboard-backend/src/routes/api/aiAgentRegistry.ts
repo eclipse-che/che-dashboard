@@ -24,6 +24,15 @@ import { logger } from '@/utils/logger';
 
 const tags = ['AI Agent Registry'];
 
+const rateLimitConfig = {
+  config: {
+    rateLimit: {
+      max: 30,
+      timeWindow: '1 minute',
+    },
+  },
+};
+
 const AI_AGENT_REGISTRY_LABEL_SELECTOR =
   'app.kubernetes.io/component=ai-agent-registry,app.kubernetes.io/part-of=che.eclipse.org';
 
@@ -55,7 +64,7 @@ export function registerAiAgentRegistryRoute(instance: FastifyInstance) {
   instance.register(async server => {
     server.get(
       `${baseApiPath}/ai-agent-registry`,
-      getSchema({ tags }),
+      Object.assign({}, rateLimitConfig, getSchema({ tags })),
       async function (): Promise<api.IAiAgentRegistry> {
         if (registryCache && Date.now() - registryCache.timestamp < REGISTRY_CACHE_TTL_MS) {
           return registryCache.data;

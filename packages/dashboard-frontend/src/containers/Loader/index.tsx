@@ -24,6 +24,7 @@ import { LoaderTab } from '@/services/helpers/types';
 import { Workspace } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
 import { selectAiAgentRegistryEnabled, selectDefaultAgent } from '@/store/AiAgentRegistry';
+import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
 import { actionCreators, AgentPodStatus, clearAgentTerminalUrl } from '@/store/LocalDevfiles';
 import { selectAgentPodStatuses, selectAgentTerminalUrl } from '@/store/LocalDevfiles/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
@@ -63,6 +64,7 @@ class LoaderContainer extends React.Component<Props, State> {
 
   componentDidMount() {
     this.initAgentInstanceId();
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
   }
 
   componentDidUpdate() {
@@ -72,6 +74,7 @@ class LoaderContainer extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
+    window.removeEventListener('beforeunload', this.handleBeforeUnload);
     this.clearPollTimer();
     this.clearHeartbeat();
     if (this.agentInstanceId && this.agentPodStatus) {
@@ -183,6 +186,18 @@ class LoaderContainer extends React.Component<Props, State> {
     }
   };
 
+  private handleBeforeUnload = () => {
+    if (!this.agentInstanceId || !this.agentPodStatus) {
+      return;
+    }
+    const namespace = this.props.namespace;
+    const agentId = encodeURIComponent(this.agentInstanceId);
+    fetch(`/dashboard/api/namespace/${namespace}/agent/${agentId}`, {
+      method: 'DELETE',
+      keepalive: true,
+    });
+  };
+
   private findTargetWorkspace(props: Props): Workspace | undefined {
     const loaderMode = getLoaderMode(props.location);
     if (loaderMode.mode !== 'workspace') {
@@ -225,6 +240,8 @@ class LoaderContainer extends React.Component<Props, State> {
         agentEnabled={agentEnabled}
         agentInitCommand={defaultAgent?.initCommand}
         agentInstanceId={this.agentInstanceId}
+        agentName={defaultAgent?.name}
+        agentDescription={defaultAgent?.description}
         isDarkTheme={isDarkTheme}
         onStartAgent={this.handleStartAgent}
         onStopAgent={this.handleStopAgent}
@@ -252,6 +269,7 @@ function ContainerWrapper(props: MappedProps) {
 
 const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
+  namespace: selectDefaultNamespace(state).name,
   agentPodStatuses: selectAgentPodStatuses(state),
   agentTerminalUrl: selectAgentTerminalUrl(state),
   agentEnabled: selectAiAgentRegistryEnabled(state),

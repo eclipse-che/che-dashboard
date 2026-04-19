@@ -224,6 +224,8 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
         agentEnabled={agentEnabled}
         agentInitCommand={defaultAgent?.initCommand}
         agentInstanceId={this.agentInstanceId}
+        agentName={defaultAgent?.name}
+        agentDescription={defaultAgent?.description}
       />
     );
   }

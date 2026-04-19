@@ -347,6 +347,13 @@ export function registerAgentsRoute(instance: FastifyInstance) {
           return;
         }
 
+        const CLUSTER_SVC_PATTERN = /^https?:\/\/[a-z0-9-]+\.[a-z0-9-]+\.svc:\d+$/;
+        if (!CLUSTER_SVC_PATTERN.test(cached)) {
+          logger.warn('Rejected terminal URL not matching cluster service pattern: %s', cached);
+          socket.close(1011, 'Invalid terminal service URL');
+          return;
+        }
+
         const queryString = new URL(request.url, 'http://localhost').search;
         const wsUrl = `${cached.replace(/^http/, 'ws')}/ws${queryString}`;
         const upstream = new WebSocket(wsUrl, ['tty']);

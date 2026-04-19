@@ -33,6 +33,7 @@ import {
   Toolbar,
   ToolbarContent,
   ToolbarItem,
+  Tooltip,
 } from '@patternfly/react-core';
 import { RocketIcon } from '@patternfly/react-icons';
 import React from 'react';
@@ -43,7 +44,6 @@ import AgentTerminal from '@/components/AgentTerminal';
 import { DevfileEditor } from '@/components/DevfileEditor';
 import DevfileEditorTools from '@/components/DevfileEditorTools';
 import Head from '@/components/Head';
-import TerminalTools from '@/components/TerminalTools';
 import { DeleteConfirmation } from '@/pages/DevfileDetails/DeleteConfirmation';
 import { DropdownActions } from '@/pages/DevfileDetails/DropdownActions';
 import styles from '@/pages/DevfileDetails/index.module.css';
@@ -66,6 +66,8 @@ interface Props {
   agentEnabled: boolean;
   agentInitCommand?: string;
   agentInstanceId?: string;
+  agentName?: string;
+  agentDescription?: string;
 }
 
 interface State {
@@ -76,7 +78,6 @@ interface State {
   agentError: string | undefined;
   hasValidationError: boolean;
   isEditorExpanded: boolean;
-  isTerminalExpanded: boolean;
   isDeleteConfirmOpen: boolean;
 }
 
@@ -91,7 +92,6 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
       agentError: undefined,
       hasValidationError: false,
       isEditorExpanded: false,
-      isTerminalExpanded: false,
       isDeleteConfirmOpen: false,
     };
   }
@@ -160,10 +160,6 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
 
   private handleEditorExpandToggle = () => {
     this.setState(prev => ({ isEditorExpanded: !prev.isEditorExpanded }));
-  };
-
-  private handleTerminalExpandToggle = () => {
-    this.setState(prev => ({ isTerminalExpanded: !prev.isTerminalExpanded }));
   };
 
   private buildRawDevfileUrl(): string {
@@ -243,15 +239,22 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
       const isPending = phase === 'Pending';
 
       if (isRunning && agentTerminalUrl) {
+        const { agentName, agentDescription } = this.props;
         const agentDisplayId = this.props.agentInstanceId || agentPodStatus.agentId;
+        const tooltipContent = (
+          <div>
+            <div>
+              <strong>{agentName || agentDisplayId}</strong>
+            </div>
+            {agentDescription && <div>{agentDescription}</div>}
+          </div>
+        );
         return (
           <div className={styles.agentPanelTerminal}>
             <div className={styles.terminalToolbar}>
-              <span className={styles.agentIdLabel}>{agentDisplayId}</span>
-              <TerminalTools
-                isExpanded={this.state.isTerminalExpanded}
-                onToggleExpand={this.handleTerminalExpandToggle}
-              />
+              <Tooltip content={tooltipContent}>
+                <span className={styles.agentIdLabel}>{agentDisplayId}</span>
+              </Tooltip>
             </div>
             <AgentTerminal
               terminalUrl={agentTerminalUrl}
@@ -260,6 +263,7 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
               isDarkTheme={this.props.isDarkTheme}
               initCommand={this.props.agentInitCommand}
             />
+            <div className={styles.terminalBottomToolbar}>{this.renderStopButton()}</div>
           </div>
         );
       }
@@ -287,7 +291,7 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
         );
       }
 
-      if (isPending || (phase === 'Running' && !agentPodStatus.ready)) {
+      if (isPending || phase === 'Running') {
         return (
           <div className={styles.agentPanelEvents}>
             <Stack hasGutter>
@@ -337,7 +341,6 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
       saveError,
       hasValidationError,
       isEditorExpanded,
-      isTerminalExpanded,
       isDeleteConfirmOpen,
     } = this.state;
     const isAgentConnected =
@@ -383,94 +386,74 @@ export default class DevfileDetails extends React.PureComponent<Props, State> {
           }}
         >
           <Split hasGutter style={{ height: 'calc(100vh - 270px)' }}>
-            {!(isAgentConnected && isTerminalExpanded) && (
-              <SplitItem isFilled className={styles.editorPanel}>
-                {saveError && (
-                  <Alert
-                    variant="danger"
-                    isInline
-                    title="Save failed"
-                    style={{ marginBottom: '8px' }}
-                  >
-                    {saveError}
-                  </Alert>
-                )}
-                <DevfileEditorTools
-                  contentText={editorContent}
-                  workspaceName={devfile.name}
-                  isExpanded={isEditorExpanded}
-                  onToggleExpand={this.handleEditorExpandToggle}
+            <SplitItem isFilled className={styles.editorPanel}>
+              {saveError && (
+                <Alert
+                  variant="danger"
+                  isInline
+                  title="Save failed"
+                  style={{ marginBottom: '8px' }}
+                >
+                  {saveError}
+                </Alert>
+              )}
+              <DevfileEditorTools
+                contentText={editorContent}
+                workspaceName={devfile.name}
+                isExpanded={isEditorExpanded}
+                onToggleExpand={this.handleEditorExpandToggle}
+              />
+              <div className={styles.editorContainer}>
+                <DevfileEditor
+                  id="devfile-editor-id"
+                  value={editorContent}
+                  schema={this.props.devfileSchema}
+                  onChange={this.handleEditorChange}
+                  onValidation={this.handleValidation}
                 />
-                <div className={styles.editorContainer}>
-                  <DevfileEditor
-                    id="devfile-editor-id"
-                    value={editorContent}
-                    schema={this.props.devfileSchema}
-                    onChange={this.handleEditorChange}
-                    onValidation={this.handleValidation}
-                  />
-                </div>
-                <div className={styles.spacer8} />
-                <Toolbar className={styles.editorToolbar}>
-                  <ToolbarContent className={styles.editorToolbarContent}>
-                    <ToolbarItem>
-                      <Button variant="secondary" onClick={this.handleRefresh}>
-                        Refresh
-                      </Button>
-                    </ToolbarItem>
-                    <ToolbarItem>
-                      <Button
-                        variant="primary"
-                        onClick={this.handleSave}
-                        isDisabled={isSaved || hasValidationError}
-                      >
-                        Save
-                      </Button>
-                    </ToolbarItem>
-                    <ToolbarItem>
-                      <Button
-                        variant="secondary"
-                        icon={<RocketIcon />}
-                        iconPosition="left"
-                        isDisabled={!isSaved || hasValidationError}
-                        onClick={this.handleCreateWorkspace}
-                      >
-                        Create Workspace
-                      </Button>
-                    </ToolbarItem>
-                    <ToolbarItem align={{ default: 'alignEnd' }}>
-                      <Button variant="secondary" isDanger onClick={this.handleDeleteClick}>
-                        Delete
-                      </Button>
-                    </ToolbarItem>
-                  </ToolbarContent>
-                </Toolbar>
-              </SplitItem>
-            )}
+              </div>
+              <div className={styles.spacer8} />
+              <Toolbar className={styles.editorToolbar}>
+                <ToolbarContent className={styles.editorToolbarContent}>
+                  <ToolbarItem>
+                    <Button variant="secondary" onClick={this.handleRefresh}>
+                      Refresh
+                    </Button>
+                  </ToolbarItem>
+                  <ToolbarItem>
+                    <Button
+                      variant="primary"
+                      onClick={this.handleSave}
+                      isDisabled={isSaved || hasValidationError}
+                    >
+                      Save
+                    </Button>
+                  </ToolbarItem>
+                  <ToolbarItem align={{ default: 'alignEnd' }}>
+                    <Button
+                      variant="secondary"
+                      icon={<RocketIcon />}
+                      iconPosition="left"
+                      isDisabled={!isSaved || hasValidationError}
+                      onClick={this.handleCreateWorkspace}
+                    >
+                      Create Workspace
+                    </Button>
+                  </ToolbarItem>
+                </ToolbarContent>
+              </Toolbar>
+            </SplitItem>
 
             {agentEnabled && !isEditorExpanded && (
               <SplitItem
-                isFilled={isAgentConnected && isTerminalExpanded}
                 className={isAgentConnected ? styles.agentPanel : undefined}
                 style={{
-                  width:
-                    isAgentConnected && isTerminalExpanded
-                      ? '100%'
-                      : isAgentConnected
-                        ? '50%'
-                        : '500px',
+                  width: isAgentConnected ? '50%' : '500px',
                   minWidth: '350px',
                   transition: 'width 0.3s ease',
                 }}
               >
                 {this.renderAgentPanel()}
-                {isAgentConnected && (
-                  <Toolbar className={styles.editorToolbar}>
-                    <ToolbarContent>
-                      <ToolbarItem>{this.renderStopButton()}</ToolbarItem>
-                    </ToolbarContent>
-                  </Toolbar>
-                )}
               </SplitItem>
             )}
           </Split>

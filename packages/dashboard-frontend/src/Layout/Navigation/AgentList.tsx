@@ -61,21 +61,25 @@ function AgentStatusIndicator(props: { phase: string; ready: boolean }): React.R
   );
 }
 
+function findAgentDefinition(
+  agentId: string,
+  agents: api.AiAgentDefinition[],
+): api.AiAgentDefinition | undefined {
+  return agents.find(a => agentId.startsWith(a.id));
+}
+
 function buildAgentTooltipContent(
   agentId: string,
   agents: api.AiAgentDefinition[],
 ): React.ReactElement {
-  const baseId = agentId.replace(/-\d{3}$/, '').replace(/-/g, '/');
-  const agentDef = agents.find(a => a.id === baseId);
-  const name = agentDef?.name || 'AI Agent';
-  const description = agentDef?.description || '';
+  const agentDef = findAgentDefinition(agentId, agents);
   return (
     <div>
       <div>
-        <strong>{name}</strong>
-        {description ? `. ${description}` : ''}
+        <strong>{agentDef?.name || 'AI Agent'}</strong>
       </div>
-      <div>ID: {agentId}</div>
+      {agentDef?.description && <div>{agentDef.description}</div>}
+      <div style={{ marginTop: '4px', opacity: 0.7 }}>ID: {agentId}</div>
     </div>
   );
 }

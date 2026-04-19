@@ -16,14 +16,42 @@
 
 .terminalPanel {
   overflow: hidden;
-  height: 100%;
+  height: calc(100vh - 270px);
 }
 
 .terminalToolbar {
   display: flex;
+  gap: 8px;
   align-items: center;
-  justify-content: space-between;
   height: 33px;
+}
+
+.toolbarSpacer {
+  flex: 1;
+}
+
+.terminalBottomToolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+}
+
+.statusLabel {
+  text-transform: capitalize;
+}
+
+.rotate {
+  animation: spinnerRotate 1s ease-in-out infinite;
+}
+
+@keyframes spinnerRotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .agentIdLabel {

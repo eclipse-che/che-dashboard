@@ -203,12 +203,12 @@ export async function createAgentPod(
   const allVolumes: k8s.V1Volume[] = [
     ...dwMounts.volumes,
     { name: TOKEN_SECRET_VOLUME, secret: { secretName } },
-    { name: 'claude-home', emptyDir: {} },
+    { name: 'tmp-dir', emptyDir: {} },
   ];
   const allVolumeMounts: k8s.V1VolumeMount[] = [
     ...dwMounts.volumeMounts,
     { name: TOKEN_SECRET_VOLUME, mountPath: TOKEN_MOUNT_PATH, readOnly: true },
-    { name: 'claude-home', mountPath: '/tmp/claude-home' },
+    { name: 'tmp-dir', mountPath: '/tmp' },
   ];
 
   const pod = await coreV1Api.createNamespacedPod({
@@ -230,6 +230,7 @@ export async function createAgentPod(
           {
             name: 'agent',
             image: `${config.image}:${config.tag}`,
+            imagePullPolicy: 'IfNotPresent',
             ports: [
               {
                 containerPort: config.terminalPort,

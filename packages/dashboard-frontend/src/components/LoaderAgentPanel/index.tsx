@@ -22,16 +22,20 @@ import {
   EmptyStateVariant,
   Flex,
   FlexItem,
+  Icon,
+  Label,
   Spinner,
   Stack,
   StackItem,
+  Tooltip,
 } from '@patternfly/react-core';
+import { InProgressIcon, ResourcesFullIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 import AgentPodEvents from '@/components/AgentPodEvents';
 import AgentTerminal from '@/components/AgentTerminal';
 import styles from '@/components/LoaderAgentPanel/index.module.css';
-import TerminalTools from '@/components/TerminalTools';
+import { StoppedIcon } from '@/components/Workspace/Status/StoppedIcon';
 import { AgentPodStatus } from '@/store/LocalDevfiles';
 
 export interface Props {
@@ -39,6 +43,8 @@ export interface Props {
   agentTerminalUrl: string | undefined;
   agentInstanceId: string | undefined;
   agentInitCommand: string | undefined;
+  agentName: string | undefined;
+  agentDescription: string | undefined;
   isDarkTheme: boolean;
   workspaceName: string;
   workspaceNamespace: string;
@@ -47,7 +53,6 @@ export interface Props {
 }
 
 interface State {
-  isTerminalExpanded: boolean;
   agentError: string | undefined;
 }
 
@@ -55,14 +60,9 @@ export default class LoaderAgentPanel extends React.PureComponent<Props, State> 
   constructor(props: Props) {
     super(props);
     this.state = {
-      isTerminalExpanded: false,
       agentError: undefined,
     };
   }
-
-  private handleTerminalExpandToggle = () => {
-    this.setState(prev => ({ isTerminalExpanded: !prev.isTerminalExpanded }));
-  };
 
   private handleStartAgent = async () => {
     this.setState({ agentError: undefined });
@@ -94,9 +94,59 @@ export default class LoaderAgentPanel extends React.PureComponent<Props, State> 
 
   private renderStopButton(): React.ReactElement {
     return (
-      <Button variant="secondary" onClick={this.props.onStopAgent}>
+      <Button variant="secondary" isDanger onClick={this.props.onStopAgent}>
         Stop
       </Button>
+    );
+  }
+
+  private renderStatusLabel(phase: string, ready: boolean): React.ReactElement {
+    const isRunning = phase === 'Running' && ready;
+    const isPending = phase === 'Pending' || (phase === 'Running' && !ready);
+    const isFailed = phase === 'Failed' || phase === 'Succeeded' || phase === 'Unknown';
+
+    let color: 'green' | 'blue' | 'orange' | 'grey';
+    let icon: React.ReactElement;
+    let text: string;
+
+    if (isRunning) {
+      color = 'green';
+      icon = (
+        <Icon status="success" isInline>
+          <ResourcesFullIcon />
+        </Icon>
+      );
+      text = 'Running';
+    } else if (isPending) {
+      color = 'blue';
+      icon = (
+        <Icon status="info" isInline>
+          <InProgressIcon className={styles.rotate} />
+        </Icon>
+      );
+      text = 'Starting';
+    } else if (isFailed) {
+      color = 'orange';
+      icon = (
+        <Icon isInline color="var(--pf-t--global--text--color--subtle)">
+          <StoppedIcon />
+        </Icon>
+      );
+      text = 'Failed';
+    } else {
+      color = 'grey';
+      icon = (
+        <Icon isInline color="var(--pf-t--global--text--color--subtle)">
+          <StoppedIcon />
+        </Icon>
+      );
+      text = phase;
+    }
+
+    return (
+      <Label color={color} icon={icon} className={styles.statusLabel}>
+        {text}
+      </Label>
     );
   }
 
@@ -111,18 +161,26 @@ export default class LoaderAgentPanel extends React.PureComponent<Props, State> 
       const isPending = phase === 'Pending';
 
       if (isRunning && agentTerminalUrl) {
+        const { agentName, agentDescription } = this.props;
         const agentDisplayId = this.props.agentInstanceId || agentPodStatus.agentId;
         const initCmd = agentInitCommand
           ? `${agentInitCommand} ${this.buildInitContext()}`
           : undefined;
+        const tooltipContent = (
+          <div>
+            <div>
+              <strong>{agentName || agentDisplayId}</strong>
+            </div>
+            {agentDescription && <div>{agentDescription}</div>}
+          </div>
+        );
         return (
           <div className={styles.terminalPanel}>
             <div className={styles.terminalToolbar}>
-              <span className={styles.agentIdLabel}>{agentDisplayId}</span>
-              <TerminalTools
-                isExpanded={this.state.isTerminalExpanded}
-                onToggleExpand={this.handleTerminalExpandToggle}
-              />
+              <Tooltip content={tooltipContent}>
+                <span className={styles.agentIdLabel}>{agentDisplayId}</span>
+              </Tooltip>
+              {this.renderStatusLabel(phase, agentPodStatus.ready)}
             </div>
             <AgentTerminal
               terminalUrl={agentTerminalUrl}
@@ -131,6 +189,7 @@ export default class LoaderAgentPanel extends React.PureComponent<Props, State> 
               isDarkTheme={isDarkTheme}
               initCommand={initCmd}
             />
+            <div className={styles.terminalBottomToolbar}>{this.renderStopButton()}</div>
           </div>
         );
       }
@@ -186,7 +245,12 @@ export default class LoaderAgentPanel extends React.PureComponent<Props, State> 
       <div className={styles.emptyState}>
         <div>
           {agentError && (
-            <Alert variant="danger" isInline title="Agent error" style={{ marginBottom: '16px' }}>
+            <Alert
+              variant="danger"
+              isInline
+              title="Agent error"
+              style={{ marginBottom: '16px', maxHeight: '200px', overflowX: 'auto' }}
+            >
               {agentError}
             </Alert>
           )}

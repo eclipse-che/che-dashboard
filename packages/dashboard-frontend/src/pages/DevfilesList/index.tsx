@@ -54,6 +54,7 @@ import React from 'react';
 import { NavigateFunction } from 'react-router-dom';
 
 import Head from '@/components/Head';
+import { DeleteConfirmation } from '@/pages/DevfileDetails/DeleteConfirmation';
 import styles from '@/pages/DevfilesList/index.module.css';
 import match from '@/services/helpers/filter';
 import { LocalDevfile } from '@/store/LocalDevfiles';
@@ -87,6 +88,8 @@ interface State {
   filterValue: string;
   sortColumn: SortColumn;
   sortDirection: SortDirection;
+  deleteConfirmIds: string[];
+  deleteConfirmName: string;
 }
 
 export default class DevfilesList extends React.PureComponent<Props, State> {
@@ -103,6 +106,8 @@ export default class DevfilesList extends React.PureComponent<Props, State> {
       filterValue: '',
       sortColumn: 'name',
       sortDirection: 'asc',
+      deleteConfirmIds: [],
+      deleteConfirmName: '',
     };
   }
 
@@ -245,18 +250,25 @@ export default class DevfilesList extends React.PureComponent<Props, State> {
     }
   };
 
-  private handleBulkDelete = async () => {
-    const { onDeleteDevfile } = this.props;
+  private handleBulkDelete = () => {
     const { selected } = this.state;
-    this.setState({ isDeleting: true });
-    try {
-      for (const id of selected) {
-        onDeleteDevfile(id);
-      }
-      this.setState({ selected: [] });
-    } finally {
-      this.setState({ isDeleting: false });
+    const { devfiles } = this.props;
+    const names = devfiles.filter(d => selected.includes(d.id)).map(d => d.name);
+    const label = names.length === 1 ? names[0] : `${names.length} devfiles`;
+    this.setState({ deleteConfirmIds: selected, deleteConfirmName: label });
+  };
+
+  private handleDeleteConfirm = () => {
+    const { onDeleteDevfile } = this.props;
+    const { deleteConfirmIds } = this.state;
+    for (const id of deleteConfirmIds) {
+      onDeleteDevfile(id);
     }
+    this.setState({ deleteConfirmIds: [], deleteConfirmName: '', selected: [] });
+  };
+
+  private handleDeleteConfirmClose = () => {
+    this.setState({ deleteConfirmIds: [], deleteConfirmName: '' });
   };
 
   private getRowActions = (devfile: LocalDevfile): IAction[] => [
@@ -277,7 +289,8 @@ export default class DevfilesList extends React.PureComponent<Props, State> {
     },
     {
       title: 'Delete',
-      onClick: () => this.props.onDeleteDevfile(devfile.id),
+      onClick: () =>
+        this.setState({ deleteConfirmIds: [devfile.id], deleteConfirmName: devfile.name }),
       isDanger: true,
     },
   ];
@@ -381,6 +394,7 @@ export default class DevfilesList extends React.PureComponent<Props, State> {
                         value={filterValue}
                         onChange={this.handleFilterChange}
                         onClear={this.handleFilterClear}
+                        style={{ marginLeft: '1rem' }}
                       />
                     </InputGroupItem>
                   </InputGroup>
@@ -512,6 +526,12 @@ export default class DevfilesList extends React.PureComponent<Props, State> {
           )}
         </PageSection>
         {this.renderModal()}
+        <DeleteConfirmation
+          devfileName={this.state.deleteConfirmName}
+          isOpen={this.state.deleteConfirmIds.length > 0}
+          onConfirm={this.handleDeleteConfirm}
+          onClose={this.handleDeleteConfirmClose}
+        />
       </React.Fragment>
     );
   }

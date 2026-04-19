@@ -42,6 +42,8 @@ export type Props = {
   agentEnabled: boolean;
   agentInitCommand: string | undefined;
   agentInstanceId: string | undefined;
+  agentName: string | undefined;
+  agentDescription: string | undefined;
   isDarkTheme: boolean;
   onStartAgent: () => void;
   onStopAgent: () => void;
@@ -95,6 +97,8 @@ export class LoaderPage extends React.PureComponent<Props, State> {
       agentEnabled,
       agentInitCommand,
       agentInstanceId,
+      agentName,
+      agentDescription,
       isDarkTheme,
       onStartAgent,
       onStopAgent,
@@ -183,6 +187,8 @@ export class LoaderPage extends React.PureComponent<Props, State> {
                     agentTerminalUrl={agentTerminalUrl}
                     agentInstanceId={agentInstanceId}
                     agentInitCommand={agentInitCommand}
+                    agentName={agentName}
+                    agentDescription={agentDescription}
                     isDarkTheme={isDarkTheme}
                     workspaceName={workspace.name}
                     workspaceNamespace={workspace.namespace}
