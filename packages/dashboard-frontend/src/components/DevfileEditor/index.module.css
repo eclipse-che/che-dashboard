@@ -39,9 +39,10 @@
 .errorMessage :global(.pf-v6-c-helper-text__item.pf-m-error) {
   overflow: hidden;
   display: inline-block;
+
+  color: var(--pf-v6-c-helper-text__item-icon--m-error--Color);
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--pf-v6-c-helper-text__item-icon--m-error--Color);
 }
 
 .docsLink {

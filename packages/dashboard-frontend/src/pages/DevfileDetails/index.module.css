@@ -100,8 +100,9 @@
 
 .agentIdLabel {
   overflow: hidden;
+
+  font-weight: bold;
   color: var(--pf-t--global--text--color--subtle);
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-weight: bold;
 }

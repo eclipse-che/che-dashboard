@@ -16,6 +16,7 @@ import { Location, NavigateFunction } from 'react-router-dom';
 
 import Head from '@/components/Head';
 import Header from '@/components/Header';
+import LoaderAgentPanel from '@/components/LoaderAgentPanel';
 import WorkspaceEvents from '@/components/WorkspaceEvents';
 import WorkspaceLogs from '@/components/WorkspaceLogs';
 import WorkspaceProgress from '@/components/WorkspaceProgress';
@@ -27,6 +28,7 @@ import { ToggleBarsContext } from '@/contexts/ToggleBars';
 import styles from '@/pages/Loader/index.module.css';
 import { DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
 import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
+import { AgentPodStatus } from '@/store/LocalDevfiles';
 
 export type Props = {
   location: Location;
@@ -35,6 +37,14 @@ export type Props = {
   tabParam: string | undefined;
   workspace: Workspace | undefined;
   onTabChange: (tab: LoaderTab) => void;
+  agentPodStatus: AgentPodStatus | undefined;
+  agentTerminalUrl: string | undefined;
+  agentEnabled: boolean;
+  agentInitCommand: string | undefined;
+  agentInstanceId: string | undefined;
+  isDarkTheme: boolean;
+  onStartAgent: () => void;
+  onStopAgent: () => void;
 };
 
 export type State = {
@@ -61,7 +71,6 @@ export class LoaderPage extends React.PureComponent<Props, State> {
   }
 
   componentDidMount(): void {
-    // hide top and side bars
     this.context.hideAll();
   }
 
@@ -76,7 +85,20 @@ export class LoaderPage extends React.PureComponent<Props, State> {
   }
 
   render(): React.ReactNode {
-    const { searchParams, workspace, location, navigate } = this.props;
+    const {
+      searchParams,
+      workspace,
+      location,
+      navigate,
+      agentPodStatus,
+      agentTerminalUrl,
+      agentEnabled,
+      agentInitCommand,
+      agentInstanceId,
+      isDarkTheme,
+      onStartAgent,
+      onStopAgent,
+    } = this.props;
     const { activeTabKey } = this.state;
 
     let pageTitle = workspace ? `Starting workspace ${workspace.name}` : 'Creating a workspace';
@@ -91,6 +113,7 @@ export class LoaderPage extends React.PureComponent<Props, State> {
 
     const isLogsTabDisabled = workspace === undefined;
     const isEventsTabDisabled = workspace === undefined;
+    const isAgentTabDisabled = workspace === undefined || !agentEnabled;
 
     const containerScc = workspace ? WorkspaceAdapter.getContainerScc(workspace.ref) : undefined;
 
@@ -144,6 +167,30 @@ export class LoaderPage extends React.PureComponent<Props, State> {
               isAriaDisabled={isEventsTabDisabled}
             >
               <WorkspaceEvents workspaceUID={workspace?.uid} />
+            </Tab>
+            <Tab
+              eventKey={LoaderTab.AiAgent}
+              title={LoaderTab.AiAgent}
+              data-testid="loader-ai-agent-tab"
+              id="loader-ai-agent-tab"
+              isDisabled={isAgentTabDisabled}
+              isAriaDisabled={isAgentTabDisabled}
+            >
+              {workspace && (
+                <PageSection isFilled={true}>
+                  <LoaderAgentPanel
+                    agentPodStatus={agentPodStatus}
+                    agentTerminalUrl={agentTerminalUrl}
+                    agentInstanceId={agentInstanceId}
+                    agentInitCommand={agentInitCommand}
+                    isDarkTheme={isDarkTheme}
+                    workspaceName={workspace.name}
+                    workspaceNamespace={workspace.namespace}
+                    onStartAgent={onStartAgent}
+                    onStopAgent={onStopAgent}
+                  />
+                </PageSection>
+              )}
             </Tab>
           </Tabs>
         </PageSection>

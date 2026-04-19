@@ -29,6 +29,11 @@ import { LoaderPage, Props } from '..';
 jest.mock('@/components/WorkspaceProgress');
 jest.mock('@/components/WorkspaceLogs');
 jest.mock('@/components/WorkspaceEvents');
+jest.mock('@/components/LoaderAgentPanel', () => {
+  const MockLoaderAgentPanel = () => <div data-testid="loader-agent-panel" />;
+  MockLoaderAgentPanel.displayName = 'MockLoaderAgentPanel';
+  return MockLoaderAgentPanel;
+});
 
 const { renderComponent } = getComponentRenderer(getComponent);
 
@@ -119,7 +124,7 @@ describe('Loader page', () => {
 
 function getComponent(
   store: Store,
-  props: Omit<Props, 'onTabChange' | 'searchParams' | 'location' | 'navigate'>,
+  props: Pick<Props, 'tabParam' | 'workspace'>,
 ): React.ReactElement {
   return (
     <Provider store={store}>
@@ -130,6 +135,14 @@ function getComponent(
         searchParams={new URLSearchParams()}
         workspace={props.workspace}
         onTabChange={mockOnTabChange}
+        agentPodStatus={undefined}
+        agentTerminalUrl={undefined}
+        agentEnabled={false}
+        agentInitCommand={undefined}
+        agentInstanceId={undefined}
+        isDarkTheme={false}
+        onStartAgent={jest.fn()}
+        onStopAgent={jest.fn()}
       />
     </Provider>
   );
