@@ -240,6 +240,50 @@ describe('Samples List', () => {
     });
   });
 
+  describe('Empty Workspace', () => {
+    const preferredPvcStrategy = 'per-workspace';
+
+    test('should force perclick policy for Empty Workspace', async () => {
+      const store = new MockStoreBuilder()
+        .withBranding({
+          docs: {
+            storageTypes: 'storage-types-docs',
+          },
+        } as BrandingData)
+        .withDwServerConfig({
+          defaults: {
+            pvcStrategy: preferredPvcStrategy,
+          } as api.IServerConfig['defaults'],
+        })
+        .withDevfileRegistries({
+          registries: {
+            ['registry-url']: {
+              metadata: [
+                {
+                  displayName: 'Empty Workspace',
+                  description: 'Start an empty workspace',
+                  tags: ['Empty'],
+                  icon: '/images/empty.svg',
+                  links: {
+                    v2: `${origin}/dashboard/devfile-registry/devfiles/empty.yaml`,
+                  },
+                },
+              ],
+            },
+          },
+        })
+        .build();
+
+      renderComponent(store, editorDefinition, editorImage);
+
+      const sampleCardButton = screen.getByRole('button', { name: 'Select Sample' });
+      await userEvent.click(sampleCardButton);
+
+      const calledUrl = mockWindowOpen.mock.calls[0][0] as string;
+      expect(calledUrl).toContain('policies.create=perclick');
+    });
+  });
+
   describe('SSH URL handling', () => {
     const preferredPvcStrategy = 'per-workspace';
 

@@ -127,8 +127,8 @@ class SamplesList extends React.PureComponent<Props, State> {
       factoryParams[EDITOR_IMAGE_ATTR] = editorImage;
     }
 
-    const policiesCreate = this.getPoliciesCreate();
-    // This is to avoid sending the default value in the URL('peruser' is the default value)
+    const isEmptyWorkspace = metadata.tags?.some(tag => tag.toLowerCase() === 'empty') === true;
+    const policiesCreate = isEmptyWorkspace ? 'perclick' : this.getPoliciesCreate();
     if (policiesCreate !== 'peruser') {
       factoryParams[POLICIES_CREATE_ATTR] = policiesCreate;
     }
