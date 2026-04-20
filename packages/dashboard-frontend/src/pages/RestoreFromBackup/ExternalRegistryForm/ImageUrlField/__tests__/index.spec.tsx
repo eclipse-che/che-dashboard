@@ -80,6 +80,22 @@ describe('ImageUrlField', () => {
 
     expect(screen.getByText('Invalid image URL format.')).toBeInTheDocument();
   });
+
+  test('should not show required error on initial render with empty value', () => {
+    renderComponent();
+
+    expect(screen.queryByText('Backup image URL is required.')).not.toBeInTheDocument();
+  });
+
+  test('should show required error after typing and clearing the field', async () => {
+    renderComponent();
+
+    const input = screen.getByLabelText('Backup image URL');
+    await userEvent.type(input, 'a');
+    await userEvent.clear(input);
+
+    expect(screen.getByText('Backup image URL is required.')).toBeInTheDocument();
+  });
 });
 
 type PartialProps = {
