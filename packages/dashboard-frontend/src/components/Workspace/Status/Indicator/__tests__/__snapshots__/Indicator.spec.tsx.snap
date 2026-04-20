@@ -130,6 +130,7 @@ exports[`Workspace indicator component Che Workspaces should render STARTING sta
             aria-hidden={true}
             aria-labelledby={null}
             className="pf-v6-svg rotate"
+            color="var(--pf-t--color--blue--50)"
             fill="currentColor"
             height="1em"
             role="img"
@@ -171,7 +172,7 @@ exports[`Workspace indicator component Che Workspaces should render STOPPED stat
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
-        color="var(--pf-t--global--text--color--regular)"
+        color="var(--pf-t--color--gray--95)"
       >
         <span
           className="pf-v6-c-icon__content"
@@ -239,7 +240,7 @@ exports[`Workspace indicator component Che Workspaces should render STOPPING sta
             aria-hidden={true}
             aria-labelledby={null}
             className="pf-v6-svg rotate"
-            color="var(--pf-t--global--text--color--regular)"
+            color="var(--pf-t--color--gray--95)"
             fill="currentColor"
             height="1em"
             role="img"
@@ -387,6 +388,7 @@ exports[`Workspace indicator component DevWorkspaces should render FAILING statu
             aria-hidden={true}
             aria-labelledby={null}
             className="pf-v6-svg rotate"
+            color="var(--pf-t--color--blue--50)"
             fill="currentColor"
             height="1em"
             role="img"
@@ -477,7 +479,7 @@ exports[`Workspace indicator component DevWorkspaces should render STOPPED statu
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
-        color="var(--pf-t--global--text--color--regular)"
+        color="var(--pf-t--color--gray--95)"
       >
         <span
           className="pf-v6-c-icon__content"
@@ -586,7 +588,7 @@ exports[`Workspace indicator component SCC Mismatch should render normal status 
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
-        color="var(--pf-t--global--text--color--regular)"
+        color="var(--pf-t--color--gray--95)"
       >
         <span
           className="pf-v6-c-icon__content"
@@ -646,7 +648,7 @@ exports[`Workspace indicator component SCC Mismatch should render normal status 
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
-        color="var(--pf-t--global--text--color--regular)"
+        color="var(--pf-t--color--gray--95)"
       >
         <span
           className="pf-v6-c-icon__content"
@@ -706,7 +708,7 @@ exports[`Workspace indicator component SCC Mismatch should render warning for ST
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
-        color="var(--pf-t--global--text--color--regular)"
+        color="var(--pf-t--color--gray--95)"
       >
         <span
           className="pf-v6-c-icon__content"
@@ -763,7 +765,7 @@ exports[`Workspace indicator component SCC Mismatch should render warning triang
         rel="noopener noreferrer"
         style={
           {
-            "color": "#73bcf7",
+            "color": "var(--pf-t--color--blue--40)",
             "textDecoration": "underline",
           }
         }
@@ -840,7 +842,7 @@ exports[`Workspace indicator component should render default status correctly 1`
             aria-hidden={true}
             aria-labelledby={null}
             className="pf-v6-svg rotate"
-            color="var(--pf-t--global--text--color--regular)"
+            color="var(--pf-t--color--gray--95)"
             fill="currentColor"
             height="1em"
             role="img"

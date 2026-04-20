@@ -126,6 +126,7 @@ exports[`The header component for IDE-loader and Factory-loader pages should ren
                             aria-hidden={true}
                             aria-labelledby={null}
                             className="pf-v6-svg rotate"
+                            color="var(--pf-t--color--blue--50)"
                             fill="currentColor"
                             height="1em"
                             role="img"

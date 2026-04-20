@@ -2,24 +2,20 @@
   text-transform: capitalize;
 }
 
+:global(html.pf-v6-theme-dark) .pf-m-green.statusLabel {
+  --pf-v6-c-label--BackgroundColor: var(--pf-t--color--green--10);
+}
+
+:global(html.pf-v6-theme-dark) .pf-m-orange.statusLabel {
+  --pf-v6-c-label--BackgroundColor: var(--pf-t--color--orange--40);
+}
+
+:global(html.pf-v6-theme-dark) .pf-m-info.statusLabel {
+  --pf-v6-c-label--BackgroundColor: var(--pf-t--color--blue--10);
+}
+
 .statusIndicator {
   margin-right: 10px;
-}
-
-.statusIndicator svg {
-  overflow: visible;
-}
-
-.statusLabel .pf-m-success svg {
-  fill: #3c8e01f5;
-}
-
-.statusLabel .pf-m-info svg {
-  fill: #5b2eed;
-}
-
-.statusLabel .pf-m-warning svg {
-  fill: #d27a18;
 }
 
 svg.rotate {

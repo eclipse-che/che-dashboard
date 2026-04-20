@@ -24,12 +24,16 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { SCC_MISMATCH_WARNING_MESSAGE } from '@/services/helpers/sccMismatch';
 import { DevWorkspaceStatus, WorkspaceStatus } from '@/services/helpers/types';
 
-// Theme-aware grey colors using PatternFly 6 tokens
-const lightGreyCssVariable = 'var(--pf-t--global--text--color--regular)';
-const darkGreyCssVariable = 'var(--pf-t--global--text--color--subtle)';
+// Theme-aware blue colors
+const lightBlueCssVariable = 'var(--pf-t--color--blue--50)';
+const darkBlueCssVariable = 'var(--pf-t--color--blue--40)';
+// Theme-aware grey colors
+const lightGreyCssVariable = 'var(--pf-t--color--gray--95)';
+const darkGreyCssVariable = 'var(--pf-t--color--gray--30)';
 
 export function getStatusIcon(status: string, isDarkTheme: boolean) {
   const greyColor = isDarkTheme ? darkGreyCssVariable : lightGreyCssVariable;
+  const blueColor = isDarkTheme ? darkBlueCssVariable : lightBlueCssVariable;
 
   let icon: React.ReactElement;
   switch (status) {
@@ -52,7 +56,7 @@ export function getStatusIcon(status: string, isDarkTheme: boolean) {
     case DevWorkspaceStatus.FAILING:
       icon = (
         <Icon status="warning" isInline>
-          <InProgressIcon className={styles.rotate} />
+          <InProgressIcon className={styles.rotate} color={blueColor} />
         </Icon>
       );
       break;
@@ -60,7 +64,7 @@ export function getStatusIcon(status: string, isDarkTheme: boolean) {
     case WorkspaceStatus.STARTING:
       icon = (
         <Icon status="info" isInline>
-          <InProgressIcon className={styles.rotate} />
+          <InProgressIcon className={styles.rotate} color={blueColor} />
         </Icon>
       );
       break;
@@ -99,7 +103,7 @@ export function getSccMismatchTooltip(documentationUrl: string | undefined): Rea
             target="_blank"
             rel="noopener noreferrer"
             onClick={event => event.stopPropagation()}
-            style={{ color: '#73bcf7', textDecoration: 'underline' }}
+            style={{ color: 'var(--pf-t--color--blue--40)', textDecoration: 'underline' }}
           >
             Learn more
           </a>

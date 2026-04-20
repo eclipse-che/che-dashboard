@@ -10,5 +10,4 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-self.addEventListener('fetch', () => {});
+export {};
