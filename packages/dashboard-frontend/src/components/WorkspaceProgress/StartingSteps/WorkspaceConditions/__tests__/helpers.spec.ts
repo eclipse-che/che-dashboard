@@ -11,7 +11,7 @@
  */
 
 import {
-  EDITORS_WITHOUT_BINARIES,
+  EDITORS_WITH_BINARIES,
   hasDownloadBinaries,
 } from '@/components/WorkspaceProgress/StartingSteps/WorkspaceConditions/helpers';
 import { DEVWORKSPACE_CHE_EDITOR } from '@/services/devfileApi/devWorkspace/metadata';
@@ -128,24 +128,65 @@ describe('hasDownloadBinaries', () => {
     ).toEqual(false);
   });
 
-  it('should return true', () => {
+  it('should return false for editors without binaries', () => {
     const name = 'test';
     const namespace = 'che-user';
-    const editorId = 'che-incubator/che-idea-server/latest';
-    const workspace = constructWorkspace(
-      devWorkspaceBuilder
-        .withMetadata({
-          name,
-          namespace,
-          annotations: {
-            [DEVWORKSPACE_CHE_EDITOR]: editorId,
-          },
-        })
-        .build(),
-    );
-    // verify the list of editors without binaries
-    expect(EDITORS_WITHOUT_BINARIES).toEqual(['che-code']);
-    // if editor name is not in the list of editors without binaries
-    expect(hasDownloadBinaries([workspace], { namespace, workspaceName: name })).toEqual(true);
+
+    const editorsWithoutBinaries = [
+      'che-incubator/che-code/latest',
+      'che-incubator/che-code/insiders',
+      'che-incubator/che-code-server/latest',
+      'che-incubator/che-code-sshd/latest',
+      'che-incubator/che-web-terminal/latest',
+      'che-incubator/che-kiro-sshd/latest',
+      'che-incubator/jetbrains-sshd/next',
+    ];
+
+    for (const editorId of editorsWithoutBinaries) {
+      const workspace = constructWorkspace(
+        devWorkspaceBuilder
+          .withMetadata({
+            name,
+            namespace,
+            annotations: {
+              [DEVWORKSPACE_CHE_EDITOR]: editorId,
+            },
+          })
+          .build(),
+      );
+      expect(hasDownloadBinaries([workspace], { namespace, workspaceName: name })).toEqual(false);
+    }
+  });
+
+  it('should return true for editors with binaries', () => {
+    const name = 'test';
+    const namespace = 'che-user';
+
+    expect(EDITORS_WITH_BINARIES).toEqual([
+      'che-idea-server',
+      'che-clion-server',
+      'che-phpstorm-server',
+      'che-pycharm-server',
+      'che-rider-server',
+      'che-rubymine-server',
+      'che-webstorm-server',
+      'che-goland-server',
+    ]);
+
+    for (const editorName of EDITORS_WITH_BINARIES) {
+      const editorId = `che-incubator/${editorName}/latest`;
+      const workspace = constructWorkspace(
+        devWorkspaceBuilder
+          .withMetadata({
+            name,
+            namespace,
+            annotations: {
+              [DEVWORKSPACE_CHE_EDITOR]: editorId,
+            },
+          })
+          .build(),
+      );
+      expect(hasDownloadBinaries([workspace], { namespace, workspaceName: name })).toEqual(true);
+    }
   });
 });

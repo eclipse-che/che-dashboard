@@ -14,32 +14,35 @@ import { WorkspaceRouteParams } from '@/Routes';
 import { DEVWORKSPACE_CHE_EDITOR } from '@/services/devfileApi/devWorkspace/metadata';
 import { Workspace } from '@/services/workspace-adapter';
 
-export const EDITORS_WITHOUT_BINARIES = ['che-code'];
+export const EDITORS_WITH_BINARIES = [
+  'che-idea-server',
+  'che-clion-server',
+  'che-phpstorm-server',
+  'che-pycharm-server',
+  'che-rider-server',
+  'che-rubymine-server',
+  'che-webstorm-server',
+  'che-goland-server',
+];
 
 export function hasDownloadBinaries(
   allWorkspaces: Workspace[],
   matchParams: WorkspaceRouteParams,
 ): boolean {
   const { namespace: targetNamespace, workspaceName: targetWorkspaceName } = matchParams;
-  // skip if target namespace or workspace name is empty or workspaces list is empty
   if (!targetNamespace || !targetWorkspaceName || allWorkspaces.length === 0) {
     return false;
   }
-  // find target workspace
   const targetWorkspace = allWorkspaces.find(
     w => w.name === targetWorkspaceName && w.namespace === targetNamespace,
   );
-  // skip if no target workspace found
   if (!targetWorkspace) {
     return false;
   }
   const cheEditor = targetWorkspace.ref.metadata.annotations?.[DEVWORKSPACE_CHE_EDITOR];
-  // skip if editor annotation empty or contains the devfile content
   if (!cheEditor || cheEditor.startsWith('apiVersion') || cheEditor.startsWith('schemaVersion')) {
     return false;
   }
-  // extract editor name from annotation
   const name = cheEditor.split('/')[1];
-  // check if editor is in the list of editors without binaries
-  return !EDITORS_WITHOUT_BINARIES.includes(name);
+  return EDITORS_WITH_BINARIES.includes(name);
 }
