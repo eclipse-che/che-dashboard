@@ -11,7 +11,7 @@
  */
 
 import {
-  EDITORS_WITH_BINARIES,
+  EDITORS_WITHOUT_BINARIES,
   hasDownloadBinaries,
 } from '@/components/WorkspaceProgress/StartingSteps/WorkspaceConditions/helpers';
 import { DEVWORKSPACE_CHE_EDITOR } from '@/services/devfileApi/devWorkspace/metadata';
@@ -86,63 +86,15 @@ describe('hasDownloadBinaries', () => {
         workspaceName: name,
       }),
     ).toEqual(false);
-
-    const editorDevfileV2Content = 'schemaVersion: 2.2.0';
-    const workspaceWithEditorDevfileV2Content = constructWorkspace(
-      devWorkspaceBuilder
-        .withMetadata({
-          name,
-          namespace,
-          annotations: {
-            [DEVWORKSPACE_CHE_EDITOR]: editorDevfileV2Content,
-          },
-        })
-        .build(),
-    );
-    // skip if editor annotation contains the V2 devfile content
-    expect(
-      hasDownloadBinaries([workspaceWithEditorDevfileV2Content], {
-        namespace,
-        workspaceName: name,
-      }),
-    ).toEqual(false);
-
-    const editorDevfileV1Content = 'apiVersion: 1.0.0';
-    const workspaceWithEditorDevfileV1Content = constructWorkspace(
-      devWorkspaceBuilder
-        .withMetadata({
-          name,
-          namespace,
-          annotations: {
-            [DEVWORKSPACE_CHE_EDITOR]: editorDevfileV1Content,
-          },
-        })
-        .build(),
-    );
-    // skip if editor annotation contains the V1 devfile content
-    expect(
-      hasDownloadBinaries([workspaceWithEditorDevfileV1Content], {
-        namespace,
-        workspaceName: name,
-      }),
-    ).toEqual(false);
   });
 
-  it('should return false for editors without binaries', () => {
+  it('should return false for che-code editors', () => {
     const name = 'test';
     const namespace = 'che-user';
 
-    const editorsWithoutBinaries = [
-      'che-incubator/che-code/latest',
-      'che-incubator/che-code/insiders',
-      'che-incubator/che-code-server/latest',
-      'che-incubator/che-code-sshd/latest',
-      'che-incubator/che-web-terminal/latest',
-      'che-incubator/che-kiro-sshd/latest',
-      'che-incubator/jetbrains-sshd/next',
-    ];
+    const cheCodeEditors = ['che-incubator/che-code/latest', 'che-incubator/che-code/insiders'];
 
-    for (const editorId of editorsWithoutBinaries) {
+    for (const editorId of cheCodeEditors) {
       const workspace = constructWorkspace(
         devWorkspaceBuilder
           .withMetadata({
@@ -162,19 +114,12 @@ describe('hasDownloadBinaries', () => {
     const name = 'test';
     const namespace = 'che-user';
 
-    expect(EDITORS_WITH_BINARIES).toEqual([
-      'che-idea-server',
-      'che-clion-server',
-      'che-phpstorm-server',
-      'che-pycharm-server',
-      'che-rider-server',
-      'che-rubymine-server',
-      'che-webstorm-server',
-      'che-goland-server',
-    ]);
+    const editorsWithBinaries = [
+      'che-incubator/che-idea-server/latest',
+      'che-incubator/che-pycharm-server/latest',
+    ];
 
-    for (const editorName of EDITORS_WITH_BINARIES) {
-      const editorId = `che-incubator/${editorName}/latest`;
+    for (const editorId of editorsWithBinaries) {
       const workspace = constructWorkspace(
         devWorkspaceBuilder
           .withMetadata({
@@ -188,5 +133,67 @@ describe('hasDownloadBinaries', () => {
       );
       expect(hasDownloadBinaries([workspace], { namespace, workspaceName: name })).toEqual(true);
     }
+  });
+
+  it('should return false when annotation contains devfile content with che-code editor name', () => {
+    const name = 'test';
+    const namespace = 'che-user';
+
+    expect(EDITORS_WITHOUT_BINARIES).toEqual(['che-code']);
+
+    const editorDevfileContent = [
+      'commands:',
+      '  - apply:',
+      '      component: che-code-injector',
+      '    id: init-container-command',
+      'metadata:',
+      '  name: che-code',
+      '  publisher: che-incubator',
+      'schemaVersion: 2.3.0',
+    ].join('\n');
+
+    const workspace = constructWorkspace(
+      devWorkspaceBuilder
+        .withMetadata({
+          name,
+          namespace,
+          annotations: {
+            [DEVWORKSPACE_CHE_EDITOR]: editorDevfileContent,
+          },
+        })
+        .build(),
+    );
+
+    expect(hasDownloadBinaries([workspace], { namespace, workspaceName: name })).toEqual(false);
+  });
+
+  it('should return true when annotation contains devfile content with JetBrains editor name', () => {
+    const name = 'test';
+    const namespace = 'che-user';
+
+    const editorDevfileContent = [
+      'commands:',
+      '  - apply:',
+      '      component: idea-injector',
+      '    id: init-container-command',
+      'metadata:',
+      '  name: che-idea-server',
+      '  publisher: che-incubator',
+      'schemaVersion: 2.3.0',
+    ].join('\n');
+
+    const workspace = constructWorkspace(
+      devWorkspaceBuilder
+        .withMetadata({
+          name,
+          namespace,
+          annotations: {
+            [DEVWORKSPACE_CHE_EDITOR]: editorDevfileContent,
+          },
+        })
+        .build(),
+    );
+
+    expect(hasDownloadBinaries([workspace], { namespace, workspaceName: name })).toEqual(true);
   });
 });

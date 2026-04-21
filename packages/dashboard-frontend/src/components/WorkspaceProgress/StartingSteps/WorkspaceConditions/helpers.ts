@@ -10,20 +10,25 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { load } from 'js-yaml';
+
 import { WorkspaceRouteParams } from '@/Routes';
 import { DEVWORKSPACE_CHE_EDITOR } from '@/services/devfileApi/devWorkspace/metadata';
 import { Workspace } from '@/services/workspace-adapter';
 
-export const EDITORS_WITH_BINARIES = [
-  'che-idea-server',
-  'che-clion-server',
-  'che-phpstorm-server',
-  'che-pycharm-server',
-  'che-rider-server',
-  'che-rubymine-server',
-  'che-webstorm-server',
-  'che-goland-server',
-];
+export const EDITORS_WITHOUT_BINARIES = ['che-code'];
+
+function getEditorName(cheEditor: string): string | undefined {
+  if (cheEditor.includes('\n')) {
+    try {
+      const parsed = load(cheEditor) as { metadata?: { name?: string } };
+      return parsed?.metadata?.name;
+    } catch {
+      return undefined;
+    }
+  }
+  return cheEditor.split('/')[1];
+}
 
 export function hasDownloadBinaries(
   allWorkspaces: Workspace[],
@@ -40,9 +45,12 @@ export function hasDownloadBinaries(
     return false;
   }
   const cheEditor = targetWorkspace.ref.metadata.annotations?.[DEVWORKSPACE_CHE_EDITOR];
-  if (!cheEditor || cheEditor.startsWith('apiVersion') || cheEditor.startsWith('schemaVersion')) {
+  if (!cheEditor) {
     return false;
   }
-  const name = cheEditor.split('/')[1];
-  return EDITORS_WITH_BINARIES.includes(name);
+  const name = getEditorName(cheEditor);
+  if (!name) {
+    return false;
+  }
+  return !EDITORS_WITHOUT_BINARIES.includes(name);
 }
