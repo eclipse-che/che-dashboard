@@ -150,6 +150,172 @@ describe('GitProviderEndpoint', () => {
       expect(input).toHaveValue(editEndpoint);
     });
   });
+
+  describe('helper text behavior', () => {
+    it('should not show helper text when endpoint is valid', async () => {
+      renderComponent(undefined);
+
+      const input = screen.getByRole('textbox');
+      const validEndpoint = 'https://provider.test/endpoint';
+      await userEvent.click(input);
+      await userEvent.paste(validEndpoint);
+
+      // Helper text should not be present
+      expect(screen.queryByText('Git provider endpoint is required.')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          'Invalid URL format. Must be a valid URL starting with http:// or https://',
+        ),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should show error helper text when endpoint is empty', async () => {
+      renderComponent('https://provider.test/endpoint');
+
+      const input = screen.getByRole('textbox');
+      await userEvent.clear(input);
+
+      // Error helper text should be visible
+      expect(screen.getByText('Git provider endpoint is required.')).toBeInTheDocument();
+    });
+
+    it('should show error helper text when endpoint has invalid protocol', async () => {
+      renderComponent(undefined);
+
+      const input = screen.getByRole('textbox');
+      const invalidEndpoint = 'ftp://provider.test/endpoint';
+      await userEvent.click(input);
+      await userEvent.paste(invalidEndpoint);
+
+      // Error helper text should be visible
+      expect(
+        screen.getByText(
+          'Invalid URL format. Must be a valid URL starting with http:// or https://',
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('should show error helper text when endpoint has no protocol', async () => {
+      renderComponent(undefined);
+
+      const input = screen.getByRole('textbox');
+      const invalidEndpoint = 'provider.test/endpoint';
+      await userEvent.click(input);
+      await userEvent.paste(invalidEndpoint);
+
+      // Error helper text should be visible
+      expect(
+        screen.getByText(
+          'Invalid URL format. Must be a valid URL starting with http:// or https://',
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('should show error helper text when endpoint has invalid format', async () => {
+      renderComponent(undefined);
+
+      const input = screen.getByRole('textbox');
+      const invalidEndpoint = 'https://';
+      await userEvent.click(input);
+      await userEvent.paste(invalidEndpoint);
+
+      // Error helper text should be visible
+      expect(
+        screen.getByText(
+          'Invalid URL format. Must be a valid URL starting with http:// or https://',
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('should hide helper text when correcting an invalid endpoint', async () => {
+      renderComponent(undefined);
+
+      const input = screen.getByRole('textbox');
+
+      // First set an invalid value
+      const invalidEndpoint = 'ftp://provider.test/endpoint';
+      await userEvent.click(input);
+      await userEvent.paste(invalidEndpoint);
+
+      // Error helper text should be visible
+      expect(
+        screen.getByText(
+          'Invalid URL format. Must be a valid URL starting with http:// or https://',
+        ),
+      ).toBeInTheDocument();
+
+      // Now correct it
+      await userEvent.clear(input);
+      const validEndpoint = 'https://provider.test/endpoint';
+      await userEvent.click(input);
+      await userEvent.paste(validEndpoint);
+
+      // Helper text should no longer be visible
+      expect(
+        screen.queryByText(
+          'Invalid URL format. Must be a valid URL starting with http:// or https://',
+        ),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should not show helper text on initial render with valid endpoint', () => {
+      renderComponent('https://provider.test/endpoint');
+
+      // No helper text should be visible
+      expect(screen.queryByText('Git provider endpoint is required.')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          'Invalid URL format. Must be a valid URL starting with http:// or https://',
+        ),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should not show helper text on initial render with default endpoint', () => {
+      renderComponent(undefined);
+
+      // No helper text should be visible initially (validation state is 'default')
+      expect(screen.queryByText('Git provider endpoint is required.')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          'Invalid URL format. Must be a valid URL starting with http:// or https://',
+        ),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should handle http endpoint correctly', async () => {
+      renderComponent(undefined);
+
+      const input = screen.getByRole('textbox');
+      const httpEndpoint = 'http://provider.test/endpoint';
+      await userEvent.click(input);
+      await userEvent.paste(httpEndpoint);
+
+      // Should be valid, no helper text
+      expect(screen.queryByText('Git provider endpoint is required.')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          'Invalid URL format. Must be a valid URL starting with http:// or https://',
+        ),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should handle endpoint with port correctly', async () => {
+      renderComponent(undefined);
+
+      const input = screen.getByRole('textbox');
+      const endpointWithPort = 'https://provider.test:8443/endpoint';
+      await userEvent.click(input);
+      await userEvent.paste(endpointWithPort);
+
+      // Should be valid, no helper text
+      expect(screen.queryByText('Git provider endpoint is required.')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          'Invalid URL format. Must be a valid URL starting with http:// or https://',
+        ),
+      ).not.toBeInTheDocument();
+    });
+  });
 });
 
 function getComponent(
