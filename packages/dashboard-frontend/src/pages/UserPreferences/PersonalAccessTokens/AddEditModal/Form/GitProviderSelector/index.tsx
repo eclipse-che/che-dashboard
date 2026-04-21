@@ -62,7 +62,7 @@ export class GitProviderSelector extends React.PureComponent<Props, State> {
     this.props.onSelect(provider);
   }
 
-  private buildDropdownItems(): React.ReactElement[] {
+  private buildDropdownItems(selectedProvider: api.GitProvider): React.ReactElement[] {
     return Object.entries(GIT_PROVIDERS)
       .sort((providerEntryA, providerEntryB) => {
         // compare by values
@@ -77,7 +77,11 @@ export class GitProviderSelector extends React.PureComponent<Props, State> {
       .map(providerEntry => {
         const [provider, providerName] = providerEntry as [api.GitProvider, string];
         return (
-          <DropdownItem key={provider} onClick={() => this.onSelect(provider)}>
+          <DropdownItem
+            key={provider}
+            isSelected={provider === selectedProvider}
+            onClick={() => this.onSelect(provider)}
+          >
             {providerName}
           </DropdownItem>
         );
@@ -88,12 +92,14 @@ export class GitProviderSelector extends React.PureComponent<Props, State> {
     const { isOpen, provider = DEFAULT_GIT_PROVIDER } = this.state;
     const providerName = GIT_PROVIDERS[provider];
 
-    const dropdownItems = this.buildDropdownItems();
+    const dropdownItems = this.buildDropdownItems(provider);
 
     return (
       <FormGroup label="Provider Name" fieldId="provider-name">
         <Dropdown
           onOpenChange={isOpen => this.setState({ isOpen })}
+          shouldFocusFirstItemOnOpen
+          popperProps={{ appendTo: 'inline' }}
           toggle={toggleRef => (
             <MenuToggle
               ref={toggleRef}
