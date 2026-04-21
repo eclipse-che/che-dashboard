@@ -34,7 +34,7 @@ import { lazyInject } from '@/inversify.config';
 import { WorkspaceRouteParams } from '@/Routes';
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import { findTargetWorkspace } from '@/services/helpers/factoryFlow/findTargetWorkspace';
-import { SCC_MISMATCH_WARNING_MESSAGE } from '@/services/helpers/sccMismatch';
+import { hasSccMismatch, SCC_MISMATCH_WARNING_MESSAGE } from '@/services/helpers/sccMismatch';
 import { AlertItem, DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
 import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
@@ -180,15 +180,10 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
     this.handleError(timeoutError);
   }
 
-  /**
-   * Check if there's an SCC mismatch between the workspace and server configuration.
-   * Returns true if server has SCC configured but workspace has different or missing SCC.
-   */
-  private hasSccMismatch(workspace: Workspace): boolean {
+  private checkSccMismatch(workspace: Workspace): boolean {
     const { currentScc } = this.props;
-    // Server has SCC requirement - check if workspace matches
     const containerScc = WorkspaceAdapter.getContainerScc(workspace.ref);
-    return containerScc !== currentScc;
+    return hasSccMismatch(containerScc, currentScc);
   }
 
   /**
@@ -208,8 +203,7 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       );
     }
 
-    // Check for SCC mismatch - show warning but allow start
-    if (this.hasSccMismatch(workspace)) {
+    if (this.checkSccMismatch(workspace)) {
       const documentationUrl = this.props.branding.docs.containerRunCapabilities;
       this.appAlerts.showAlert({
         key: 'scc-mismatch-warning',

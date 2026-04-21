@@ -24,6 +24,7 @@ import {
   buildWorkspaceDetailsLocation,
   toHref,
 } from '@/services/helpers/location';
+import { hasSccMismatch } from '@/services/helpers/sccMismatch';
 import { LoaderTab, WorkspaceAction } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
@@ -108,19 +109,10 @@ class WorkspaceActionsProvider extends React.Component<Props, State> {
     }
   }
 
-  /**
-   * Check if there's an SCC mismatch between the workspace and server configuration.
-   * Returns true if server has SCC configured but workspace has different or missing SCC.
-   */
-  private hasSccMismatch(workspace: Workspace): boolean {
+  private checkSccMismatch(workspace: Workspace): boolean {
     const { currentScc } = this.props;
-    // If server has no SCC requirement, no mismatch
-    if (currentScc === undefined) {
-      return false;
-    }
-    // Server has SCC requirement - check if workspace matches
     const containerScc = WorkspaceAdapter.getContainerScc(workspace.ref);
-    return containerScc !== currentScc;
+    return hasSccMismatch(containerScc, currentScc);
   }
 
   /**
@@ -149,7 +141,7 @@ class WorkspaceActionsProvider extends React.Component<Props, State> {
         break;
       }
       case WorkspaceAction.START_DEBUG_AND_OPEN_LOGS: {
-        if (this.hasSccMismatch(workspace)) {
+        if (this.checkSccMismatch(workspace)) {
           console.warn(
             `Workspace "${workspace.name}" has SCC mismatch. The workspace was created with a different container SCC than what is currently configured.`,
           );
@@ -162,7 +154,7 @@ class WorkspaceActionsProvider extends React.Component<Props, State> {
       }
       case WorkspaceAction.START_IN_BACKGROUND:
         {
-          if (this.hasSccMismatch(workspace)) {
+          if (this.checkSccMismatch(workspace)) {
             console.warn(
               `Workspace "${workspace.name}" has SCC mismatch. The workspace was created with a different container SCC than what is currently configured.`,
             );
