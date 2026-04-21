@@ -10,36 +10,47 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { load } from 'js-yaml';
+
 import { WorkspaceRouteParams } from '@/Routes';
 import { DEVWORKSPACE_CHE_EDITOR } from '@/services/devfileApi/devWorkspace/metadata';
 import { Workspace } from '@/services/workspace-adapter';
 
 export const EDITORS_WITHOUT_BINARIES = ['che-code'];
 
+function getEditorName(cheEditor: string): string | undefined {
+  if (cheEditor.includes('\n')) {
+    try {
+      const parsed = load(cheEditor) as { metadata?: { name?: string } };
+      return parsed?.metadata?.name;
+    } catch {
+      return undefined;
+    }
+  }
+  return cheEditor.split('/')[1];
+}
+
 export function hasDownloadBinaries(
   allWorkspaces: Workspace[],
   matchParams: WorkspaceRouteParams,
 ): boolean {
   const { namespace: targetNamespace, workspaceName: targetWorkspaceName } = matchParams;
-  // skip if target namespace or workspace name is empty or workspaces list is empty
   if (!targetNamespace || !targetWorkspaceName || allWorkspaces.length === 0) {
     return false;
   }
-  // find target workspace
   const targetWorkspace = allWorkspaces.find(
     w => w.name === targetWorkspaceName && w.namespace === targetNamespace,
   );
-  // skip if no target workspace found
   if (!targetWorkspace) {
     return false;
   }
   const cheEditor = targetWorkspace.ref.metadata.annotations?.[DEVWORKSPACE_CHE_EDITOR];
-  // skip if editor annotation empty or contains the devfile content
-  if (!cheEditor || cheEditor.startsWith('apiVersion') || cheEditor.startsWith('schemaVersion')) {
+  if (!cheEditor) {
     return false;
   }
-  // extract editor name from annotation
-  const name = cheEditor.split('/')[1];
-  // check if editor is in the list of editors without binaries
+  const name = getEditorName(cheEditor);
+  if (!name) {
+    return false;
+  }
   return !EDITORS_WITHOUT_BINARIES.includes(name);
 }
