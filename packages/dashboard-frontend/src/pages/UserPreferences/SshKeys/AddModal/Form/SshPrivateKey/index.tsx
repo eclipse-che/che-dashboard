@@ -10,7 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FormGroup, ValidatedOptions } from '@patternfly/react-core';
+import {
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  ValidatedOptions,
+} from '@patternfly/react-core';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 import { TextFileUpload } from '@/components/TextFileUpload';
@@ -86,7 +93,9 @@ export class SshPrivateKey extends React.Component<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { validated } = this.state;
+    const { validated, privateKey, isUpload } = this.state;
+
+    const errorMessage = this.getErrorMessage(privateKey, isUpload);
 
     return (
       <FormGroup fieldId="ssh-private-key" label="Private Key" isRequired={true}>
@@ -97,6 +106,15 @@ export class SshPrivateKey extends React.Component<Props, State> {
           validated={validated}
           onChange={(key, isUpload) => this.onChange(key, isUpload)}
         />
+        {validated === ValidatedOptions.error && (
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem icon={<ExclamationCircleIcon />} variant="error">
+                {errorMessage}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+        )}
       </FormGroup>
     );
   }
