@@ -49,6 +49,7 @@ exports[`UserPreferences snapshot 1`] = `
                 data-ouia-safe="true"
                 id="pf-tab-ContainerRegistries-user-preferences-tabs"
                 role="tab"
+                tabindex="0"
                 type="button"
               >
                 Container Registries
@@ -65,6 +66,7 @@ exports[`UserPreferences snapshot 1`] = `
                 data-ouia-safe="true"
                 id="pf-tab-GitServices-user-preferences-tabs"
                 role="tab"
+                tabindex="-1"
                 type="button"
               >
                 Git Services
@@ -81,6 +83,7 @@ exports[`UserPreferences snapshot 1`] = `
                 data-ouia-safe="true"
                 id="pf-tab-PersonalAccessTokens-user-preferences-tabs"
                 role="tab"
+                tabindex="-1"
                 type="button"
               >
                 Personal Access Tokens
@@ -97,6 +100,7 @@ exports[`UserPreferences snapshot 1`] = `
                 data-ouia-safe="true"
                 id="pf-tab-Gitconfig-user-preferences-tabs"
                 role="tab"
+                tabindex="-1"
                 type="button"
               >
                 Gitconfig
@@ -113,6 +117,7 @@ exports[`UserPreferences snapshot 1`] = `
                 data-ouia-safe="true"
                 id="pf-tab-SshKeys-user-preferences-tabs"
                 role="tab"
+                tabindex="-1"
                 type="button"
               >
                 SSH Keys

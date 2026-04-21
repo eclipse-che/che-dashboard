@@ -37,6 +37,14 @@ export type State = {
 };
 
 class UserPreferences extends React.PureComponent<Props, State> {
+  private readonly tabOrder: UserPreferencesTab[] = [
+    UserPreferencesTab.CONTAINER_REGISTRIES,
+    UserPreferencesTab.GIT_SERVICES,
+    UserPreferencesTab.PERSONAL_ACCESS_TOKENS,
+    UserPreferencesTab.GITCONFIG,
+    UserPreferencesTab.SSH_KEYS,
+  ];
+
   constructor(props: Props) {
     super(props);
 
@@ -68,17 +76,49 @@ class UserPreferences extends React.PureComponent<Props, State> {
     return UserPreferencesTab.CONTAINER_REGISTRIES;
   }
 
-  private handleTabClick(
+  private handleTabClick = (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
     activeTabKey: string | number,
-  ): void {
+  ): void => {
     event.stopPropagation();
     this.props.navigate(`${ROUTE.USER_PREFERENCES}?tab=${activeTabKey}`);
 
     this.setState({
       activeTabKey: activeTabKey as UserPreferencesTab,
     });
-  }
+  };
+
+  private handleTabKeyDown = (event: React.KeyboardEvent): void => {
+    const target = event.target as HTMLElement;
+    if (target.getAttribute('role') !== 'tab') {
+      return;
+    }
+
+    const { activeTabKey } = this.state;
+    const currentIndex = this.tabOrder.indexOf(activeTabKey);
+    let nextIndex = -1;
+
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+      nextIndex = (currentIndex + 1) % this.tabOrder.length;
+    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+      nextIndex = (currentIndex - 1 + this.tabOrder.length) % this.tabOrder.length;
+    } else if (event.key === 'Home') {
+      nextIndex = 0;
+    } else if (event.key === 'End') {
+      nextIndex = this.tabOrder.length - 1;
+    } else {
+      return;
+    }
+
+    event.preventDefault();
+    const nextTabKey = this.tabOrder[nextIndex];
+    this.props.navigate(`${ROUTE.USER_PREFERENCES}?tab=${nextTabKey}`);
+    this.setState({ activeTabKey: nextTabKey }, () => {
+      const tabsContainer = document.getElementById('user-preferences-tabs');
+      const buttons = tabsContainer?.querySelectorAll<HTMLButtonElement>('[role="tab"]');
+      buttons?.[nextIndex]?.focus();
+    });
+  };
 
   render(): React.ReactNode {
     const { activeTabKey } = this.state;
@@ -94,26 +134,44 @@ class UserPreferences extends React.PureComponent<Props, State> {
             id="user-preferences-tabs"
             style={{ backgroundColor: 'var(--pf-global--BackgroundColor--100)' }}
             activeKey={activeTabKey}
-            onSelect={(event, tabKey) => this.handleTabClick(event, tabKey)}
+            onSelect={this.handleTabClick}
+            onKeyDown={this.handleTabKeyDown}
             mountOnEnter={true}
             unmountOnExit={true}
           >
-            <Tab eventKey={UserPreferencesTab.CONTAINER_REGISTRIES} title="Container Registries">
+            <Tab
+              eventKey={UserPreferencesTab.CONTAINER_REGISTRIES}
+              title="Container Registries"
+              tabIndex={activeTabKey === UserPreferencesTab.CONTAINER_REGISTRIES ? 0 : -1}
+            >
               <ContainerRegistries />
             </Tab>
-            <Tab eventKey={UserPreferencesTab.GIT_SERVICES} title="Git Services">
+            <Tab
+              eventKey={UserPreferencesTab.GIT_SERVICES}
+              title="Git Services"
+              tabIndex={activeTabKey === UserPreferencesTab.GIT_SERVICES ? 0 : -1}
+            >
               <GitServices />
             </Tab>
             <Tab
               eventKey={UserPreferencesTab.PERSONAL_ACCESS_TOKENS}
               title="Personal Access Tokens"
+              tabIndex={activeTabKey === UserPreferencesTab.PERSONAL_ACCESS_TOKENS ? 0 : -1}
             >
               <PersonalAccessTokens />
             </Tab>
-            <Tab eventKey={UserPreferencesTab.GITCONFIG} title="Gitconfig">
+            <Tab
+              eventKey={UserPreferencesTab.GITCONFIG}
+              title="Gitconfig"
+              tabIndex={activeTabKey === UserPreferencesTab.GITCONFIG ? 0 : -1}
+            >
               <GitConfig />
             </Tab>
-            <Tab eventKey={UserPreferencesTab.SSH_KEYS} title="SSH Keys">
+            <Tab
+              eventKey={UserPreferencesTab.SSH_KEYS}
+              title="SSH Keys"
+              tabIndex={activeTabKey === UserPreferencesTab.SSH_KEYS ? 0 : -1}
+            >
               <SshKeys />
             </Tab>
           </Tabs>
