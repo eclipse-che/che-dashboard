@@ -10,7 +10,16 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FormGroup, TextInput, TextInputTypes, ValidatedOptions } from '@patternfly/react-core';
+import {
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  TextInput,
+  TextInputTypes,
+  ValidatedOptions,
+} from '@patternfly/react-core';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 export type Props = {
@@ -53,21 +62,41 @@ export class TokenData extends React.PureComponent<Props, State> {
     }
   }
 
+  private getErrorMessage(tokenData: string): string {
+    if (tokenData.length === 0) {
+      return 'Token is required.';
+    }
+    return '';
+  }
+
   public render(): React.ReactElement {
     const { isEdit } = this.props;
-    const { tokenData = '' } = this.state;
+    const { tokenData = '', validated } = this.state;
     const placeholder = isEdit ? 'Replace Token' : 'Enter a Token';
+    const errorMessage = this.getErrorMessage(tokenData);
+    const hasError = validated === ValidatedOptions.error;
 
     return (
-      <FormGroup fieldId="token-data-label" label="Token">
+      <FormGroup fieldId="token-data-label" isRequired label="Token">
         <TextInput
           aria-describedby="token-data-label"
           aria-label="Token"
+          isRequired
           onChange={(_event, tokenData) => this.onChange(tokenData)}
           placeholder={placeholder}
           type={TextInputTypes.password}
+          validated={hasError ? 'error' : 'default'}
           value={tokenData}
         />
+        <FormHelperText>
+          <HelperText>
+            {hasError && (
+              <HelperTextItem variant="error" icon={<ExclamationCircleIcon />}>
+                {errorMessage}
+              </HelperTextItem>
+            )}
+          </HelperText>
+        </FormHelperText>
       </FormGroup>
     );
   }
