@@ -10,7 +10,15 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FormGroup, TextInput, ValidatedOptions } from '@patternfly/react-core';
+import {
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  TextInput,
+  ValidatedOptions,
+} from '@patternfly/react-core';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 import { InputGroupExtended } from '@/components/InputGroupExtended';
@@ -48,25 +56,39 @@ export class GitConfigUserName extends React.PureComponent<Props, State> {
   }
 
   private handleChange(value: string): void {
-    const validated = this.validate(value);
-    const isValid = validated === ValidatedOptions.success;
+    const result = this.validateAndSanitize(value);
+    const isValid = result.validated === ValidatedOptions.success;
 
     this.setState({
       value,
-      validated,
+      validated: result.validated,
     });
     this.props.onChange(value, isValid);
   }
 
-  private validate(value: string): ValidatedOptions {
-    if (value.length === 0) {
-      return ValidatedOptions.error;
+  private validateAndSanitize(value: string): {
+    validated: ValidatedOptions;
+    sanitized: string;
+  } {
+    const trimmed = value.trim();
+
+    if (trimmed.length === 0) {
+      return {
+        validated: ValidatedOptions.error,
+        sanitized: 'Name is required',
+      };
     }
-    if (value.length > MAX_LENGTH) {
-      return ValidatedOptions.error;
+    if (trimmed.length > MAX_LENGTH) {
+      return {
+        validated: ValidatedOptions.error,
+        sanitized: `Name must not exceed ${MAX_LENGTH} characters`,
+      };
     }
 
-    return ValidatedOptions.success;
+    return {
+      validated: ValidatedOptions.success,
+      sanitized: trimmed,
+    };
   }
 
   public render(): React.ReactElement {
@@ -74,6 +96,7 @@ export class GitConfigUserName extends React.PureComponent<Props, State> {
     const { value = '', validated } = this.state;
 
     const fieldId = 'gitconfig-user-name';
+    const result = this.validateAndSanitize(value);
 
     return (
       <FormGroup label="name" fieldId={fieldId} isRequired>
@@ -94,6 +117,15 @@ export class GitConfigUserName extends React.PureComponent<Props, State> {
             onChange={(_event, value) => this.handleChange(value)}
           />
         </InputGroupExtended>
+        {validated === ValidatedOptions.error && (
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem variant="error" icon={<ExclamationCircleIcon />}>
+                {result.sanitized}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+        )}
       </FormGroup>
     );
   }

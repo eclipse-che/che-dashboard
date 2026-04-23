@@ -93,6 +93,43 @@ describe('GitConfigUserEmail', () => {
 
     expect(mockOnChange).toHaveBeenCalledWith('user@che.orga', true);
   });
+
+  it('should show "Email is required" error message when value is empty', async () => {
+    renderComponent('user@che.org', false);
+
+    const textInput = screen.getByRole('textbox');
+    await userEvent.clear(textInput);
+
+    expect(screen.getByText('Email is required')).toBeInTheDocument();
+  });
+
+  it('should show "Email must not exceed 128 characters" error message when value is too long', async () => {
+    renderComponent('user@che.org', false);
+
+    const textInput = screen.getByRole('textbox');
+    await userEvent.clear(textInput);
+    await userEvent.paste('a'.repeat(129));
+
+    expect(screen.getByText('Email must not exceed 128 characters')).toBeInTheDocument();
+  });
+
+  it('should show "Email must be a valid email address" error message when email format is invalid', async () => {
+    renderComponent('user@che.org', false);
+
+    const textInput = screen.getByRole('textbox');
+    await userEvent.clear(textInput);
+    await userEvent.paste('invalid-email');
+
+    expect(screen.getByText('Email must be a valid email address')).toBeInTheDocument();
+  });
+
+  it('should not show error message when value is valid', () => {
+    renderComponent('user@che.org', false);
+
+    expect(screen.queryByText('Email is required')).not.toBeInTheDocument();
+    expect(screen.queryByText('Email must not exceed 128 characters')).not.toBeInTheDocument();
+    expect(screen.queryByText('Email must be a valid email address')).not.toBeInTheDocument();
+  });
 });
 
 function getComponent(

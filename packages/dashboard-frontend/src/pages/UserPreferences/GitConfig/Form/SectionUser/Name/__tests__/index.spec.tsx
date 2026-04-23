@@ -83,6 +83,32 @@ describe('GitConfigUserName', () => {
 
     expect(mockOnChange).toHaveBeenCalledWith('user one two', true);
   });
+
+  it('should show "Name is required" error message when value is empty', async () => {
+    renderComponent('user one', false);
+
+    const textInput = screen.getByRole('textbox');
+    await userEvent.clear(textInput);
+
+    expect(screen.getByText('Name is required')).toBeInTheDocument();
+  });
+
+  it('should show "Name must not exceed 128 characters" error message when value is too long', async () => {
+    renderComponent('user one', false);
+
+    const textInput = screen.getByRole('textbox');
+    await userEvent.clear(textInput);
+    await userEvent.paste('a'.repeat(129));
+
+    expect(screen.getByText('Name must not exceed 128 characters')).toBeInTheDocument();
+  });
+
+  it('should not show error message when value is valid', () => {
+    renderComponent('user one', false);
+
+    expect(screen.queryByText('Name is required')).not.toBeInTheDocument();
+    expect(screen.queryByText('Name must not exceed 128 characters')).not.toBeInTheDocument();
+  });
 });
 
 function getComponent(
