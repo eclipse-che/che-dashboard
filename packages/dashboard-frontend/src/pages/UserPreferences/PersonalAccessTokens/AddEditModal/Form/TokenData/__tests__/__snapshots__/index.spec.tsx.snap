@@ -20,6 +20,13 @@ exports[`TokenData snapshot w/o token data 1`] = `
         >
           Token
         </span>
+        <span
+          aria-hidden="true"
+          className="pf-v6-c-form__label-required"
+        >
+           
+          *
+        </span>
       </label>
         
     </div>
@@ -41,11 +48,18 @@ exports[`TokenData snapshot w/o token data 1`] = `
           onChange={[Function]}
           onFocus={[Function]}
           placeholder="Enter a Token"
-          required={false}
+          required={true}
           type="password"
           value=""
         />
       </span>
+      <div
+        className="pf-v6-c-form__helper-text"
+      >
+        <div
+          className="pf-v6-c-helper-text"
+        />
+      </div>
     </div>
   </div>
 </form>
@@ -71,6 +85,13 @@ exports[`TokenData snapshot with token data 1`] = `
         >
           Token
         </span>
+        <span
+          aria-hidden="true"
+          className="pf-v6-c-form__label-required"
+        >
+           
+          *
+        </span>
       </label>
         
     </div>
@@ -92,11 +113,18 @@ exports[`TokenData snapshot with token data 1`] = `
           onChange={[Function]}
           onFocus={[Function]}
           placeholder="Replace Token"
-          required={false}
+          required={true}
           type="password"
           value=""
         />
       </span>
+      <div
+        className="pf-v6-c-form__helper-text"
+      >
+        <div
+          className="pf-v6-c-helper-text"
+        />
+      </div>
     </div>
   </div>
 </form>

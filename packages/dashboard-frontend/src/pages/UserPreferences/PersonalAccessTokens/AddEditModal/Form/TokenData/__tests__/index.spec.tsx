@@ -59,7 +59,7 @@ describe('TokenData', () => {
     fireEvent.change(input, { target: { value: tokenData } });
 
     expect(mockOnChange).toHaveBeenCalledWith(btoa(tokenData), true);
-    expect(screen.queryByText('This field is required.')).toBeFalsy();
+    expect(screen.queryByText('Token is required.')).toBeFalsy();
   });
 
   it('should handle the empty value', () => {
@@ -79,8 +79,55 @@ describe('TokenData', () => {
     fireEvent.change(input, { target: { value: '' } });
 
     expect(mockOnChange).toHaveBeenCalledWith('', false);
-    // TokenData component validates but doesn't render error messages
-    expect(screen.queryByText('This field is required.')).toBeFalsy();
+    expect(screen.getByText('Token is required.')).toBeTruthy();
+  });
+
+  it('should display validation error when token is empty', () => {
+    renderComponent(false);
+
+    const input = screen.getByPlaceholderText('Enter a Token');
+
+    // Trigger validation by entering and clearing the field
+    fireEvent.change(input, { target: { value: 'test' } });
+    fireEvent.change(input, { target: { value: '' } });
+
+    // Verify error message is displayed
+    expect(screen.getByText('Token is required.')).toBeInTheDocument();
+  });
+
+  it('should clear validation error when token is entered', () => {
+    renderComponent(false);
+
+    const input = screen.getByPlaceholderText('Enter a Token');
+
+    // Trigger error by entering and clearing the field
+    fireEvent.change(input, { target: { value: 'test' } });
+    fireEvent.change(input, { target: { value: '' } });
+    expect(screen.getByText('Token is required.')).toBeInTheDocument();
+
+    // Enter a valid token
+    fireEvent.change(input, { target: { value: 'my-token' } });
+
+    // Verify error message is removed
+    expect(screen.queryByText('Token is required.')).not.toBeInTheDocument();
+  });
+
+  it('should show error icon when validation fails', () => {
+    renderComponent(false);
+
+    const input = screen.getByPlaceholderText('Enter a Token');
+
+    // Trigger validation error
+    fireEvent.change(input, { target: { value: 'test' } });
+    fireEvent.change(input, { target: { value: '' } });
+
+    // Verify error message with icon is displayed
+    const errorMessage = screen.getByText('Token is required.');
+    expect(errorMessage).toBeInTheDocument();
+
+    // The error should be in a helper text item with error variant
+    const helperTextItem = errorMessage.closest('.pf-v6-c-helper-text__item');
+    expect(helperTextItem).toHaveClass('pf-m-error');
   });
 });
 
