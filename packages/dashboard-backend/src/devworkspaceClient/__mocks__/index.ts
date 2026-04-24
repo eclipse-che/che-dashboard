@@ -10,6 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { api } from '@eclipse-che/common';
+
 import {
   IAiProviderKeyApi,
   IAiRegistryApi,
@@ -30,12 +32,17 @@ import {
   ISccPermissionApi,
   IServerConfigApi,
   IShhKeysApi,
+  IUserProfileApi,
+  IWatcherService,
   IWorkspacePreferencesApi,
 } from '@/devworkspaceClient/types';
 
 import { IDevWorkspaceClient } from '..';
 
 export class DevWorkspaceClient implements IDevWorkspaceClient {
+  get configMapWatchApi(): IWatcherService<api.webSocket.SubscribeParams> {
+    throw new Error('Method not implemented.');
+  }
   get eventApi(): IEventApi {
     throw new Error('Method not implemented.');
   }
