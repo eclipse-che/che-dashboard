@@ -55,6 +55,7 @@ export type Props = MappedProps & {
   editorDefinition: string | undefined;
   editorImage: string | undefined;
   navigate: NavigateFunction;
+  presetUrl?: string;
 };
 export type State = {
   hasSshKeys: boolean;
@@ -70,15 +71,39 @@ class ImportFromGit extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
+    const presetUrl = props.presetUrl || '';
+    const hasSshKeys = props.sshKeys.length > 0;
     this.state = {
-      hasSshKeys: this.props.sshKeys.length > 0,
-      locationValidated: ValidatedOptions.default,
-      location: '',
+      hasSshKeys,
+      locationValidated: presetUrl
+        ? validateLocation(presetUrl, hasSshKeys)
+        : ValidatedOptions.default,
+      location: presetUrl,
       remotesValidated: ValidatedOptions.default,
       isFocused: false,
       isConfirmationOpen: false,
       gitBranch: undefined,
     };
+  }
+
+  public componentDidMount(): void {
+    if (this.props.presetUrl) {
+      // Set the DOM input value for the preset URL
+      const inputElement = document.getElementById(FIELD_ID) as HTMLInputElement;
+      if (inputElement) {
+        inputElement.value = this.props.presetUrl;
+      }
+      // Clear the 'url' param from the browser URL
+      const url = new URL(window.location.href);
+      const hashParts = url.hash.split('?');
+      if (hashParts.length > 1) {
+        const searchParams = new URLSearchParams(hashParts[1]);
+        searchParams.delete('url');
+        const remaining = searchParams.toString();
+        url.hash = remaining ? `${hashParts[0]}?${remaining}` : hashParts[0];
+        window.history.replaceState(null, '', url.toString());
+      }
+    }
   }
 
   public componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>): void {
