@@ -76,6 +76,19 @@ describe('TextFileUpload', () => {
     expect(contentInput).toBeEnabled();
   });
 
+  test('Upload button aria-label', async () => {
+    const ariaLabel = 'Upload test file';
+    renderComponent(ValidatedOptions.default, ariaLabel);
+
+    // Find the Upload button by its role and name
+    const uploadButton = screen.getByRole('button', { name: /Upload/i });
+    expect(uploadButton).not.toBeNull();
+
+    await waitFor(() => {
+      expect(uploadButton.getAttribute('aria-label')).toBe(ariaLabel);
+    });
+  });
+
   describe('Upload file', () => {
     test('should handle a valid file', async () => {
       renderComponent(ValidatedOptions.default);
@@ -147,12 +160,16 @@ describe('TextFileUpload', () => {
   });
 });
 
-function getComponent(validated: ValidatedOptions): React.ReactElement {
+function getComponent(
+  validated: ValidatedOptions,
+  uploadButtonAriaLabel?: string,
+): React.ReactElement {
   return (
     <TextFileUpload
       fieldId={fieldId}
       fileNamePlaceholder={fileNamePlaceholder}
       textAreaPlaceholder={textAreaPlaceholder}
+      uploadButtonAriaLabel={uploadButtonAriaLabel}
       validated={validated}
       onChange={mockOnChange}
     />

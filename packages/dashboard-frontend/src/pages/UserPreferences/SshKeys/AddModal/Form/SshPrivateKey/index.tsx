@@ -103,6 +103,7 @@ export class SshPrivateKey extends React.Component<Props, State> {
           fieldId="ssh-private-key"
           fileNamePlaceholder="Upload the PRIVATE key"
           textAreaPlaceholder="Or paste the PRIVATE key"
+          uploadButtonAriaLabel="Upload private key file"
           validated={validated}
           onChange={(key, isUpload) => this.onChange(key, isUpload)}
         />

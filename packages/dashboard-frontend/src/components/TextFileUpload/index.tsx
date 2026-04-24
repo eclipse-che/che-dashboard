@@ -19,6 +19,7 @@ export type Props = {
   fieldId: string;
   fileNamePlaceholder?: string;
   textAreaPlaceholder?: string;
+  uploadButtonAriaLabel?: string;
   validated: ValidatedOptions;
   onChange: (content: string, isUpload: boolean) => void;
 };
@@ -34,6 +35,8 @@ export type State = {
  * A component that allows the user to upload a text file.
  */
 export class TextFileUpload extends React.PureComponent<Props, State> {
+  private containerRef = React.createRef<HTMLDivElement>();
+
   constructor(props: Props) {
     super(props);
 
@@ -43,6 +46,29 @@ export class TextFileUpload extends React.PureComponent<Props, State> {
       file: undefined,
       isLoading: false,
     };
+  }
+
+  public componentDidMount(): void {
+    this.updateUploadButtonAriaLabel();
+  }
+
+  public componentDidUpdate(): void {
+    this.updateUploadButtonAriaLabel();
+  }
+
+  private updateUploadButtonAriaLabel(): void {
+    const { uploadButtonAriaLabel } = this.props;
+    if (!uploadButtonAriaLabel || !this.containerRef.current) {
+      return;
+    }
+
+    // Find the upload button within the FileUpload component
+    const buttons = this.containerRef.current.querySelectorAll('button');
+    buttons.forEach(button => {
+      if (button.textContent?.includes('Upload')) {
+        button.setAttribute('aria-label', uploadButtonAriaLabel);
+      }
+    });
   }
 
   private handleFileInputChange(file: File): void {
@@ -87,31 +113,33 @@ export class TextFileUpload extends React.PureComponent<Props, State> {
     const hideDefaultPreview = filename !== undefined;
 
     return (
-      <FileUpload
-        id={fieldId}
-        data-testid={fieldId}
-        value={content}
-        filename={filename}
-        filenamePlaceholder={fileNamePlaceholder}
-        onFileInputChange={(_event, file) => this.handleFileInputChange(file)}
-        onClearClick={() => this.handleClearClick()}
-        onDataChange={(_event, data) => this.handleDataChange(data)}
-        onTextChange={(_event, text) => this.handleTextChange(text)}
-        browseButtonText="Upload"
-        isLoading={isLoading}
-        isRequired={true}
-        isReadOnly={isReadOnly}
-        validated={fileUploadValidated}
-        type="text"
-        onReadStarted={() => this.setState({ isLoading: true })}
-        onReadFinished={() => this.setState({ isLoading: false })}
-        onReadFailed={() => this.setState({ isLoading: false })}
-        textAreaPlaceholder={textAreaPlaceholder}
-        allowEditingUploadedText={allowEditingUploadedText}
-        hideDefaultPreview={hideDefaultPreview}
-      >
-        {filename && <TextFileUploadPreview file={file} />}
-      </FileUpload>
+      <div ref={this.containerRef}>
+        <FileUpload
+          id={fieldId}
+          data-testid={fieldId}
+          value={content}
+          filename={filename}
+          filenamePlaceholder={fileNamePlaceholder}
+          onFileInputChange={(_event, file) => this.handleFileInputChange(file)}
+          onClearClick={() => this.handleClearClick()}
+          onDataChange={(_event, data) => this.handleDataChange(data)}
+          onTextChange={(_event, text) => this.handleTextChange(text)}
+          browseButtonText="Upload"
+          isLoading={isLoading}
+          isRequired={true}
+          isReadOnly={isReadOnly}
+          validated={fileUploadValidated}
+          type="text"
+          onReadStarted={() => this.setState({ isLoading: true })}
+          onReadFinished={() => this.setState({ isLoading: false })}
+          onReadFailed={() => this.setState({ isLoading: false })}
+          textAreaPlaceholder={textAreaPlaceholder}
+          allowEditingUploadedText={allowEditingUploadedText}
+          hideDefaultPreview={hideDefaultPreview}
+        >
+          {filename && <TextFileUploadPreview file={file} />}
+        </FileUpload>
+      </div>
     );
   }
 }
