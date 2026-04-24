@@ -1,0 +1,65 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+.contentSection {
+  overflow: hidden;
+  height: calc(100vh - 270px);
+  padding-top: 0;
+  background-color: inherit !important;
+}
+
+.editorWrapper {
+  display: flex;
+  flex-direction: column;
+  min-width: 350px;
+  height: calc(100vh - 285px);
+}
+
+.drawerPanel,
+.drawerPanel .pf-v6-c-drawer__panel-main {
+  padding: 0 !important;
+}
+
+.drawerPanel *.pf-v6-c-drawer__splitter::after {
+  border: none;
+}
+
+*.drawerPanel,
+.drawerPanel > * {
+  background-color: inherit;
+  border: none;
+}
+
+.drawerPanelExpanded {
+  --pf-v6-c-drawer__panel--FlexBasis: 100% !important;
+}
+
+.drawerPanelExpanded :global(.pf-v6-c-drawer__splitter) {
+  display: none;
+}
+
+.drawerPanelHidden {
+  --pf-v6-c-drawer__panel--FlexBasis: 0 !important;
+
+  position: absolute;
+  right: 0;
+
+  overflow: hidden;
+
+  width: 0;
+
+  visibility: hidden !important;
+}
+
+.drawerPanelHidden :global(.pf-v6-c-drawer__splitter) {
+  display: none;
+}
