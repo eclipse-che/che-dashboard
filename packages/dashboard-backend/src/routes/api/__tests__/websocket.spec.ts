@@ -56,6 +56,10 @@ describe('WebSocket handler', () => {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },
+      configMapWatchApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
     });
 
     webSocketHandler(mockWs as never, mockRequest as never);
@@ -106,6 +110,10 @@ describe('WebSocket handler', () => {
         watchInNamespace: jest.fn().mockRejectedValue(watchError),
         stopWatching: jest.fn(),
       },
+      configMapWatchApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
     });
 
     webSocketHandler(mockWs as never, mockRequest as never);
@@ -150,6 +158,10 @@ describe('WebSocket handler', () => {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },
+      configMapWatchApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
     });
 
     webSocketHandler(mockWs as never, mockRequest as never);
@@ -183,6 +195,10 @@ describe('WebSocket handler', () => {
         stopWatching: jest.fn(),
       },
       logsApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
+      configMapWatchApi: {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },
@@ -220,6 +236,10 @@ describe('WebSocket handler', () => {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },
+      configMapWatchApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
     });
 
     webSocketHandler(mockWs as never, mockRequest as never);
@@ -253,6 +273,10 @@ describe('WebSocket handler', () => {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },
+      configMapWatchApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
     });
 
     webSocketHandler(mockWs as never, mockRequest as never);
@@ -279,6 +303,10 @@ describe('WebSocket handler', () => {
         stopWatching: jest.fn(),
       },
       logsApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
+      configMapWatchApi: {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },
