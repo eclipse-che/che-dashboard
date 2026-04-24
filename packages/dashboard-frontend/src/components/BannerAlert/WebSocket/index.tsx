@@ -27,6 +27,9 @@ import { selectBranding } from '@/store/Branding/selectors';
 
 type Props = MappedProps;
 
+// Delay before showing the WebSocket error banner to avoid flashing on transient disconnects
+const WS_ERROR_DEBOUNCE_MS = 10000;
+
 type State = {
   erroringWebSockets: string[];
   watchAuthError: string | undefined;
@@ -37,6 +40,7 @@ class BannerAlertWebSocket extends React.PureComponent<Props, State> {
   private readonly onDidWebsocketFail: ConnectionListener;
   private readonly onDidWebsocketOpen: ConnectionListener;
   private readonly onWatchChannelMessage: ChannelListener;
+  private errorDebounceTimer: ReturnType<typeof setTimeout> | undefined;
 
   constructor(props: Props) {
     super(props);
@@ -46,11 +50,16 @@ class BannerAlertWebSocket extends React.PureComponent<Props, State> {
       watchAuthError: undefined,
     };
     this.onDidWebsocketFail = () => {
-      this.setState({
-        erroringWebSockets: [this.websocketClient.websocketContext],
-      });
+      // Debounce: wait before showing the error banner to avoid flashing on transient disconnects
+      clearTimeout(this.errorDebounceTimer);
+      this.errorDebounceTimer = setTimeout(() => {
+        this.setState({
+          erroringWebSockets: [this.websocketClient.websocketContext],
+        });
+      }, WS_ERROR_DEBOUNCE_MS);
     };
     this.onDidWebsocketOpen = () => {
+      clearTimeout(this.errorDebounceTimer);
       this.setState({
         erroringWebSockets: [],
         watchAuthError: undefined,
@@ -66,6 +75,7 @@ class BannerAlertWebSocket extends React.PureComponent<Props, State> {
   }
 
   public componentWillUnmount() {
+    clearTimeout(this.errorDebounceTimer);
     this.websocketClient.removeConnectionEventListener(
       ConnectionEvent.ERROR,
       this.onDidWebsocketFail,
