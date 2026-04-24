@@ -500,6 +500,7 @@ export interface IPersonalAccessTokenApi {
 export interface IDevWorkspaceClient {
   devWorkspaceTemplateApi: IDevWorkspaceTemplateApi;
   devworkspaceApi: IDevWorkspaceApi;
+  configMapWatchApi: IWatcherService<api.webSocket.SubscribeParams>;
   dockerConfigApi: IDockerConfigApi;
   eventApi: IEventApi;
   kubeConfigApi: IKubeConfigApi;
