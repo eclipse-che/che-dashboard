@@ -12,25 +12,34 @@
 
 import React from 'react';
 
-import { BasicViewer } from '@/components/BasicViewer';
+import { DevfileEditor } from '@/components/DevfileEditor';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
-describe('BasicViewer', () => {
+describe('DevfileEditor', () => {
   test('snapshot', () => {
-    const snapshot = createSnapshot('line 1\nline 2\nline 3');
+    const snapshot = createSnapshot();
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 
   test('renders container with id', () => {
-    renderComponent('line 1\nline 2\nline 3');
+    renderComponent();
 
-    const container = document.getElementById('basic-viewer-id');
+    const container = document.getElementById('test-editor');
     expect(container).toBeTruthy();
+  });
+
+  test('renders with the devfileEditor class', () => {
+    renderComponent();
+
+    const container = document.getElementById('test-editor');
+    expect(container?.className).toContain('devfileEditor');
   });
 });
 
-function getComponent(value: string): React.ReactElement {
-  return <BasicViewer id="basic-viewer-id" value={value} />;
+function getComponent(): React.ReactElement {
+  return (
+    <DevfileEditor id="test-editor" value={'schemaVersion: 2.2.2\nmetadata:\n  name: test\n'} />
+  );
 }
