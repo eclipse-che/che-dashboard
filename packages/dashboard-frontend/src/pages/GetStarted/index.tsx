@@ -66,6 +66,15 @@ export class GetStarted extends React.PureComponent<Props, State> {
     return searchParam.get('filter') || undefined;
   }
 
+  private getPresetUrl(): string | undefined {
+    const { pathname, search } = this.props.location;
+    if (!search || pathname !== ROUTE.GET_STARTED) {
+      return undefined;
+    }
+    const searchParam = new URLSearchParams(search);
+    return searchParam.get('url') || undefined;
+  }
+
   private handleSelectEditor(
     editorDefinition: string | undefined,
     editorImage: string | undefined,
@@ -106,6 +115,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
             editorDefinition={editorDefinition}
             editorImage={editorImage}
             navigate={navigate}
+            presetUrl={this.getPresetUrl()}
           />
 
           <Spacer />
