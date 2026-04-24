@@ -19,7 +19,7 @@ import { Store } from 'redux';
 
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import devfileApi from '@/services/devfileApi';
-import { DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
+import { LoaderTab } from '@/services/helpers/types';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
@@ -29,12 +29,15 @@ import { LoaderPage, Props } from '..';
 jest.mock('@/components/WorkspaceProgress');
 jest.mock('@/components/WorkspaceLogs');
 jest.mock('@/components/WorkspaceEvents');
+jest.mock('@/components/LoaderAgentPanel', () => {
+  const MockLoaderAgentPanel = () => <div data-testid="loader-agent-panel" />;
+  MockLoaderAgentPanel.displayName = 'MockLoaderAgentPanel';
+  return { __esModule: true, default: MockLoaderAgentPanel };
+});
 
 const { renderComponent } = getComponentRenderer(getComponent);
 
 const mockOnTabChange = jest.fn();
-const mockOnStartWorkspace = jest.fn();
-const mockOnStopWorkspace = jest.fn();
 
 const namespace = 'user-che';
 const workspaceName = 'wksp-test';
@@ -67,7 +70,6 @@ describe('Loader page', () => {
     renderComponent(store, {
       tabParam,
       workspace,
-      workspaceStatus: DevWorkspaceStatus.STARTING,
     });
 
     const tabButtonLogs = screen.getByRole('tab', { name: 'Logs' });
@@ -80,7 +82,6 @@ describe('Loader page', () => {
     renderComponent(store, {
       tabParam: LoaderTab.Logs,
       workspace,
-      workspaceStatus: DevWorkspaceStatus.STARTING,
     });
 
     const tabpanelProgress = screen.queryByRole('tabpanel', { name: 'Progress' });
@@ -97,7 +98,6 @@ describe('Loader page', () => {
     const { reRenderComponent } = renderComponent(store, {
       tabParam,
       workspace: undefined,
-      workspaceStatus: DevWorkspaceStatus.STOPPED,
     });
 
     expect(screen.queryByRole('heading')).toHaveTextContent('Creating a workspace');
@@ -116,70 +116,15 @@ describe('Loader page', () => {
     reRenderComponent(storeReady, {
       tabParam,
       workspace: constructWorkspace(devWorkspaceReady),
-      workspaceStatus: DevWorkspaceStatus.RUNNING,
     });
 
     expect(screen.queryByRole('heading')).toHaveTextContent('Starting workspace');
-  });
-
-  it('should show actions kebab when workspace is defined', () => {
-    renderComponent(store, {
-      tabParam,
-      workspace,
-      workspaceStatus: DevWorkspaceStatus.STARTING,
-    });
-
-    expect(screen.getByRole('button', { name: 'Workspace actions' })).toBeInTheDocument();
-  });
-
-  it('should not show actions kebab when workspace is undefined', () => {
-    renderComponent(store, {
-      tabParam,
-      workspace: undefined,
-      workspaceStatus: DevWorkspaceStatus.STOPPED,
-    });
-
-    expect(screen.queryByRole('button', { name: 'Workspace actions' })).toBeNull();
-  });
-
-  it('should call onStopWorkspace when Stop is clicked in kebab', async () => {
-    renderComponent(store, {
-      tabParam,
-      workspace,
-      workspaceStatus: DevWorkspaceStatus.STARTING,
-    });
-
-    await userEvent.click(screen.getByRole('button', { name: 'Workspace actions' }));
-    await userEvent.click(screen.getByRole('menuitem', { name: /stop/i }));
-
-    await waitFor(() => expect(mockOnStopWorkspace).toHaveBeenCalledTimes(1));
-  });
-
-  it('should call onStartWorkspace when Start is clicked in kebab (workspace stopped)', async () => {
-    renderComponent(store, {
-      tabParam,
-      workspace,
-      workspaceStatus: DevWorkspaceStatus.STOPPED,
-    });
-
-    await userEvent.click(screen.getByRole('button', { name: 'Workspace actions' }));
-    await userEvent.click(screen.getByRole('menuitem', { name: /start/i }));
-
-    await waitFor(() => expect(mockOnStartWorkspace).toHaveBeenCalledTimes(1));
   });
 });
 
 function getComponent(
   store: Store,
-  props: Omit<
-    Props,
-    | 'onTabChange'
-    | 'onStartWorkspace'
-    | 'onStopWorkspace'
-    | 'searchParams'
-    | 'location'
-    | 'navigate'
-  >,
+  props: Pick<Props, 'tabParam' | 'workspace'>,
 ): React.ReactElement {
   return (
     <Provider store={store}>
@@ -189,10 +134,18 @@ function getComponent(
         tabParam={props.tabParam}
         searchParams={new URLSearchParams()}
         workspace={props.workspace}
-        workspaceStatus={props.workspaceStatus}
+        workspaceContent=""
         onTabChange={mockOnTabChange}
-        onStartWorkspace={mockOnStartWorkspace}
-        onStopWorkspace={mockOnStopWorkspace}
+        agentPodStatus={undefined}
+        agentTerminalUrl={undefined}
+        agentEnabled={false}
+        agentInitCommand={undefined}
+        agentInstanceId={undefined}
+        agentName={undefined}
+        agentDescription={undefined}
+        isDarkTheme={false}
+        onStartAgent={jest.fn()}
+        onStopAgent={jest.fn()}
       />
     </Provider>
   );
