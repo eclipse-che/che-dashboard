@@ -48,6 +48,25 @@ const UserMenuComponent: React.FC<Props> = ({ history, username, logout }) => {
   const autoThemeRef = React.useRef<HTMLSpanElement>(null);
   const tooltipContainerRef = React.useRef<HTMLDivElement>(null);
 
+  const themeOrder = [ThemePreference.LIGHT, ThemePreference.DARK, ThemePreference.AUTO];
+
+  const handleThemeKeyDown = (event: React.KeyboardEvent): void => {
+    const currentIndex = themeOrder.indexOf(themePreference);
+
+    if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+      event.preventDefault();
+      event.stopPropagation();
+      const step = event.key === 'ArrowRight' ? 1 : -1;
+      const nextIndex = (currentIndex + step + themeOrder.length) % themeOrder.length;
+      setThemePreference(themeOrder[nextIndex]);
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      event.stopPropagation();
+      const nextIndex = (currentIndex + 1) % themeOrder.length;
+      setThemePreference(themeOrder[nextIndex]);
+    }
+  };
+
   const onUsernameSelect = (
     _event?: React.MouseEvent<Element, MouseEvent>,
     itemId?: string | number,
@@ -84,7 +103,7 @@ const UserMenuComponent: React.FC<Props> = ({ history, username, logout }) => {
       <DropdownGroup label="Appearance">
         <DropdownList>
           <DropdownItem itemId="theme-selector" key="theme-selector" component="div">
-            <div ref={tooltipContainerRef}>
+            <div ref={tooltipContainerRef} onKeyDown={handleThemeKeyDown}>
               <ToggleGroup id="theme-toggle" aria-label="Theme toggle group">
                 {/* Span wrappers give triggerRef a real bounding rect (display:contents has none) */}
                 <span ref={lightThemeRef}>
