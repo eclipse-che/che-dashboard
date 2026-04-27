@@ -48,8 +48,8 @@ describe('GitProviderOrganization', () => {
     await userEvent.paste(organization);
 
     expect(mockOnChange).toHaveBeenCalledWith(organization, true);
-    expect(screen.queryByText('This field is required.')).toBeFalsy();
-    expect(screen.queryByText(/^The Provider Organization is too long./)).toBeFalsy();
+    expect(screen.queryByText('Git Provider Organization is required.')).toBeFalsy();
+    expect(screen.queryByText(/must be \d+ characters or less/)).toBeFalsy();
   });
 
   it('should handle a too long organization value', async () => {
@@ -64,9 +64,10 @@ describe('GitProviderOrganization', () => {
     await userEvent.paste(organization);
 
     expect(mockOnChange).toHaveBeenCalledWith(organization, false);
-    // GitProviderOrganization component validates but doesn't render error messages
-    expect(screen.queryByText('This field is required.')).toBeFalsy();
-    expect(screen.queryByText(/^The Provider Organization is too long./)).toBeFalsy();
+    expect(screen.queryByText('Git Provider Organization is required.')).toBeFalsy();
+    expect(
+      screen.getByText('Git Provider Organization must be 255 characters or less.'),
+    ).toBeTruthy();
   });
 
   it('should handle an empty value', async () => {
@@ -79,9 +80,98 @@ describe('GitProviderOrganization', () => {
     await userEvent.clear(input);
 
     expect(mockOnChange).toHaveBeenCalledWith('', false);
-    // GitProviderOrganization component validates but doesn't render error messages
-    expect(screen.queryByText('This field is required.')).toBeFalsy();
-    expect(screen.queryByText(/^The Provider Organization is too long./)).toBeFalsy();
+    expect(screen.getByText('Git Provider Organization is required.')).toBeTruthy();
+    expect(screen.queryByText(/must be \d+ characters or less/)).toBeFalsy();
+  });
+
+  describe('helper text behavior', () => {
+    it('should not show helper text when organization is valid', async () => {
+      renderComponent();
+
+      const input = screen.getByRole('textbox');
+
+      const validOrganization = 'user-organization';
+      await userEvent.click(input);
+      await userEvent.paste(validOrganization);
+
+      // Helper text should not be present
+      expect(screen.queryByText('Git Provider Organization is required.')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Git Provider Organization must be \d+ characters or less./),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should show error helper text when organization is empty', async () => {
+      renderComponent();
+
+      const input = screen.getByRole('textbox');
+
+      // First set a valid value
+      await userEvent.click(input);
+      await userEvent.paste('user-organization');
+
+      // Then clear it to trigger validation
+      await userEvent.clear(input);
+
+      // Error helper text should be visible
+      expect(screen.getByText('Git Provider Organization is required.')).toBeInTheDocument();
+    });
+
+    it('should show error helper text when organization is too long', async () => {
+      renderComponent();
+
+      const input = screen.getByRole('textbox');
+
+      // Create an organization that exceeds MAX_LENGTH (255)
+      const tooLongOrganization = 'a'.repeat(256);
+      await userEvent.click(input);
+      await userEvent.paste(tooLongOrganization);
+
+      // Error helper text should be visible
+      expect(
+        screen.getByText('Git Provider Organization must be 255 characters or less.'),
+      ).toBeInTheDocument();
+    });
+
+    it('should hide helper text when correcting an invalid organization', async () => {
+      renderComponent('user-organization');
+
+      const input = screen.getByRole('textbox');
+
+      // Clear the input to trigger error
+      await userEvent.clear(input);
+
+      // Error helper text should be visible
+      expect(screen.getByText('Git Provider Organization is required.')).toBeInTheDocument();
+
+      // Now correct it
+      const validOrganization = 'user-organization';
+      await userEvent.click(input);
+      await userEvent.paste(validOrganization);
+
+      // Helper text should no longer be visible
+      expect(screen.queryByText('Git Provider Organization is required.')).not.toBeInTheDocument();
+    });
+
+    it('should not show helper text on initial render with valid organization', () => {
+      renderComponent('user-organization');
+
+      // No helper text should be visible
+      expect(screen.queryByText('Git Provider Organization is required.')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Git Provider Organization must be \d+ characters or less./),
+      ).not.toBeInTheDocument();
+    });
+
+    it('should not show helper text on initial render without organization', () => {
+      renderComponent();
+
+      // No helper text should be visible initially (validation state is 'default')
+      expect(screen.queryByText('Git Provider Organization is required.')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Git Provider Organization must be \d+ characters or less./),
+      ).not.toBeInTheDocument();
+    });
   });
 });
 

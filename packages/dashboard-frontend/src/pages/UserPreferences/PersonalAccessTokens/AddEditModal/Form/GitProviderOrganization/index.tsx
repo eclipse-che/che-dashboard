@@ -10,7 +10,16 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FormGroup, TextInput, TextInputTypes, ValidatedOptions } from '@patternfly/react-core';
+import {
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  TextInput,
+  TextInputTypes,
+  ValidatedOptions,
+} from '@patternfly/react-core';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 const MAX_LENGTH = 255;
@@ -54,8 +63,20 @@ export class GitProviderOrganization extends React.PureComponent<Props, State> {
     }
   }
 
+  private getErrorMessage(providerOrganization: string): string {
+    if (providerOrganization.length === 0) {
+      return 'Git Provider Organization is required.';
+    } else if (providerOrganization.length > MAX_LENGTH) {
+      return `Git Provider Organization must be ${MAX_LENGTH} characters or less.`;
+    }
+    return '';
+  }
+
   public render(): React.ReactElement {
-    const { providerOrganization = '' } = this.state;
+    const { providerOrganization = '', validated } = this.state;
+
+    const errorMessage = this.getErrorMessage(providerOrganization);
+    const hasError = validated === ValidatedOptions.error;
 
     return (
       <FormGroup
@@ -69,8 +90,18 @@ export class GitProviderOrganization extends React.PureComponent<Props, State> {
           placeholder="Enter a Git Provider Organization"
           onChange={(_event, providerOrganization) => this.onChange(providerOrganization)}
           type={TextInputTypes.text}
+          validated={hasError ? 'error' : 'default'}
           value={providerOrganization}
         />
+        {hasError && (
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem variant="error" icon={<ExclamationCircleIcon />}>
+                {errorMessage}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+        )}
       </FormGroup>
     );
   }
