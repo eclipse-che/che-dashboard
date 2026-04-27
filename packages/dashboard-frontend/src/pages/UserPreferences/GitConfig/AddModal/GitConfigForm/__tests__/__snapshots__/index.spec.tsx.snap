@@ -57,6 +57,46 @@ exports[`GitConfigForm snapshot with predefined git configuration 1`] = `
           onClick={[Function]}
           type="button"
         />
+        <input
+          data-testid="submit-missing-user-section-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-empty-email-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-long-email-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-parse-error-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-max-length-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-only-name-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-only-email-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-both-null-git-config"
+          onClick={[Function]}
+          type="button"
+        />
       </div>
     </div>
   </div>
@@ -113,6 +153,46 @@ exports[`GitConfigForm snapshot without predefined git configuration 1`] = `
         />
         <input
           data-testid="submit-long-name-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-missing-user-section-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-empty-email-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-long-email-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-parse-error-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-max-length-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-only-name-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-only-email-git-config"
+          onClick={[Function]}
+          type="button"
+        />
+        <input
+          data-testid="submit-both-null-git-config"
           onClick={[Function]}
           type="button"
         />

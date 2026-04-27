@@ -93,6 +93,144 @@ describe('GitConfigForm', () => {
       false,
     );
   });
+
+  describe('Error messages', () => {
+    it('should display error message for missing user section', async () => {
+      renderComponent();
+
+      const gitConfigField = screen.getByTestId('submit-missing-user-section-git-config');
+      await userEvent.click(gitConfigField);
+
+      expect(
+        screen.getByText('The [user] section with "name" and "email" fields is required.'),
+      ).toBeInTheDocument();
+    });
+
+    it('should display error message for invalid email format', async () => {
+      renderComponent();
+
+      const gitConfigField = screen.getByTestId('submit-invalid-email-git-config');
+      await userEvent.click(gitConfigField);
+
+      expect(
+        screen.getByText('User email must be a valid email address (e.g., user@example.com).'),
+      ).toBeInTheDocument();
+    });
+
+    it('should display error message for empty name when email is valid', async () => {
+      renderComponent();
+
+      const gitConfigField = screen.getByTestId('submit-empty-name-git-config');
+      await userEvent.click(gitConfigField);
+
+      // Name is now required
+      expect(screen.getByText('Username is required.')).toBeInTheDocument();
+    });
+
+    it('should display error message for name exceeding max length', async () => {
+      renderComponent();
+
+      const gitConfigField = screen.getByTestId('submit-long-name-git-config');
+      await userEvent.click(gitConfigField);
+
+      expect(
+        screen.getByText('User name must be between 1 and 128 characters.'),
+      ).toBeInTheDocument();
+    });
+
+    it('should display error message for empty email when name is valid', async () => {
+      renderComponent();
+
+      const gitConfigField = screen.getByTestId('submit-empty-email-git-config');
+      await userEvent.click(gitConfigField);
+
+      // Email is now required
+      expect(screen.getByText('User email is required.')).toBeInTheDocument();
+    });
+
+    it('should display error message for email exceeding max length', async () => {
+      renderComponent();
+
+      const gitConfigField = screen.getByTestId('submit-long-email-git-config');
+      await userEvent.click(gitConfigField);
+
+      expect(
+        screen.getByText('User email must be between 1 and 128 characters.'),
+      ).toBeInTheDocument();
+    });
+
+    it('should display error message for malformed config', async () => {
+      renderComponent();
+
+      const gitConfigField = screen.getByTestId('submit-parse-error-git-config');
+      await userEvent.click(gitConfigField);
+
+      // The multi-ini parser is lenient and may parse malformed content
+      // but it should still fail validation and show an error message
+      expect(
+        screen.getByText('The [user] section with "name" and "email" fields is required.'),
+      ).toBeInTheDocument();
+    });
+
+    it('should display error message for max length exceeded', async () => {
+      renderComponent();
+
+      const gitConfigField = screen.getByTestId('submit-max-length-git-config');
+      await userEvent.click(gitConfigField);
+
+      expect(
+        screen.getByText('The value is too long. The maximum length is 4096 characters.'),
+      ).toBeInTheDocument();
+    });
+
+    it('should not display error message for valid input', async () => {
+      renderComponent();
+
+      const gitConfigField = screen.getByTestId('submit-valid-git-config');
+      await userEvent.click(gitConfigField);
+
+      expect(
+        screen.queryByText('User email must be a valid email address (e.g., user@example.com).'),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('The [user] section with "name" and "email" fields is required.'),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Required field validation', () => {
+    it('should reject config with only name (email is required)', async () => {
+      renderComponent();
+
+      const gitConfigField = screen.getByTestId('submit-only-name-git-config');
+      await userEvent.click(gitConfigField);
+
+      expect(mockOnChange).toHaveBeenCalledWith({ user: { name: 'User One' } }, false);
+      expect(screen.getByText('User email is required.')).toBeInTheDocument();
+    });
+
+    it('should reject config with only email (name is required)', async () => {
+      renderComponent();
+
+      const gitConfigField = screen.getByTestId('submit-only-email-git-config');
+      await userEvent.click(gitConfigField);
+
+      expect(mockOnChange).toHaveBeenCalledWith({ user: { email: 'user@test.com' } }, false);
+      expect(screen.getByText('Username is required.')).toBeInTheDocument();
+    });
+
+    it('should reject config when both name and email are null', async () => {
+      renderComponent();
+
+      const gitConfigField = screen.getByTestId('submit-both-null-git-config');
+      await userEvent.click(gitConfigField);
+
+      expect(mockOnChange).toHaveBeenCalledWith({ user: {} }, false);
+      expect(
+        screen.getByText('The [user] section with "name" and "email" fields is required.'),
+      ).toBeInTheDocument();
+    });
+  });
 });
 
 function getComponent(gitConfig?: GitConfigStore.GitConfig) {

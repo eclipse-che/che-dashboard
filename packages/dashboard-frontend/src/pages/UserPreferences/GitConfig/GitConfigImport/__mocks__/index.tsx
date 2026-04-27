@@ -51,6 +51,53 @@ export class GitConfigImport extends React.PureComponent<Props> {
             onChange(`[user]\n\tname = ${longName}\n\temail = user@test.com\n`, false);
           }}
         />
+        <input
+          data-testid="submit-missing-user-section-git-config"
+          type="button"
+          onClick={() => onChange('[core]\n\teditor = vim\n', false)}
+        />
+        <input
+          data-testid="submit-empty-email-git-config"
+          type="button"
+          onClick={() => onChange('[user]\n\tname = User One\n\temail = \n', false)}
+        />
+        <input
+          data-testid="submit-long-email-git-config"
+          type="button"
+          onClick={() => {
+            const longEmail = 'a'.repeat(120) + '@test.com';
+            onChange(`[user]\n\tname = User One\n\temail = ${longEmail}\n`, false);
+          }}
+        />
+        <input
+          data-testid="submit-parse-error-git-config"
+          type="button"
+          onClick={() => onChange('invalid [[[[ config', false)}
+        />
+        <input
+          data-testid="submit-max-length-git-config"
+          type="button"
+          onClick={() => {
+            const longContent =
+              '[user]\n\tname = User One\n\temail = user@test.com\n' + 'x'.repeat(4100);
+            onChange(longContent, false);
+          }}
+        />
+        <input
+          data-testid="submit-only-name-git-config"
+          type="button"
+          onClick={() => onChange('[user]\n\tname = User One\n', false)}
+        />
+        <input
+          data-testid="submit-only-email-git-config"
+          type="button"
+          onClick={() => onChange('[user]\n\temail = user@test.com\n', false)}
+        />
+        <input
+          data-testid="submit-both-null-git-config"
+          type="button"
+          onClick={() => onChange('[user]\n', false)}
+        />
       </div>
     );
   }
