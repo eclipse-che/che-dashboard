@@ -76,19 +76,19 @@ class UserPreferences extends React.PureComponent<Props, State> {
     return UserPreferencesTab.CONTAINER_REGISTRIES;
   }
 
-  private handleTabClick = (
+  private handleTabClick(
     event: React.MouseEvent<HTMLElement, MouseEvent>,
     activeTabKey: string | number,
-  ): void => {
+  ): void {
     event.stopPropagation();
     this.props.navigate(`${ROUTE.USER_PREFERENCES}?tab=${activeTabKey}`);
 
     this.setState({
       activeTabKey: activeTabKey as UserPreferencesTab,
     });
-  };
+  }
 
-  private handleTabKeyDown = (event: React.KeyboardEvent): void => {
+  private handleTabKeyDown(event: React.KeyboardEvent): void {
     const target = event.target as HTMLElement;
     if (target.getAttribute('role') !== 'tab') {
       return;
@@ -118,7 +118,7 @@ class UserPreferences extends React.PureComponent<Props, State> {
       const buttons = tabsContainer?.querySelectorAll<HTMLButtonElement>('[role="tab"]');
       buttons?.[nextIndex]?.focus();
     });
-  };
+  }
 
   render(): React.ReactNode {
     const { activeTabKey } = this.state;
@@ -134,8 +134,8 @@ class UserPreferences extends React.PureComponent<Props, State> {
             id="user-preferences-tabs"
             style={{ backgroundColor: 'var(--pf-global--BackgroundColor--100)' }}
             activeKey={activeTabKey}
-            onSelect={this.handleTabClick}
-            onKeyDown={this.handleTabKeyDown}
+            onSelect={(event, tabKey) => this.handleTabClick(event, tabKey)}
+            onKeyDown={event => this.handleTabKeyDown(event)}
             mountOnEnter={true}
             unmountOnExit={true}
           >
