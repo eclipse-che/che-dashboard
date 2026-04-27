@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -139,6 +140,124 @@ describe('UserPreferences', () => {
       await userEvent.click(tab);
 
       expect(screen.queryByRole('tabpanel', { name: 'SSH Keys' })).toBeTruthy();
+    });
+  });
+
+  describe('Keyboard navigation', () => {
+    it('should move to the next tab on ArrowRight', () => {
+      const location = buildUserPreferencesLocation(UserPreferencesTab.CONTAINER_REGISTRIES);
+      renderComponent(location);
+
+      const tab = screen.getByRole('tab', { name: 'Container Registries' });
+      fireEvent.keyDown(tab, { key: 'ArrowRight' });
+
+      expect(mockNavigate).toHaveBeenCalledWith(
+        expect.stringContaining(`tab=${UserPreferencesTab.GIT_SERVICES}`),
+      );
+    });
+
+    it('should move to the next tab on ArrowDown', () => {
+      const location = buildUserPreferencesLocation(UserPreferencesTab.CONTAINER_REGISTRIES);
+      renderComponent(location);
+
+      const tab = screen.getByRole('tab', { name: 'Container Registries' });
+      fireEvent.keyDown(tab, { key: 'ArrowDown' });
+
+      expect(mockNavigate).toHaveBeenCalledWith(
+        expect.stringContaining(`tab=${UserPreferencesTab.GIT_SERVICES}`),
+      );
+    });
+
+    it('should move to the previous tab on ArrowLeft', () => {
+      const location = buildUserPreferencesLocation(UserPreferencesTab.GIT_SERVICES);
+      renderComponent(location);
+
+      const tab = screen.getByRole('tab', { name: 'Git Services' });
+      fireEvent.keyDown(tab, { key: 'ArrowLeft' });
+
+      expect(mockNavigate).toHaveBeenCalledWith(
+        expect.stringContaining(`tab=${UserPreferencesTab.CONTAINER_REGISTRIES}`),
+      );
+    });
+
+    it('should move to the previous tab on ArrowUp', () => {
+      const location = buildUserPreferencesLocation(UserPreferencesTab.GIT_SERVICES);
+      renderComponent(location);
+
+      const tab = screen.getByRole('tab', { name: 'Git Services' });
+      fireEvent.keyDown(tab, { key: 'ArrowUp' });
+
+      expect(mockNavigate).toHaveBeenCalledWith(
+        expect.stringContaining(`tab=${UserPreferencesTab.CONTAINER_REGISTRIES}`),
+      );
+    });
+
+    it('should wrap around to the first tab on ArrowRight from the last tab', () => {
+      const location = buildUserPreferencesLocation(UserPreferencesTab.SSH_KEYS);
+      renderComponent(location);
+
+      const tab = screen.getByRole('tab', { name: 'SSH Keys' });
+      fireEvent.keyDown(tab, { key: 'ArrowRight' });
+
+      expect(mockNavigate).toHaveBeenCalledWith(
+        expect.stringContaining(`tab=${UserPreferencesTab.CONTAINER_REGISTRIES}`),
+      );
+    });
+
+    it('should wrap around to the last tab on ArrowLeft from the first tab', () => {
+      const location = buildUserPreferencesLocation(UserPreferencesTab.CONTAINER_REGISTRIES);
+      renderComponent(location);
+
+      const tab = screen.getByRole('tab', { name: 'Container Registries' });
+      fireEvent.keyDown(tab, { key: 'ArrowLeft' });
+
+      expect(mockNavigate).toHaveBeenCalledWith(
+        expect.stringContaining(`tab=${UserPreferencesTab.SSH_KEYS}`),
+      );
+    });
+
+    it('should move to the first tab on Home', () => {
+      const location = buildUserPreferencesLocation(UserPreferencesTab.GITCONFIG);
+      renderComponent(location);
+
+      const tab = screen.getByRole('tab', { name: 'Gitconfig' });
+      fireEvent.keyDown(tab, { key: 'Home' });
+
+      expect(mockNavigate).toHaveBeenCalledWith(
+        expect.stringContaining(`tab=${UserPreferencesTab.CONTAINER_REGISTRIES}`),
+      );
+    });
+
+    it('should move to the last tab on End', () => {
+      const location = buildUserPreferencesLocation(UserPreferencesTab.CONTAINER_REGISTRIES);
+      renderComponent(location);
+
+      const tab = screen.getByRole('tab', { name: 'Container Registries' });
+      fireEvent.keyDown(tab, { key: 'End' });
+
+      expect(mockNavigate).toHaveBeenCalledWith(
+        expect.stringContaining(`tab=${UserPreferencesTab.SSH_KEYS}`),
+      );
+    });
+
+    it('should not navigate on unhandled keys', () => {
+      const location = buildUserPreferencesLocation(UserPreferencesTab.CONTAINER_REGISTRIES);
+      renderComponent(location);
+
+      const tab = screen.getByRole('tab', { name: 'Container Registries' });
+      fireEvent.keyDown(tab, { key: 'Enter' });
+
+      expect(mockNavigate).not.toHaveBeenCalled();
+    });
+
+    it('should not navigate when keydown target is not a tab', () => {
+      const location = buildUserPreferencesLocation(UserPreferencesTab.CONTAINER_REGISTRIES);
+      renderComponent(location);
+
+      const tabPanel = screen.getByRole('tabpanel', { name: 'Container Registries' });
+      fireEvent.keyDown(tabPanel, { key: 'ArrowRight' });
+
+      expect(mockNavigate).not.toHaveBeenCalled();
     });
   });
 });
