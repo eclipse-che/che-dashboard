@@ -101,6 +101,18 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
     onSelect(activeEditor.id);
   };
 
+  private handleKeyDown(event: React.KeyboardEvent): void {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+    const target = event.target as HTMLElement;
+    if (target.tagName === 'BUTTON' || target.closest('[role="menu"]')) {
+      return;
+    }
+    event.preventDefault();
+    this.handleSelectableAction();
+  }
+
   private handleDropdownToggle(event: React.MouseEvent) {
     event.stopPropagation();
 
@@ -184,6 +196,10 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
         isSelectable
         isSelected={isSelectedGroup}
         onClick={this.handleSelectableAction}
+        onKeyDown={(e: React.KeyboardEvent) => this.handleKeyDown(e)}
+        role="button"
+        tabIndex={0}
+        aria-label={`Select editor ${groupName}`}
       >
         <CardHeader
           selectableActions={{
