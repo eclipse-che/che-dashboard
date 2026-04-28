@@ -61,7 +61,7 @@ describe('WorkspaceActionsDropdown', () => {
     test('open dropdown', async () => {
       renderComponent(workspace, 'kebab-toggle');
 
-      const toggle = screen.queryByRole('button', { name: 'Actions' });
+      const toggle = screen.queryByRole('button', { name: 'Actions for my-workspace' });
 
       expect(toggle).toBeTruthy();
       expect(toggle).toHaveAttribute('data-testtype', 'kebab-toggle');
@@ -93,7 +93,7 @@ describe('WorkspaceActionsDropdown', () => {
     test('open dropdown', async () => {
       renderComponent(workspace, 'dropdown-toggle');
 
-      const toggle = screen.queryByRole('button', { name: 'Actions' });
+      const toggle = screen.queryByRole('button', { name: 'Actions for my-workspace' });
 
       expect(toggle).not.toBeNull();
       expect(toggle).toHaveAttribute('data-testtype', 'dropdown-toggle');

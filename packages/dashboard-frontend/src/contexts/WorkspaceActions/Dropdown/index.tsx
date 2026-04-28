@@ -79,7 +79,7 @@ class WorkspaceActionsDropdownComponent extends React.PureComponent<Props, State
       return (toggleRef: React.Ref<MenuToggleElement>) => (
         <MenuToggle
           ref={toggleRef}
-          aria-label="Actions"
+          aria-label={`Actions for ${workspace.name}`}
           data-testid={`${workspace.uid}-action-dropdown`}
           data-testtype="kebab-toggle"
           isDisabled={isDisabled}
@@ -96,7 +96,7 @@ class WorkspaceActionsDropdownComponent extends React.PureComponent<Props, State
     return (toggleRef: React.Ref<MenuToggleElement>) => (
       <MenuToggle
         ref={toggleRef}
-        aria-label="Actions"
+        aria-label={`Actions for ${workspace.name}`}
         data-testid={`${workspace.uid}-action-dropdown`}
         data-testtype="dropdown-toggle"
         isDisabled={isDisabled}
