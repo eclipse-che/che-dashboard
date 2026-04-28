@@ -24,6 +24,8 @@ import {
   EmptyStateVariant,
   Flex,
   FlexItem,
+  Label,
+  LabelProps,
   Tooltip,
 } from '@patternfly/react-core';
 import React from 'react';
@@ -41,6 +43,7 @@ export interface Props {
   agentName: string | undefined;
   agentDescription: string | undefined;
   agentInitCommand: string | undefined;
+  emptyStateDescription: string;
   namespace: string;
   devfileName: string;
   devfileId: string;
@@ -89,6 +92,32 @@ export default class AgentPanel extends React.PureComponent<Props, State> {
       >
         {isStartingAgent ? 'Starting...' : 'Start Agent'}
       </Button>
+    );
+  }
+
+  private renderAgentStatusLabel(): React.ReactElement | null {
+    const { agentPodStatus } = this.props;
+    if (!agentPodStatus) return null;
+
+    const { phase, ready } = agentPodStatus;
+    let label: string;
+    let color: LabelProps['color'];
+
+    if (phase === AgentPodPhase.RUNNING && ready) {
+      label = 'Running';
+      color = 'green';
+    } else if (phase === AgentPodPhase.PENDING || (phase === AgentPodPhase.RUNNING && !ready)) {
+      label = 'Starting';
+      color = 'blue';
+    } else {
+      label = 'Failed';
+      color = 'orange';
+    }
+
+    return (
+      <Label color={color} isCompact>
+        {label}
+      </Label>
     );
   }
 
@@ -154,6 +183,9 @@ export default class AgentPanel extends React.PureComponent<Props, State> {
                   <span className={styles.agentIdLabel}>Agent ID: {agentDisplayId}</span>
                 </Tooltip>
               </FlexItem>
+              <FlexItem>
+                <span className={styles.statusLabel}>{this.renderAgentStatusLabel()}</span>
+              </FlexItem>
               <FlexItem align={{ default: 'alignRight' }}>
                 <TerminalTools
                   isExpanded={isTerminalExpanded}
@@ -200,6 +232,9 @@ export default class AgentPanel extends React.PureComponent<Props, State> {
                   <span className={styles.agentIdLabel}>Agent ID: {agentDisplayId}</span>
                 </Tooltip>
               </FlexItem>
+              <FlexItem>
+                <span className={styles.statusLabel}>{this.renderAgentStatusLabel()}</span>
+              </FlexItem>
               <FlexItem align={{ default: 'alignRight' }}>
                 <TerminalTools
                   isExpanded={isTerminalExpanded}
@@ -228,7 +263,7 @@ export default class AgentPanel extends React.PureComponent<Props, State> {
             </Alert>
           )}
           <EmptyState headingLevel="h3" titleText="AI Agent" variant={EmptyStateVariant.sm}>
-            <EmptyStateBody>Start an AI agent to get help building your devfile.</EmptyStateBody>
+            <EmptyStateBody>{this.props.emptyStateDescription}</EmptyStateBody>
             <EmptyStateFooter>
               <EmptyStateActions>{this.renderStartButton()}</EmptyStateActions>
             </EmptyStateFooter>

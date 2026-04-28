@@ -24,6 +24,7 @@ import { ROUTE } from '@/Routes';
 import { buildGettingStartedLocation, buildWorkspacesLocation } from '@/services/helpers/location';
 import { Workspace } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
+import { selectAiAgentRegistryEnabled } from '@/store/AiAgentRegistry';
 import { selectAllWorkspaces, selectRecentWorkspaces } from '@/store/Workspaces/selectors';
 
 export interface NavigationItemObject {
@@ -152,7 +153,7 @@ export class Navigation extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { recentWorkspaces } = this.props;
+    const { recentWorkspaces, agentRegistryEnabled } = this.props;
     const { activeLocation } = this.state;
 
     return (
@@ -168,9 +169,11 @@ export class Navigation extends React.PureComponent<Props, State> {
             workspaces={recentWorkspaces}
           />
         </div>
-        <div style={{ position: 'absolute', bottom: '100px', left: 0, right: 0 }}>
-          <NavigationAgentList activePath={activeLocation.pathname} />
-        </div>
+        {agentRegistryEnabled && (
+          <div style={{ position: 'absolute', bottom: '100px', left: 0, right: 0 }}>
+            <NavigationAgentList activePath={activeLocation.pathname} />
+          </div>
+        )}
       </Nav>
     );
   }
@@ -179,6 +182,7 @@ export class Navigation extends React.PureComponent<Props, State> {
 const mapStateToProps = (state: RootState) => ({
   recentWorkspaces: selectRecentWorkspaces(state),
   allWorkspaces: selectAllWorkspaces(state),
+  agentRegistryEnabled: selectAiAgentRegistryEnabled(state),
 });
 const connector = connect(mapStateToProps);
 

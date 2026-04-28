@@ -54,20 +54,18 @@ import React from 'react';
 import { NavigateFunction } from 'react-router-dom';
 
 import Head from '@/components/Head';
+import ProgressIndicator from '@/components/Progress';
 import { DeleteConfirmation } from '@/pages/DevfileDetails/DeleteConfirmation';
+import { DEVFILE_FALLBACK } from '@/pages/DevfilesList/const';
 import styles from '@/pages/DevfilesList/index.module.css';
 import match from '@/services/helpers/filter';
 import { LocalDevfile } from '@/store/LocalDevfiles';
-
-const DEVFILE_FALLBACK = `schemaVersion: 2.2.0
-metadata:
-  generateName: empty
-`;
 
 interface Props {
   devfiles: LocalDevfile[];
   defaultDevfileContent: string | undefined;
   error: string | undefined;
+  isLoading: boolean;
   namespace: string;
   navigate: NavigateFunction;
   onCreateDevfile: (name: string, description: string, content: string) => Promise<string>;
@@ -380,6 +378,9 @@ export default class DevfilesList extends React.PureComponent<Props, State> {
             </Content>
           </Content>
         </PageSection>
+        <div className={styles.progressIndicator}>
+          <ProgressIndicator isLoading={this.props.isLoading} />
+        </div>
         <PageSection
           padding={{ default: 'noPadding' }}
           variant={PageSectionVariants.default}

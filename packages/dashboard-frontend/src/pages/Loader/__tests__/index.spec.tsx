@@ -19,7 +19,7 @@ import { Store } from 'redux';
 
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import devfileApi from '@/services/devfileApi';
-import { LoaderTab } from '@/services/helpers/types';
+import { DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
@@ -135,6 +135,8 @@ function getComponent(
         searchParams={new URLSearchParams()}
         workspace={props.workspace}
         workspaceContent=""
+        workspaceStatus={DevWorkspaceStatus.STOPPED}
+        devWorkspaceSchema={undefined}
         onTabChange={mockOnTabChange}
         agentPodStatus={undefined}
         agentTerminalUrl={undefined}
@@ -144,8 +146,12 @@ function getComponent(
         agentName={undefined}
         agentDescription={undefined}
         isDarkTheme={false}
+        isLoading={false}
         onStartAgent={jest.fn()}
         onStopAgent={jest.fn()}
+        onStartWorkspace={jest.fn()}
+        onStopWorkspace={jest.fn()}
+        onSaveWorkspace={jest.fn()}
       />
     </Provider>
   );

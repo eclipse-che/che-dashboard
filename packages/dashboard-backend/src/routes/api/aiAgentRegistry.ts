@@ -14,10 +14,11 @@
 
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifyRequest } from 'fastify';
 
 import { baseApiPath } from '@/constants/config';
 import { getServiceAccountToken } from '@/routes/api/helpers/getServiceAccountToken';
+import { getToken } from '@/routes/api/helpers/getToken';
 import { getSchema } from '@/services/helpers';
 import { KubeConfigProvider } from '@/services/kubeclient/kubeConfigProvider';
 import { logger } from '@/utils/logger';
@@ -65,7 +66,8 @@ export function registerAiAgentRegistryRoute(instance: FastifyInstance) {
     server.get(
       `${baseApiPath}/ai-agent-registry`,
       Object.assign({}, rateLimitConfig, getSchema({ tags })),
-      async function (): Promise<api.IAiAgentRegistry> {
+      async function (request: FastifyRequest): Promise<api.IAiAgentRegistry> {
+        getToken(request);
         if (registryCache && Date.now() - registryCache.timestamp < REGISTRY_CACHE_TTL_MS) {
           return registryCache.data;
         }

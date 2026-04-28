@@ -11,17 +11,29 @@
  */
 
 .editorTools {
+  display: flex;
+  align-items: center;
   height: 33px;
 }
 
-.editorTools > * {
+.title {
+  overflow: hidden;
+
+  font-size: small;
+  font-weight: var(--pf-t--global--font--weight--body--bold);
+  color: var(--pf-t--global--text--color--subtle);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statusLabel {
+  margin-left: var(--pf-t--global--spacer--sm);
+}
+
+.editorTools > :not(.title, .statusLabel) {
   user-select: none;
-
-  float: right;
-
   height: inherit;
-  margin: 0;
-
+  margin-left: auto;
   font-size: small;
 }
 

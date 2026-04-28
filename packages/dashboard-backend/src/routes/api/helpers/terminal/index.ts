@@ -141,8 +141,8 @@ export function proxyToTerminal(
         proxyRes.on('data', (chunk: Buffer) => chunks.push(chunk));
         proxyRes.on('end', () => {
           let html = Buffer.concat(chunks).toString('utf-8');
-          html = html.replace(/href="\//g, `href="${proxyPrefix}/`);
-          html = html.replace(/src="\//g, `src="${proxyPrefix}/`);
+          html = html.replace(/href=(["'])\//g, `href=$1${proxyPrefix}/`);
+          html = html.replace(/src=(["'])\//g, `src=$1${proxyPrefix}/`);
           html = html.replace(
             '</head>',
             `${buildBridgeScript(darkThemeJson, lightThemeJson)}\n</head>`,

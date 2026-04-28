@@ -38,7 +38,8 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
-CHE_DASHBOARD_IMAGE="${CHE_DASHBOARD_IMAGE:-quay.io/local/che-dashboard:local}"
+IMAGE_TAG="local-$(date +%Y%m%d-%H%M%S)"
+CHE_DASHBOARD_IMAGE="${CHE_DASHBOARD_IMAGE:-quay.io/local/che-dashboard:${IMAGE_TAG}}"
 BUILD_PLATFORM="${BUILD_PLATFORM:-linux/arm64}"
 CRC_SSH_PORT="${CRC_SSH_PORT:-2222}"
 TAR_PATH="/tmp/che-dashboard.tar"

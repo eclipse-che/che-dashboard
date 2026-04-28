@@ -37,6 +37,7 @@ type Props = {
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   containerScc: string | undefined;
   title: string;
+  actions?: React.ReactNode;
 };
 
 class Header extends React.PureComponent<Props> {
@@ -46,7 +47,7 @@ class Header extends React.PureComponent<Props> {
   }
 
   public render(): React.ReactElement {
-    const { title, status, containerScc, hideBreadcrumbs } = this.props;
+    const { title, status, containerScc, hideBreadcrumbs, actions } = this.props;
 
     return (
       <PageSection>
@@ -71,6 +72,7 @@ class Header extends React.PureComponent<Props> {
               <FlexItem>
                 <WorkspaceStatusLabel status={status} containerScc={containerScc} />
               </FlexItem>
+              {actions && <FlexItem align={{ default: 'alignRight' }}>{actions}</FlexItem>}
             </Flex>
           </StackItem>
         </Stack>

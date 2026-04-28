@@ -27,7 +27,7 @@ describe('Navigation Main List', () => {
     renderComponent(store);
 
     const navLinks = screen.getAllByRole('link');
-    expect(navLinks.length).toEqual(3);
+    expect(navLinks.length).toEqual(2);
   });
 
   it('should have correct navigation item labels', () => {
@@ -37,8 +37,7 @@ describe('Navigation Main List', () => {
     const navLinks = screen.getAllByRole('link');
 
     expect(navLinks[0]).toHaveTextContent('Create Workspace');
-    expect(navLinks[1]).toHaveTextContent('Devfiles (0)');
-    expect(navLinks[2]).toHaveTextContent('Workspaces (0)');
+    expect(navLinks[1]).toHaveTextContent('Workspaces (0)');
   });
 
   it('should have correct navigation item workspaces quantity', () => {
