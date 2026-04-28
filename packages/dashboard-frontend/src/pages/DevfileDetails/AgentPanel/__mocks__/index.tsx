@@ -16,8 +16,10 @@ import { Props } from '@/pages/DevfileDetails/AgentPanel';
 
 const AgentPanel = (props: Props) => (
   <div data-testid="agent-panel">
+    <span data-testid="agent-is-terminal-expanded">{String(props.isTerminalExpanded)}</span>
     <button onClick={props.onStopAgent}>Stop</button>
     <button onClick={() => props.onStartAgent()}>Start Agent</button>
+    <button onClick={props.onTerminalExpandToggle}>Toggle Terminal</button>
   </div>
 );
 export default AgentPanel;
