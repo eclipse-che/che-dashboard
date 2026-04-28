@@ -83,7 +83,7 @@ export function generateDevfileId(content: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '')
     .slice(0, 20);
-  const suffix = randomBytes(4).toString('hex').slice(0, 7);
+  const suffix = randomBytes(4).toString('hex');
   return `${sanitized || 'devfile'}-${suffix}`;
 }
 

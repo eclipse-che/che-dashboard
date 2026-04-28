@@ -12,9 +12,13 @@
 
 .contentSection {
   overflow: hidden;
-  height: calc(100vh - 270px);
+  height: calc(100vh - 250px);
   padding-top: 0;
   background-color: inherit !important;
+}
+
+.contentSection > * > * {
+  padding: 0 20px;
 }
 
 .editorWrapper {

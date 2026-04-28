@@ -26,6 +26,8 @@ import { AlertItem } from '@/services/helpers/types';
 export interface Props {
   contentText: string;
   workspaceName: string;
+  title?: string;
+  statusLabel?: React.ReactNode;
   isExpanded: boolean;
   readOnly?: boolean;
   onToggleExpand: () => void;
@@ -93,11 +95,13 @@ export default class DevfileEditorTools extends React.PureComponent<Props, State
   }
 
   public render(): React.ReactElement {
-    const { workspaceName, isExpanded, readOnly, onToggleExpand } = this.props;
+    const { workspaceName, title, statusLabel, isExpanded, readOnly, onToggleExpand } = this.props;
     const { contentText, contentBlobUrl, copied } = this.state;
 
     return (
       <div className={styles.editorTools}>
+        {title && <span className={styles.title}>{title}</span>}
+        {statusLabel && <span className={styles.statusLabel}>{statusLabel}</span>}
         <Flex>
           {!readOnly && (
             <React.Fragment>

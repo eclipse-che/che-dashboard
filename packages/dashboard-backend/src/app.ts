@@ -34,6 +34,7 @@ import { registerDevfileSchemaRoute } from '@/routes/api/devfileSchema';
 import { registerDevWorkspaceClusterRoutes } from '@/routes/api/devworkspaceCluster';
 import { registerDevworkspaceResourcesRoute } from '@/routes/api/devworkspaceResources';
 import { registerDevworkspacesRoutes } from '@/routes/api/devworkspaces';
+import { registerDevWorkspaceSchemaRoute } from '@/routes/api/devworkspaceSchema';
 import { registerDevWorkspaceTemplates } from '@/routes/api/devworkspaceTemplates';
 import { registerDockerConfigRoutes } from '@/routes/api/dockerConfig';
 import { registerEditorsRoutes } from '@/routes/api/editors';
@@ -153,6 +154,8 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
     registerAgentsRoute(server),
 
     registerDevfileSchemaRoute(server),
+
+    registerDevWorkspaceSchemaRoute(server),
 
     registerAiAgentRegistryRoute(server),
   ]);

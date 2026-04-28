@@ -89,6 +89,7 @@ function renderComponent(overrides?: Partial<React.ComponentProps<typeof Devfile
       agentPodStatus={undefined}
       agentTerminalUrl={undefined}
       isDarkTheme={true}
+      isLoading={false}
       agentEnabled={true}
       {...overrides}
     />,

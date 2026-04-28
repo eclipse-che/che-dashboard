@@ -20,17 +20,17 @@ const selectLocalDevfilesState = (state: RootState) => state.localDevfiles;
 
 export const selectLocalDevfiles = createSelector(
   selectLocalDevfilesState,
-  state => state.devfiles,
+  state => state?.devfiles ?? [],
 );
 
 export const selectLocalDevfilesIsLoading = createSelector(
   selectLocalDevfilesState,
-  state => state.isLoading,
+  state => state?.isLoading ?? false,
 );
 
 export const selectLocalDevfilesError = createSelector(
   selectLocalDevfilesState,
-  state => state.error,
+  state => state?.error,
 );
 
 export const selectLocalDevfileById = (id: string) =>
@@ -41,10 +41,10 @@ export const selectLocalDevfileByName = (name: string) =>
 
 export const selectAgentTerminalUrl = createSelector(
   selectLocalDevfilesState,
-  state => state.agentTerminalUrl,
+  state => state?.agentTerminalUrl,
 );
 
 export const selectAgentPodStatuses = createSelector(
   selectLocalDevfilesState,
-  state => state.agentPodStatuses,
+  state => state?.agentPodStatuses ?? [],
 );

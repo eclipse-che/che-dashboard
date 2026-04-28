@@ -30,6 +30,16 @@ export const MAX_AGENT_PODS_PER_USER = 3;
 const TOKEN_SECRET_VOLUME = 'che-user-token';
 const TOKEN_MOUNT_PATH = '/var/run/secrets/che/token';
 
+const BLOCKED_ENV_NAMES = new Set([
+  'PATH',
+  'HOME',
+  'LD_PRELOAD',
+  'LD_LIBRARY_PATH',
+  'KUBERNETES_API_URL',
+  'CHE_USER_TOKEN_FILE',
+  'AGENT_NAMESPACE',
+]);
+
 export interface AgentPodStatus {
   agentId: string;
   name: string;
@@ -48,7 +58,10 @@ interface AgentConfig {
 }
 
 function normalizeAgentId(agentId: string): string {
-  return agentId.replace(/\//g, '-').replace(/[^a-z0-9-]/g, '');
+  return agentId
+    .toLowerCase()
+    .replace(/\//g, '-')
+    .replace(/[^a-z0-9-]/g, '');
 }
 
 function agentPodName(agentId: string): string {
@@ -251,7 +264,7 @@ export async function createAgentPod(
               },
             },
             env: [
-              ...config.env,
+              ...config.env.filter(e => !BLOCKED_ENV_NAMES.has(e.name)),
               { name: 'AGENT_NAMESPACE', value: namespace },
               { name: 'KUBERNETES_API_URL', value: kubeApiUrl },
               { name: 'CHE_USER_TOKEN_FILE', value: `${TOKEN_MOUNT_PATH}/token` },
@@ -264,6 +277,7 @@ export async function createAgentPod(
               runAsNonRoot: true,
               readOnlyRootFilesystem: true,
               capabilities: { drop: ['ALL'] },
+              seccompProfile: { type: 'RuntimeDefault' },
             },
           },
         ],
@@ -404,6 +418,67 @@ export async function cleanupExpiredAgentPods(token: string, namespace: string):
     }
   }
   return deleted;
+}
+
+const PERIODIC_CLEANUP_INTERVAL_MS = 5 * 60 * 1000;
+let periodicCleanupTimer: ReturnType<typeof setInterval> | undefined;
+
+export function startPeriodicAgentCleanup(getToken: () => string): void {
+  if (periodicCleanupTimer) return;
+
+  // Requires cluster-wide pod list RBAC for the service account (ClusterRole with pods list verb)
+  periodicCleanupTimer = setInterval(async () => {
+    try {
+      const token = getToken();
+      const coreV1Api = getCoreV1Api(token);
+      const allPods = await coreV1Api.listPodForAllNamespaces({
+        labelSelector: `${AGENT_LABEL_COMPONENT}=ai-agent`,
+      });
+
+      const now = Date.now();
+      const ttlMs = AGENT_TTL_MINUTES * 60 * 1000;
+
+      for (const pod of allPods.items) {
+        const heartbeat = pod.metadata?.annotations?.[HEARTBEAT_ANNOTATION];
+        if (!heartbeat) continue;
+
+        const lastBeat = new Date(heartbeat).getTime();
+        if (now - lastBeat > ttlMs) {
+          const name = pod.metadata!.name!;
+          const namespace = pod.metadata!.namespace!;
+          logger.info(
+            'Periodic cleanup: deleting expired agent pod %s/%s (last heartbeat: %s)',
+            namespace,
+            name,
+            heartbeat,
+          );
+          try {
+            await coreV1Api.deleteNamespacedPod({
+              name,
+              namespace,
+              body: { gracePeriodSeconds: 5 },
+            });
+          } catch (e) {
+            logger.error(e, 'Periodic cleanup: failed to delete pod %s/%s', namespace, name);
+          }
+        }
+      }
+    } catch (e) {
+      logger.warn(e, 'Periodic agent cleanup failed');
+    }
+  }, PERIODIC_CLEANUP_INTERVAL_MS);
+
+  logger.info(
+    'Started periodic agent cleanup (interval: %d min)',
+    PERIODIC_CLEANUP_INTERVAL_MS / 60_000,
+  );
+}
+
+export function stopPeriodicAgentCleanup(): void {
+  if (periodicCleanupTimer) {
+    clearInterval(periodicCleanupTimer);
+    periodicCleanupTimer = undefined;
+  }
 }
 
 export function getAgentServiceUrl(

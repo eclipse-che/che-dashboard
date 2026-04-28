@@ -11,7 +11,7 @@
  */
 
 import { helpers } from '@eclipse-che/common';
-import { dump } from 'js-yaml';
+import { dump, load } from 'js-yaml';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Location, NavigateFunction, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -19,12 +19,15 @@ import { Location, NavigateFunction, useLocation, useNavigate, useParams } from 
 import { useTheme } from '@/contexts/ThemeContext';
 import { LoaderPage } from '@/pages/Loader';
 import { WorkspaceRouteParams } from '@/Routes';
+import devfileApi from '@/services/devfileApi';
 import { findTargetWorkspace } from '@/services/helpers/factoryFlow/findTargetWorkspace';
 import { getLoaderMode } from '@/services/helpers/factoryFlow/getLoaderMode';
-import { LoaderTab } from '@/services/helpers/types';
+import { DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
 import { Workspace } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
 import { selectAiAgentRegistryEnabled, selectDefaultAgent } from '@/store/AiAgentRegistry';
+import { selectDevWorkspaceSchema } from '@/store/DevWorkspaceSchema';
+import { devWorkspaceSchemaActionCreators } from '@/store/DevWorkspaceSchema';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
 import {
   actionCreators,
@@ -33,7 +36,8 @@ import {
   clearAgentTerminalUrl,
 } from '@/store/LocalDevfiles';
 import { selectAgentPodStatuses, selectAgentTerminalUrl } from '@/store/LocalDevfiles/selectors';
-import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
+import { actionCreators as workspaceActionCreators } from '@/store/Workspaces/actions';
+import { selectAllWorkspaces, selectIsLoading } from '@/store/Workspaces/selectors';
 
 type RouteParams = Partial<WorkspaceRouteParams> | undefined;
 
@@ -75,6 +79,7 @@ class LoaderContainer extends React.Component<Props, State> {
 
   componentDidMount() {
     this.initAgentInstanceId();
+    this.props.requestDevWorkspaceSchema();
     window.addEventListener('beforeunload', this.handleBeforeUnload);
   }
 
@@ -88,9 +93,6 @@ class LoaderContainer extends React.Component<Props, State> {
     window.removeEventListener('beforeunload', this.handleBeforeUnload);
     this.clearPollTimer();
     this.clearHeartbeat();
-    if (this.agentInstanceId && this.agentPodStatus) {
-      this.props.stopAgent(this.agentInstanceId);
-    }
     this.props.clearAgentTerminalUrl();
   }
 
@@ -208,6 +210,28 @@ class LoaderContainer extends React.Component<Props, State> {
     poll();
   }
 
+  private handleStartWorkspace = () => {
+    const workspace = this.findTargetWorkspace(this.props);
+    if (workspace) {
+      this.props.startWorkspace(workspace);
+    }
+  };
+
+  private handleStopWorkspace = () => {
+    const workspace = this.findTargetWorkspace(this.props);
+    if (workspace) {
+      this.props.stopWorkspace(workspace);
+    }
+  };
+
+  private handleSaveWorkspace = async (content: string): Promise<void> => {
+    const workspace = this.findTargetWorkspace(this.props);
+    if (!workspace) return;
+    const parsed = load(content) as devfileApi.DevWorkspace;
+    const updated = { ...workspace, ref: parsed } as Workspace;
+    await this.props.updateWorkspace(updated);
+  };
+
   private handleStartAgent = async () => {
     const { defaultAgent } = this.props;
     if (defaultAgent && this.agentInstanceId) {
@@ -256,12 +280,24 @@ class LoaderContainer extends React.Component<Props, State> {
   }
 
   render(): React.ReactElement {
-    const { location, navigate, isDarkTheme, agentTerminalUrl, agentEnabled, defaultAgent } =
-      this.props;
+    const {
+      location,
+      navigate,
+      isDarkTheme,
+      isLoading,
+      agentTerminalUrl,
+      agentEnabled,
+      defaultAgent,
+      devWorkspaceSchema,
+    } = this.props;
     const { tabParam, searchParams } = this.state;
 
     const workspace = this.findTargetWorkspace(this.props);
     const workspaceContent = workspace ? dump(workspace.ref, { lineWidth: -1 }) : '';
+    const workspaceStatus = (workspace?.status as DevWorkspaceStatus) || DevWorkspaceStatus.STOPPED;
+    const agentPodStatus = this.agentPodStatus;
+    const isAgentTransitioning =
+      agentPodStatus?.phase === AgentPodPhase.PENDING && !agentPodStatus?.ready;
 
     return (
       <LoaderPage
@@ -271,8 +307,11 @@ class LoaderContainer extends React.Component<Props, State> {
         tabParam={tabParam}
         workspace={workspace}
         workspaceContent={workspaceContent}
+        workspaceStatus={workspaceStatus}
+        devWorkspaceSchema={devWorkspaceSchema}
+        isLoading={isLoading || isAgentTransitioning}
         onTabChange={tab => this.handleTabChange(tab)}
-        agentPodStatus={this.agentPodStatus}
+        agentPodStatus={agentPodStatus}
         agentTerminalUrl={agentTerminalUrl}
         agentEnabled={agentEnabled}
         agentInitCommand={defaultAgent?.initCommand}
@@ -282,6 +321,9 @@ class LoaderContainer extends React.Component<Props, State> {
         isDarkTheme={isDarkTheme}
         onStartAgent={this.handleStartAgent}
         onStopAgent={this.handleStopAgent}
+        onStartWorkspace={this.handleStartWorkspace}
+        onStopWorkspace={this.handleStopWorkspace}
+        onSaveWorkspace={this.handleSaveWorkspace}
       />
     );
   }
@@ -307,10 +349,12 @@ function ContainerWrapper(props: MappedProps) {
 const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   namespace: selectDefaultNamespace(state).name,
+  isLoading: selectIsLoading(state),
   agentPodStatuses: selectAgentPodStatuses(state),
   agentTerminalUrl: selectAgentTerminalUrl(state),
   agentEnabled: selectAiAgentRegistryEnabled(state),
   defaultAgent: selectDefaultAgent(state),
+  devWorkspaceSchema: selectDevWorkspaceSchema(state),
 });
 
 const mapDispatchToProps = {
@@ -319,6 +363,10 @@ const mapDispatchToProps = {
   fetchAgentTerminalUrl: actionCreators.fetchAgentTerminalUrl,
   sendHeartbeat: actionCreators.sendHeartbeat,
   clearAgentTerminalUrl,
+  startWorkspace: workspaceActionCreators.startWorkspace,
+  stopWorkspace: workspaceActionCreators.stopWorkspace,
+  updateWorkspace: workspaceActionCreators.updateWorkspace,
+  requestDevWorkspaceSchema: devWorkspaceSchemaActionCreators.requestDevWorkspaceSchema,
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps, null, {

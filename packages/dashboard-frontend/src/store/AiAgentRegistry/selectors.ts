@@ -18,20 +18,27 @@ import { RootState } from '@/store';
 
 const selectState = (state: RootState) => state.aiAgentRegistry;
 
-export const selectAiAgents = createSelector(selectState, state => state.agents);
+export const selectAiAgents = createSelector(selectState, state => state?.agents ?? []);
 
-export const selectDefaultAgentId = createSelector(selectState, state => state.defaultAgentId);
+export const selectDefaultAgentId = createSelector(
+  selectState,
+  state => state?.defaultAgentId ?? '',
+);
 
 export const selectDefaultAgent = createSelector(selectState, state => {
-  if (state.agents.length === 0) return undefined;
-  return state.agents.find(a => a.id === state.defaultAgentId) || state.agents[0];
+  const agents = state?.agents ?? [];
+  if (agents.length === 0) return undefined;
+  return agents.find(a => a.id === state?.defaultAgentId) || agents[0];
 });
 
 export const selectAiAgentRegistryEnabled = createSelector(
   selectState,
-  state => state.agents.length > 0,
+  state => (state?.agents?.length ?? 0) > 0,
 );
 
-export const selectAiAgentRegistryIsLoading = createSelector(selectState, state => state.isLoading);
+export const selectAiAgentRegistryIsLoading = createSelector(
+  selectState,
+  state => state?.isLoading ?? false,
+);
 
-export const selectAiAgentRegistryError = createSelector(selectState, state => state.error);
+export const selectAiAgentRegistryError = createSelector(selectState, state => state?.error);

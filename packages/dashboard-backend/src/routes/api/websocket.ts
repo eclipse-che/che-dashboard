@@ -29,9 +29,16 @@ export function registerWebsocket(instance: FastifyInstance) {
 }
 
 export function webSocketHandler(ws: WebSocket, request: FastifyRequest): void {
+  let token: string;
+  try {
+    token = getToken(request);
+  } catch {
+    ws.close(1008, 'Authentication required');
+    return;
+  }
+
   const subscriptionManager = new SubscriptionManager(ws);
 
-  const token = getToken(request);
   const { eventApi, devworkspaceApi, logsApi, podApi, configMapWatchApi } =
     getDevWorkspaceClient(token);
 

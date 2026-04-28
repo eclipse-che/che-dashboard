@@ -69,6 +69,7 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
     this.fetchTerminalUrlIfNeeded();
     this.props.subscribeToConfigMapChanges();
     this.configMapSubscribed = true;
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
   }
 
   componentDidUpdate() {
@@ -77,6 +78,7 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
   }
 
   componentWillUnmount() {
+    window.removeEventListener('beforeunload', this.handleBeforeUnload);
     this.clearPollTimer();
     this.clearHeartbeat();
     if (this.agentInstanceId && this.agentPodStatus) {
@@ -209,6 +211,18 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
     }
   };
 
+  private handleBeforeUnload = () => {
+    if (!this.agentInstanceId || !this.agentPodStatus) {
+      return;
+    }
+    const namespace = this.props.namespace;
+    const agentId = encodeURIComponent(this.agentInstanceId);
+    fetch(`/dashboard/api/namespace/${namespace}/agent/${agentId}`, {
+      method: 'DELETE',
+      keepalive: true,
+    });
+  };
+
   render() {
     const {
       devfiles,
@@ -223,6 +237,8 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
       defaultAgent,
     } = this.props;
     const agentPodStatus = this.agentPodStatus;
+    const isAgentTransitioning =
+      agentPodStatus?.phase === AgentPodPhase.PENDING && !agentPodStatus?.ready;
 
     const devfile = devfiles.find(d => d.id === devfileId);
 
@@ -239,6 +255,7 @@ export class DevfileDetailsContainer extends React.PureComponent<Props> {
         devfileSchema={devfileSchema}
         namespace={namespace}
         navigate={navigate}
+        isLoading={isLoading || isAgentTransitioning}
         onSave={(id, content) => this.props.saveDevfile(id, content)}
         onRefresh={() => this.props.requestDevfiles()}
         onDelete={id => {

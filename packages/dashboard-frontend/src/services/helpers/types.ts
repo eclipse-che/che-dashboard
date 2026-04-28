@@ -109,7 +109,7 @@ export enum LoaderTab {
   Progress = 'Progress',
   Logs = 'Logs',
   Events = 'Events',
-  AiAgent = 'AI Agent',
+  DevWorkspace = 'DevWorkspace',
 }
 
 export enum WorkspaceDetailsTab {
