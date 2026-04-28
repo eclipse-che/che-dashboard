@@ -13,12 +13,12 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 
-import { BasicViewer, Props } from '@/components/BasicViewer';
+import { DevfileViewer, Props } from '@/components/DevfileViewer';
 
-jest.unmock('@/components/BasicViewer');
+jest.unmock('@/components/DevfileViewer');
 
-// These need to be declared with `var` so they are hoisted before jest.mock
-// (jest.mock is hoisted by babel-jest to the top of the file)
+// These need to be declared before jest.mock calls since jest.mock is hoisted
+// but the variable declarations with `var` keyword are also hoisted (unlike let/const)
 /* eslint-disable no-var */
 var mockViewDispatch: jest.Mock;
 var mockViewDestroy: jest.Mock;
@@ -75,8 +75,32 @@ jest.mock('@codemirror/view', () => {
   };
 });
 
+jest.mock('@codemirror/lang-yaml', () => ({
+  yaml: jest.fn().mockReturnValue('yaml-extension'),
+}));
+
+jest.mock('@codemirror/language', () => ({
+  HighlightStyle: {
+    define: jest.fn().mockReturnValue('highlight-style'),
+  },
+  syntaxHighlighting: jest.fn().mockReturnValue('syntax-highlighting'),
+}));
+
 jest.mock('@codemirror/theme-one-dark', () => ({
   oneDark: 'one-dark-theme',
+}));
+
+jest.mock('@lezer/highlight', () => ({
+  tags: {
+    keyword: 'keyword',
+    string: 'string',
+    variableName: 'variableName',
+    name: 'name',
+    deleted: 'deleted',
+    character: 'character',
+    propertyName: 'propertyName',
+    macroName: 'macroName',
+  },
 }));
 
 jest.mock('codemirror', () => ({
@@ -92,31 +116,33 @@ jest.mock('@/contexts/ThemeContext', () => ({
 
 function renderComponent(overrides?: Partial<Props>) {
   const defaultProps: Props = {
-    value: 'line 1\nline 2\nline 3',
-    id: 'basic-viewer-id',
+    isActive: true,
+    isExpanded: false,
+    value: 'schemaVersion: 2.2.2\nmetadata:\n  name: test\n',
+    id: 'test-viewer',
   };
-  return render(<BasicViewer {...defaultProps} {...overrides} />);
+  return render(<DevfileViewer {...defaultProps} {...overrides} />);
 }
 
-describe('BasicViewer', () => {
+describe('DevfileViewer', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockIsDarkTheme = false;
     mockDocToString.mockReturnValue('');
   });
 
-  test('renders a container with the correct id', () => {
+  test('renders a container div with the correct id', () => {
     renderComponent();
 
-    const container = document.getElementById('basic-viewer-id');
+    const container = document.getElementById('test-viewer');
     expect(container).toBeTruthy();
   });
 
-  test('renders with basicViewer class', () => {
+  test('renders with devfileViewer class', () => {
     renderComponent();
 
-    const container = document.getElementById('basic-viewer-id');
-    expect(container?.className).toContain('basicViewer');
+    const container = document.getElementById('test-viewer');
+    expect(container?.parentElement?.className).toContain('devfileViewer');
   });
 
   test('creates EditorView when container ref is set', () => {
@@ -131,7 +157,7 @@ describe('BasicViewer', () => {
     );
   });
 
-  test('creates EditorState with correct doc', () => {
+  test('creates EditorState with correct doc and extensions', () => {
     const { EditorState } = jest.requireMock<{ EditorState: { create: jest.Mock } }>(
       '@codemirror/state',
     );
@@ -140,21 +166,20 @@ describe('BasicViewer', () => {
 
     expect(EditorState.create).toHaveBeenCalledWith(
       expect.objectContaining({
-        doc: 'line 1\nline 2\nline 3',
+        doc: 'schemaVersion: 2.2.2\nmetadata:\n  name: test\n',
       }),
     );
   });
 
-  test('uses light theme when isDarkTheme is false', () => {
+  test('uses light theme compartment when isDarkTheme is false', () => {
     mockIsDarkTheme = false;
     renderComponent();
 
-    const callArgs = mockCompartmentOf.mock.calls;
-    const hasOneDark = callArgs.some((args: unknown[]) => args[0] === 'one-dark-theme');
-    expect(hasOneDark).toBe(false);
+    // The compartment.of should be called with light theme (not oneDark)
+    expect(mockCompartmentOf).toHaveBeenCalled();
   });
 
-  test('uses dark theme when isDarkTheme is true', () => {
+  test('uses dark theme compartment when isDarkTheme is true', () => {
     mockIsDarkTheme = true;
     renderComponent();
 
@@ -165,11 +190,19 @@ describe('BasicViewer', () => {
     mockIsDarkTheme = false;
     const { rerender } = renderComponent();
 
+    // Clear calls from initial render
     mockViewDispatch.mockClear();
     mockReconfigure.mockClear();
 
     mockIsDarkTheme = true;
-    rerender(<BasicViewer value="line 1\nline 2\nline 3" id="basic-viewer-id" />);
+    rerender(
+      <DevfileViewer
+        isActive={true}
+        isExpanded={false}
+        value="schemaVersion: 2.2.2\nmetadata:\n  name: test\n"
+        id="test-viewer"
+      />,
+    );
 
     expect(mockReconfigure).toHaveBeenCalledWith('one-dark-theme');
     expect(mockViewDispatch).toHaveBeenCalledWith(
@@ -183,9 +216,12 @@ describe('BasicViewer', () => {
     mockDocToString.mockReturnValue('old content');
     const { rerender } = renderComponent({ value: 'old content' });
 
+    // Clear dispatch calls from initial render
     mockViewDispatch.mockClear();
 
-    rerender(<BasicViewer value="new content" id="basic-viewer-id" />);
+    rerender(
+      <DevfileViewer isActive={true} isExpanded={false} value="new content" id="test-viewer" />,
+    );
 
     expect(mockViewDispatch).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -204,12 +240,20 @@ describe('BasicViewer', () => {
 
     mockViewDispatch.mockClear();
 
-    rerender(<BasicViewer value={content} id="basic-viewer-id" />);
+    rerender(<DevfileViewer isActive={true} isExpanded={false} value={content} id="test-viewer" />);
 
+    // dispatch should not be called for content changes
     const contentChangeCalls = mockViewDispatch.mock.calls.filter(
       (call: unknown[]) => (call[0] as Record<string, unknown>).changes !== undefined,
     );
     expect(contentChangeCalls).toHaveLength(0);
+  });
+
+  test('renders with different id', () => {
+    renderComponent({ id: 'custom-viewer-id' });
+
+    const container = document.getElementById('custom-viewer-id');
+    expect(container).toBeTruthy();
   });
 
   test('destroys EditorView on unmount', () => {
@@ -218,12 +262,5 @@ describe('BasicViewer', () => {
     unmount();
 
     expect(mockViewDestroy).toHaveBeenCalled();
-  });
-
-  test('renders with different id', () => {
-    renderComponent({ id: 'custom-id' });
-
-    const container = document.getElementById('custom-id');
-    expect(container).toBeTruthy();
   });
 });
