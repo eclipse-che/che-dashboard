@@ -16,7 +16,6 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 
-import Fallback from '@/components/Fallback';
 import DevfilesList from '@/pages/DevfilesList';
 import { RootState } from '@/store';
 import { selectEmptyWorkspaceUrl } from '@/store/DevfileRegistries/selectors';
@@ -41,14 +40,11 @@ export class DevfilesListContainer extends React.PureComponent<Props> {
     const { devfiles, isLoading, error, defaultNamespace, defaultDevfileContent, navigate } =
       this.props;
 
-    if (isLoading) {
-      return Fallback;
-    }
-
     return (
       <DevfilesList
         devfiles={devfiles}
         error={error}
+        isLoading={isLoading}
         defaultDevfileContent={defaultDevfileContent}
         namespace={defaultNamespace.name}
         navigate={navigate}

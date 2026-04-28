@@ -10,9 +10,19 @@
 *   Red Hat, Inc. - initial API and implementation
 */
 
+.progressIndicator {
+  position: relative;
+  top: -5px;
+}
+
 .loaderPage {
   overflow: hidden;
   padding-right: 0;
   padding-bottom: 0;
   padding-left: 0;
+}
+
+.tabContentPadded {
+  padding-inline: calc(var(--pf-v6-c-page__main-section--PaddingInlineStart))
+    calc(var(--pf-v6-c-page__main-section--PaddingInlineEnd));
 }

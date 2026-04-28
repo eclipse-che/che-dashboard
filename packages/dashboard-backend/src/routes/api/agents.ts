@@ -30,7 +30,9 @@ import {
   getAgentPodStatus,
   getAgentServiceAccess,
   heartbeatAgentPod,
+  startPeriodicAgentCleanup,
 } from '@/routes/api/helpers/agentPod';
+import { getServiceAccountToken } from '@/routes/api/helpers/getServiceAccountToken';
 import { getToken } from '@/routes/api/helpers/getToken';
 import { proxyToTerminal } from '@/routes/api/helpers/terminal';
 import { getSchema } from '@/services/helpers';
@@ -38,6 +40,7 @@ import { logger } from '@/utils/logger';
 
 const tags = ['Agent Pods'];
 
+const DEFAULT_AGENT_ID = 'anthropic/claude-code';
 const MIN_TERMINAL_PORT = 1024;
 const MAX_TERMINAL_PORT = 65535;
 
@@ -52,6 +55,7 @@ function validateTerminalPort(port: number): number {
 
 const terminalAccessCache = new Map<string, { access: AgentServiceAccess; timestamp: number }>();
 const TERMINAL_URL_CACHE_TTL = 30 * 1000;
+const MAX_TERMINAL_CACHE_SIZE = 100;
 
 function terminalCacheKey(namespace: string, agentId: string): string {
   return `${namespace}/${agentId}`;
@@ -78,6 +82,13 @@ function setCachedTerminalAccess(
 ): void {
   const key = terminalCacheKey(namespace, agentId);
   terminalAccessCache.set(key, { access, timestamp: Date.now() });
+
+  if (terminalAccessCache.size > MAX_TERMINAL_CACHE_SIZE) {
+    const firstKey = terminalAccessCache.keys().next().value;
+    if (firstKey !== undefined) {
+      terminalAccessCache.delete(firstKey);
+    }
+  }
 }
 
 function clearCachedTerminalAccess(namespace: string, agentId: string): void {
@@ -153,6 +164,8 @@ const agentCreateBodySchema = {
 };
 
 export function registerAgentsRoute(instance: FastifyInstance) {
+  startPeriodicAgentCleanup(getServiceAccountToken);
+
   instance.register(async server => {
     // Create agent pod + service
     server.post(
@@ -305,7 +318,7 @@ export function registerAgentsRoute(instance: FastifyInstance) {
           throw new Error('Authentication required');
         }
         const query = request.query as Record<string, string | undefined>;
-        const agentId = query.agentId || 'anthropic/claude-code';
+        const agentId = query.agentId || DEFAULT_AGENT_ID;
         const terminalPort = query.terminalPort
           ? validateTerminalPort(parseInt(query.terminalPort, 10))
           : 8080;
@@ -375,7 +388,7 @@ export function registerAgentsRoute(instance: FastifyInstance) {
         }
         const { namespace } = request.params as restParams.INamespacedParams;
         const requestUrl = new URL(request.url, 'http://localhost');
-        const agentId = requestUrl.searchParams.get('agentId') || 'anthropic/claude-code';
+        const agentId = requestUrl.searchParams.get('agentId') || DEFAULT_AGENT_ID;
         const cachedAccess = getCachedTerminalAccess(namespace, agentId);
         if (!cachedAccess) {
           socket.close(1011, 'Terminal service URL not found');
@@ -383,17 +396,30 @@ export function registerAgentsRoute(instance: FastifyInstance) {
         }
 
         const CLUSTER_SVC_PATTERN = /^https?:\/\/[a-z0-9-]+\.[a-z0-9-]+\.svc:\d+$/;
-        if (!isLocalRun() && !CLUSTER_SVC_PATTERN.test(cachedAccess.baseUrl)) {
+        const LOCAL_PROXY_PATTERN =
+          /^https?:\/\/[^/]+\/api\/v1\/namespaces\/[a-z0-9-]+\/services\/[a-z0-9-]+:\d+\/proxy$/;
+        const urlIsValid = isLocalRun()
+          ? LOCAL_PROXY_PATTERN.test(cachedAccess.baseUrl)
+          : CLUSTER_SVC_PATTERN.test(cachedAccess.baseUrl);
+        if (!urlIsValid) {
           logger.warn(
-            'Rejected terminal URL not matching cluster service pattern: %s',
+            'Rejected terminal URL not matching expected pattern: %s',
             cachedAccess.baseUrl,
           );
           socket.close(1011, 'Invalid terminal service URL');
           return;
         }
 
-        const queryString = new URL(request.url, 'http://localhost').search;
-        const wsUrl = `${cachedAccess.baseUrl.replace(/^http/, 'ws')}/ws${queryString}`;
+        const allowedWsParams = new URLSearchParams();
+        const incomingParams = new URL(request.url, 'http://localhost').searchParams;
+        for (const key of ['agentId', 'arg', 'terminalPort'] as const) {
+          const val = incomingParams.get(key);
+          if (val !== null) {
+            allowedWsParams.set(key, val);
+          }
+        }
+        const sanitizedQuery = allowedWsParams.toString();
+        const wsUrl = `${cachedAccess.baseUrl.replace(/^http/, 'ws')}/ws${sanitizedQuery ? `?${sanitizedQuery}` : ''}`;
         const wsOptions: WebSocket.ClientOptions = {};
         if (cachedAccess.httpsOptions) {
           wsOptions.rejectUnauthorized = cachedAccess.httpsOptions.rejectUnauthorized;
@@ -455,7 +481,7 @@ export function registerAgentsRoute(instance: FastifyInstance) {
       }
       const { namespace } = request.params as restParams.INamespacedParams;
       const requestUrl = new URL(request.url, 'http://localhost');
-      const agentId = requestUrl.searchParams.get('agentId') || 'anthropic/claude-code';
+      const agentId = requestUrl.searchParams.get('agentId') || DEFAULT_AGENT_ID;
       const terminalPort = requestUrl.searchParams.get('terminalPort')
         ? validateTerminalPort(parseInt(requestUrl.searchParams.get('terminalPort') as string, 10))
         : 8080;

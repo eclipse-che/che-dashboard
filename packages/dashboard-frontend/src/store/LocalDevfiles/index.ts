@@ -282,25 +282,35 @@ export const actionCreators = {
   saveDevfile:
     (id: string, content: string): AppThunk =>
     async (dispatch, getState) => {
-      const namespace = selectDefaultNamespace(getState()).name;
-      const response = await fetch(`${DEVFILES_API_BASE}/${namespace}/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content }),
-      });
-      if (!response.ok) {
-        throw new Error(`Failed to save devfile: ${response.statusText}`);
+      dispatch(requestStart());
+      try {
+        const namespace = selectDefaultNamespace(getState()).name;
+        const response = await fetch(`${DEVFILES_API_BASE}/${namespace}/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content }),
+        });
+        if (!response.ok) {
+          throw new Error(`Failed to save devfile: ${response.statusText}`);
+        }
+        const devfiles = getState().localDevfiles.devfiles.map(d =>
+          d.id === id
+            ? {
+                ...d,
+                name: extractName(content),
+                description: extractDescription(content),
+                content,
+                projectNames: extractProjectNames(content),
+                lastModified: new Date().toISOString(),
+              }
+            : d,
+        );
+        dispatch(requestSuccess(devfiles));
+      } catch (e) {
+        const message = e instanceof Error ? e.message : 'Failed to save devfile';
+        dispatch(requestError(message));
+        throw e;
       }
-      dispatch(
-        updateDevfileAction({
-          id,
-          name: extractName(content),
-          description: extractDescription(content),
-          content,
-          projectNames: extractProjectNames(content),
-          lastModified: new Date().toISOString(),
-        }),
-      );
     },
 
   deleteDevfile:
@@ -373,9 +383,13 @@ export const actionCreators = {
       dispatch(setAgentTerminalUrl(undefined));
       dispatch(removeAgentPodStatus(agentId));
 
-      await fetch(`${AGENTS_API_BASE}/${namespace}/agent/${encodeURIComponent(agentId)}`, {
-        method: 'DELETE',
-      });
+      try {
+        await fetch(`${AGENTS_API_BASE}/${namespace}/agent/${encodeURIComponent(agentId)}`, {
+          method: 'DELETE',
+        });
+      } catch {
+        // Best-effort cleanup — pod will be garbage-collected by TTL if delete fails
+      }
     },
 
   fetchAgentStatus:

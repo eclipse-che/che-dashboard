@@ -27,6 +27,11 @@
   white-space: nowrap;
 }
 
+.progressIndicator {
+  position: relative;
+  top: -5px;
+}
+
 .cellId {
   overflow: hidden;
 

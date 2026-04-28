@@ -19,6 +19,7 @@ import { clusterConfigReducer } from '@/store/ClusterConfig';
 import { clusterInfoReducer } from '@/store/ClusterInfo';
 import { devfileRegistriesReducer } from '@/store/DevfileRegistries';
 import { devfileSchemaReducer } from '@/store/DevfileSchema';
+import { devWorkspaceSchemaReducer } from '@/store/DevWorkspaceSchema';
 import { devWorkspacesClusterReducer } from '@/store/DevWorkspacesCluster';
 import { dockerConfigReducer } from '@/store/DockerConfig';
 import { eventsReducer } from '@/store/Events';
@@ -51,6 +52,7 @@ export const rootReducer = {
   clusterInfo: clusterInfoReducer,
   devfileRegistries: devfileRegistriesReducer,
   devfileSchema: devfileSchemaReducer,
+  devWorkspaceSchema: devWorkspaceSchemaReducer,
   devWorkspaces: devWorkspacesReducer,
   devWorkspacesCluster: devWorkspacesClusterReducer,
   dockerConfig: dockerConfigReducer,

@@ -10,10 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-.editorContainer {
-  height: calc(100vh - 350px);
-}
-
-.toolbar {
-  margin-top: var(--pf-t--global--spacer--lg);
-}
+export const DEVFILE_FALLBACK = `schemaVersion: 2.2.0
+metadata:
+  generateName: empty
+`;

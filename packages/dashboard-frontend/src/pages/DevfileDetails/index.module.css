@@ -10,6 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+.progressIndicator {
+  position: relative;
+  top: -5px;
+}
+
 .contentSection {
   overflow: hidden;
   height: calc(100vh - 235px);

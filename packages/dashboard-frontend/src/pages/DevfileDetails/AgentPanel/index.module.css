@@ -22,7 +22,7 @@
   justify-content: center;
 
   min-height: 225px;
-  margin-top: var(--pf-t--global--spacer--sm);
+  margin-top: 33px;
   margin-left: var(--pf-t--global--spacer--md);
 
   background-color: inherit;
@@ -44,6 +44,10 @@
   color: var(--pf-t--global--text--color--subtle);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.statusLabel {
+  font-size: small;
 }
 
 .failedAlert {
