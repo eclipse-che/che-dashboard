@@ -11,11 +11,18 @@
  */
 
 .backupStatusBadge {
+  font-weight: bold;
   text-transform: capitalize;
 }
 
-.size-md {
-  font-size: var(--pf-v5-global--FontSize--sm);
+html.pf-v6-theme-dark .pf-m-green {
+  --pf-v6-c-label--BackgroundColor: var(--pf-t--color--green--10);
+  --pf-v6-c-label--Color: var(--pf-t--color--green--40);
+}
+
+html.pf-v6-theme-dark .pf-m-orange {
+  --pf-v6-c-label--BackgroundColor: var(--pf-t--color--orange--40);
+  --pf-v6-c-label--Color: var(--pf-t--color--orange--10);
 }
 
 .rotate {

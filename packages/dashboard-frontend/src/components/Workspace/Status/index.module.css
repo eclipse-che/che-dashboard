@@ -1,17 +1,26 @@
 .statusLabel {
+  font-weight: bold;
   text-transform: capitalize;
 }
 
-:global(html.pf-v6-theme-dark) .pf-m-green.statusLabel {
+html.pf-v6-theme-dark .pf-m-green.statusLabel {
   --pf-v6-c-label--BackgroundColor: var(--pf-t--color--green--10);
+  --pf-v6-c-label--Color: var(--pf-t--color--green--40);
 }
 
-:global(html.pf-v6-theme-dark) .pf-m-orange.statusLabel {
+html.pf-v6-theme-dark .pf-m-orange.statusLabel {
   --pf-v6-c-label--BackgroundColor: var(--pf-t--color--orange--40);
+  --pf-v6-c-label--Color: var(--pf-t--color--orange--10);
 }
 
-:global(html.pf-v6-theme-dark) .pf-m-info.statusLabel {
+html.pf-v6-theme-dark .pf-m-blue.statusLabel {
   --pf-v6-c-label--BackgroundColor: var(--pf-t--color--blue--10);
+  --pf-v6-c-label--Color: var(--pf-t--color--blue--30);
+}
+
+html.pf-v6-theme-dark .pf-m-info.statusLabel {
+  --pf-v6-c-label--BackgroundColor: var(--pf-t--color--blue--10);
+  --pf-v6-c-label--Color: var(--pf-t--color--blue--30);
 }
 
 .statusIndicator {

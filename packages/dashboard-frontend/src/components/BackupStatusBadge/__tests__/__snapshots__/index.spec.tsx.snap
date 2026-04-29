@@ -25,7 +25,7 @@ exports[`BackupStatusBadge icon rendering should render CheckCircleIcon for succ
   >
     <span
       aria-label="Backup status: Success"
-      className="pf-v6-c-label pf-m-green pf-m-filled backupStatusBadge size-md"
+      className="pf-v6-c-label pf-m-green pf-m-filled backupStatusBadge"
       data-testid="backup-status-badge"
     >
       <span
@@ -93,7 +93,7 @@ exports[`BackupStatusBadge icon rendering should render ExclamationTriangleIcon 
   >
     <span
       aria-label="Backup status: Failed"
-      className="pf-v6-c-label pf-m-orange pf-m-filled backupStatusBadge size-md"
+      className="pf-v6-c-label pf-m-orange pf-m-filled backupStatusBadge"
       data-testid="backup-status-badge"
     >
       <span
@@ -164,7 +164,7 @@ exports[`BackupStatusBadge icon rendering should render InfoCircleIcon for never
   >
     <span
       aria-label="Backup status: Never"
-      className="pf-v6-c-label pf-m-filled backupStatusBadge size-md"
+      className="pf-v6-c-label pf-m-filled backupStatusBadge"
       data-testid="backup-status-badge"
     >
       <span
@@ -232,7 +232,7 @@ exports[`BackupStatusBadge icon rendering should render animated InProgressIcon 
   >
     <span
       aria-label="Backup status: In Progress"
-      className="pf-v6-c-label pf-m-blue pf-m-filled backupStatusBadge size-md"
+      className="pf-v6-c-label pf-m-blue pf-m-filled backupStatusBadge"
       data-testid="backup-status-badge"
     >
       <span
@@ -304,7 +304,7 @@ exports[`BackupStatusBadge snapshots failed status 1`] = `
   >
     <span
       aria-label="Backup status: Failed"
-      className="pf-v6-c-label pf-m-orange pf-m-filled backupStatusBadge size-md"
+      className="pf-v6-c-label pf-m-orange pf-m-filled backupStatusBadge"
       data-testid="backup-status-badge"
     >
       <span
@@ -372,7 +372,7 @@ exports[`BackupStatusBadge snapshots in-progress status 1`] = `
   >
     <span
       aria-label="Backup status: In Progress"
-      className="pf-v6-c-label pf-m-blue pf-m-filled backupStatusBadge size-md"
+      className="pf-v6-c-label pf-m-blue pf-m-filled backupStatusBadge"
       data-testid="backup-status-badge"
     >
       <span
@@ -444,7 +444,7 @@ exports[`BackupStatusBadge snapshots never status 1`] = `
   >
     <span
       aria-label="Backup status: Never"
-      className="pf-v6-c-label pf-m-filled backupStatusBadge size-md"
+      className="pf-v6-c-label pf-m-filled backupStatusBadge"
       data-testid="backup-status-badge"
     >
       <span
@@ -515,7 +515,7 @@ exports[`BackupStatusBadge snapshots success status 1`] = `
   >
     <span
       aria-label="Backup status: Success"
-      className="pf-v6-c-label pf-m-green pf-m-filled backupStatusBadge size-md"
+      className="pf-v6-c-label pf-m-green pf-m-filled backupStatusBadge"
       data-testid="backup-status-badge"
     >
       <span
