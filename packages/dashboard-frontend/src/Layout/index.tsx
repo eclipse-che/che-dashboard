@@ -153,7 +153,17 @@ const LayoutComponent: React.FC<Props> = props => {
         masthead={masthead}
         sidebar={sidebar}
         isManagedSidebar={isSidebarVisible}
-        skipToContent={<SkipToContent href="#main-content">Skip to content</SkipToContent>}
+        skipToContent={
+          <SkipToContent
+            href="#main-content"
+            onClick={(e: React.MouseEvent) => {
+              e.preventDefault();
+              document.getElementById('main-content')?.focus();
+            }}
+          >
+            Skip to content
+          </SkipToContent>
+        }
         mainContainerId="main-content"
       >
         <ErrorBoundary onError={error => testBackends(error)}>
