@@ -14,16 +14,10 @@
 
 import { BACKUP_IMAGE_URL_PATTERN } from '@eclipse-che/common';
 import { Form, ValidatedOptions } from '@patternfly/react-core';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { ImageUrlField } from '@/pages/RestoreFromBackup/ExternalRegistryForm/ImageUrlField';
-import {
-  sanitizeImageUrl,
-  sanitizeWorkspaceName,
-  validateWorkspaceName,
-  ValidationState,
-} from '@/pages/RestoreFromBackup/helpers';
-import { useRestoreFormValidation } from '@/pages/RestoreFromBackup/useRestoreFormValidation';
+import { sanitizeImageUrl, ValidationState } from '@/pages/RestoreFromBackup/helpers';
 import { WorkspaceNameField } from '@/pages/RestoreFromBackup/WorkspaceNameField';
 
 export type ExternalRegistryRestoreData = {
@@ -82,58 +76,29 @@ export const ExternalRegistryRestoreForm: React.FC<Props> = ({
   const initialUrl = initialImageUrl || '';
   const [imageUrl, setImageUrl] = useState(initialUrl);
 
-  const initialWorkspaceName = detectWorkspaceName(initialUrl);
-  const {
-    workspaceName,
-    workspaceNameValidated,
-    workspaceNameError,
-    workspaceNameWarning,
-    setWorkspaceName,
-    handleWorkspaceNameChange,
-  } = useRestoreFormValidation(existingWorkspaceNames, existingBackupNames);
+  const [workspaceName, setWorkspaceName] = useState('');
+  const [isWorkspaceNameValid, setIsWorkspaceNameValid] = useState(false);
 
-  // Initialize workspace name from initialImageUrl on first render
-  React.useEffect(() => {
-    if (initialWorkspaceName) {
-      setWorkspaceName(initialWorkspaceName);
-    }
-    const { validationState } = computeImageUrlValidation(initialUrl);
-    const wsIsValid = initialWorkspaceName.length > 0;
-    const isValid = validationState === 'valid' && wsIsValid;
-    onValidationChange(
-      isValid,
-      isValid ? { workspaceName: initialWorkspaceName, imageUrl: initialUrl } : null,
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Compute URL validation state during render (derived from imageUrl)
   const { validationState, imageUrlValidated, imageUrlError } = computeImageUrlValidation(imageUrl);
+
+  const detectedWorkspaceName = validationState === 'valid' ? detectWorkspaceName(imageUrl) : '';
+
+  // Notify parent whenever form validity changes
+  useEffect(() => {
+    const isValid = validationState === 'valid' && isWorkspaceNameValid;
+    onValidationChange(isValid, isValid ? { workspaceName, imageUrl } : null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imageUrl, workspaceName, isWorkspaceNameValid, validationState]);
 
   const handleImageUrlChange = (value: string) => {
     const sanitized = sanitizeImageUrl(value);
     setImageUrl(sanitized);
-
-    const { validationState: newValidationState } = computeImageUrlValidation(sanitized);
-    const newWorkspaceName = newValidationState === 'valid' ? detectWorkspaceName(sanitized) : '';
-    setWorkspaceName(newWorkspaceName);
-
-    const isValid = newValidationState === 'valid' && newWorkspaceName.length > 0;
-    onValidationChange(
-      isValid,
-      isValid ? { workspaceName: newWorkspaceName, imageUrl: sanitized } : null,
-    );
   };
 
-  const wrappedHandleWorkspaceNameChange = (value: string) => {
-    handleWorkspaceNameChange(value);
-    const sanitized = sanitizeWorkspaceName(value);
-    const { validated } = validateWorkspaceName(sanitized);
-    const wsIsValid =
-      validated === ValidatedOptions.success || validated === ValidatedOptions.warning;
-    const isValid = validationState === 'valid' && wsIsValid;
-    onValidationChange(isValid, isValid ? { workspaceName: sanitized, imageUrl } : null);
-  };
+  const handleWorkspaceNameChange = useCallback((name: string, isValid: boolean) => {
+    setWorkspaceName(name);
+    setIsWorkspaceNameValid(isValid);
+  }, []);
 
   return (
     <Form isHorizontal={true} onSubmit={e => e.preventDefault()}>
@@ -147,11 +112,10 @@ export const ExternalRegistryRestoreForm: React.FC<Props> = ({
       <WorkspaceNameField
         fieldId="restore-workspace-name-cross"
         helperText="Name for the restored workspace. Auto-detected from the backup image."
-        value={workspaceName}
-        validated={workspaceNameValidated}
-        error={workspaceNameError}
-        warning={workspaceNameWarning}
-        onChange={wrappedHandleWorkspaceNameChange}
+        value={detectedWorkspaceName}
+        existingWorkspaceNames={existingWorkspaceNames}
+        existingBackupNames={existingBackupNames}
+        onChange={handleWorkspaceNameChange}
         actionButton={actionButton}
       />
     </Form>

@@ -50,3 +50,41 @@ export function validateWorkspaceName(name: string): {
   }
   return { validated: ValidatedOptions.success, error: '' };
 }
+
+export function validateWorkspaceNameWithConflicts(
+  name: string,
+  existingWorkspaceNames: Set<string>,
+  existingBackupNames?: Set<string>,
+): {
+  validated: ValidatedOptions;
+  error: string;
+  warning: string;
+  isValid: boolean;
+} {
+  const { validated, error } = validateWorkspaceName(name);
+
+  if (validated === ValidatedOptions.success && existingWorkspaceNames.has(name)) {
+    return {
+      validated: ValidatedOptions.error,
+      error: 'A workspace with this name already exists.',
+      warning: '',
+      isValid: false,
+    };
+  }
+
+  if (validated === ValidatedOptions.success && existingBackupNames?.has(name)) {
+    return {
+      validated: ValidatedOptions.warning,
+      error: '',
+      warning: `A backup named "${name}" already exists. The new workspace will be associated with that backup.`,
+      isValid: true,
+    };
+  }
+
+  return {
+    validated,
+    error,
+    warning: '',
+    isValid: validated === ValidatedOptions.success,
+  };
+}

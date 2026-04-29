@@ -109,6 +109,18 @@ describe('ExternalRegistryRestoreForm', () => {
 
     expect(mockOnValidationChange).toHaveBeenCalledWith(false, null);
   });
+
+  test('should NOT reset workspace name when backup image URL changes after manual edit', async () => {
+    renderComponent();
+
+    const nameInput = screen.getByLabelText('Workspace name');
+    await userEvent.type(nameInput, 'my-custom-name');
+
+    const urlInput = screen.getByLabelText('Backup image URL');
+    await userEvent.type(urlInput, 'registry.example.com/ns/workspace:latest');
+
+    expect(nameInput).toHaveValue('my-custom-name');
+  });
 });
 
 type ComponentOptions = {
