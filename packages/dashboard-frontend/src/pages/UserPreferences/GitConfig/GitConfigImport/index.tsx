@@ -20,6 +20,7 @@ import React from 'react';
 export type Props = {
   content: string | undefined;
   validated: ValidatedOptions;
+  errorMessage: string | undefined;
   onChange: (content: string, isUpload: boolean) => void;
 };
 

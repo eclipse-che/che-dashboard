@@ -53,6 +53,15 @@ describe('GitConfigUpload', () => {
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 
+  test('snapshot with error message', () => {
+    const snapshot = createSnapshot(
+      ValidatedOptions.error,
+      undefined,
+      'User email must be a valid email address (e.g., user@example.com).',
+    );
+    expect(snapshot.toJSON()).toMatchSnapshot();
+  });
+
   test('File uploader controls', () => {
     renderComponent(ValidatedOptions.default);
 
@@ -149,6 +158,17 @@ describe('GitConfigUpload', () => {
   });
 });
 
-function getComponent(validated: ValidatedOptions, content?: string): React.ReactElement {
-  return <GitConfigImport content={content} validated={validated} onChange={mockOnChange} />;
+function getComponent(
+  validated: ValidatedOptions,
+  content?: string,
+  errorMessage?: string,
+): React.ReactElement {
+  return (
+    <GitConfigImport
+      content={content}
+      validated={validated}
+      errorMessage={errorMessage}
+      onChange={mockOnChange}
+    />
+  );
 }
