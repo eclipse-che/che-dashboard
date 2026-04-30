@@ -15,6 +15,7 @@ import { History, Location, UnregisterCallback } from 'history';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import NavigationAgentList from '@/Layout/Navigation/AgentList';
 import NavigationMainList from '@/Layout/Navigation/MainList';
 import NavigationRecentList from '@/Layout/Navigation/RecentList';
 import { CREATE_NEW_IF_EXIST_SWITCH_ID } from '@/pages/GetStarted/SamplesList/Toolbar/CreateNewIfExistSwitch';
@@ -23,6 +24,7 @@ import { ROUTE } from '@/Routes';
 import { buildGettingStartedLocation, buildWorkspacesLocation } from '@/services/helpers/location';
 import { Workspace } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
+import { selectAiAgentRegistryEnabled } from '@/store/AiAgentRegistry';
 import { selectAllWorkspaces, selectRecentWorkspaces } from '@/store/Workspaces/selectors';
 
 export interface NavigationItemObject {
@@ -151,16 +153,27 @@ export class Navigation extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { recentWorkspaces } = this.props;
+    const { recentWorkspaces, agentRegistryEnabled } = this.props;
     const { activeLocation } = this.state;
 
     return (
       <Nav
         aria-label="Navigation"
         onSelect={(event, selected) => this.handleNavSelect(event, selected)}
+        style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
       >
-        <NavigationMainList activePath={activeLocation.pathname} />
-        <NavigationRecentList activePath={activeLocation.pathname} workspaces={recentWorkspaces} />
+        <div style={{ flex: 1, overflow: 'auto' }}>
+          <NavigationMainList activePath={activeLocation.pathname} />
+          <NavigationRecentList
+            activePath={activeLocation.pathname}
+            workspaces={recentWorkspaces}
+          />
+        </div>
+        {agentRegistryEnabled && (
+          <div style={{ position: 'absolute', bottom: '100px', left: 0, right: 0 }}>
+            <NavigationAgentList activePath={activeLocation.pathname} />
+          </div>
+        )}
       </Nav>
     );
   }
@@ -169,6 +182,7 @@ export class Navigation extends React.PureComponent<Props, State> {
 const mapStateToProps = (state: RootState) => ({
   recentWorkspaces: selectRecentWorkspaces(state),
   allWorkspaces: selectAllWorkspaces(state),
+  agentRegistryEnabled: selectAiAgentRegistryEnabled(state),
 });
 const connector = connect(mapStateToProps);
 

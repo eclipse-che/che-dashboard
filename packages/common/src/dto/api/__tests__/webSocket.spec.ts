@@ -13,6 +13,7 @@
 import { webSocket } from '..';
 import {
   Channel,
+  isConfigMapMessage,
   isDevWorkspaceMessage,
   isEventMessage,
   isLogsMessage,
@@ -263,6 +264,40 @@ describe('api.webSocket typeguards', () => {
     expect(isWebSocketEventData(undefined)).toBeFalsy();
     expect(isWebSocketEventData({})).toBeFalsy();
     expect(isWebSocketEventData('foo')).toBeFalsy();
+  });
+
+  test('isConfigMapMessage', () => {
+    expect(
+      isConfigMapMessage({
+        eventPhase: webSocket.EventPhase.ADDED,
+        configMap: {},
+      }),
+    ).toBeTruthy();
+    expect(
+      isConfigMapMessage({
+        eventPhase: webSocket.EventPhase.DELETED,
+        configMap: {},
+      }),
+    ).toBeTruthy();
+    expect(
+      isConfigMapMessage({
+        eventPhase: webSocket.EventPhase.MODIFIED,
+        configMap: {},
+      }),
+    ).toBeTruthy();
+
+    expect(isConfigMapMessage(undefined)).toBeFalsy();
+    expect(isConfigMapMessage({})).toBeFalsy();
+    expect(
+      isConfigMapMessage({
+        eventPhase: webSocket.EventPhase.ADDED,
+      }),
+    ).toBeFalsy();
+    expect(
+      isConfigMapMessage({
+        configMap: {},
+      }),
+    ).toBeFalsy();
   });
 
   test('isLogsMessage', () => {

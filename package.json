@@ -35,7 +35,8 @@
     "format:fix": "yarn workspaces foreach -A run format:fix",
     "lint:check": "yarn workspaces foreach -A run lint:check",
     "lint:fix": "yarn workspaces foreach -A run lint:fix",
-    "deploy:patch": "$PWD/run/patch.sh"
+    "deploy:patch": "$PWD/run/patch.sh",
+    "local:patch": "$PWD/run/local-patch.sh"
   },
   "devDependencies": {
     "@eclipse-che/license-tool": "^2.0.0"

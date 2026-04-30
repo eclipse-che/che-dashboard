@@ -42,10 +42,9 @@ else
   # Detect container engine
   CONTAINER_ENGINE=$("${PWD}/scripts/container_tool.sh" detect)
 
-  echo "[INFO] Building multi-arch image '${CHE_DASHBOARD_IMAGE}' for platforms: ${BUILD_PLATFORMS}..."
+  echo "[INFO] Building image '${CHE_DASHBOARD_IMAGE}' for platforms: ${BUILD_PLATFORMS}..."
 
   if [[ "$CONTAINER_ENGINE" == "docker" ]]; then
-    # Use docker buildx for multi-arch build
     docker buildx build \
       --platform "${BUILD_PLATFORMS}" \
       --push \
@@ -53,9 +52,8 @@ else
       -t "${CHE_DASHBOARD_IMAGE}" \
       .
   else
-    # Fallback to podman build (single arch) with push
-    echo "[WARN] Podman detected. Building for current platform only."
     podman build \
+      --platform "${BUILD_PLATFORMS}" \
       -f build/dockerfiles/skaffold.Dockerfile \
       -t "${CHE_DASHBOARD_IMAGE}" \
       .

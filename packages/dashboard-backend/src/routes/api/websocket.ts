@@ -29,10 +29,18 @@ export function registerWebsocket(instance: FastifyInstance) {
 }
 
 export function webSocketHandler(ws: WebSocket, request: FastifyRequest): void {
+  let token: string;
+  try {
+    token = getToken(request);
+  } catch {
+    ws.close(1008, 'Authentication required');
+    return;
+  }
+
   const subscriptionManager = new SubscriptionManager(ws);
 
-  const token = getToken(request);
-  const { eventApi, devworkspaceApi, logsApi, podApi } = getDevWorkspaceClient(token);
+  const { eventApi, devworkspaceApi, logsApi, podApi, configMapWatchApi } =
+    getDevWorkspaceClient(token);
 
   const channel = api.webSocket.Channel;
   const watchers = {
@@ -40,6 +48,7 @@ export function webSocketHandler(ws: WebSocket, request: FastifyRequest): void {
     [channel.EVENT]: new ObjectsWatcher(eventApi, channel.EVENT),
     [channel.LOGS]: new ObjectsWatcher(logsApi, channel.LOGS),
     [channel.POD]: new ObjectsWatcher(podApi, channel.POD),
+    [channel.CONFIGMAP]: new ObjectsWatcher(configMapWatchApi, channel.CONFIGMAP),
   };
 
   function notifyWatchStartError(
@@ -67,7 +76,8 @@ export function webSocketHandler(ws: WebSocket, request: FastifyRequest): void {
     switch (message.channel) {
       case channel.DEV_WORKSPACE:
       case channel.EVENT:
-      case channel.POD: {
+      case channel.POD:
+      case channel.CONFIGMAP: {
         const watcher = watchers[message.channel];
         watcher.attach(subscriptionManager);
         try {
@@ -97,8 +107,8 @@ export function webSocketHandler(ws: WebSocket, request: FastifyRequest): void {
     watcher.stop();
   }
   function handleUnsubscribeAll() {
-    [channel.DEV_WORKSPACE, channel.EVENT, channel.LOGS, channel.POD].forEach(channel =>
-      handleChannelUnsubscribe(channel),
+    [channel.DEV_WORKSPACE, channel.EVENT, channel.LOGS, channel.POD, channel.CONFIGMAP].forEach(
+      channel => handleChannelUnsubscribe(channel),
     );
   }
 

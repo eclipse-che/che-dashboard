@@ -52,6 +52,7 @@ export const COMPONENT_UPDATE_POLICY = 'che.eclipse.org/components-update-policy
 export const REGISTRY_URL = 'che.eclipse.org/plugin-registry-url';
 
 export const DEVWORKSPACE_LABEL_METADATA_NAME = 'kubernetes.io/metadata.name';
+export const DEVWORKSPACE_LABEL_RESOURCE_TYPE = 'che.eclipse.org/type';
 
 export const DEVWORKSPACE_NEXT_START_ANNOTATION = 'che.eclipse.org/next-start-cfg';
 export const DEVWORKSPACE_DEVFILE_SOURCE = 'che.eclipse.org/devfile-source';

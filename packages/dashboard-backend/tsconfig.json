@@ -23,6 +23,7 @@
   ],
   "include": [
     "src",
-    "src/devfileSchemas/**/*.json"
+    "src/devfileSchemas/**/*.json",
+    "src/devworkspaceSchemas/**/*.json"
   ],
 }
