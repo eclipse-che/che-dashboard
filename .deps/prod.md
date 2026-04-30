@@ -27,7 +27,7 @@
 | `@fastify/rate-limit@10.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/rate-limit/10.3.0) |
 | `@fastify/reply-from@12.6.2` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/reply-from/12.6.2) |
 | `@fastify/send@4.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/send/4.1.0) |
-| `@fastify/static@9.0.0` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/static/9.0.0) |
+| `@fastify/static@9.1.3` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/static/9.1.3) |
 | `@fastify/swagger-ui@5.2.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/swagger-ui/5.2.5) |
 | `@fastify/swagger@9.7.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/swagger/9.7.0) |
 | `@fastify/websocket@11.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/websocket/11.2.0) |
