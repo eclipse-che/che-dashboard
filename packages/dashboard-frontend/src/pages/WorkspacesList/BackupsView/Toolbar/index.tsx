@@ -122,7 +122,6 @@ export class BackupsListToolbar extends React.PureComponent<Props> {
             <Content
               id="next-scheduled-backup-label"
               component={ContentVariants.small}
-              aria-label="Next scheduled backup time"
               data-testid="next-scheduled-backup"
             >
               {scheduleLabel}
