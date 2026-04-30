@@ -55,7 +55,7 @@
   border-radius: 3px;
 }
 
-.pf-v6-theme-dark .errorMessage {
+:global(.pf-v6-theme-dark) .errorMessage {
   color: var(--pf-t--global--text--color--regular);
   background-color: rgb(185 80 80);
 }

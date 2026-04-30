@@ -15,16 +15,6 @@
   text-transform: capitalize;
 }
 
-html.pf-v6-theme-dark .pf-m-green {
-  --pf-v6-c-label--BackgroundColor: var(--pf-t--color--green--10);
-  --pf-v6-c-label--Color: var(--pf-t--color--green--40);
-}
-
-html.pf-v6-theme-dark .pf-m-orange {
-  --pf-v6-c-label--BackgroundColor: var(--pf-t--color--orange--40);
-  --pf-v6-c-label--Color: var(--pf-t--color--orange--10);
-}
-
 .rotate {
   animation-name: spinnerRotate;
   animation-duration: 1s;
