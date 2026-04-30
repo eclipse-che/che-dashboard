@@ -111,7 +111,7 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
   private getInfoModalContent(): React.ReactNode {
     const { hasEphemeral, hasPerUser, hasPerWorkspace } = this.getExistingTypes();
 
-    const ephemeralTypeDescr = hasEphemeral ? (
+    const ephemeralTypeDesc = hasEphemeral ? (
       <Content component="p">
         <b>Ephemeral Storage</b> allows for faster I/O but may have limited storage and is not
         persistent.
@@ -119,7 +119,7 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
     ) : (
       ''
     );
-    const perUserTypeDescr = hasPerUser ? (
+    const perUserTypeDesc = hasPerUser ? (
       <Content component="p">
         <b>Per-user Storage</b> one PVC is provisioned per namespace. All of the workspace&apos;s
         storage (volume mounts) mounted in it on subpaths according to devworkspace ID.
@@ -127,7 +127,7 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
     ) : (
       ''
     );
-    const perWorkspaceTypeDescr = hasPerWorkspace ? (
+    const perWorkspaceTypeDesc = hasPerWorkspace ? (
       <Content component="p">
         <b>Per-workspace Storage</b> a PVC is provisioned for each workspace within the namespace.
         All of the workspace&apos;s storage (volume mounts) are mounted on subpaths within the
@@ -141,9 +141,9 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
 
     return (
       <Content>
-        {perUserTypeDescr}
-        {perWorkspaceTypeDescr}
-        {ephemeralTypeDescr}
+        {perUserTypeDesc}
+        {perWorkspaceTypeDesc}
+        {ephemeralTypeDesc}
         <Content component="p">
           <a rel="noreferrer" target="_blank" href={href}>
             Open documentation page
@@ -285,6 +285,7 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
         fieldId="storage-type"
         labelHelp={
           <FormGroupLabelHelp
+            className={overviewStyles.labelHelp}
             aria-label="More info for storage type"
             onClick={() => this.handleInfoToggle()}
           />

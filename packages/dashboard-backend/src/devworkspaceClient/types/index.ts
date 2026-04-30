@@ -514,6 +514,8 @@ export interface IDevWorkspaceClient {
   sshKeysApi: IShhKeysApi;
   workspacePreferencesApi: IWorkspacePreferencesApi;
   editorsApi: IEditorsApi;
+  aiProviderKeyApi: IAiProviderKeyApi;
+  aiRegistryApi: IAiRegistryApi;
 }
 
 export interface IDevWorkspaceSingletonClient {
@@ -576,6 +578,38 @@ export interface IShhKeysApi {
   list(namespace: string): Promise<Array<api.SshKey>>;
   add(namespace: string, sshKey: api.SshKey): Promise<api.SshKey>;
   delete(namespace: string, name: string): Promise<void>;
+}
+
+export interface IAiRegistryApi {
+  /**
+   * Reads the AI tool registry from a ConfigMap in the cluster.
+   * Returns providers, tools, and default provider selections.
+   */
+  get(): Promise<api.IAiRegistry>;
+}
+
+export interface IAiProviderKeyApi {
+  /**
+   * Returns sanitized provider IDs that have a dashboard-managed key Secret
+   * in the namespace (identified by the che.eclipse.org/ai-provider-id label).
+   */
+  listProviderIdsWithKey(namespace: string): Promise<string[]>;
+
+  /**
+   * Creates or replaces the API key Secret for the given provider in the given namespace.
+   * The envVarName becomes both the Secret data key and the injected env var name.
+   */
+  createOrReplace(
+    namespace: string,
+    providerId: string,
+    apiKey: string,
+    envVarName: string,
+  ): Promise<void>;
+
+  /**
+   * Deletes the API key Secret for the given provider from the given namespace.
+   */
+  delete(namespace: string, providerId: string): Promise<void>;
 }
 
 export interface IBackupApi {

@@ -60,7 +60,9 @@ async function startApp(): Promise<void> {
   }
 
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./service-worker.js');
+    navigator.serviceWorker.register('./service-worker.js').catch(e => {
+      console.warn('Service worker registration failed:', e);
+    });
   }
 
   root.render(

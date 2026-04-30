@@ -115,6 +115,11 @@ describe('Workspace creation time', () => {
           return responseWithDelay([], REQUEST_TIME_200);
         case 'http://localhost/dashboard/api/airgap-sample':
           return responseWithDelay([], REQUEST_TIME_200);
+        case '/dashboard/api/ai-registry':
+          return responseWithDelay(
+            { providers: [], tools: [], defaultAiProviders: [] },
+            REQUEST_TIME_200,
+          );
         case 'http://localhost/dashboard/devfile-registry/devfiles/empty.yaml':
           return responseWithDelay('', REQUEST_TIME_200);
         default:

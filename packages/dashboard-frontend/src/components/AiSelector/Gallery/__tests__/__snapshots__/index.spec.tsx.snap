@@ -1,0 +1,134 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`AiProviderGallery snapshot 1`] = `
+<div
+  className="pf-v6-l-gallery pf-m-gutter"
+  style={
+    {
+      "--pf-v6-l-gallery--GridTemplateColumns--max": "280px",
+      "--pf-v6-l-gallery--GridTemplateColumns--min": "210px",
+    }
+  }
+>
+  <div
+    className="pf-v6-c-card pf-m-compact pf-m-selectable pf-m-clickable"
+    data-ouia-component-id="OUIA-Generated-Card-1"
+    data-ouia-component-type="PF6/Card"
+    data-ouia-safe={true}
+    id="ai-provider-card-anthropic-claude"
+    onClick={[Function]}
+    onKeyDown={[Function]}
+    tabIndex={0}
+  >
+    <div
+      className="pf-v6-c-card__header"
+    >
+      <div
+        className="pf-v6-c-card__actions pf-m-no-offset"
+      >
+        <div
+          className="pf-v6-c-card__selectable-actions"
+        >
+          <div
+            className="pf-v6-c-check pf-m-standalone"
+          >
+            <input
+              aria-invalid={false}
+              aria-labelledby="ai-provider-card-anthropic-claude"
+              checked={false}
+              className="pf-v6-c-check__input pf-v6-screen-reader"
+              data-ouia-component-id="OUIA-Generated-Checkbox-1"
+              data-ouia-component-type="PF6/Checkbox"
+              data-ouia-safe={true}
+              disabled={false}
+              id="ai-provider-input-anthropic-claude"
+              name="ai-provider-selector"
+              onChange={[Function]}
+              required={false}
+              type="checkbox"
+            />
+            <label
+              className="pf-v6-c-check__label"
+              htmlFor="ai-provider-input-anthropic-claude"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        className="pf-v6-c-card__header-main"
+      >
+        <div
+          className="pf-v6-c-card__title"
+        >
+          <div
+            className="pf-v6-c-card__title-text"
+            id="ai-provider-card-anthropic-claude-title"
+          >
+            Claude
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    className="pf-v6-c-card pf-m-compact pf-m-selectable pf-m-clickable"
+    data-ouia-component-id="OUIA-Generated-Card-2"
+    data-ouia-component-type="PF6/Card"
+    data-ouia-safe={true}
+    id="ai-provider-card-google-gemini"
+    onClick={[Function]}
+    onKeyDown={[Function]}
+    tabIndex={0}
+  >
+    <div
+      className="pf-v6-c-card__header"
+    >
+      <div
+        className="pf-v6-c-card__actions pf-m-no-offset"
+      >
+        <div
+          className="pf-v6-c-card__selectable-actions"
+        >
+          <div
+            className="pf-v6-c-check pf-m-standalone"
+          >
+            <input
+              aria-invalid={false}
+              aria-labelledby="ai-provider-card-google-gemini"
+              checked={false}
+              className="pf-v6-c-check__input pf-v6-screen-reader"
+              data-ouia-component-id="OUIA-Generated-Checkbox-2"
+              data-ouia-component-type="PF6/Checkbox"
+              data-ouia-safe={true}
+              disabled={false}
+              id="ai-provider-input-google-gemini"
+              name="ai-provider-selector"
+              onChange={[Function]}
+              required={false}
+              type="checkbox"
+            />
+            <label
+              className="pf-v6-c-check__label"
+              htmlFor="ai-provider-input-google-gemini"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        className="pf-v6-c-card__header-main"
+      >
+        <div
+          className="pf-v6-c-card__title"
+        >
+          <div
+            className="pf-v6-c-card__title-text"
+            id="ai-provider-card-google-gemini-title"
+          >
+            Gemini
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
