@@ -20,7 +20,7 @@
 | `@fastify/error@4.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/error/4.2.0) |
 | `@fastify/fast-json-stringify-compiler@5.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/fast-json-stringify-compiler/5.0.3) |
 | `@fastify/forwarded@3.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/forwarded/3.0.1) |
-| `@fastify/http-proxy@11.4.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/http-proxy/11.4.4) |
+| `@fastify/http-proxy@11.4.4` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/http-proxy/11.4.4) |
 | `@fastify/merge-json-schemas@0.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/merge-json-schemas/0.2.1) |
 | `@fastify/oauth2@8.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/oauth2/8.2.0) |
 | `@fastify/proxy-addr@5.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/proxy-addr/5.1.0) |
@@ -74,7 +74,7 @@
 | `atomic-sleep@1.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/atomic-sleep/1.0.0) |
 | `attr-accept@2.2.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/attr-accept/2.2.5) |
 | `avvio@9.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/avvio/9.2.0) |
-| `axios@1.15.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios/1.15.0) |
+| `axios@1.15.2` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios/1.15.2) |
 | `blueimp-md5@2.19.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/blueimp-md5/2.19.0) |
 | `brorand@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/brorand/1.1.0) |
 | `browserify-aes@1.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/browserify-aes/1.2.0) |
