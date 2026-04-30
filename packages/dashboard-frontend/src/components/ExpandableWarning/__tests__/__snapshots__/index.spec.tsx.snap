@@ -80,7 +80,7 @@ exports[`Expandable warning items should correctly render the component 1`] = `
             className="pf-v6-c-code-block__code"
           >
             <small
-              className="pf-v6-c-content--small hideOverflow"
+              className="pf-v6-c-content--small hideOverflow errorMessage"
               data-ouia-component-id="OUIA-Generated-Content-4"
               data-ouia-component-type="PF6/Content"
               data-ouia-safe={true}
