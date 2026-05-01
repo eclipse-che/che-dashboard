@@ -284,4 +284,22 @@ describe('Workspaces Actions', () => {
       expect(actions[0]).toEqual(workspaceUIDClearAction());
     });
   });
+
+  describe('refreshKubeconfigWorkspace', () => {
+    it('should dispatch refreshKubeconfigWorkspace action', async () => {
+      const mockRefreshKubeconfigWorkspace = jest.fn();
+      jest.spyOn(devWorkspacesActionCreators, 'refreshKubeconfigWorkspace').mockImplementationOnce(
+        (...args: unknown[]) =>
+          async () =>
+            mockRefreshKubeconfigWorkspace(...args),
+      );
+
+      store.dispatch(actionCreators.refreshKubeconfigWorkspace(mockWorkspace));
+
+      const actions = store.getActions();
+      expect(actions).toHaveLength(0);
+
+      expect(mockRefreshKubeconfigWorkspace).toHaveBeenCalledWith(mockWorkspace.ref);
+    });
+  });
 });

@@ -188,6 +188,7 @@ class WorkspaceActionsDropdownComponent extends React.PureComponent<Props, State
       getItem(WorkspaceAction.RESTART_WORKSPACE, isTerminating || isStopped),
       getItem(WorkspaceAction.STOP_WORKSPACE, isTerminating || isStopped),
       getItem(WorkspaceAction.DELETE_WORKSPACE, isTerminating),
+      getItem(WorkspaceAction.REFRESH_KUBECONFIG, isTerminating || isStopped),
     ];
 
     // The 'Workspace Details' action is available only with kebab-toggle because this actions widget is used on the workspace details page without kebab-toggle

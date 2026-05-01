@@ -177,6 +177,11 @@ class WorkspaceActionsProvider extends React.Component<Props, State> {
           await this.props.restartWorkspace(workspace);
         }
         break;
+      case WorkspaceAction.REFRESH_KUBECONFIG:
+        {
+          await this.props.refreshKubeconfigWorkspace(workspace);
+        }
+        break;
       default:
         console.warn(`Unhandled action type: "${action}".`);
     }

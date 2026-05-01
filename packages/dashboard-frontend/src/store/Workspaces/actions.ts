@@ -58,6 +58,12 @@ export const actionCreators = {
       await dispatch(devWorkspacesActionCreators.restartWorkspace(workspace.ref));
     },
 
+  refreshKubeconfigWorkspace:
+    (workspace: Workspace): AppThunk =>
+    async dispatch => {
+      await dispatch(devWorkspacesActionCreators.refreshKubeconfigWorkspace(workspace.ref));
+    },
+
   stopWorkspace:
     (workspace: Workspace): AppThunk =>
     async dispatch => {
