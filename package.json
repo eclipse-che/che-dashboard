@@ -46,7 +46,7 @@
     "@adobe/css-tools": "^4.3.2",
     "@hapi/hoek": "^10.0.1",
     "ajv@^6.0.0": "6.14.0",
-    "axios": "^1.15.0",
+    "axios": "^1.15.2",
     "bn.js": "^5.2.0",
     "braces": "^3.0.3",
     "cipher-base": "^1.0.6",
@@ -72,6 +72,7 @@
     "yaml": "^2.8.3",
     "picomatch": "^2.3.2",
     "undici": "^7.24.5",
-    "svgo": "^3.3.3"
+    "svgo": "^3.3.3",
+    "follow-redirects": "^1.16.0"
   }
 }

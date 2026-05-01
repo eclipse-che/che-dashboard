@@ -13,6 +13,7 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `@fastify/reply-from@12.6.2` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/reply-from/12.6.2) |
 | `@fastify/static@9.0.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/static/9.0.0) |
 | `@isaacs/brace-expansion@5.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@isaacs/brace-expansion/5.0.1) |
+| `axios@1.15.2` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios/1.15.2) |
 | `any-signal@4.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/any-signal/4.2.0) |
 | `cronstrue@3.13.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cronstrue/3.13.0) |
 | `fast-uri@2.4.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-uri/2.4.0) |
