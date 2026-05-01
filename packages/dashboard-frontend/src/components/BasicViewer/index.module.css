@@ -21,7 +21,3 @@
   height: 100%;
   border: 1px solid var(--pf-t--global--border--color--default);
 }
-
-html:not(.pf-v6-theme-dark) .basicViewer > div > div > div > div {
-  opacity: 0.8;
-}

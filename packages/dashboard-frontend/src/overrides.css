@@ -37,8 +37,29 @@ html.pf-v6-theme-dark .outer-fill {
   padding: 0 !important;
 }
 
-span[class*='label-required'] {
-  color: var(--pf-t--global--color--status--danger--default);
+html:not(.pf-v6-theme-dark) span[class*='label-required'] {
+  color: var(--pf-t--color--red-orange--60);
+}
+
+html.pf-v6-theme-dark span[class*='label-required'] {
+  color: var(--pf-t--color--red-orange--30);
+}
+
+/* Dark theme label contrast overrides */
+html.pf-v6-theme-dark .pf-m-green {
+  --pf-v6-c-label--BackgroundColor: var(--pf-t--color--green--10);
+  --pf-v6-c-label--Color: var(--pf-t--color--green--40);
+}
+
+html.pf-v6-theme-dark .pf-m-orange {
+  --pf-v6-c-label--BackgroundColor: var(--pf-t--color--orange--40);
+  --pf-v6-c-label--Color: var(--pf-t--color--orange--10);
+}
+
+html.pf-v6-theme-dark .pf-m-blue,
+html.pf-v6-theme-dark .pf-m-info {
+  --pf-v6-c-label--BackgroundColor: var(--pf-t--color--blue--10);
+  --pf-v6-c-label--Color: var(--pf-t--color--blue--30);
 }
 
 /* Panel border override - only for panels inside page main body */

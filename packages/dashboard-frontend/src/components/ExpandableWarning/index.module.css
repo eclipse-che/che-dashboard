@@ -16,6 +16,16 @@
   border-top: 2px solid;
 }
 
+:global(.pf-v6-theme-dark) .error {
+  color: var(--pf-t--global--text--color--regular);
+  background-color: rgb(185 80 80);
+}
+
+:global(.pf-v6-theme-dark) .error .errorMessage {
+  color: var(--pf-t--global--text--color--regular);
+  background-color: transparent;
+}
+
 .error small,
 .error button {
   font-size: small;

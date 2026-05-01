@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`DevfileViewer snapshot with light theme 1`] = `
+<div
+  className="devfileViewer"
+>
+  <div
+    className="cm-theme-light codeMirror"
+    id="devfile-viewer-id"
+  />
+</div>
+`;

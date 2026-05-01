@@ -1,17 +1,6 @@
 .statusLabel {
+  font-weight: bold;
   text-transform: capitalize;
-}
-
-:global(html.pf-v6-theme-dark) .pf-m-green.statusLabel {
-  --pf-v6-c-label--BackgroundColor: var(--pf-t--color--green--10);
-}
-
-:global(html.pf-v6-theme-dark) .pf-m-orange.statusLabel {
-  --pf-v6-c-label--BackgroundColor: var(--pf-t--color--orange--40);
-}
-
-:global(html.pf-v6-theme-dark) .pf-m-info.statusLabel {
-  --pf-v6-c-label--BackgroundColor: var(--pf-t--color--blue--10);
 }
 
 .statusIndicator {

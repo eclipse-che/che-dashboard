@@ -11,11 +11,8 @@
  */
 
 .backupStatusBadge {
+  font-weight: bold;
   text-transform: capitalize;
-}
-
-.size-md {
-  font-size: var(--pf-v5-global--FontSize--sm);
 }
 
 .rotate {

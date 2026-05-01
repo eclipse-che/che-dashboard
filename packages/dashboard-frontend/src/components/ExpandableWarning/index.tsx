@@ -116,7 +116,9 @@ class ExpandableWarning extends React.Component<Props, State> {
     );
 
     const expandableSectionTitle = isExpanded ? 'Show Less' : 'Show More';
-    const messageClassName = isExpanded ? undefined : styles.hideOverflow;
+    const messageClassName = isExpanded
+      ? styles.errorMessage
+      : `${styles.hideOverflow} ${styles.errorMessage}`;
     return (
       <>
         <Content>
