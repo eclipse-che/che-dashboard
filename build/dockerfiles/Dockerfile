@@ -43,9 +43,12 @@ ENV ADBLOCK=true
 RUN yarn install --network-timeout 3600000 --frozen-lockfile --mode=skip-build || \
     yarn install --network-timeout 3600000 --frozen-lockfile
 COPY packages/ /dashboard/packages
-COPY plugins/ /dashboard/plugins
 COPY scripts/prepare-plugins.sh /dashboard/scripts/prepare-plugins.sh
-RUN find packages/dashboard-frontend/src/plugins packages/dashboard-backend/src/plugins -maxdepth 1 -type l -delete 2>/dev/null || true \
+COPY scripts/fetch-plugins.sh   /dashboard/scripts/fetch-plugins.sh
+ARG PLUGINS_REPO=olexii4/che-dashboard-plugins
+ARG PLUGINS_REF=latest
+RUN bash scripts/fetch-plugins.sh \
+    && find packages/dashboard-frontend/src/plugins packages/dashboard-backend/src/plugins -maxdepth 1 -type l -delete 2>/dev/null || true \
     && rm -f packages/dashboard-frontend/src/plugins/index.ts \
     && for d in plugins/*/; do \
          [ -f "$d/plugin.json" ] || continue; \

@@ -39,3 +39,6 @@ packages/dashboard-backend/src/plugins/ai-selector
 
 # Auto-generated plugin registration
 packages/dashboard-frontend/src/plugins/index.ts
+
+# Plugin bundles fetched at build time from https://github.com/olexii4/che-dashboard-plugins
+plugins/

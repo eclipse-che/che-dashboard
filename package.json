@@ -20,8 +20,9 @@
   },
   "license": "EPL-2.0",
   "scripts": {
-    "prepare:plugins": "bash scripts/prepare-plugins.sh",
-    "postinstall": "bash scripts/prepare-plugins.sh",
+    "fetch:plugins": "bash scripts/fetch-plugins.sh",
+    "prepare:plugins": "bash scripts/fetch-plugins.sh && bash scripts/prepare-plugins.sh",
+    "postinstall": "bash scripts/fetch-plugins.sh && bash scripts/prepare-plugins.sh",
     "build": "yarn prepare:plugins && yarn workspaces foreach -A run build",
     "build:dev": "yarn prepare:plugins && yarn workspaces foreach -A run build:dev",
     "frontend:start": "yarn workspace @eclipse-che/dashboard-frontend start",

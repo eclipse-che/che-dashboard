@@ -29,6 +29,9 @@
 #                         Use when only CSS/assets changed or you already ran yarn build.
 #   PREBUILD            - Set to 1 to build JS locally first, then package into thin image.
 #                         Faster than building inside Docker when webpack cache is warm.
+#   LOCAL_PLUGINS       - Path to a local che-dashboard-plugins clone. When set, plugins are
+#                         copied from there instead of downloaded from GitHub Releases.
+#                         e.g. LOCAL_PLUGINS=~/workspace/olexii4/che-dashboard-plugins
 #
 
 set -e
@@ -105,6 +108,7 @@ echo "[INFO] Using container engine: ${CONTAINER_ENGINE}"
 if [[ "${PREBUILD:-0}" == "1" ]]; then
   echo "[INFO] PREBUILD mode: building JS locally, then packaging..."
   cd "${PROJECT_DIR}"
+  bash scripts/fetch-plugins.sh
   bash scripts/prepare-plugins.sh
   yarn workspace @eclipse-che/common run build
   yarn workspace @eclipse-che/dashboard-plugins run build
