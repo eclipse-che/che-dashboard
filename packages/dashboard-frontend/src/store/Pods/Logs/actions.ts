@@ -106,6 +106,12 @@ export const actionCreators = {
         const websocketClient = container.get(WebsocketClient);
         websocketClient.unsubscribeFromChannel(api.webSocket.Channel.LOGS);
 
+        // 400 means the Kubernetes API rejected the log request (containers not ready yet).
+        // Don't retry immediately — the WorkspaceLogs component will re-trigger when needed.
+        if (status.code === 400) {
+          return;
+        }
+
         const allPods = selectAllPods(getState());
         if (allPods.find(pod => pod.metadata?.name === params.podName) === undefined) {
           console.debug('WebSocket(LOGS): pod not found, stop watching logs:', params.podName);

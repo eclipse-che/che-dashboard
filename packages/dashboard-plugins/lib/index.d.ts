@@ -1,0 +1,4 @@
+export type { BackendPlugin, ColumnDefinition, FactoryParamExtension, FrontendPlugin, LoaderTabDefinition, NavigationItemDefinition, PluginManifest, PluginSlotProps, PluginSlots, TabDefinition, WorkspaceHooks, } from './types';
+export { bootstrapPlugins, getPluginFactoryParams, getPluginReducers, getRegisteredBackendPlugins, getRegisteredFrontendPlugins, registerBackendPlugin, registerFrontendPlugin, runPluginCreateHooks, runPluginStartHooks, } from './registry';
+export { getPluginColumns, getPluginLoaderTabs, getPluginNavigationItems, getPluginTabs, PluginSlot } from './frontend/PluginSlot';
+//# sourceMappingURL=index.d.ts.map

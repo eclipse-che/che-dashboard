@@ -6,6 +6,7 @@
   "workspaces": {
     "packages": [
       "packages/common",
+      "packages/dashboard-plugins",
       "packages/dashboard-backend",
       "packages/dashboard-frontend"
     ]
@@ -19,8 +20,10 @@
   },
   "license": "EPL-2.0",
   "scripts": {
-    "build": "yarn workspaces foreach -A run build",
-    "build:dev": "yarn workspaces foreach -A run build:dev",
+    "prepare:plugins": "bash scripts/prepare-plugins.sh",
+    "postinstall": "bash scripts/prepare-plugins.sh",
+    "build": "yarn prepare:plugins && yarn workspaces foreach -A run build",
+    "build:dev": "yarn prepare:plugins && yarn workspaces foreach -A run build:dev",
     "frontend:start": "yarn workspace @eclipse-che/dashboard-frontend start",
     "start": "$PWD/run/local-run.sh $@",
     "start:prepare": "$PWD/run/prepare-local-run.sh",
@@ -29,13 +32,16 @@
     "license:generate": "license-tool --harvest",
     "test": "yarn run pretest && yarn workspaces foreach -A run test --no-cache",
     "test:check": "yarn run pretest && yarn workspace @eclipse-che/dashboard-frontend test --config=jest.config.check.js",
-    "pretest": "yarn workspace @eclipse-che/common run build",
+    "pretest": "yarn prepare:plugins && yarn workspace @eclipse-che/common run build && yarn workspace @eclipse-che/dashboard-plugins run build",
     "test:coverage": "yarn run pretest && yarn workspaces foreach -A run test --coverage",
     "format:check": "yarn workspaces foreach -A run format:check",
     "format:fix": "yarn workspaces foreach -A run format:fix",
     "lint:check": "yarn workspaces foreach -A run lint:check",
     "lint:fix": "yarn workspaces foreach -A run lint:fix",
-    "deploy:patch": "$PWD/run/patch.sh"
+    "deploy:patch": "$PWD/run/patch.sh",
+    "local:patch": "$PWD/run/local-patch.sh",
+    "local:patch:fast": "PREBUILD=1 $PWD/run/local-patch.sh",
+    "local:patch:skip-build": "SKIP_BUILD=1 $PWD/run/local-patch.sh"
   },
   "devDependencies": {
     "@eclipse-che/license-tool": "^2.0.0"

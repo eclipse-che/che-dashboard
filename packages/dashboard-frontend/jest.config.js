@@ -12,11 +12,19 @@
 
 const base = require('../../jest.config.base');
 
+const path = require('path');
+
 module.exports = {
   ...base,
+  roots: ['<rootDir>/src', path.resolve(__dirname, '../../plugins')],
+  testRegex: '(\\.(test|spec))\\.tsx?$',
+  testPathIgnorePatterns: ['/lib/', '/node_modules/', '/backend/'],
   displayName: 'Dashboard Frontend',
   maxWorkers: 1, // Run serially to avoid jest-websocket-mock cross-test interference
   moduleDirectories: ['node_modules', '../../node_modules', 'src'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(@eclipse-che/dashboard-plugins)/)',
+  ],
   moduleNameMapper: {
     '\\.(css|less|sass|scss|styl)$': 'identity-obj-proxy',
     '\\.(gif|ttf|eot|svg)$': '<rootDir>/__mocks__/fileMock.js',

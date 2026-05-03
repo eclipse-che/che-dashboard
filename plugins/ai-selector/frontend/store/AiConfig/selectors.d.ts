@@ -1,0 +1,373 @@
+import { RootState } from '@/store';
+export declare const selectAiProviders: ((state: {
+    aiAgentRegistry: import("@/store/AiAgentRegistry").AiAgentRegistryState;
+    aiConfig: import("@/plugins/ai-selector/store/AiConfig").AiConfigState;
+    backups: import("@/store/Backups").BackupsState;
+    devfileSchema: import("@/store/DevfileSchema").DevfileSchemaState;
+    devWorkspaceSchema: import("@/store/DevWorkspaceSchema").DevWorkspaceSchemaState;
+    localDevfiles: import("@/store/LocalDevfiles").LocalDevfilesState;
+    bannerAlert: import("@/store/BannerAlert").BannerAlertState;
+    branding: import("@/store/Branding").BrandingState;
+    clusterConfig: import("@/store/ClusterConfig").ClusterConfigState;
+    clusterInfo: import("@/store/ClusterInfo").ClusterInfoState;
+    devfileRegistries: import("@/store/DevfileRegistries").DevfileRegistriesState;
+    devWorkspaces: import("@/store/Workspaces/devWorkspaces").DevWorkspacesState;
+    devWorkspacesCluster: import("@/store/DevWorkspacesCluster").DevWorkspaceClusterState;
+    dockerConfig: import("@/store/DockerConfig").DockerConfigState;
+    dwPlugins: import("@/store/Plugins/devWorkspacePlugins").DevWorkspacePluginsState;
+    dwServerConfig: import("@/store/ServerConfig").ServerConfigState;
+    events: import("@/store/Events").EventsState;
+    factoryResolver: import("@/store/FactoryResolver").FactoryResolverState;
+    gitConfig: import("@/store/GitConfig").GitConfigState;
+    gitOauthConfig: import("@/store/GitOauthConfig").GitOauthConfigState;
+    infrastructureNamespaces: import("@/store/InfrastructureNamespaces").InfrastructureNamespacesState;
+    logs: import("@/store/Pods/Logs").PodLogsState;
+    personalAccessToken: import("@/store/PersonalAccessTokens").PersonalAccessTokenState;
+    plugins: import("@/store/Plugins/chePlugins").ChePluginsState;
+    pods: import("@/store/Pods").PodsState;
+    sanityCheck: import("@/store/SanityCheck").SanityCheckState;
+    sshKeys: import("@/store/SshKeys").SshKeysState;
+    userId: import("@/store/User/Id").UserIdState;
+    userProfile: import("@/store/User/Profile").UserProfileState;
+    workspacePreferences: import("@/store/Workspaces/Preferences").WorkspacePreferencesState;
+    workspaces: import("@/store/Workspaces").WorkspacesState;
+}) => import("@eclipse-che/common/lib/dto/api").AiProviderDefinition[]) & {
+    clearCache: () => void;
+    resultsCount: () => number;
+    resetResultsCount: () => void;
+} & {
+    resultFunc: (resultFuncArgs_0: import("@/plugins/ai-selector/store/AiConfig").AiConfigState) => import("@eclipse-che/common/lib/dto/api").AiProviderDefinition[];
+    memoizedResultFunc: ((resultFuncArgs_0: import("@/plugins/ai-selector/store/AiConfig").AiConfigState) => import("@eclipse-che/common/lib/dto/api").AiProviderDefinition[]) & {
+        clearCache: () => void;
+        resultsCount: () => number;
+        resetResultsCount: () => void;
+    };
+    lastResult: () => import("@eclipse-che/common/lib/dto/api").AiProviderDefinition[];
+    dependencies: [(state: RootState) => import("@/plugins/ai-selector/store/AiConfig").AiConfigState];
+    recomputations: () => number;
+    resetRecomputations: () => void;
+    dependencyRecomputations: () => number;
+    resetDependencyRecomputations: () => void;
+} & {
+    argsMemoize: typeof import("reselect").weakMapMemoize;
+    memoize: typeof import("reselect").weakMapMemoize;
+};
+export declare const selectAiTools: ((state: {
+    aiAgentRegistry: import("@/store/AiAgentRegistry").AiAgentRegistryState;
+    aiConfig: import("@/plugins/ai-selector/store/AiConfig").AiConfigState;
+    backups: import("@/store/Backups").BackupsState;
+    devfileSchema: import("@/store/DevfileSchema").DevfileSchemaState;
+    devWorkspaceSchema: import("@/store/DevWorkspaceSchema").DevWorkspaceSchemaState;
+    localDevfiles: import("@/store/LocalDevfiles").LocalDevfilesState;
+    bannerAlert: import("@/store/BannerAlert").BannerAlertState;
+    branding: import("@/store/Branding").BrandingState;
+    clusterConfig: import("@/store/ClusterConfig").ClusterConfigState;
+    clusterInfo: import("@/store/ClusterInfo").ClusterInfoState;
+    devfileRegistries: import("@/store/DevfileRegistries").DevfileRegistriesState;
+    devWorkspaces: import("@/store/Workspaces/devWorkspaces").DevWorkspacesState;
+    devWorkspacesCluster: import("@/store/DevWorkspacesCluster").DevWorkspaceClusterState;
+    dockerConfig: import("@/store/DockerConfig").DockerConfigState;
+    dwPlugins: import("@/store/Plugins/devWorkspacePlugins").DevWorkspacePluginsState;
+    dwServerConfig: import("@/store/ServerConfig").ServerConfigState;
+    events: import("@/store/Events").EventsState;
+    factoryResolver: import("@/store/FactoryResolver").FactoryResolverState;
+    gitConfig: import("@/store/GitConfig").GitConfigState;
+    gitOauthConfig: import("@/store/GitOauthConfig").GitOauthConfigState;
+    infrastructureNamespaces: import("@/store/InfrastructureNamespaces").InfrastructureNamespacesState;
+    logs: import("@/store/Pods/Logs").PodLogsState;
+    personalAccessToken: import("@/store/PersonalAccessTokens").PersonalAccessTokenState;
+    plugins: import("@/store/Plugins/chePlugins").ChePluginsState;
+    pods: import("@/store/Pods").PodsState;
+    sanityCheck: import("@/store/SanityCheck").SanityCheckState;
+    sshKeys: import("@/store/SshKeys").SshKeysState;
+    userId: import("@/store/User/Id").UserIdState;
+    userProfile: import("@/store/User/Profile").UserProfileState;
+    workspacePreferences: import("@/store/Workspaces/Preferences").WorkspacePreferencesState;
+    workspaces: import("@/store/Workspaces").WorkspacesState;
+}) => import("@eclipse-che/common/lib/dto/api").AiToolDefinition[]) & {
+    clearCache: () => void;
+    resultsCount: () => number;
+    resetResultsCount: () => void;
+} & {
+    resultFunc: (resultFuncArgs_0: import("@/plugins/ai-selector/store/AiConfig").AiConfigState) => import("@eclipse-che/common/lib/dto/api").AiToolDefinition[];
+    memoizedResultFunc: ((resultFuncArgs_0: import("@/plugins/ai-selector/store/AiConfig").AiConfigState) => import("@eclipse-che/common/lib/dto/api").AiToolDefinition[]) & {
+        clearCache: () => void;
+        resultsCount: () => number;
+        resetResultsCount: () => void;
+    };
+    lastResult: () => import("@eclipse-che/common/lib/dto/api").AiToolDefinition[];
+    dependencies: [(state: RootState) => import("@/plugins/ai-selector/store/AiConfig").AiConfigState];
+    recomputations: () => number;
+    resetRecomputations: () => void;
+    dependencyRecomputations: () => number;
+    resetDependencyRecomputations: () => void;
+} & {
+    argsMemoize: typeof import("reselect").weakMapMemoize;
+    memoize: typeof import("reselect").weakMapMemoize;
+};
+export declare const selectDefaultAiProviders: ((state: {
+    aiAgentRegistry: import("@/store/AiAgentRegistry").AiAgentRegistryState;
+    aiConfig: import("@/plugins/ai-selector/store/AiConfig").AiConfigState;
+    backups: import("@/store/Backups").BackupsState;
+    devfileSchema: import("@/store/DevfileSchema").DevfileSchemaState;
+    devWorkspaceSchema: import("@/store/DevWorkspaceSchema").DevWorkspaceSchemaState;
+    localDevfiles: import("@/store/LocalDevfiles").LocalDevfilesState;
+    bannerAlert: import("@/store/BannerAlert").BannerAlertState;
+    branding: import("@/store/Branding").BrandingState;
+    clusterConfig: import("@/store/ClusterConfig").ClusterConfigState;
+    clusterInfo: import("@/store/ClusterInfo").ClusterInfoState;
+    devfileRegistries: import("@/store/DevfileRegistries").DevfileRegistriesState;
+    devWorkspaces: import("@/store/Workspaces/devWorkspaces").DevWorkspacesState;
+    devWorkspacesCluster: import("@/store/DevWorkspacesCluster").DevWorkspaceClusterState;
+    dockerConfig: import("@/store/DockerConfig").DockerConfigState;
+    dwPlugins: import("@/store/Plugins/devWorkspacePlugins").DevWorkspacePluginsState;
+    dwServerConfig: import("@/store/ServerConfig").ServerConfigState;
+    events: import("@/store/Events").EventsState;
+    factoryResolver: import("@/store/FactoryResolver").FactoryResolverState;
+    gitConfig: import("@/store/GitConfig").GitConfigState;
+    gitOauthConfig: import("@/store/GitOauthConfig").GitOauthConfigState;
+    infrastructureNamespaces: import("@/store/InfrastructureNamespaces").InfrastructureNamespacesState;
+    logs: import("@/store/Pods/Logs").PodLogsState;
+    personalAccessToken: import("@/store/PersonalAccessTokens").PersonalAccessTokenState;
+    plugins: import("@/store/Plugins/chePlugins").ChePluginsState;
+    pods: import("@/store/Pods").PodsState;
+    sanityCheck: import("@/store/SanityCheck").SanityCheckState;
+    sshKeys: import("@/store/SshKeys").SshKeysState;
+    userId: import("@/store/User/Id").UserIdState;
+    userProfile: import("@/store/User/Profile").UserProfileState;
+    workspacePreferences: import("@/store/Workspaces/Preferences").WorkspacePreferencesState;
+    workspaces: import("@/store/Workspaces").WorkspacesState;
+}) => string[]) & {
+    clearCache: () => void;
+    resultsCount: () => number;
+    resetResultsCount: () => void;
+} & {
+    resultFunc: (resultFuncArgs_0: import("@/plugins/ai-selector/store/AiConfig").AiConfigState) => string[];
+    memoizedResultFunc: ((resultFuncArgs_0: import("@/plugins/ai-selector/store/AiConfig").AiConfigState) => string[]) & {
+        clearCache: () => void;
+        resultsCount: () => number;
+        resetResultsCount: () => void;
+    };
+    lastResult: () => string[];
+    dependencies: [(state: RootState) => import("@/plugins/ai-selector/store/AiConfig").AiConfigState];
+    recomputations: () => number;
+    resetRecomputations: () => void;
+    dependencyRecomputations: () => number;
+    resetDependencyRecomputations: () => void;
+} & {
+    argsMemoize: typeof import("reselect").weakMapMemoize;
+    memoize: typeof import("reselect").weakMapMemoize;
+};
+export declare const selectAiConfigEnabled: ((state: {
+    aiAgentRegistry: import("@/store/AiAgentRegistry").AiAgentRegistryState;
+    aiConfig: import("@/plugins/ai-selector/store/AiConfig").AiConfigState;
+    backups: import("@/store/Backups").BackupsState;
+    devfileSchema: import("@/store/DevfileSchema").DevfileSchemaState;
+    devWorkspaceSchema: import("@/store/DevWorkspaceSchema").DevWorkspaceSchemaState;
+    localDevfiles: import("@/store/LocalDevfiles").LocalDevfilesState;
+    bannerAlert: import("@/store/BannerAlert").BannerAlertState;
+    branding: import("@/store/Branding").BrandingState;
+    clusterConfig: import("@/store/ClusterConfig").ClusterConfigState;
+    clusterInfo: import("@/store/ClusterInfo").ClusterInfoState;
+    devfileRegistries: import("@/store/DevfileRegistries").DevfileRegistriesState;
+    devWorkspaces: import("@/store/Workspaces/devWorkspaces").DevWorkspacesState;
+    devWorkspacesCluster: import("@/store/DevWorkspacesCluster").DevWorkspaceClusterState;
+    dockerConfig: import("@/store/DockerConfig").DockerConfigState;
+    dwPlugins: import("@/store/Plugins/devWorkspacePlugins").DevWorkspacePluginsState;
+    dwServerConfig: import("@/store/ServerConfig").ServerConfigState;
+    events: import("@/store/Events").EventsState;
+    factoryResolver: import("@/store/FactoryResolver").FactoryResolverState;
+    gitConfig: import("@/store/GitConfig").GitConfigState;
+    gitOauthConfig: import("@/store/GitOauthConfig").GitOauthConfigState;
+    infrastructureNamespaces: import("@/store/InfrastructureNamespaces").InfrastructureNamespacesState;
+    logs: import("@/store/Pods/Logs").PodLogsState;
+    personalAccessToken: import("@/store/PersonalAccessTokens").PersonalAccessTokenState;
+    plugins: import("@/store/Plugins/chePlugins").ChePluginsState;
+    pods: import("@/store/Pods").PodsState;
+    sanityCheck: import("@/store/SanityCheck").SanityCheckState;
+    sshKeys: import("@/store/SshKeys").SshKeysState;
+    userId: import("@/store/User/Id").UserIdState;
+    userProfile: import("@/store/User/Profile").UserProfileState;
+    workspacePreferences: import("@/store/Workspaces/Preferences").WorkspacePreferencesState;
+    workspaces: import("@/store/Workspaces").WorkspacesState;
+}) => boolean) & {
+    clearCache: () => void;
+    resultsCount: () => number;
+    resetResultsCount: () => void;
+} & {
+    resultFunc: (resultFuncArgs_0: import("@/plugins/ai-selector/store/AiConfig").AiConfigState) => boolean;
+    memoizedResultFunc: ((resultFuncArgs_0: import("@/plugins/ai-selector/store/AiConfig").AiConfigState) => boolean) & {
+        clearCache: () => void;
+        resultsCount: () => number;
+        resetResultsCount: () => void;
+    };
+    lastResult: () => boolean;
+    dependencies: [(state: RootState) => import("@/plugins/ai-selector/store/AiConfig").AiConfigState];
+    recomputations: () => number;
+    resetRecomputations: () => void;
+    dependencyRecomputations: () => number;
+    resetDependencyRecomputations: () => void;
+} & {
+    argsMemoize: typeof import("reselect").weakMapMemoize;
+    memoize: typeof import("reselect").weakMapMemoize;
+};
+export declare const selectAiProviderKeyExists: ((state: {
+    aiAgentRegistry: import("@/store/AiAgentRegistry").AiAgentRegistryState;
+    aiConfig: import("@/plugins/ai-selector/store/AiConfig").AiConfigState;
+    backups: import("@/store/Backups").BackupsState;
+    devfileSchema: import("@/store/DevfileSchema").DevfileSchemaState;
+    devWorkspaceSchema: import("@/store/DevWorkspaceSchema").DevWorkspaceSchemaState;
+    localDevfiles: import("@/store/LocalDevfiles").LocalDevfilesState;
+    bannerAlert: import("@/store/BannerAlert").BannerAlertState;
+    branding: import("@/store/Branding").BrandingState;
+    clusterConfig: import("@/store/ClusterConfig").ClusterConfigState;
+    clusterInfo: import("@/store/ClusterInfo").ClusterInfoState;
+    devfileRegistries: import("@/store/DevfileRegistries").DevfileRegistriesState;
+    devWorkspaces: import("@/store/Workspaces/devWorkspaces").DevWorkspacesState;
+    devWorkspacesCluster: import("@/store/DevWorkspacesCluster").DevWorkspaceClusterState;
+    dockerConfig: import("@/store/DockerConfig").DockerConfigState;
+    dwPlugins: import("@/store/Plugins/devWorkspacePlugins").DevWorkspacePluginsState;
+    dwServerConfig: import("@/store/ServerConfig").ServerConfigState;
+    events: import("@/store/Events").EventsState;
+    factoryResolver: import("@/store/FactoryResolver").FactoryResolverState;
+    gitConfig: import("@/store/GitConfig").GitConfigState;
+    gitOauthConfig: import("@/store/GitOauthConfig").GitOauthConfigState;
+    infrastructureNamespaces: import("@/store/InfrastructureNamespaces").InfrastructureNamespacesState;
+    logs: import("@/store/Pods/Logs").PodLogsState;
+    personalAccessToken: import("@/store/PersonalAccessTokens").PersonalAccessTokenState;
+    plugins: import("@/store/Plugins/chePlugins").ChePluginsState;
+    pods: import("@/store/Pods").PodsState;
+    sanityCheck: import("@/store/SanityCheck").SanityCheckState;
+    sshKeys: import("@/store/SshKeys").SshKeysState;
+    userId: import("@/store/User/Id").UserIdState;
+    userProfile: import("@/store/User/Profile").UserProfileState;
+    workspacePreferences: import("@/store/Workspaces/Preferences").WorkspacePreferencesState;
+    workspaces: import("@/store/Workspaces").WorkspacesState;
+}) => Record<string, boolean>) & {
+    clearCache: () => void;
+    resultsCount: () => number;
+    resetResultsCount: () => void;
+} & {
+    resultFunc: (resultFuncArgs_0: import("@/plugins/ai-selector/store/AiConfig").AiConfigState) => Record<string, boolean>;
+    memoizedResultFunc: ((resultFuncArgs_0: import("@/plugins/ai-selector/store/AiConfig").AiConfigState) => Record<string, boolean>) & {
+        clearCache: () => void;
+        resultsCount: () => number;
+        resetResultsCount: () => void;
+    };
+    lastResult: () => Record<string, boolean>;
+    dependencies: [(state: RootState) => import("@/plugins/ai-selector/store/AiConfig").AiConfigState];
+    recomputations: () => number;
+    resetRecomputations: () => void;
+    dependencyRecomputations: () => number;
+    resetDependencyRecomputations: () => void;
+} & {
+    argsMemoize: typeof import("reselect").weakMapMemoize;
+    memoize: typeof import("reselect").weakMapMemoize;
+};
+export declare const selectAiConfigIsLoading: ((state: {
+    aiAgentRegistry: import("@/store/AiAgentRegistry").AiAgentRegistryState;
+    aiConfig: import("@/plugins/ai-selector/store/AiConfig").AiConfigState;
+    backups: import("@/store/Backups").BackupsState;
+    devfileSchema: import("@/store/DevfileSchema").DevfileSchemaState;
+    devWorkspaceSchema: import("@/store/DevWorkspaceSchema").DevWorkspaceSchemaState;
+    localDevfiles: import("@/store/LocalDevfiles").LocalDevfilesState;
+    bannerAlert: import("@/store/BannerAlert").BannerAlertState;
+    branding: import("@/store/Branding").BrandingState;
+    clusterConfig: import("@/store/ClusterConfig").ClusterConfigState;
+    clusterInfo: import("@/store/ClusterInfo").ClusterInfoState;
+    devfileRegistries: import("@/store/DevfileRegistries").DevfileRegistriesState;
+    devWorkspaces: import("@/store/Workspaces/devWorkspaces").DevWorkspacesState;
+    devWorkspacesCluster: import("@/store/DevWorkspacesCluster").DevWorkspaceClusterState;
+    dockerConfig: import("@/store/DockerConfig").DockerConfigState;
+    dwPlugins: import("@/store/Plugins/devWorkspacePlugins").DevWorkspacePluginsState;
+    dwServerConfig: import("@/store/ServerConfig").ServerConfigState;
+    events: import("@/store/Events").EventsState;
+    factoryResolver: import("@/store/FactoryResolver").FactoryResolverState;
+    gitConfig: import("@/store/GitConfig").GitConfigState;
+    gitOauthConfig: import("@/store/GitOauthConfig").GitOauthConfigState;
+    infrastructureNamespaces: import("@/store/InfrastructureNamespaces").InfrastructureNamespacesState;
+    logs: import("@/store/Pods/Logs").PodLogsState;
+    personalAccessToken: import("@/store/PersonalAccessTokens").PersonalAccessTokenState;
+    plugins: import("@/store/Plugins/chePlugins").ChePluginsState;
+    pods: import("@/store/Pods").PodsState;
+    sanityCheck: import("@/store/SanityCheck").SanityCheckState;
+    sshKeys: import("@/store/SshKeys").SshKeysState;
+    userId: import("@/store/User/Id").UserIdState;
+    userProfile: import("@/store/User/Profile").UserProfileState;
+    workspacePreferences: import("@/store/Workspaces/Preferences").WorkspacePreferencesState;
+    workspaces: import("@/store/Workspaces").WorkspacesState;
+}) => boolean) & {
+    clearCache: () => void;
+    resultsCount: () => number;
+    resetResultsCount: () => void;
+} & {
+    resultFunc: (resultFuncArgs_0: import("@/plugins/ai-selector/store/AiConfig").AiConfigState) => boolean;
+    memoizedResultFunc: ((resultFuncArgs_0: import("@/plugins/ai-selector/store/AiConfig").AiConfigState) => boolean) & {
+        clearCache: () => void;
+        resultsCount: () => number;
+        resetResultsCount: () => void;
+    };
+    lastResult: () => boolean;
+    dependencies: [(state: RootState) => import("@/plugins/ai-selector/store/AiConfig").AiConfigState];
+    recomputations: () => number;
+    resetRecomputations: () => void;
+    dependencyRecomputations: () => number;
+    resetDependencyRecomputations: () => void;
+} & {
+    argsMemoize: typeof import("reselect").weakMapMemoize;
+    memoize: typeof import("reselect").weakMapMemoize;
+};
+export declare const selectAiConfigError: ((state: {
+    aiAgentRegistry: import("@/store/AiAgentRegistry").AiAgentRegistryState;
+    aiConfig: import("@/plugins/ai-selector/store/AiConfig").AiConfigState;
+    backups: import("@/store/Backups").BackupsState;
+    devfileSchema: import("@/store/DevfileSchema").DevfileSchemaState;
+    devWorkspaceSchema: import("@/store/DevWorkspaceSchema").DevWorkspaceSchemaState;
+    localDevfiles: import("@/store/LocalDevfiles").LocalDevfilesState;
+    bannerAlert: import("@/store/BannerAlert").BannerAlertState;
+    branding: import("@/store/Branding").BrandingState;
+    clusterConfig: import("@/store/ClusterConfig").ClusterConfigState;
+    clusterInfo: import("@/store/ClusterInfo").ClusterInfoState;
+    devfileRegistries: import("@/store/DevfileRegistries").DevfileRegistriesState;
+    devWorkspaces: import("@/store/Workspaces/devWorkspaces").DevWorkspacesState;
+    devWorkspacesCluster: import("@/store/DevWorkspacesCluster").DevWorkspaceClusterState;
+    dockerConfig: import("@/store/DockerConfig").DockerConfigState;
+    dwPlugins: import("@/store/Plugins/devWorkspacePlugins").DevWorkspacePluginsState;
+    dwServerConfig: import("@/store/ServerConfig").ServerConfigState;
+    events: import("@/store/Events").EventsState;
+    factoryResolver: import("@/store/FactoryResolver").FactoryResolverState;
+    gitConfig: import("@/store/GitConfig").GitConfigState;
+    gitOauthConfig: import("@/store/GitOauthConfig").GitOauthConfigState;
+    infrastructureNamespaces: import("@/store/InfrastructureNamespaces").InfrastructureNamespacesState;
+    logs: import("@/store/Pods/Logs").PodLogsState;
+    personalAccessToken: import("@/store/PersonalAccessTokens").PersonalAccessTokenState;
+    plugins: import("@/store/Plugins/chePlugins").ChePluginsState;
+    pods: import("@/store/Pods").PodsState;
+    sanityCheck: import("@/store/SanityCheck").SanityCheckState;
+    sshKeys: import("@/store/SshKeys").SshKeysState;
+    userId: import("@/store/User/Id").UserIdState;
+    userProfile: import("@/store/User/Profile").UserProfileState;
+    workspacePreferences: import("@/store/Workspaces/Preferences").WorkspacePreferencesState;
+    workspaces: import("@/store/Workspaces").WorkspacesState;
+}) => string | undefined) & {
+    clearCache: () => void;
+    resultsCount: () => number;
+    resetResultsCount: () => void;
+} & {
+    resultFunc: (resultFuncArgs_0: import("@/plugins/ai-selector/store/AiConfig").AiConfigState) => string | undefined;
+    memoizedResultFunc: ((resultFuncArgs_0: import("@/plugins/ai-selector/store/AiConfig").AiConfigState) => string | undefined) & {
+        clearCache: () => void;
+        resultsCount: () => number;
+        resetResultsCount: () => void;
+    };
+    lastResult: () => string | undefined;
+    dependencies: [(state: RootState) => import("@/plugins/ai-selector/store/AiConfig").AiConfigState];
+    recomputations: () => number;
+    resetRecomputations: () => void;
+    dependencyRecomputations: () => number;
+    resetDependencyRecomputations: () => void;
+} & {
+    argsMemoize: typeof import("reselect").weakMapMemoize;
+    memoize: typeof import("reselect").weakMapMemoize;
+};
+//# sourceMappingURL=selectors.d.ts.map

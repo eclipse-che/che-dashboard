@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { getPluginTabs } from '@/plugin-registry';
 import { PageSection, PageSectionVariants, Tab, Tabs, Title } from '@patternfly/react-core';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -61,13 +62,15 @@ class UserPreferences extends React.PureComponent<Props, State> {
     if (search) {
       const searchParam = new URLSearchParams(search);
       const tab = searchParam.get('tab');
+      const pluginTabKeys = getPluginTabs().map(t => t.tabKey);
       if (
         pathname === ROUTE.USER_PREFERENCES &&
         (tab === UserPreferencesTab.CONTAINER_REGISTRIES ||
           tab === UserPreferencesTab.GITCONFIG ||
           tab === UserPreferencesTab.GIT_SERVICES ||
           tab === UserPreferencesTab.PERSONAL_ACCESS_TOKENS ||
-          tab === UserPreferencesTab.SSH_KEYS)
+          tab === UserPreferencesTab.SSH_KEYS ||
+          pluginTabKeys.includes(tab as string))
       ) {
         return searchParam.get('tab') as UserPreferencesTab;
       }
@@ -122,6 +125,9 @@ class UserPreferences extends React.PureComponent<Props, State> {
 
   render(): React.ReactNode {
     const { activeTabKey } = this.state;
+    const pluginTabs = getPluginTabs().filter(
+      tab => !tab.visible || tab.visible(this.props.state),
+    );
 
     return (
       <React.Fragment>
@@ -174,6 +180,17 @@ class UserPreferences extends React.PureComponent<Props, State> {
             >
               <SshKeys />
             </Tab>
+            {pluginTabs.length > 0 &&
+              pluginTabs[0] !== undefined && (
+                <Tab
+                  key={pluginTabs[0].pluginId}
+                  eventKey={pluginTabs[0].tabKey}
+                  title={pluginTabs[0].name}
+                  tabIndex={activeTabKey === pluginTabs[0].tabKey ? 0 : -1}
+                >
+                  {React.createElement(pluginTabs[0].component)}
+                </Tab>
+              )}
           </Tabs>
         </PageSection>
       </React.Fragment>
@@ -183,6 +200,7 @@ class UserPreferences extends React.PureComponent<Props, State> {
 
 const mapStateToProps = (state: RootState) => ({
   isLoading: selectIsLoading(state),
+  state,
 });
 
 const connector = connect(mapStateToProps, gitOauthConfigActionCreators);

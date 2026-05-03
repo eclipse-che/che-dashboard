@@ -80,6 +80,7 @@ function update_pkgs_versions() {
   sed_in_place -e "s/\"version\": \".*\"/\"version\": \"${VER}\"/" packages/dashboard-backend/package.json
   sed_in_place -e "s/\"version\": \".*\"/\"version\": \"${VER}\"/" packages/dashboard-frontend/package.json
   sed_in_place -e "s/\"version\": \".*\"/\"version\": \"${VER}\"/" packages/common/package.json
+  sed_in_place -e "s/\"version\": \".*\"/\"version\": \"${VER}\"/" packages/dashboard-plugins/package.json
   if [[ ${VER} != *"-next" ]]; then
     # update devworkspace generator version for release
     jq ".\"dependencies\".\"@eclipse-che/che-devworkspace-generator\" = \"${VER}\"" packages/dashboard-backend/package.json > packages/dashboard-backend/package.json.update
@@ -93,6 +94,7 @@ function update_pkgs_versions() {
   sed_in_place -e "s/@eclipse-che\/dashboard-backend@.*\`/@eclipse-che\/dashboard-backend@${VER}\`/" .deps/EXCLUDED/prod.md
   sed_in_place -e "s/@eclipse-che\/dashboard-frontend@.*\`/@eclipse-che\/dashboard-frontend@${VER}\`/" .deps/EXCLUDED/prod.md
   sed_in_place -e "s/@eclipse-che\/common@.*\`/@eclipse-che\/common@${VER}\`/" .deps/EXCLUDED/prod.md
+  sed_in_place -e "s/@eclipse-che\/dashboard-plugins@.*\`/@eclipse-che\/dashboard-plugins@${VER}\`/" .deps/EXCLUDED/prod.md
   # regenerate yarn.lock
   yarn --no-immutable
   # regenerate license files

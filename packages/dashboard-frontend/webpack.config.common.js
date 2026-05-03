@@ -73,7 +73,7 @@ const config = {
       {
         test: /\.tsx?$/,
         include: path.join(__dirname, 'src'),
-        use: ['ts-loader'],
+        use: [{ loader: 'ts-loader', options: { ignoreDiagnostics: [6059] } }],
         exclude: /node_modules/,
       },
       {
@@ -88,6 +88,7 @@ const config = {
   },
   resolve: {
     extensions: ['.js', '.ts', '.tsx'],
+    symlinks: false,
     alias: {
       // alias for absolute imports (see tsconfig.json)
       '@': path.resolve(__dirname, 'src/'),

@@ -16,8 +16,21 @@ RUN dnf -y -q update --exclude=unbound-libs
 
 COPY . /dashboard/
 WORKDIR /dashboard/
-RUN npm i -g yarn; yarn install
-RUN yarn build
+RUN npm i -g yarn \
+    && find packages/dashboard-frontend/src/plugins packages/dashboard-backend/src/plugins -maxdepth 1 -type l -delete \
+    && rm -f packages/dashboard-frontend/src/plugins/index.ts \
+    && for d in plugins/*/; do \
+         [ -f "$d/plugin.json" ] || continue; \
+         name=$(basename "$d"); \
+         [ -d "$d/frontend" ] && cp -r "$d/frontend" "packages/dashboard-frontend/src/plugins/$name"; \
+         [ -d "$d/backend" ] && cp -r "$d/backend" "packages/dashboard-backend/src/plugins/$name"; \
+       done \
+    && bash scripts/prepare-plugins.sh \
+    && yarn install
+RUN yarn workspace @eclipse-che/common run build \
+    && yarn workspace @eclipse-che/dashboard-plugins run build \
+    && yarn workspace @eclipse-che/dashboard-backend run build \
+    && yarn workspace @eclipse-che/dashboard-frontend run build
 
 # https://registry.access.redhat.com/ubi9/nodejs-20
 FROM registry.access.redhat.com/ubi9/nodejs-20

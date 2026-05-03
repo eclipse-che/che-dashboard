@@ -152,6 +152,59 @@ export interface IServerConfig {
   allowedSourceUrls: string[];
 }
 
+export interface AiToolDefinition {
+  providerId: string;
+  tag: string;
+  name: string;
+  url: string;
+  binary: string;
+  pattern: 'init' | 'bundle';
+  injectorImage: string;
+  envVarName?: string;
+  setupCommand?: string;
+}
+
+export interface AiProviderDefinition {
+  id: string;
+  name: string;
+  publisher: string;
+  description?: string;
+  docsUrl?: string;
+  icon?: string;
+}
+
+export interface IAiRegistry {
+  providers: AiProviderDefinition[];
+  tools: AiToolDefinition[];
+  defaultAiProviders: string[];
+}
+
+export interface AiAgentEnvVar {
+  name: string;
+  value: string;
+}
+
+export interface AiAgentDefinition {
+  id: string;
+  name: string;
+  publisher: string;
+  description?: string;
+  icon?: string;
+  docsUrl?: string;
+  image: string;
+  tag: string;
+  memoryLimit?: string;
+  cpuLimit?: string;
+  terminalPort: number;
+  env?: AiAgentEnvVar[];
+  initCommand?: string;
+}
+
+export interface IAiAgentRegistry {
+  agents: AiAgentDefinition[];
+  defaultAgentId: string;
+}
+
 export interface IAdvancedAuthorization {
   allowUsers?: string[];
   allowGroups?: string[];

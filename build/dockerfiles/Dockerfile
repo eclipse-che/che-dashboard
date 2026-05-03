@@ -14,7 +14,7 @@
 FROM --platform=$BUILDPLATFORM docker.io/node:24.0.2-alpine3.21 AS builder
 
 # hadolint ignore=DL3018
-RUN apk add --no-cache python3 py3-pip make g++ jq curl git zip
+RUN apk add --no-cache python3 py3-pip make g++ jq curl git zip bash
 RUN pip3 install yq --break-system-packages
 
 COPY .yarn/releases /dashboard/.yarn/releases/
@@ -32,6 +32,9 @@ COPY ${FRONTEND}/package.json /dashboard/${FRONTEND}/
 ENV BACKEND=packages/dashboard-backend
 COPY ${BACKEND}/package.json /dashboard/${BACKEND}/
 
+ENV PLUGINS=packages/dashboard-plugins
+COPY ${PLUGINS}/package.json /dashboard/${PLUGINS}/
+
 WORKDIR /dashboard
 
 ENV DISABLE_OPENCOLLECTIVE=true
@@ -40,7 +43,21 @@ ENV ADBLOCK=true
 RUN yarn install --network-timeout 3600000 --frozen-lockfile --mode=skip-build || \
     yarn install --network-timeout 3600000 --frozen-lockfile
 COPY packages/ /dashboard/packages
-RUN yarn build
+COPY plugins/ /dashboard/plugins
+COPY scripts/prepare-plugins.sh /dashboard/scripts/prepare-plugins.sh
+RUN find packages/dashboard-frontend/src/plugins packages/dashboard-backend/src/plugins -maxdepth 1 -type l -delete 2>/dev/null || true \
+    && rm -f packages/dashboard-frontend/src/plugins/index.ts \
+    && for d in plugins/*/; do \
+         [ -f "$d/plugin.json" ] || continue; \
+         name=$(basename "$d"); \
+         [ -d "$d/frontend" ] && cp -r "$d/frontend" "packages/dashboard-frontend/src/plugins/$name"; \
+         [ -d "$d/backend" ] && cp -r "$d/backend" "packages/dashboard-backend/src/plugins/$name"; \
+       done \
+    && bash scripts/prepare-plugins.sh
+RUN yarn workspace @eclipse-che/common run build \
+    && yarn workspace @eclipse-che/dashboard-plugins run build \
+    && yarn workspace @eclipse-che/dashboard-backend run build \
+    && yarn workspace @eclipse-che/dashboard-frontend run build
 
 # Prepare air-gapped resources
 COPY scripts/airgap.sh /dashboard/airgap.sh

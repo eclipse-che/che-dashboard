@@ -12,6 +12,8 @@
 
 import { NavList } from '@patternfly/react-core';
 import React from 'react';
+
+import { getPluginNavigationItems } from '@/plugin-registry';
 import { connect, ConnectedProps } from 'react-redux';
 
 import NavigationMainItem from '@/Layout/Navigation/MainItem';
@@ -25,16 +27,34 @@ type Props = MappedProps & {
   activePath: string;
 };
 
+function insertPluginItems(
+  base: NavigationItemObject[],
+  pluginItems: Array<{ to: string; label: string; labelSelector?: (state: unknown) => string; insertAfter?: string }>,
+  state: unknown,
+): NavigationItemObject[] {
+  const result = [...base];
+  for (const item of pluginItems) {
+    const label = item.labelSelector ? item.labelSelector(state) : item.label;
+    const insertIdx = item.insertAfter
+      ? result.findIndex(i => i.to === item.insertAfter)
+      : -1;
+    const pos = insertIdx >= 0 ? insertIdx + 1 : result.length;
+    result.splice(pos, 0, { to: item.to, label });
+  }
+  return result;
+}
+
 export class NavigationMainList extends React.PureComponent<Props> {
   private get items(): NavigationItemObject[] {
-    const { allWorkspaces } = this.props;
-
+    const { allWorkspaces, state } = this.props;
     const allWorkspacesNumber = allWorkspaces.length;
 
-    return [
+    const base: NavigationItemObject[] = [
       { to: ROUTE.GET_STARTED, label: 'Create Workspace' },
       { to: ROUTE.WORKSPACES, label: `Workspaces (${allWorkspacesNumber})` },
     ];
+
+    return insertPluginItems(base, getPluginNavigationItems(), state);
   }
 
   public render(): React.ReactElement {
@@ -50,6 +70,7 @@ export class NavigationMainList extends React.PureComponent<Props> {
 
 const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
+  state,
 });
 
 const connector = connect(mapStateToProps);

@@ -22,7 +22,13 @@ import { registerCors } from '@/plugins/cors';
 import { registerStaticServer } from '@/plugins/staticServer';
 import { registerSwagger } from '@/plugins/swagger';
 import { registerWebSocket } from '@/plugins/webSocket';
+import { registerAiConfigRoutes } from '@/plugins/ai-selector/routes/aiConfig';
+import { registerAiRegistryRoute } from '@/plugins/ai-selector/routes/aiRegistry';
+import { registerAgentsRoute } from '@/routes/api/agents';
+import { registerAiAgentRegistryRoute } from '@/routes/api/aiAgentRegistry';
 import { registerAirGapSampleRoute } from '@/routes/api/airGapSample';
+import { registerDevfileSchemaRoute } from '@/routes/api/devfileSchema';
+import { registerDevfilesRoute } from '@/routes/api/devfiles';
 import { registerBackupRoutes } from '@/routes/api/backup';
 import { registerClusterConfigRoute } from '@/routes/api/clusterConfig';
 import { registerClusterInfoRoute } from '@/routes/api/clusterInfo';
@@ -143,5 +149,17 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
     registerAirGapSampleRoute(server),
 
     registerBackupRoutes(server),
+
+    registerAiConfigRoutes(server),
+
+    registerAiRegistryRoute(isLocalRun(), server),
+
+    registerAgentsRoute(server),
+
+    registerAiAgentRegistryRoute(server),
+
+    registerDevfileSchemaRoute(server),
+
+    registerDevfilesRoute(server),
   ]);
 }
