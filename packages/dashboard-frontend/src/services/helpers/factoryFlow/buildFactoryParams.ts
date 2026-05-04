@@ -15,6 +15,7 @@ import { che } from '@/services/models';
 export const NAME_ATTR = 'name';
 export const DEV_WORKSPACE_ATTR = 'devWorkspace';
 export const EDITOR_ATTR = 'che-editor';
+export const AI_PROVIDER_ATTR = 'ai-provider';
 export const ERROR_CODE_ATTR = 'error_code';
 export const FACTORY_URL_ATTR = 'url';
 export const POLICIES_CREATE_ATTR = 'policies.create';
@@ -35,6 +36,7 @@ export const PROPAGATE_FACTORY_ATTRS = [
   'workspaceDeploymentLabels',
   DEV_WORKSPACE_ATTR,
   EDITOR_ATTR,
+  AI_PROVIDER_ATTR,
   FACTORY_URL_ATTR,
   POLICIES_CREATE_ATTR,
   STORAGE_TYPE_ATTR,
@@ -71,6 +73,7 @@ export type FactoryParams = {
   debugWorkspaceStart: boolean;
   existing: string | undefined;
   name: string | undefined;
+  aiProviders: string[];
 };
 
 export type PoliciesCreate = 'perclick' | 'peruser';
@@ -98,6 +101,7 @@ export function buildFactoryParams(searchParams: URLSearchParams): FactoryParams
     debugWorkspaceStart: isDebugWorkspaceStart(searchParams) !== undefined,
     existing: getExistingWorkspaceName(searchParams),
     name: getName(searchParams),
+    aiProviders: getAiProviders(searchParams),
   };
 }
 
@@ -220,4 +224,15 @@ function getExistingWorkspaceName(searchParams: URLSearchParams): string | undef
 
 function getName(searchParams: URLSearchParams): string | undefined {
   return searchParams.get(NAME_ATTR) || undefined;
+}
+
+function getAiProviders(searchParams: URLSearchParams): string[] {
+  const value = searchParams.get(AI_PROVIDER_ATTR);
+  if (!value) {
+    return [];
+  }
+  return value
+    .split(',')
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
 }

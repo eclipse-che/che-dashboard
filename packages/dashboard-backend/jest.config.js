@@ -10,10 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+const path = require('path');
 const base = require('../../jest.config.base');
 
 module.exports = {
   ...base,
+  roots: ['<rootDir>/src', path.resolve(__dirname, '../../plugins')],
+  testRegex: '(\\.(test|spec))\\.tsx?$',
+  testPathIgnorePatterns: ['/lib/', '/node_modules/', '/frontend/'],
   displayName: 'Dashboard backend',
   moduleDirectories: [
     'node_modules',

@@ -195,4 +195,14 @@ export class WebsocketClient {
   public hasChannelMessageListener(channel: api.webSocket.Channel): boolean {
     return this.messageHandler.hasListener(channel);
   }
+
+  /**
+   * Removes a data message listener for the given channel.
+   */
+  public removeChannelMessageListener(
+    channel: api.webSocket.Channel,
+    listener: ChannelListener,
+  ): void {
+    this.messageHandler.removeListener(channel, listener);
+  }
 }

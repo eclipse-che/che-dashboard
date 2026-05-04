@@ -37,6 +37,8 @@ import { TabManager } from '@/services/tabManager';
 import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
 import { selectApplications } from '@/store/ClusterInfo/selectors';
+import { AgentPodPhase, AgentPodStatus } from '@/store/LocalDevfiles';
+import { selectAgentPodStatuses } from '@/store/LocalDevfiles/selectors';
 import { workspacesActionCreators } from '@/store/Workspaces';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
@@ -99,6 +101,9 @@ class StartingStepOpenWorkspace extends ProgressStep<Props, State> {
       workspace?.status !== nextWorkspace?.status ||
       workspace?.ideUrl !== nextWorkspace?.ideUrl
     ) {
+      return true;
+    }
+    if (!isEqual(this.props.agentPodStatuses, nextProps.agentPodStatuses)) {
       return true;
     }
     // set the error for the current step
@@ -194,7 +199,7 @@ class StartingStepOpenWorkspace extends ProgressStep<Props, State> {
     const isOpenshift = this.props.applications.length === 1;
     if (isOpenshift) {
       actionCallbacks.push({
-        title: 'Edit the DevWorkspace spec',
+        title: 'OpenShift console',
         callback: () => {
           this.openDevWorkspaceClusterConsole();
         },
@@ -238,13 +243,16 @@ class StartingStepOpenWorkspace extends ProgressStep<Props, State> {
     // but we need to run the timer only when the workspace is running
     const workspace = this.findTargetWorkspace(this.props);
     const isActive = workspace?.isRunning && distance === 0;
+    const hasRunningAgent = this.props.agentPodStatuses.some(
+      (s: AgentPodStatus) => s.phase === AgentPodPhase.RUNNING && s.ready,
+    );
 
     const isError = false;
     const isWarning = lastError !== undefined;
 
     return (
       <React.Fragment>
-        {isActive && (
+        {isActive && !hasRunningAgent && (
           <TimeLimit timeLimitSec={TIMEOUT_TO_GET_URL_SEC} onTimeout={() => this.handleTimeout()} />
         )}
         <ProgressStepTitle
@@ -263,6 +271,7 @@ class StartingStepOpenWorkspace extends ProgressStep<Props, State> {
 const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   applications: selectApplications(state),
+  agentPodStatuses: selectAgentPodStatuses(state),
 });
 
 const connector = connect(mapStateToProps, workspacesActionCreators, null, {

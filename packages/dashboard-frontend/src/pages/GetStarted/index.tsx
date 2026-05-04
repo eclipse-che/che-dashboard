@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { PluginSlot } from '@/plugin-registry/PluginSlot';
 import { Divider, PageSection, PageSectionVariants, Title } from '@patternfly/react-core';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -31,6 +32,7 @@ type Props = MappedProps & {
 type State = {
   editorDefinition: string | undefined;
   editorImage: string | undefined;
+  aiProviders: string[];
   presetFilter: string | undefined;
 };
 
@@ -41,6 +43,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
     this.state = {
       editorDefinition: undefined,
       editorImage: undefined,
+      aiProviders: [],
       presetFilter: this.getPresetFilter(),
     };
   }
@@ -78,7 +81,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
 
   render(): React.ReactNode {
     const { defaultEditor, navigate } = this.props;
-    const { editorDefinition, editorImage, presetFilter } = this.state;
+    const { editorDefinition, editorImage, aiProviders, presetFilter } = this.state;
 
     const title = 'Create Workspace';
 
@@ -102,9 +105,18 @@ export class GetStarted extends React.PureComponent<Props, State> {
 
           <Spacer />
 
+          <PluginSlot
+            name="workspaceCreation"
+            props={{
+              onSelect: (providerIds: string[]) =>
+                this.setState({ aiProviders: providerIds }),
+            }}
+          />
+
           <ImportFromGit
             editorDefinition={editorDefinition}
             editorImage={editorImage}
+            aiProviders={aiProviders}
             navigate={navigate}
           />
 
@@ -113,6 +125,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
           <SamplesList
             editorDefinition={editorDefinition}
             editorImage={editorImage}
+            aiProviders={aiProviders}
             presetFilter={presetFilter}
           />
         </PageSection>

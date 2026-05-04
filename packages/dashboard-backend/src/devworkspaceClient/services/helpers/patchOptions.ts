@@ -49,3 +49,11 @@ export const STRATEGIC_MERGE_PATCH_OPTIONS: ConfigurationOptions = wrapOptions({
 export const JSON_PATCH_OPTIONS: ConfigurationOptions = wrapOptions({
   middleware: [createPatchMiddleware(PatchStrategy.JsonPatch)],
 })!;
+
+/**
+ * Configuration options for patch operations using JSON merge patch.
+ * Uses application/merge-patch+json: { data: { key: null } } to delete a key.
+ */
+export const JSON_MERGE_PATCH_OPTIONS: ConfigurationOptions = wrapOptions({
+  middleware: [createPatchMiddleware(PatchStrategy.MergePatch)],
+})!;

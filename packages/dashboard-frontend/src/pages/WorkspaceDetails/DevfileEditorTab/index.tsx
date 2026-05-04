@@ -49,6 +49,11 @@ export default class DevfileEditorTab extends React.PureComponent<Props, State> 
       <React.Fragment>
         <br />
         <Content className={editorTabStyle}>
+          {!devfileStr && (
+            <Content component="p" style={{ padding: '1rem', color: 'var(--pf-v5-global--Color--200)' }}>
+              DevWorkspace YAML is not yet available.
+            </Content>
+          )}
           {devfileStr && (
             <>
               <EditorTools

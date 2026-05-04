@@ -10,15 +10,16 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { BackupConfig, BackupInfo } from '@eclipse-che/common';
+import { api, BackupConfig, BackupInfo } from '@eclipse-che/common';
+import { Divider, PageSection, PageSectionVariants } from '@patternfly/react-core';
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import React from 'react';
 import { NavigateFunction } from 'react-router-dom';
 
 import NothingFoundEmptyState from '@/pages/WorkspacesList/EmptyState/NothingFound';
 import NoWorkspacesEmptyState from '@/pages/WorkspacesList/EmptyState/NoWorkspaces';
-import { buildRows, RowData, SortDirection } from '@/pages/WorkspacesList/Rows';
+import { buildRows, getSortParams, RowData, SortDirection } from '@/pages/WorkspacesList/Rows';
 import WorkspacesListToolbar from '@/pages/WorkspacesList/WorkspacesView/Toolbar';
-import { WorkspacesTable } from '@/pages/WorkspacesList/WorkspacesView/WorkspacesTable';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import devfileApi from '@/services/devfileApi';
 import { buildGettingStartedLocation } from '@/services/helpers/location';
@@ -29,6 +30,8 @@ type Props = {
   workspaces: Workspace[];
   editors: devfileApi.Devfile[];
   backupsByWorkspace: Record<string, BackupInfo>;
+  aiProviders: api.AiProviderDefinition[];
+  aiTools: api.AiToolDefinition[];
   branding: BrandingData;
   navigate: NavigateFunction;
 };
@@ -45,41 +48,27 @@ type State = {
 };
 
 export class WorkspacesView extends React.PureComponent<Props, State> {
-  private getColumns() {
-    const showBackupStatus = !!this.props.backupConfig?.registry;
-    const columns = [
-      { title: 'Name', dataLabel: 'Name', sortable: true },
-      { title: 'Editor', dataLabel: 'Editor', sortable: true },
-      { title: 'Last Modified', dataLabel: 'Last Modified', sortable: true },
-      ...(showBackupStatus ? [{ title: 'Backup Status', dataLabel: 'Backup Status' }] : []),
-      { title: 'Project(s)', dataLabel: 'Project(s)' },
-      { title: '', dataLabel: ' ', screenReaderText: 'Open' },
-      { title: '', dataLabel: ' ', screenReaderText: 'Open' },
-      { title: '', dataLabel: ' ', screenReaderText: 'Actions' },
-    ];
-    return columns;
-  }
-
   constructor(props: Props) {
     super(props);
 
     const filtered = this.props.workspaces.map(workspace => workspace.uid);
+    const lastModifiedIndex = this.props.aiTools.length > 0 ? 3 : 2;
     this.state = {
       filtered,
       selected: [],
       isSelectedAll: false,
       rows: [],
       sortBy: {
-        index: 2, // Last Modified column
+        index: lastModifiedIndex,
         direction: 'asc',
       },
     };
   }
 
   private buildRows(): RowData[] {
-    const { backupConfig, backupsByWorkspace, editors, workspaces } = this.props;
+    const { aiProviders, aiTools, backupsByWorkspace, editors, workspaces } = this.props;
     const { filtered, selected, sortBy } = this.state;
-    const showBackupStatus = !!backupConfig?.registry;
+    const lastModifiedColumnIndex = aiTools.length > 0 ? 3 : 2;
 
     return buildRows(
       workspaces,
@@ -89,7 +78,9 @@ export class WorkspacesView extends React.PureComponent<Props, State> {
       selected,
       sortBy,
       backupsByWorkspace,
-      showBackupStatus,
+      aiProviders,
+      aiTools,
+      lastModifiedColumnIndex,
     );
   }
 
@@ -206,16 +197,76 @@ export class WorkspacesView extends React.PureComponent<Props, State> {
       emptyState = <NothingFoundEmptyState />;
     }
 
+    const showAiColumn = this.props.aiTools.length > 0;
+    const showBackupStatus = !!this.props.backupConfig?.registry;
+    const columns = [
+      { title: 'Name', dataLabel: 'Name', sortable: true },
+      { title: 'Editor', dataLabel: 'Editor', sortable: true },
+      ...(showAiColumn ? [{ title: 'AI Provider(s)', dataLabel: 'AI Provider(s)' }] : []),
+      { title: 'Last Modified', dataLabel: 'Last Modified', sortable: true },
+      ...(showBackupStatus ? [{ title: 'Backup Status', dataLabel: 'Backup Status' }] : []),
+      { title: 'Project(s)', dataLabel: 'Project(s)' },
+    ];
+
     return (
       <>
-        <WorkspacesTable
-          columns={this.getColumns()}
-          rows={rows}
-          sortBy={sortBy}
-          onSelect={(isSelected, rowIndex) => this.handleSelect(isSelected, rowIndex)}
-          onSort={(index, direction) => this.handleSort(index, direction)}
-          toolbar={toolbar}
-        />
+        <PageSection
+          padding={{ default: 'noPadding' }}
+          variant={PageSectionVariants.default}
+          isFilled={false}
+        >
+          <Divider component="div" className="pf-u-mt-xl" />
+          {toolbar}
+          <Table aria-label="Workspaces List Table" variant="compact">
+            <Thead>
+              <Tr>
+                <Th screenReaderText="Select workspace" />
+                {columns.map((col, colIndex) => (
+                  <Th
+                    key={colIndex}
+                    sort={
+                      col.sortable
+                        ? getSortParams(
+                            colIndex,
+                            sortBy.index,
+                            sortBy.direction,
+                            (index, direction) => this.handleSort(index, direction),
+                          )
+                        : undefined
+                    }
+                  >
+                    {col.title}
+                  </Th>
+                ))}
+                <Th screenReaderText="Open" />
+                <Th screenReaderText="Actions" />
+              </Tr>
+            </Thead>
+            <Tbody>
+              {rows.map((row, rowIndex) => (
+                <Tr key={row.workspaceUID} style={{ verticalAlign: 'middle' }}>
+                  <Td
+                    style={{ verticalAlign: 'inherit' }}
+                    select={{
+                      rowIndex,
+                      onSelect: (_event, isSelected) => this.handleSelect(isSelected, rowIndex),
+                      isSelected: row.isSelected,
+                      isDisabled: row.isDisabled,
+                    }}
+                  />
+                  <Td dataLabel="Name">{row.cells.details}</Td>
+                  <Td dataLabel="Editor">{row.cells.editorIcon}</Td>
+                  {showAiColumn && <Td dataLabel="AI Provider(s)">{row.cells.aiTool}</Td>}
+                  <Td dataLabel="Last Modified">{row.cells.lastModifiedDate}</Td>
+                  {showBackupStatus && <Td dataLabel="Backup Status">{row.cells.backupStatus}</Td>}
+                  <Td dataLabel="Project(s)">{row.cells.projectsList}</Td>
+                  <Td>{row.cells.action}</Td>
+                  <Td isActionCell>{row.cells.actionsDropdown}</Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </PageSection>
         {emptyState}
       </>
     );

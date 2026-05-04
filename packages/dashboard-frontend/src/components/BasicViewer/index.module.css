@@ -16,7 +16,7 @@
   height: 100%;
 }
 
-.basicViewer > div {
+.basicViewer > * {
   overflow: auto;
   height: 100%;
   border: 1px solid var(--pf-t--global--border--color--default);

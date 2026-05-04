@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { bootstrapPlugins } from '@/plugin-registry';
 import common, { api } from '@eclipse-che/common';
 import { Store } from 'redux';
 
@@ -51,6 +52,7 @@ import {
 } from '@/store/InfrastructureNamespaces';
 import { chePluginsActionCreators } from '@/store/Plugins/chePlugins';
 import { devWorkspacePluginsActionCreators } from '@/store/Plugins/devWorkspacePlugins';
+import { actionCreators as localDevfilesActionCreators } from '@/store/LocalDevfiles';
 import { podsActionCreators, selectPodsResourceVersion } from '@/store/Pods';
 import { backendCheckRequestAction } from '@/store/SanityCheck/actions';
 import { serverConfigActionCreators } from '@/store/ServerConfig';
@@ -120,9 +122,11 @@ export default class Bootstrap {
       }),
       this.fetchPods().then(() => {
         this.watchWebSocketPods();
+        localDevfilesActionCreators.subscribeToAgentPodChanges()(this.store.dispatch, this.store.getState, undefined);
       }),
       this.fetchSshKeys(),
       this.fetchWorkspacePreferences(),
+      bootstrapPlugins(this.store),
     ]);
 
     const errors = results

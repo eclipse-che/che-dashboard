@@ -13,6 +13,8 @@
 import React from 'react';
 import { Params, Route, Routes } from 'react-router-dom';
 
+import DevfileDetailsContainer from '@/containers/DevfileDetails';
+import DevfilesListContainer from '@/containers/DevfilesList';
 import GetStartedContainer from '@/containers/GetStarted';
 import RestoreFromBackupContainer from '@/containers/RestoreFromBackup';
 import UserPreferencesContainer from '@/containers/UserPreferences';
@@ -24,6 +26,8 @@ export enum ROUTE {
   HOME = '/',
   GET_STARTED = '/create-workspace',
   WORKSPACES = '/workspaces',
+  DEVFILES = '/devfiles',
+  DEVFILE_DETAILS = '/devfile/:namespace/:devfileId',
   WORKSPACE_DETAILS = '/workspace/:namespace/:workspaceName',
   WORKSPACE_DETAILS_TAB = '/workspace/:namespace/:workspaceName?tab=:tabId',
   IDE_LOADER = '/ide/:namespace/:workspaceName',
@@ -44,6 +48,8 @@ export function AppRoutes(): React.ReactElement {
     <Routes>
       <Route key="get-started" path={ROUTE.GET_STARTED} element={<GetStartedContainer />} />
       <Route key="workspaces-list" path={ROUTE.WORKSPACES} element={<WorkspacesListContainer />} />
+      <Route key="devfiles-list" path={ROUTE.DEVFILES} element={<DevfilesListContainer />} />
+      <Route key="devfile-details" path={ROUTE.DEVFILE_DETAILS} element={<DevfileDetailsContainer />} />
       <Route
         key="workspace-details"
         path={ROUTE.WORKSPACE_DETAILS}

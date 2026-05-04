@@ -12,10 +12,13 @@
 
 import common from '@eclipse-che/common';
 
+import * as DwApi from '@/services/backend-client/devWorkspaceApi';
 import devfileApi from '@/services/devfileApi';
 import { DEVWORKSPACE_CHE_EDITOR } from '@/services/devfileApi/devWorkspace/metadata';
+import { sanitizeStaleAiTools, updateOutdatedAiTools } from '@/plugins/ai-selector/services/helpers/aiTools';
 import { isOAuthResponse, OAuthService } from '@/services/oauth';
 import { AppThunk } from '@/store';
+import { selectAiTools } from '@/plugins/ai-selector/store/AiConfig/selectors';
 import {
   checkRunningDevWorkspacesClusterLimitExceeded,
   devWorkspacesClusterActionCreators,
@@ -86,6 +89,32 @@ export const startWorkspace =
       workspace = await getDevWorkspaceClient().manageContainerSccAttribute(workspace, config);
 
       workspace = await getDevWorkspaceClient().manageDebugMode(workspace, debugWorkspace);
+
+      // Sanitize stale AI tools and update outdated ones in a single PATCH.
+      const aiTools = selectAiTools(getState());
+      const aiPatched = sanitizeStaleAiTools(workspace, aiTools);
+      const updateSource = aiPatched ?? workspace;
+      const aiUpdated = updateOutdatedAiTools(updateSource, aiTools);
+      const aiResult = aiUpdated ?? aiPatched;
+      if (aiResult) {
+        const patchOps: { op: string; path: string; value: unknown }[] = [
+          { op: 'replace', path: '/spec/template', value: aiResult.spec.template },
+        ];
+        // Persist annotation changes (e.g. clearing PENDING_CLEANUP_ANNOTATION)
+        if (aiResult.metadata?.annotations) {
+          patchOps.push({
+            op: 'replace',
+            path: '/metadata/annotations',
+            value: aiResult.metadata.annotations,
+          });
+        }
+        const { devWorkspace } = await DwApi.patchWorkspace(
+          workspace.metadata.namespace,
+          workspace.metadata.name,
+          patchOps,
+        );
+        workspace = devWorkspace;
+      }
 
       const editorName = getEditorName(workspace);
       const lifeTimeMs = getLifeTimeMs(workspace);

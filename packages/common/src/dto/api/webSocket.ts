@@ -18,6 +18,7 @@ export enum Channel {
   EVENT = 'event',
   POD = 'pod',
   LOGS = 'logs',
+  CONFIGMAP = 'configMap',
 }
 
 export function isWebSocketChannel(channel: unknown): channel is Channel {
@@ -26,7 +27,8 @@ export function isWebSocketChannel(channel: unknown): channel is Channel {
       ((channel as Channel) === Channel.DEV_WORKSPACE ||
         (channel as Channel) === Channel.EVENT)) ||
     (channel as Channel) === Channel.POD ||
-    (channel as Channel) === Channel.LOGS
+    (channel as Channel) === Channel.LOGS ||
+    (channel as Channel) === Channel.CONFIGMAP
   );
 }
 
@@ -44,7 +46,7 @@ export type SubscribeMessage = {
   method: 'SUBSCRIBE';
 } & (
   | {
-      channel: Channel.DEV_WORKSPACE | Channel.EVENT | Channel.POD;
+      channel: Channel.DEV_WORKSPACE | Channel.EVENT | Channel.POD | Channel.CONFIGMAP;
       params: SubscribeParams;
     }
   | {
@@ -149,12 +151,25 @@ export type StatusMessage = {
   status: V1Status;
   params: SubscribeParams | SubscribeLogsParams;
 };
+export type ConfigMapMessage = {
+  eventPhase: EventPhase.ADDED | EventPhase.MODIFIED | EventPhase.DELETED;
+  configMap: {
+    metadata?: {
+      name?: string;
+      resourceVersion?: string;
+      annotations?: Record<string, string>;
+    };
+    data?: Record<string, string>;
+  };
+};
+
 export type NotificationMessage =
   | EventMessage
   | DevWorkspaceMessage
   | PodMessage
   | LogsMessage
-  | StatusMessage;
+  | StatusMessage
+  | ConfigMapMessage;
 export type EventData = {
   channel: Channel;
   message: NotificationMessage;
@@ -227,5 +242,15 @@ export function isLogsMessage(message: unknown): message is LogsMessage {
     (message as LogsMessage).podName !== undefined &&
     (message as LogsMessage).containerName !== undefined &&
     (message as LogsMessage).logs !== undefined
+  );
+}
+
+export function isConfigMapMessage(message: unknown): message is ConfigMapMessage {
+  return (
+    message !== undefined &&
+    ((message as ConfigMapMessage).eventPhase === EventPhase.ADDED ||
+      (message as ConfigMapMessage).eventPhase === EventPhase.MODIFIED ||
+      (message as ConfigMapMessage).eventPhase === EventPhase.DELETED) &&
+    (message as ConfigMapMessage).configMap !== undefined
   );
 }

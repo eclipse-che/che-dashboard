@@ -15,6 +15,7 @@ import { History, Location, UnregisterCallback } from 'history';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import NavigationAgentList from '@/Layout/Navigation/AgentList';
 import NavigationMainList from '@/Layout/Navigation/MainList';
 import NavigationRecentList from '@/Layout/Navigation/RecentList';
 import { CREATE_NEW_IF_EXIST_SWITCH_ID } from '@/pages/GetStarted/SamplesList/Toolbar/CreateNewIfExistSwitch';
@@ -158,9 +159,13 @@ export class Navigation extends React.PureComponent<Props, State> {
       <Nav
         aria-label="Navigation"
         onSelect={(event, selected) => this.handleNavSelect(event, selected)}
+        style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
       >
         <NavigationMainList activePath={activeLocation.pathname} />
         <NavigationRecentList activePath={activeLocation.pathname} workspaces={recentWorkspaces} />
+        <div style={{ marginTop: 'auto' }}>
+          <NavigationAgentList activePath={activeLocation.pathname} />
+        </div>
       </Nav>
     );
   }
