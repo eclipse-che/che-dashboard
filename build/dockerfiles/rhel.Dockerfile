@@ -16,19 +16,7 @@ RUN dnf -y -q update --exclude=unbound-libs
 
 COPY . /dashboard/
 WORKDIR /dashboard/
-ARG PLUGINS_REPO=olexii4/che-dashboard-plugins
-ARG PLUGINS_REF=latest
 RUN npm i -g yarn \
-    && bash scripts/fetch-plugins.sh \
-    && find packages/dashboard-frontend/src/plugins packages/dashboard-backend/src/plugins -maxdepth 1 -type l -delete \
-    && rm -f packages/dashboard-frontend/src/plugins/index.ts \
-    && for d in plugins/*/; do \
-         [ -f "$d/plugin.json" ] || continue; \
-         name=$(basename "$d"); \
-         [ -d "$d/frontend" ] && cp -r "$d/frontend" "packages/dashboard-frontend/src/plugins/$name"; \
-         [ -d "$d/backend" ] && cp -r "$d/backend" "packages/dashboard-backend/src/plugins/$name"; \
-       done \
-    && bash scripts/prepare-plugins.sh \
     && yarn install
 RUN yarn workspace @eclipse-che/common run build \
     && yarn workspace @eclipse-che/dashboard-plugins run build \
