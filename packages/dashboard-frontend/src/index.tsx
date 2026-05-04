@@ -21,6 +21,7 @@ import { Provider } from 'react-redux';
 
 import App from '@/App';
 import WorkspaceActionsProvider from '@/contexts/WorkspaceActions/Provider';
+import { registerAllPlugins } from '@/plugins';
 import PreloadData from '@/services/bootstrap';
 import { store } from '@/store';
 
@@ -47,6 +48,8 @@ if (typeof EventTarget !== 'undefined') {
 startApp();
 
 async function startApp(): Promise<void> {
+  registerAllPlugins();
+
   const history = createHashHistory();
 
   const container = document.getElementById('ui-container')!;

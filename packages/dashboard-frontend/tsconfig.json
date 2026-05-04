@@ -21,6 +21,7 @@
       ]
     },
     "preserveConstEnums": true,
+    "preserveSymlinks": true,
     "removeComments": true,
     "resolveJsonModule": true,
     "rootDir": "src",
