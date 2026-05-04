@@ -162,9 +162,18 @@ EOF
 
 ## Pull Request — Ready to Submit
 
+> **Title:** `feat: Devfile Creator and Workspace Loader with AI Agent`
+>
 > Copy the block below verbatim as the PR body when opening the upstream PR.
 
 ---
+
+<!-- Please review the following before submitting a PR:
+Che's Contributing Guide: https://github.com/eclipse/che/blob/master/CONTRIBUTING.md
+Pull Request Policy: https://github.com/eclipse/che/wiki/Development-Workflow#pull-requests
+
+COMMITTERS: please include labels on each PR. Labels are listed here: https://github.com/eclipse/che/wiki/Labels but at a minimum you should include `kind/..` and `Dev Open Pull Request Status` labels.
+-->
 
 ### What does this PR do?
 
@@ -194,23 +203,23 @@ and to troubleshoot failing workspaces from the loader page.
   validation and autocompletion.
 - Same AI Agent panel for **troubleshooting failing workspaces** — agent can
   read pod events, inspect logs, and patch the DevWorkspace spec in place.
-- The workspace start/stop `TimeLimit` countdown is suspended while an agent
-  is running (prevents premature restart before the agent completes its fix).
+- The workspace `TimeLimit` countdown is suspended while an agent is running,
+  preventing a premature restart before the agent completes its fix.
 
 #### Plugin architecture
 
-Both features are delivered as independently versioned plugins:
+Both features are delivered as independently versioned plugins fetched at build
+time from GitHub Releases — no plugin source is committed to this repository.
 
-| Plugin | Source |
-|--------|--------|
+| Plugin | Description |
+|--------|-------------|
 | `ai-selector` | AI tool selection + User Preferences API key management |
 | `dashboard-ai-agent` | Devfile Creator, AI agent lifecycle, Loader DevWorkspace tab |
 
-Plugins are fetched at build time from GitHub Releases
-(https://github.com/olexii4/che-dashboard-plugins) via `scripts/fetch-plugins.sh`.
-No plugin source is committed to this repository.
+Plugins are downloaded by `scripts/fetch-plugins.sh` from
+https://github.com/olexii4/che-dashboard-plugins/releases/download/latest/
 
-#### Backend API
+#### Backend API additions
 
 | Route | Description |
 |-------|-------------|
@@ -221,7 +230,7 @@ No plugin source is committed to this repository.
 | `POST /api/namespace/:ns/agent` | Create agent pod |
 | `DELETE /api/namespace/:ns/agent/:agentId` | Stop agent pod |
 | `GET /api/namespace/:ns/agent/:agentId` | Agent pod status |
-| `POST /api/namespace/:ns/agent/:agentId/heartbeat` | Extend TTL |
+| `POST /api/namespace/:ns/agent/:agentId/heartbeat` | Extend agent TTL |
 | `GET /api/namespace/:ns/agent-terminal-url` | Discover ttyd endpoint |
 | `GET /api/ai-agent-registry` | Agent definitions from labeled ConfigMap |
 | `GET /api/ai-config` | Cluster AI tool configuration |
@@ -230,9 +239,9 @@ No plugin source is committed to this repository.
 
 #### Agent lifecycle
 
-- Agent pods run [olexii4/che-dashboard-agent](https://github.com/olexii4/che-dashboard-agent) (Claude Code + ttyd, scratch-based image).
+- Agent pods run [olexii4/che-dashboard-agent](https://github.com/olexii4/che-dashboard-agent) (Claude Code + ttyd, minimal scratch image).
 - Client heartbeats every **30 s**; backend stamps `che.eclipse.org/last-heartbeat`.
-  Pods idle for **20 minutes** are garbage-collected by a 5-minute periodic job.
+  Pods idle for **20 minutes** are garbage-collected by a 5-minute background job.
 - **3 concurrent agent pods** maximum per user.
 
 #### `@eclipse-che/common` additions
@@ -245,7 +254,9 @@ No plugin source is committed to this repository.
 
 ### Screenshot/screencast of this PR
 
-<!-- Add screenshots from https://github.com/eclipse-che/che-dashboard/pull/1515 -->
+<!-- Screenshots from https://github.com/eclipse-che/che-dashboard/pull/1515 -->
+
+[Demo video](https://drive.google.com/file/d/17qzt1LzlLjze-R6H4x-4VnSp0uKBAvtZ/view?usp=drive_link)
 
 ### What issues does this PR fix or reference?
 
@@ -255,8 +266,8 @@ fixes https://github.com/eclipse-che/che/issues/23796
 
 #### Repositories used for testing
 
-1. **[olexii4/che-dashboard-agent](https://github.com/olexii4/che-dashboard-agent)** — AI agent container image (Claude Code + ttyd). Used to create the AI Agent Registry ConfigMap.
-2. **[olexii4/che-dashboard-plugins](https://github.com/olexii4/che-dashboard-plugins)** — Plugin source. Releases publish ZIPs consumed by this dashboard build.
+1. **[olexii4/che-dashboard-agent](https://github.com/olexii4/che-dashboard-agent)** — AI agent container image (Claude Code + ttyd). Used to build the AI Agent Registry ConfigMap.
+2. **[olexii4/che-dashboard-plugins](https://github.com/olexii4/che-dashboard-plugins)** — Plugin source; GitHub Releases publish ZIPs consumed by this dashboard build.
 
 #### Cluster setup
 
@@ -297,8 +308,8 @@ data:
 EOF
 ```
 
-3. Configure `ANTHROPIC_API_KEY` in the user namespace (Secret with
-   `controller.devfile.io/mount-as: env` annotation).
+3. Configure `ANTHROPIC_API_KEY` in the user namespace as a Secret with
+   `controller.devfile.io/mount-as: env` annotation so it auto-mounts into agent pods.
 
 #### Manual test scenarios
 
@@ -306,19 +317,40 @@ EOF
 
 1. Open **Devfiles** in the sidebar → click **Create Devfile**.
 2. Click **Start Agent** → wait for the ttyd terminal to connect.
-3. Ask the agent to generate a devfile for a project (e.g. Node.js + MySQL).
+3. Ask the agent to generate a devfile for a project (e.g. `add the project https://github.com/olexii4/database-app.git , corresponding containers and commands`).
 4. Observe real-time editor updates as the agent writes to the ConfigMap.
-5. Click **Create Workspace** → verify the workspace starts with the generated spec.
+5. Click **Create Workspace** → verify the workspace starts with the generated spec and all commands work.
 
 **B — Workspace troubleshooting**
 
 1. Create a workspace whose devfile is missing `args: [tail, -f, /dev/null]` on a
    non-UDI container so the postStart hook fails.
 2. On the Loader page, open the **DevWorkspace** tab → click **Start Agent**.
-3. Verify the agent diagnoses the failure, proposes the fix, and the editor
-   reflects the patch.
+3. Verify the agent diagnoses the postStart failure, proposes adding the missing
+   `args`, and the editor reflects the patch.
 4. Save and restart the workspace — verify it starts successfully.
 
+**C — AI Selector and API key management**
+
+1. Navigate to **User Preferences → AI Providers Keys** → add an API key for a
+   provider. Verify the Secret is created with correct labels and the
+   `controller.devfile.io/mount-as: env` annotation.
+2. On **Create Workspace**, verify the AI Provider Selector accordion renders and
+   selecting a tool injects the init container into the DevWorkspace.
+3. On **Workspace Details → Overview**, verify the AI Tool section shows the
+   current tool; editing it updates the DevWorkspace spec.
+
+#### Release Notes
+
+Adds a **Devfile Creator** with an embedded AI agent (Claude Code) that helps
+users author and troubleshoot DevWorkspace configurations interactively.
+The agent is available both on the new Devfiles page and on the Workspace Loader
+page for diagnosing startup failures. AI tool selection and API key management
+are accessible from User Preferences.
+
+#### Docs PR
+
+<!-- Please add a matching PR to [the docs repo](https://github.com/eclipse/che-docs) and link that PR to this issue. Both will be merged at the same time. -->
 **C — AI Selector and API key management**
 
 1. Navigate to **User Preferences → AI Providers Keys** → add an API key for
