@@ -109,10 +109,13 @@ export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
             validated={valid}
             onChange={(_event, _url) => this.onChange(_url)}
           />
-          <Button variant="link" isDisabled={!url || !isUrl} aria-label="open registry">
-            <a href={url} style={{ color: 'inherit' }} target="_blank" rel="noreferrer">
-              <ExternalLinkAltIcon />
-            </a>
+          <Button
+            variant="link"
+            isDisabled={!url || !isUrl}
+            aria-label="open registry"
+            onClick={() => window.open(url, '_blank')}
+          >
+            <ExternalLinkAltIcon />
           </Button>
         </InputGroup>
         {valid === ValidatedOptions.error && errorMessage && (
