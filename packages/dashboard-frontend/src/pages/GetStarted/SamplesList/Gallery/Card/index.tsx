@@ -89,27 +89,15 @@ export class SampleCard extends React.PureComponent<Props> {
         id={this.cardId}
         isCompact
         isClickable
-        isSelectable
         onClick={this.handleSelectableAction}
         onKeyDown={(e: React.KeyboardEvent) => this.handleKeyDown(e)}
         role="button"
         tabIndex={0}
         aria-label={`Create workspace from sample ${metadata.displayName}`}
-        className={'sample-card'}
+        className={`${styles.sampleCard} sample-card`}
         data-testid="sample-card"
       >
-        <CardHeader
-          selectableActions={{
-            selectableActionId: `${this.cardId}-input`,
-            selectableActionAriaLabelledby: this.cardId,
-            name: 'sample-card-selector',
-            variant: 'single',
-            onChange: this.handleSelectableAction,
-            hasNoOffset: true,
-            isHidden: true,
-          }}
-          actions={{ actions: <>{tags}</> }}
-        >
+        <CardHeader actions={{ actions: <>{tags}</> }}>
           {devfileIcon}
           <CardTitle>{metadata.displayName}</CardTitle>
         </CardHeader>
