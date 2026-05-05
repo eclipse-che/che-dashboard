@@ -3,7 +3,7 @@
 exports[`Devfile Metadata Card snapshot 1`] = `
 <div
   aria-label="Create workspace from sample Go"
-  className="pf-v6-c-card pf-m-compact pf-m-selectable pf-m-clickable sample-card"
+  className="pf-v6-c-card pf-m-compact pf-m-clickable sampleCard sample-card"
   data-ouia-component-id="OUIA-Generated-Card-1"
   data-ouia-component-type="PF6/Card"
   data-ouia-safe={true}
@@ -18,35 +18,8 @@ exports[`Devfile Metadata Card snapshot 1`] = `
     className="pf-v6-c-card__header"
   >
     <div
-      className="pf-v6-c-card__actions pf-m-no-offset"
-    >
-      <div
-        className="pf-v6-c-card__selectable-actions"
-      >
-        <div
-          className="pf-v6-c-radio pf-m-standalone"
-        >
-          <input
-            aria-invalid={false}
-            aria-labelledby="sample-card-go"
-            checked={false}
-            className="pf-v6-c-radio__input pf-v6-screen-reader"
-            data-ouia-component-id="OUIA-Generated-Radio-1"
-            data-ouia-component-type="PF6/Radio"
-            data-ouia-safe={true}
-            disabled={false}
-            id="sample-card-go-input"
-            name="sample-card-selector"
-            onChange={[Function]}
-            type="radio"
-          />
-          <label
-            className="pf-v6-c-radio__label"
-            htmlFor="sample-card-go-input"
-          />
-        </div>
-      </div>
-    </div>
+      className="pf-v6-c-card__actions"
+    />
     <div
       className="pf-v6-c-card__header-main"
     >
