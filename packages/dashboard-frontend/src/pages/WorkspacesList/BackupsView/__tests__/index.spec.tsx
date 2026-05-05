@@ -135,12 +135,11 @@ describe('BackupsView', () => {
   });
 
   describe('lifecycle', () => {
-    test('should fetch backup list on mount with force', () => {
+    test('should fetch backup list on mount', () => {
       renderComponent({ namespace: 'test-namespace' });
 
       expect(mockFetchBackupList).toHaveBeenCalledWith({
         namespace: 'test-namespace',
-        force: true,
       });
     });
 
@@ -169,7 +168,7 @@ describe('BackupsView', () => {
         />,
       );
 
-      expect(mockFetchBackupList).toHaveBeenCalledWith({ namespace: 'namespace-1', force: true });
+      expect(mockFetchBackupList).toHaveBeenCalledWith({ namespace: 'namespace-1' });
       mockFetchBackupList.mockClear();
 
       rerender(
@@ -183,7 +182,7 @@ describe('BackupsView', () => {
         </MemoryRouter>,
       );
 
-      expect(mockFetchBackupList).toHaveBeenCalledWith({ namespace: 'namespace-2', force: true });
+      expect(mockFetchBackupList).toHaveBeenCalledWith({ namespace: 'namespace-2' });
     });
 
     test('should not re-fetch when namespace stays the same', () => {

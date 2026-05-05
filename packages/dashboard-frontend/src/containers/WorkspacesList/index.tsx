@@ -18,7 +18,11 @@ import Fallback from '@/components/Fallback';
 import WorkspacesList from '@/pages/WorkspacesList';
 import { RootState } from '@/store';
 import { fetchBackupConfig, fetchWorkspaceBackupStatus } from '@/store/Backups/actions';
-import { selectAllBackupsByWorkspace, selectBackupConfig } from '@/store/Backups/selectors';
+import {
+  selectAllBackupsByWorkspace,
+  selectBackupConfig,
+  selectBackupSchedule,
+} from '@/store/Backups/selectors';
 import { selectBranding } from '@/store/Branding/selectors';
 import { selectCmEditors } from '@/store/Plugins/devWorkspacePlugins/selectors';
 import { workspacesActionCreators } from '@/store/Workspaces';
@@ -56,7 +60,7 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
   }
 
   private fetchBackupStatuses() {
-    const { allWorkspaces, backupConfig, backupsByWorkspace } = this.props;
+    const { allWorkspaces, backupConfig, backupsByWorkspace: backupsByWorkspace } = this.props;
     if (!backupConfig?.registry) {
       return;
     }
@@ -73,10 +77,11 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
 
   render() {
     const {
-      backupConfig,
-      branding,
       allWorkspaces,
+      backupConfig,
       backupsByWorkspace,
+      backupSchedule,
+      branding,
       editors,
       isLoading,
       location,
@@ -90,12 +95,13 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
     return (
       <WorkspacesList
         backupConfig={backupConfig}
+        backupsByWorkspace={backupsByWorkspace}
+        backupSchedule={backupSchedule}
         branding={branding}
         editors={editors}
         location={location}
         navigate={navigate}
         workspaces={allWorkspaces}
-        backupsByWorkspace={backupsByWorkspace}
       />
     );
   }
@@ -110,10 +116,11 @@ function ContainerWrapper(props: MappedProps) {
 
 const mapStateToProps = (state: RootState) => {
   return {
-    backupConfig: selectBackupConfig(state),
-    branding: selectBranding(state),
     allWorkspaces: selectAllWorkspaces(state),
+    backupConfig: selectBackupConfig(state),
     backupsByWorkspace: selectAllBackupsByWorkspace(state),
+    backupSchedule: selectBackupSchedule(state),
+    branding: selectBranding(state),
     editors: selectCmEditors(state),
     isLoading: selectIsLoading(state),
   };
