@@ -16,8 +16,9 @@ RUN dnf -y -q update --exclude=unbound-libs
 
 COPY . /dashboard/
 WORKDIR /dashboard/
-RUN npm i -g yarn; yarn install
-RUN yarn build
+RUN npm i -g yarn \
+    && yarn install
+RUN yarn build:packages
 
 # https://registry.access.redhat.com/ubi9/nodejs-20
 FROM registry.access.redhat.com/ubi9/nodejs-20
