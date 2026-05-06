@@ -15,6 +15,8 @@ import { Store } from 'redux';
 
 import { lazyInject } from '@/inversify.config';
 import { bootstrapPlugins } from '@/plugin-registry';
+import { aiAgentRegistryActionCreators } from '@/plugins/dashboard-ai-agent/store/AiAgentRegistry';
+import { actionCreators as localDevfilesActionCreators } from '@/plugins/dashboard-ai-agent/store/LocalDevfiles';
 import { updateFavicon } from '@/preload/brandingLoader';
 import { provisionKubernetesNamespace } from '@/services/backend-client/kubernetesNamespaceApi';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
@@ -36,7 +38,6 @@ import { ResourceFetcherService } from '@/services/resource-fetcher';
 import { Workspace } from '@/services/workspace-adapter';
 import { hasLoginPage, isForbidden, isUnauthorized } from '@/services/workspace-client/helpers';
 import { AppThunk, RootState } from '@/store';
-import { aiAgentRegistryActionCreators } from '@/plugins/dashboard-ai-agent/store/AiAgentRegistry';
 import { bannerAlertActionCreators } from '@/store/BannerAlert';
 import { brandingActionCreators } from '@/store/Branding';
 import { clusterConfigActionCreators, selectDashboardFavicon } from '@/store/ClusterConfig';
@@ -51,7 +52,6 @@ import {
   infrastructureNamespacesActionCreators,
   selectDefaultNamespace,
 } from '@/store/InfrastructureNamespaces';
-import { actionCreators as localDevfilesActionCreators } from '@/plugins/dashboard-ai-agent/store/LocalDevfiles';
 import { chePluginsActionCreators } from '@/store/Plugins/chePlugins';
 import { devWorkspacePluginsActionCreators } from '@/store/Plugins/devWorkspacePlugins';
 import { podsActionCreators, selectPodsResourceVersion } from '@/store/Pods';

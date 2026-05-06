@@ -11,12 +11,13 @@
  */
 
 import { container } from '@/inversify.config';
+import { aiAgentRegistryActionCreators } from '@/plugins/dashboard-ai-agent/store/AiAgentRegistry';
+import { actionCreators as localDevfilesActionCreators } from '@/plugins/dashboard-ai-agent/store/LocalDevfiles';
 import { provisionKubernetesNamespace } from '@/services/backend-client/kubernetesNamespaceApi';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import Bootstrap from '@/services/bootstrap';
 import { ResourceFetcherService } from '@/services/resource-fetcher';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
-import { aiAgentRegistryActionCreators } from '@/plugins/dashboard-ai-agent/store/AiAgentRegistry';
 import { bannerAlertActionCreators } from '@/store/BannerAlert';
 import { brandingActionCreators } from '@/store/Branding';
 import { clusterConfigActionCreators } from '@/store/ClusterConfig';
@@ -24,7 +25,6 @@ import { clusterInfoActionCreators } from '@/store/ClusterInfo';
 import { devfileRegistriesActionCreators } from '@/store/DevfileRegistries';
 import { eventsActionCreators } from '@/store/Events';
 import { infrastructureNamespacesActionCreators } from '@/store/InfrastructureNamespaces';
-import { actionCreators as localDevfilesActionCreators } from '@/plugins/dashboard-ai-agent/store/LocalDevfiles';
 import { chePluginsActionCreators } from '@/store/Plugins/chePlugins';
 import { devWorkspacePluginsActionCreators } from '@/store/Plugins/devWorkspacePlugins';
 import { podsActionCreators } from '@/store/Pods';
