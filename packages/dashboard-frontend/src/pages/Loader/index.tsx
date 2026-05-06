@@ -26,7 +26,6 @@ import { Location, NavigateFunction } from 'react-router-dom';
 
 import Head from '@/components/Head';
 import Header from '@/components/Header';
-import LoaderAgentPanelTab from '@/plugins/dashboard-ai-agent/components/LoaderAgentPanelTab';
 import WorkspaceEvents from '@/components/WorkspaceEvents';
 import WorkspaceLogs from '@/components/WorkspaceLogs';
 import WorkspaceProgress from '@/components/WorkspaceProgress';
@@ -36,6 +35,7 @@ import {
 } from '@/components/WorkspaceProgress/StartingSteps/StartWorkspace/prepareRestart';
 import { ToggleBarsContext } from '@/contexts/ToggleBars';
 import styles from '@/pages/Loader/index.module.css';
+import LoaderAgentPanelTab from '@/plugins/dashboard-ai-agent/components/LoaderAgentPanelTab';
 import { DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
 import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
 
