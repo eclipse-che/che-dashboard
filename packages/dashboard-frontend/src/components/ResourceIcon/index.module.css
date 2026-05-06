@@ -12,6 +12,7 @@
 
 .icon {
   display: inline-block;
+  flex-shrink: 0;
 
   min-width: 18px;
   margin-right: 4px;
@@ -19,10 +20,10 @@
 
   font-size: 14px;
   line-height: 16px;
-  color: var(--pf-t--global--text--color--nonstatus--on-blue--default);
+  color: var(--pf-t--global--color--nonstatus--gray--100);
   text-align: center;
   white-space: nowrap;
 
-  background-color: var(--pf-t--global--color--nonstatus--blue--default);
+  background-color: var(--pf-t--global--color--nonstatus--blue--300);
   border-radius: 20px;
 }
