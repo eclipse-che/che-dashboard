@@ -2,9 +2,8 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 
 | Packages | Resolved CQs |
 | --- | --- |
-| `@eclipse-che/api@7.86.0` | ecd.che |
-| `@eclipse-che/license-tool@2.0.0` | ecd.che |
-| `axios@1.15.2` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios/1.15.2) |
-| `postcss@8.5.13` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/postcss/8.5.13) |
-
+| `@types/stream-buffers@3.0.8` | #24674 |
+| `qs@6.5.5` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/qs/6.5.5) |
+| `tar@7.5.11` | #25796 |
+| `tar@7.5.7` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/tar/7.5.7) |
 
