@@ -16,6 +16,7 @@ import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import Bootstrap from '@/services/bootstrap';
 import { ResourceFetcherService } from '@/services/resource-fetcher';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+import { aiAgentRegistryActionCreators } from '@/plugins/dashboard-ai-agent/store/AiAgentRegistry';
 import { bannerAlertActionCreators } from '@/store/BannerAlert';
 import { brandingActionCreators } from '@/store/Branding';
 import { clusterConfigActionCreators } from '@/store/ClusterConfig';
@@ -23,6 +24,7 @@ import { clusterInfoActionCreators } from '@/store/ClusterInfo';
 import { devfileRegistriesActionCreators } from '@/store/DevfileRegistries';
 import { eventsActionCreators } from '@/store/Events';
 import { infrastructureNamespacesActionCreators } from '@/store/InfrastructureNamespaces';
+import { actionCreators as localDevfilesActionCreators } from '@/plugins/dashboard-ai-agent/store/LocalDevfiles';
 import { chePluginsActionCreators } from '@/store/Plugins/chePlugins';
 import { devWorkspacePluginsActionCreators } from '@/store/Plugins/devWorkspacePlugins';
 import { podsActionCreators } from '@/store/Pods';
@@ -96,6 +98,12 @@ jest
   .spyOn(workspacePreferencesActionCreators, 'requestPreferences')
   .mockImplementation(() => jest.fn());
 jest.spyOn(bannerAlertActionCreators, 'addBanner').mockImplementation(() => jest.fn());
+jest
+  .spyOn(localDevfilesActionCreators, 'subscribeToAgentPodChanges')
+  .mockImplementation(() => jest.fn());
+jest
+  .spyOn(aiAgentRegistryActionCreators, 'requestAiAgentRegistry')
+  .mockImplementation(() => jest.fn().mockResolvedValue(undefined));
 
 const mockWebsocketClient = {
   connect: jest.fn(),
