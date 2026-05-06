@@ -20,6 +20,16 @@ import WorkspaceDetailsContainer from '@/containers/WorkspaceDetails';
 import WorkspacesListContainer from '@/containers/WorkspacesList';
 import { Redirects } from '@/Routes/Redirects';
 
+// Lazy-load plugin containers to avoid pulling the full plugin component tree
+// into the main bundle (prevents circular dep crash) and to keep jest happy
+// (the dynamic import is not resolved during module loading in tests).
+const DevfilesListContainer = React.lazy(
+  () => import('@/plugins/dashboard-ai-agent/containers/DevfilesList'),
+);
+const DevfileDetailsContainer = React.lazy(
+  () => import('@/plugins/dashboard-ai-agent/containers/DevfileDetails'),
+);
+
 export enum ROUTE {
   HOME = '/',
   GET_STARTED = '/create-workspace',
@@ -33,6 +43,8 @@ export enum ROUTE {
   FACTORY_LOADER_URL = '/load-factory?url=:url',
   USER_PREFERENCES = '/user-preferences',
   USER_PREFERENCES_TAB = '/user-preferences?tab=:tabId',
+  DEVFILES = '/devfiles',
+  DEVFILE_DETAILS = '/devfile/:namespace/:devfileId',
 }
 
 export type WorkspaceRouteParams = Params<'namespace' | 'workspaceName'>;
@@ -60,6 +72,24 @@ export function AppRoutes(): React.ReactElement {
         key="user-preferences"
         path={ROUTE.USER_PREFERENCES}
         element={<UserPreferencesContainer />}
+      />
+      <Route
+        key="devfiles-list"
+        path={ROUTE.DEVFILES}
+        element={
+          <React.Suspense fallback={null}>
+            <DevfilesListContainer />
+          </React.Suspense>
+        }
+      />
+      <Route
+        key="devfile-details"
+        path={ROUTE.DEVFILE_DETAILS}
+        element={
+          <React.Suspense fallback={null}>
+            <DevfileDetailsContainer />
+          </React.Suspense>
+        }
       />
       <Route key="redirects" path="*" element={<Redirects />} />
     </Routes>

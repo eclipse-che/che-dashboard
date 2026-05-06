@@ -22,6 +22,7 @@ import Head from '@/components/Head';
 import ImportFromGit from '@/components/ImportFromGit';
 import { Spacer } from '@/components/Spacer';
 import SamplesList from '@/pages/GetStarted/SamplesList';
+import { PluginSlot } from '@/plugin-registry/PluginSlot';
 import { ROUTE } from '@/Routes';
 import { RootState } from '@/store';
 import { selectAiConfigEnabled } from '@/store/AiConfig/selectors';
@@ -123,6 +124,10 @@ export class GetStarted extends React.PureComponent<Props, State> {
             aiProviders={aiProviders}
             navigate={navigate}
           />
+
+          <Spacer />
+
+          <PluginSlot name="workspaceCreation" />
 
           <Spacer />
 

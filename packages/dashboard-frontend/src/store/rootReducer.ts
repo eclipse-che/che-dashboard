@@ -10,13 +10,16 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { aiConfigReducer } from '@/store/AiConfig';
+import { reducer as aiConfigReducer } from '@/plugins/ai-selector/store/AiConfig/reducer';
+import { aiAgentRegistryReducer } from '@/plugins/dashboard-ai-agent/store/AiAgentRegistry';
 import { backupsReducer } from '@/store/Backups';
 import { bannerAlertReducer } from '@/store/BannerAlert';
 import { brandingReducer } from '@/store/Branding';
 import { clusterConfigReducer } from '@/store/ClusterConfig';
 import { clusterInfoReducer } from '@/store/ClusterInfo';
 import { devfileRegistriesReducer } from '@/store/DevfileRegistries';
+import { devfileSchemaReducer } from '@/plugins/dashboard-ai-agent/store/DevfileSchema';
+import { devWorkspaceSchemaReducer } from '@/plugins/dashboard-ai-agent/store/DevWorkspaceSchema';
 import { devWorkspacesClusterReducer } from '@/store/DevWorkspacesCluster';
 import { dockerConfigReducer } from '@/store/DockerConfig';
 import { eventsReducer } from '@/store/Events';
@@ -24,6 +27,7 @@ import { factoryResolverReducer } from '@/store/FactoryResolver';
 import { gitConfigReducer } from '@/store/GitConfig';
 import { gitOauthConfigReducer } from '@/store/GitOauthConfig';
 import { infrastructureNamespacesReducer } from '@/store/InfrastructureNamespaces';
+import { localDevfilesReducer } from '@/plugins/dashboard-ai-agent/store/LocalDevfiles';
 import { personalAccessTokenReducer } from '@/store/PersonalAccessTokens';
 import { chePluginsReducer } from '@/store/Plugins/chePlugins';
 import { devWorkspacePluginsReducer } from '@/store/Plugins/devWorkspacePlugins';
@@ -39,7 +43,11 @@ import { devWorkspacesReducer } from '@/store/Workspaces/devWorkspaces';
 import { workspacePreferencesReducer } from '@/store/Workspaces/Preferences';
 
 export const rootReducer = {
+  aiAgentRegistry: aiAgentRegistryReducer,
   aiConfig: aiConfigReducer,
+  devfileSchema: devfileSchemaReducer,
+  devWorkspaceSchema: devWorkspaceSchemaReducer,
+  localDevfiles: localDevfilesReducer,
   backups: backupsReducer,
   bannerAlert: bannerAlertReducer,
   branding: brandingReducer,
