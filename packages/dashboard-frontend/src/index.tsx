@@ -21,6 +21,7 @@ import { Provider } from 'react-redux';
 
 import App from '@/App';
 import WorkspaceActionsProvider from '@/contexts/WorkspaceActions/Provider';
+import { registerAllPlugins } from '@/plugins';
 import PreloadData from '@/services/bootstrap';
 import { store } from '@/store';
 
@@ -47,6 +48,8 @@ if (typeof EventTarget !== 'undefined') {
 startApp();
 
 async function startApp(): Promise<void> {
+  registerAllPlugins();
+
   const history = createHashHistory();
 
   const container = document.getElementById('ui-container')!;
@@ -54,13 +57,16 @@ async function startApp(): Promise<void> {
   try {
     // preload app data
     await new PreloadData(store).init();
-    console.log('UD: preload data complete successfully.');
   } catch (error) {
     console.error('UD: preload data failed.', error);
   }
 
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./service-worker.js');
+    try {
+      await navigator.serviceWorker.register('./service-worker.js');
+    } catch (error) {
+      console.error('UD: service worker registration failed.', error);
+    }
   }
 
   root.render(

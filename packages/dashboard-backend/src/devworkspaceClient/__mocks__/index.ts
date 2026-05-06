@@ -85,6 +85,7 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
   get editorsApi(): IEditorsApi {
     throw new Error('Method not implemented.');
   }
+
 }
 
 export class DevWorkspaceSingletonClient implements IDevWorkspaceSingletonClient {

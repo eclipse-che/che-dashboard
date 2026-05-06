@@ -14,6 +14,7 @@ import common, { api } from '@eclipse-che/common';
 import { Store } from 'redux';
 
 import { lazyInject } from '@/inversify.config';
+import { bootstrapPlugins } from '@/plugin-registry';
 import { updateFavicon } from '@/preload/brandingLoader';
 import { provisionKubernetesNamespace } from '@/services/backend-client/kubernetesNamespaceApi';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
@@ -34,7 +35,8 @@ import { signIn } from '@/services/helpers/login';
 import { ResourceFetcherService } from '@/services/resource-fetcher';
 import { Workspace } from '@/services/workspace-adapter';
 import { hasLoginPage, isForbidden, isUnauthorized } from '@/services/workspace-client/helpers';
-import { RootState } from '@/store';
+import { AppThunk, RootState } from '@/store';
+import { aiAgentRegistryActionCreators } from '@/plugins/dashboard-ai-agent/store/AiAgentRegistry';
 import { bannerAlertActionCreators } from '@/store/BannerAlert';
 import { brandingActionCreators } from '@/store/Branding';
 import { clusterConfigActionCreators, selectDashboardFavicon } from '@/store/ClusterConfig';
@@ -49,6 +51,7 @@ import {
   infrastructureNamespacesActionCreators,
   selectDefaultNamespace,
 } from '@/store/InfrastructureNamespaces';
+import { actionCreators as localDevfilesActionCreators } from '@/plugins/dashboard-ai-agent/store/LocalDevfiles';
 import { chePluginsActionCreators } from '@/store/Plugins/chePlugins';
 import { devWorkspacePluginsActionCreators } from '@/store/Plugins/devWorkspacePlugins';
 import { podsActionCreators, selectPodsResourceVersion } from '@/store/Pods';
@@ -86,6 +89,10 @@ export default class Bootstrap {
     this.resourceFetcher = new ResourceFetcherService();
   }
 
+  private dispatch<T>(thunk: AppThunk<T>): T {
+    return thunk(this.store.dispatch, this.store.getState, undefined);
+  }
+
   async init(): Promise<void> {
     await this.fetchServerConfig()
       .then(() => this.doBackendsSanityCheck())
@@ -120,9 +127,14 @@ export default class Bootstrap {
       }),
       this.fetchPods().then(() => {
         this.watchWebSocketPods();
+        this.dispatch(localDevfilesActionCreators.subscribeToAgentPodChanges());
       }),
       this.fetchSshKeys(),
       this.fetchWorkspacePreferences(),
+      bootstrapPlugins(this.store),
+      this.dispatch(aiAgentRegistryActionCreators.requestAiAgentRegistry()).catch((e: unknown) => {
+        console.warn('Unable to fetch AI agent registry.', e);
+      }),
     ]);
 
     const errors = results
@@ -148,7 +160,7 @@ export default class Bootstrap {
           lastFetched: Date.now(),
         }),
       );
-    } catch (e) {
+    } catch (e: unknown) {
       if (isUnauthorized(e) || (isForbidden(e) && hasLoginPage(e))) {
         signIn();
       }
@@ -166,7 +178,7 @@ export default class Bootstrap {
     const { requestClusterConfig } = clusterConfigActionCreators;
     try {
       await requestClusterConfig()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
+    } catch (e: unknown) {
       console.warn(
         'Unable to fetch cluster configuration. This is expected behavior unless backend is configured to provide this information.',
       );
@@ -177,7 +189,7 @@ export default class Bootstrap {
     const { requestClusterInfo } = clusterInfoActionCreators;
     try {
       await requestClusterInfo()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
+    } catch (e: unknown) {
       console.warn(
         'Unable to fetch cluster info. This is expected behavior unless backend is configured to provide this information.',
       );
@@ -188,7 +200,7 @@ export default class Bootstrap {
     const { requestBranding } = brandingActionCreators;
     try {
       await requestBranding()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
+    } catch (e: unknown) {
       const errorMessage = common.helpers.errors.getMessage(e);
       this.issuesReporterService.registerIssue('unknown', new Error(errorMessage));
     }
@@ -299,7 +311,7 @@ export default class Bootstrap {
     const { requestDwDefaultEditor } = devWorkspacePluginsActionCreators;
     try {
       await requestDwDefaultEditor()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
+    } catch (e: unknown) {
       const message = `Required sources failed when trying to create the workspace: ${e}`;
       const { addBanner } = bannerAlertActionCreators;
       addBanner(message)(this.store.dispatch, this.store.getState, undefined);
@@ -312,7 +324,7 @@ export default class Bootstrap {
     const { requestDwDefaultPlugins } = devWorkspacePluginsActionCreators;
     try {
       await requestDwDefaultPlugins()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
+    } catch (e: unknown) {
       console.error('Failed to retrieve default plug-ins.', e);
     }
   }
@@ -321,7 +333,7 @@ export default class Bootstrap {
     const { requestNamespaces } = infrastructureNamespacesActionCreators;
     try {
       await requestNamespaces()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
+    } catch (e: unknown) {
       console.error(e);
     }
   }
@@ -330,7 +342,7 @@ export default class Bootstrap {
     const { requestServerConfig } = serverConfigActionCreators;
     try {
       await requestServerConfig()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
+    } catch (e: unknown) {
       console.error(e);
     }
   }
@@ -425,7 +437,7 @@ export default class Bootstrap {
 
       const error = this.workspaceStoppedDetector.getWorkspaceStoppedError(stoppedWorkspace, type);
       this.issuesReporterService.registerIssue(type, error, workspaceData);
-    } catch (e) {
+    } catch (e: unknown) {
       if (e instanceof WorkspaceRunningError) {
         if (e.workspace.ideUrl) {
           const ideUrl = e.workspace.ideUrl;

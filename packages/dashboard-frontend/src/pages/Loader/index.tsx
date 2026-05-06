@@ -16,6 +16,7 @@ import { Location, NavigateFunction } from 'react-router-dom';
 
 import Head from '@/components/Head';
 import Header from '@/components/Header';
+import LoaderAgentPanelTab from '@/plugins/dashboard-ai-agent/components/LoaderAgentPanelTab';
 import WorkspaceEvents from '@/components/WorkspaceEvents';
 import WorkspaceLogs from '@/components/WorkspaceLogs';
 import WorkspaceProgress from '@/components/WorkspaceProgress';
@@ -144,6 +145,17 @@ export class LoaderPage extends React.PureComponent<Props, State> {
               isAriaDisabled={isEventsTabDisabled}
             >
               <WorkspaceEvents workspaceUID={workspace?.uid} />
+            </Tab>
+            <Tab
+              eventKey="DevWorkspaces"
+              title="DevWorkspaces"
+              data-testid="loader-devworkspaces-tab"
+              id="loader-devworkspaces-tab"
+            >
+              <LoaderAgentPanelTab
+                workspace={workspace}
+                isActive={activeTabKey === ('DevWorkspaces' as LoaderTab)}
+              />
             </Tab>
           </Tabs>
         </PageSection>

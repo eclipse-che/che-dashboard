@@ -132,4 +132,5 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
   get workspacePreferencesApi(): IWorkspacePreferencesApi {
     return new WorkspacePreferencesApiService(this.kubeConfig);
   }
+
 }
