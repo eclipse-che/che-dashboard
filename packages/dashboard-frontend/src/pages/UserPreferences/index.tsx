@@ -93,7 +93,7 @@ class UserPreferences extends React.PureComponent<Props, State> {
     }
 
     const { activeTabKey } = this.state;
-    const currentIndex = this.tabOrder.indexOf(activeTabKey);
+    const currentIndex = (this.tabOrder as ReadonlyArray<string>).indexOf(activeTabKey);
     let nextIndex = -1;
 
     if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
