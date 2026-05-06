@@ -49,3 +49,11 @@ export const STRATEGIC_MERGE_PATCH_OPTIONS: ConfigurationOptions = wrapOptions({
 export const JSON_PATCH_OPTIONS: ConfigurationOptions = wrapOptions({
   middleware: [createPatchMiddleware(PatchStrategy.JsonPatch)],
 })!;
+
+/**
+ * Configuration options for merge-patch operations.
+ * Uses application/merge-patch+json for: { data: { key: value } } or { data: { key: null } }
+ */
+export const JSON_MERGE_PATCH_OPTIONS: ConfigurationOptions = wrapOptions({
+  middleware: [createPatchMiddleware(PatchStrategy.MergePatch)],
+})!;

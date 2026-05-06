@@ -335,6 +335,32 @@ export const namespacedWorkspacePreferencesAuthorizationSchema: JSONSchema7 = {
   required: ['namespace', 'provider'],
 };
 
+export const aiProviderKeyBodySchema: JSONSchema7 = {
+  type: 'object',
+  properties: {
+    toolId: { type: 'string' },
+    envVarName: { type: 'string' },
+    apiKey: { type: 'string' },
+  },
+  required: ['toolId', 'envVarName', 'apiKey'],
+};
+
+export const aiProviderKeyParamsSchema: JSONSchema7 = {
+  type: 'object',
+  properties: {
+    namespace: { type: 'string' },
+    toolId: { type: 'string' },
+  },
+  required: ['namespace', 'toolId'],
+};
+
+export const devfileVersionSchema: JSONSchema7 = {
+  type: 'object',
+  properties: {
+    version: { type: 'string' },
+  },
+};
+
 export const namespacedWorkspacePreferencesTrustedSourceSchema: JSONSchema7 = {
   type: 'object',
   properties: {

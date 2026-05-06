@@ -15,6 +15,9 @@ import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import React from 'react';
 
 import { getSortParams, RowData, SortDirection } from '@/pages/WorkspacesList/Rows';
+import { getRegisteredFrontendPlugins } from '@/plugin-registry';
+import { selectAiProviders, selectAiTools } from '@/plugins/ai-selector/store/AiConfig';
+import { store } from '@/store';
 
 type ColumnDef = {
   title: string;
@@ -83,6 +86,28 @@ export class WorkspacesTable extends React.PureComponent<Props> {
                 />
                 <Td dataLabel="Name">{row.cells.details}</Td>
                 <Td dataLabel="Editor">{row.cells.editorIcon}</Td>
+                {getRegisteredFrontendPlugins()
+                  .map(p => p.slots.workspacesListColumn)
+                  .filter(col => {
+                    if (!col) return false;
+                    if (col.visible) return col.visible(store.getState());
+                    return true;
+                  })
+                  .map((col, i) => {
+                    const state = store.getState();
+                    const ColComponent = col!.component as React.ComponentType<
+                      Record<string, unknown>
+                    >;
+                    return (
+                      <Td key={i} dataLabel={col!.name}>
+                        <ColComponent
+                          workspace={row.workspace}
+                          aiTools={selectAiTools(state)}
+                          aiProviders={selectAiProviders(state)}
+                        />
+                      </Td>
+                    );
+                  })}
                 <Td dataLabel="Last Modified">{row.cells.lastModifiedDate}</Td>
                 {row.cells.backupStatus !== undefined && (
                   <Td dataLabel="Backup Status">{row.cells.backupStatus}</Td>

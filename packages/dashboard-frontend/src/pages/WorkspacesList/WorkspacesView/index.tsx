@@ -19,10 +19,12 @@ import NoWorkspacesEmptyState from '@/pages/WorkspacesList/EmptyState/NoWorkspac
 import { buildRows, RowData, SortDirection } from '@/pages/WorkspacesList/Rows';
 import WorkspacesListToolbar from '@/pages/WorkspacesList/WorkspacesView/Toolbar';
 import { WorkspacesTable } from '@/pages/WorkspacesList/WorkspacesView/WorkspacesTable';
+import { getRegisteredFrontendPlugins } from '@/plugin-registry';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import devfileApi from '@/services/devfileApi';
 import { buildGettingStartedLocation } from '@/services/helpers/location';
 import { Workspace } from '@/services/workspace-adapter';
+import { store } from '@/store';
 
 type Props = {
   backupConfig?: BackupConfig;
@@ -45,11 +47,23 @@ type State = {
 };
 
 export class WorkspacesView extends React.PureComponent<Props, State> {
+  private getPluginColumns() {
+    const state = store.getState();
+    return getRegisteredFrontendPlugins()
+      .map(p => p.slots.workspacesListColumn)
+      .filter(col => col && (!col.visible || col.visible(state)));
+  }
+
   private getColumns() {
     const showBackupStatus = !!this.props.backupConfig?.registry;
+    const pluginColumns = this.getPluginColumns().map(col => ({
+      title: col!.name,
+      dataLabel: col!.name,
+    }));
     const columns = [
       { title: 'Name', dataLabel: 'Name', sortable: true },
       { title: 'Editor', dataLabel: 'Editor', sortable: true },
+      ...pluginColumns,
       { title: 'Last Modified', dataLabel: 'Last Modified', sortable: true },
       ...(showBackupStatus ? [{ title: 'Backup Status', dataLabel: 'Backup Status' }] : []),
       { title: 'Project(s)', dataLabel: 'Project(s)' },

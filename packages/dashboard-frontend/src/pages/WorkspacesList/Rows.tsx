@@ -34,6 +34,7 @@ export type SortDirection = 'asc' | 'desc' | 'none';
 
 export interface RowData {
   workspaceUID: string;
+  workspace: Workspace;
   cells: {
     details: React.ReactNode;
     editorIcon: React.ReactNode;
@@ -227,6 +228,7 @@ export function buildRow(
 
   return {
     workspaceUID: workspace.uid,
+    workspace,
     cells: {
       details,
       editorIcon,
