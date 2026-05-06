@@ -24,10 +24,25 @@ exports[`Sidebar snapshot - open 1`] = `
   id="page-sidebar"
 >
   <div
-    className="pf-v6-c-page__sidebar-body"
+    className="pf-v6-c-page__sidebar-body sidebarBody"
   >
-    <div>
-      Mock Navigation component
+    <div
+      className="mainNavWrapper"
+    >
+      <div>
+        Mock Navigation component
+      </div>
+    </div>
+    <div
+      className="agentNavWrapper"
+    >
+      <nav
+        aria-label="Agent Pods"
+        className="pf-v6-c-nav"
+        data-ouia-component-id="OUIA-Generated-Nav-1"
+        data-ouia-component-type="PF6/Nav"
+        data-ouia-safe={true}
+      />
     </div>
   </div>
 </div>
