@@ -1,0 +1,57 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+.countdownRing {
+  float: left;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 56px;
+  height: 56px;
+  margin: 0 16px 8px 0;
+
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--pf-t--global--text--color--regular);
+
+  border: 4px solid var(--pf-t--global--border--color--status--warning--default);
+  border-radius: 50%;
+}
+
+.countdownRingUrgent {
+  color: var(--pf-t--global--text--color--status--danger--default);
+  border-color: var(--pf-t--global--border--color--status--danger--default);
+  animation: urgentPulse 1s infinite;
+}
+
+@keyframes urgentPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+.clearFloat {
+  clear: both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .countdownRingUrgent {
+    animation: none;
+  }
+}
