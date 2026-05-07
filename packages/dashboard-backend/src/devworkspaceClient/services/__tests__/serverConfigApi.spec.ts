@@ -13,7 +13,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import * as mockClient from '@kubernetes/client-node';
-import { CustomObjectsApi } from '@kubernetes/client-node';
+import { CoreV1Api, CustomObjectsApi } from '@kubernetes/client-node';
 
 import { CheClusterCustomResource, CustomResourceDefinitionList } from '@/devworkspaceClient';
 import {
@@ -22,6 +22,10 @@ import {
 } from '@/devworkspaceClient/services/serverConfigApi';
 
 jest.mock('@/helpers/getUserName.ts');
+
+jest.mock('@/devworkspaceClient/services/helpers/retryableExec', () => ({
+  retryableExec: jest.fn((fn: () => Promise<unknown>) => fn()),
+}));
 
 const mockRun = jest.fn();
 jest.mock('@/devworkspaceClient/services/helpers/exec', () => ({
@@ -342,6 +346,71 @@ describe('Server Config API Service', () => {
       } as CheClusterCustomResource);
 
       expect(res).toEqual('false');
+    });
+  });
+
+  describe('Session Timeout', () => {
+    function makeServiceWithConfigMap(configMapContent: string | null): ServerConfigApiService {
+      const { KubeConfig } = mockClient;
+      const kc = new KubeConfig();
+      kc.makeApiClient = jest.fn().mockImplementation((apiClass: unknown) => {
+        if (apiClass === CoreV1Api) {
+          if (configMapContent === null) {
+            return {
+              readNamespacedConfigMap: () => Promise.reject(new Error('not found')),
+            } as unknown as CoreV1Api;
+          }
+          return {
+            readNamespacedConfigMap: () =>
+              Promise.resolve({ data: { 'oauth-proxy.cfg': configMapContent } }),
+          } as unknown as CoreV1Api;
+        }
+        return {
+          listClusterCustomObject: () => Promise.resolve(buildCustomResourceList().body),
+        } as unknown as CustomObjectsApi;
+      });
+      return new ServerConfigApiService(kc);
+    }
+
+    // CR-based path (new operator with che-operator PR #1760)
+    test('returns cookieExpireSeconds from CR when set', async () => {
+      const cr = buildCustomResource();
+      cr.spec.networking = { auth: { gateway: { oAuthProxy: { cookieExpireSeconds: 1440 } } } };
+      expect(await serverConfigService.getSessionTimeout(cr)).toEqual(1440);
+    });
+
+    test('returns 0 when cookieExpireSeconds is 0 (session-cookie mode)', async () => {
+      const cr = buildCustomResource();
+      cr.spec.networking = { auth: { gateway: { oAuthProxy: { cookieExpireSeconds: 0 } } } };
+      expect(await serverConfigService.getSessionTimeout(cr)).toEqual(0);
+    });
+
+    // ConfigMap fallback path (old operator — CR field absent)
+    test('falls back to ConfigMap and parses "24h0m0s" to 86400', async () => {
+      const svc = makeServiceWithConfigMap('cookie_expire = "24h0m0s"');
+      const cr = buildCustomResource(); // no oAuthProxy field
+      expect(await svc.getSessionTimeout(cr)).toEqual(86400);
+    });
+
+    test('falls back to ConfigMap and parses "30m0s" to 1800', async () => {
+      const svc = makeServiceWithConfigMap('cookie_expire = "30m0s"');
+      const cr = buildCustomResource();
+      expect(await svc.getSessionTimeout(cr)).toEqual(1800);
+    });
+
+    test('returns -1 when ConfigMap read fails', async () => {
+      const svc = makeServiceWithConfigMap(null);
+      const cr = buildCustomResource();
+      expect(await svc.getSessionTimeout(cr)).toEqual(-1);
+    });
+
+    test('returns -1 when namespace is not set', async () => {
+      const savedNamespace = process.env['CHECLUSTER_CR_NAMESPACE'];
+      delete process.env['CHECLUSTER_CR_NAMESPACE'];
+      const cr = buildCustomResource();
+      const result = await serverConfigService.getSessionTimeout(cr);
+      process.env['CHECLUSTER_CR_NAMESPACE'] = savedNamespace;
+      expect(result).toEqual(-1);
     });
   });
 });

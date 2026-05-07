@@ -136,6 +136,12 @@ export type CheClusterCustomResource = k8s.V1CustomResourceDefinition & {
     networking?: {
       auth?: {
         advancedAuthorization?: api.IAdvancedAuthorization;
+        gateway?: {
+          oAuthProxy?: {
+            // Added in che-operator PR #1760
+            cookieExpireSeconds?: number;
+          };
+        };
       };
     };
   };
@@ -412,6 +418,15 @@ export interface IServerConfigApi {
    * Returns the hideEditorsById value
    */
   getHideEditorsById(cheCustomResource: CheClusterCustomResource): string[];
+
+  /**
+   * Returns the OAuth session timeout in seconds.
+   * Reads spec.networking.auth.gateway.oAuthProxy.cookieExpireSeconds from the CR first
+   * (che-operator PR #1760, +kubebuilder:default:=86400). Falls back to parsing cookie_expire
+   * from the che-gateway-config-oauth-proxy ConfigMap for clusters running older operators
+   * where the CR field is absent. Returns -1 when neither source is available.
+   */
+  getSessionTimeout(cheCustomResource: CheClusterCustomResource): Promise<number>;
 
   /**
    * Returns the Machine (hardware) type.
