@@ -66,18 +66,30 @@ describe('AiProviderEntry', () => {
     renderComponent(geminiProvider, false, false);
     expect(screen.queryByText(/Key configured/i)).toBeNull();
   });
+
+  it('shows Tech-Preview badge when provider has Tech-Preview tag', () => {
+    renderComponent(geminiProvider, false, false, ['Tech-Preview']);
+    expect(screen.getByText('Tech-Preview')).toBeInTheDocument();
+  });
+
+  it('does not show Tech-Preview badge when provider has no tags', () => {
+    renderComponent(geminiProvider, false, false);
+    expect(screen.queryByText('Tech-Preview')).toBeNull();
+  });
 });
 
 function getComponent(
   provider: api.AiToolDefinition,
   isSelected: boolean,
   hasExistingKey: boolean,
+  tags?: string[],
 ): React.ReactElement {
   return (
     <AiProviderEntry
       provider={provider}
       isSelected={isSelected}
       hasExistingKey={hasExistingKey}
+      tags={tags}
       onToggle={mockOnSelect}
     />
   );

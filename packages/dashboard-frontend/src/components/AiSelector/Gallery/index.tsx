@@ -44,6 +44,7 @@ export class AiProviderGallery extends React.PureComponent<Props> {
               provider={provider}
               icon={providerDef?.icon}
               description={providerDef?.description}
+              tags={providerDef?.tags}
               isSelected={selectedProviderIds.includes(provider.providerId)}
               hasExistingKey={!!providerKeyExists[provider.providerId]}
               onToggle={onToggle}

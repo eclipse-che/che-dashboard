@@ -21,6 +21,7 @@ export type Props = {
   provider: api.AiToolDefinition;
   icon?: string;
   description?: string;
+  tags?: string[];
   isSelected: boolean;
   hasExistingKey: boolean;
   onToggle: (providerId: string) => void;
@@ -71,10 +72,25 @@ export class AiProviderEntry extends React.PureComponent<Props> {
     }
   };
 
+  private getTags(): React.ReactElement[] {
+    const { tags } = this.props;
+    if (!tags) {
+      return [];
+    }
+    return tags
+      .filter(tag => tag === 'Tech-Preview')
+      .map((tag, index) => (
+        <Badge isRead style={{ whiteSpace: 'nowrap' }} key={`tag-${index}`}>
+          {tag}
+        </Badge>
+      ));
+  }
+
   public render(): React.ReactElement {
     const { provider, icon, description, isSelected, hasExistingKey } = this.props;
 
     const titleClassName = isSelected ? styles.activeCard : '';
+    const tagBadges = this.getTags();
 
     return (
       <Card
@@ -97,6 +113,7 @@ export class AiProviderEntry extends React.PureComponent<Props> {
             hasNoOffset: true,
             isHidden: true,
           }}
+          actions={tagBadges.length > 0 ? { actions: <>{tagBadges}</> } : undefined}
         >
           <CardTitle className={titleClassName}>
             {icon && (

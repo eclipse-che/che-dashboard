@@ -130,6 +130,8 @@ export interface AiProviderDefinition {
   docsUrl?: string;
   /** URL to the provider's SVG icon */
   icon?: string;
+  /** Optional labels, e.g. ['Tech-Preview'] */
+  tags?: string[];
 }
 
 export interface IServerConfig {
