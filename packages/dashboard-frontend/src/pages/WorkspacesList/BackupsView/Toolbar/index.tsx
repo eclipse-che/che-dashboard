@@ -108,7 +108,6 @@ export class BackupsListToolbar extends React.PureComponent<Props> {
                 icon={<RedoIcon />}
                 iconPosition="left"
                 variant={ButtonVariant.link}
-                aria-label="Restore from backup"
                 onClick={() => onRestoreClick()}
                 data-testid="restore-from-backup-button"
               >
