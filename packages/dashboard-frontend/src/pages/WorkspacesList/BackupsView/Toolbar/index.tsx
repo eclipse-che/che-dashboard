@@ -15,8 +15,7 @@
 import {
   Button,
   ButtonVariant,
-  Content,
-  ContentVariants,
+  Checkbox,
   InputGroup,
   TextInput,
   Toolbar,
@@ -25,12 +24,12 @@ import {
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
 import { EllipsisVIcon, RedoIcon, SearchIcon } from '@patternfly/react-icons';
-import cronstrue from 'cronstrue';
 import React from 'react';
+
+import styles from '@/pages/WorkspacesList/BackupsView/Toolbar/index.module.css';
 
 type Props = {
   filterValue: string;
-  backupSchedule: string | undefined;
   onFilterChange: (value: string) => void;
   onFilterApply: () => void;
   onFilterClear: () => void;
@@ -50,30 +49,31 @@ export class BackupsListToolbar extends React.PureComponent<Props> {
   }
 
   public render(): React.ReactElement {
-    const { filterValue, backupSchedule, onFilterChange, onFilterApply, onRestoreClick } =
-      this.props;
-
-    let scheduleLabel: string;
-    if (backupSchedule) {
-      try {
-        scheduleLabel = `Backup schedule: ${cronstrue.toString(backupSchedule)}`;
-      } catch {
-        scheduleLabel = `Backup schedule: ${backupSchedule}`;
-      }
-    } else {
-      scheduleLabel = 'No backup schedule configured';
-    }
+    const { filterValue, onFilterChange, onFilterApply, onRestoreClick } = this.props;
 
     return (
-      <Toolbar id="backups-view-toolbar" data-testid="backups-view-toolbar">
+      <Toolbar
+        id="backups-view-toolbar"
+        data-testid="backups-view-toolbar"
+        style={{ paddingBlockStart: '1rem' }}
+      >
         <ToolbarContent>
+          <ToolbarItem className={styles.toolbarCheckbox}>
+            {/* NOTE: this hidden checkbox is needed to align the backup toolbar items in the same way as the active workspaces toolbar items. */}
+            <Checkbox
+              isChecked={false}
+              isDisabled={true}
+              id="backups-select-all-placeholder"
+              name="backups-select-all-placeholder"
+            />
+          </ToolbarItem>
           <ToolbarItem>
             <InputGroup>
               <TextInput
                 name="backups-filter-input"
                 id="backups-filter-input"
                 type="search"
-                aria-label="Filter backups"
+                aria-label="Search backups"
                 placeholder="Search"
                 value={filterValue}
                 onChange={(_event, value) => onFilterChange(value)}
@@ -82,7 +82,7 @@ export class BackupsListToolbar extends React.PureComponent<Props> {
               />
               <Button
                 variant="control"
-                aria-label="Filter backups"
+                aria-label="Search backups"
                 onClick={() => onFilterApply()}
                 data-testid="backups-filter-button"
               >
@@ -115,17 +115,6 @@ export class BackupsListToolbar extends React.PureComponent<Props> {
               </Button>
             </ToolbarItem>
           </ToolbarToggleGroup>
-        </ToolbarContent>
-        <ToolbarContent data-testid="next-backup-info">
-          <ToolbarItem align={{ default: 'alignEnd' }}>
-            <Content
-              id="next-scheduled-backup-label"
-              component={ContentVariants.small}
-              data-testid="next-scheduled-backup"
-            >
-              {scheduleLabel}
-            </Content>
-          </ToolbarItem>
         </ToolbarContent>
       </Toolbar>
     );

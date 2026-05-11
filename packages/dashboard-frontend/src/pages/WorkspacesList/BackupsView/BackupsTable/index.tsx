@@ -50,6 +50,7 @@ export class BackupsTable extends React.PureComponent<Props> {
         <Table aria-label="Backups List Table" variant="compact" data-testid="backups-table">
           <Thead>
             <Tr>
+              <Th screenReaderText="Select backup" />
               {columns.map((col, colIndex) => (
                 <Th
                   key={colIndex}
@@ -74,6 +75,15 @@ export class BackupsTable extends React.PureComponent<Props> {
           <Tbody>
             {rows.map((row, rowIndex) => (
               <Tr key={rowIndex}>
+                <Td
+                  style={{ visibility: 'hidden' }}
+                  select={{
+                    rowIndex,
+                    onSelect: () => {},
+                    isSelected: false,
+                    isDisabled: true,
+                  }}
+                />
                 {row.cells.map((cell, cellIndex) => (
                   <Td key={cell.key} dataLabel={columns[cellIndex]?.dataLabel}>
                     {cell.title}

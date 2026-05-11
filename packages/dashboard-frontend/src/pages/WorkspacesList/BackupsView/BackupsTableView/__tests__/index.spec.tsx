@@ -23,11 +23,6 @@ jest.mock('@/services/helpers/dates', () => ({
   formatRelativeDate: jest.fn(() => '2 hours ago'),
 }));
 
-jest.mock('cronstrue', () => ({
-  __esModule: true,
-  default: { toString: jest.fn(() => 'At 01:00 AM') },
-}));
-
 jest.mock('@/components/BackupStatusBadge', () => ({
   BackupStatusBadge: (props: {
     status: string;
@@ -73,15 +68,10 @@ const mockBackups: BackupItem[] = [
   },
 ];
 
-function renderComponent(backups: BackupItem[] = mockBackups, backupSchedule?: string) {
+function renderComponent(backups: BackupItem[] = mockBackups) {
   return render(
     <MemoryRouter>
-      <BackupsTableView
-        backups={backups}
-        namespace="test-namespace"
-        navigate={mockNavigate}
-        backupSchedule={backupSchedule}
-      />
+      <BackupsTableView backups={backups} namespace="test-namespace" navigate={mockNavigate} />
     </MemoryRouter>,
   );
 }
@@ -427,29 +417,6 @@ describe('BackupsTableView', () => {
 
       const size = screen.getByTestId('backup-size');
       expect(size).toHaveTextContent('1.0 MB');
-    });
-  });
-
-  describe('toolbar', () => {
-    test('should render toolbar', () => {
-      renderComponent();
-
-      expect(screen.getByTestId('backups-view-toolbar')).toBeTruthy();
-    });
-
-    test('should show "No backup schedule configured" when backupSchedule is undefined', () => {
-      renderComponent(mockBackups, undefined);
-
-      expect(screen.getByTestId('next-scheduled-backup')).toHaveTextContent(
-        'No backup schedule configured',
-      );
-    });
-
-    test('should display human-readable backup schedule', () => {
-      renderComponent(mockBackups, '0 1 * * *');
-
-      const el = screen.getByTestId('next-scheduled-backup');
-      expect(el).toHaveTextContent('Backup schedule: At 01:00 AM');
     });
   });
 });
