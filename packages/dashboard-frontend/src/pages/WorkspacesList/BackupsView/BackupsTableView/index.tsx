@@ -34,7 +34,6 @@ type Props = {
   backups: BackupItem[];
   namespace: string;
   navigate: (location: ReturnType<typeof buildRestoreFromBackupLocation>) => void;
-  backupSchedule: string | undefined;
 };
 
 type State = {
@@ -125,7 +124,7 @@ export class BackupsTableView extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { backups, namespace, backupSchedule } = this.props;
+    const { backups, namespace } = this.props;
     const { sortBy, filterValue, expandedDropdowns } = this.state;
 
     const filtered = this.getFilteredBackups();
@@ -141,7 +140,6 @@ export class BackupsTableView extends React.PureComponent<Props, State> {
     const toolbar = (
       <BackupsListToolbar
         filterValue={filterValue}
-        backupSchedule={backupSchedule}
         onFilterChange={value => this.handleFilterChange(value)}
         onFilterApply={() => this.handleFilterApply()}
         onFilterClear={() => this.handleFilterClear()}
