@@ -10,6 +10,10 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+.sampleCard {
+  border: var(--pf-v6-c-card--BorderWidth) var(--pf-v6-c-card--BorderStyle) var(--pf-t--global--border--color--default);
+}
+
 .sampleCardIcon {
   width: 68px;
   height: 68px;
