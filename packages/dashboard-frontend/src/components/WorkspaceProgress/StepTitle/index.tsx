@@ -11,6 +11,7 @@
  */
 
 import React, { PropsWithChildren } from 'react';
+import ReactDOM from 'react-dom';
 
 import { ProgressStepTitleIcon } from '@/components/WorkspaceProgress/StepTitle/Icon';
 import styles from '@/components/WorkspaceProgress/StepTitle/index.module.css';
@@ -21,11 +22,29 @@ export type Props = PropsWithChildren<{
   hasChildren?: boolean;
   isError?: boolean;
   isWarning?: boolean;
+  /** When set, the live-region announcement reads "Step: {parentStepName} / {step text}".
+   *  Use for condition sub-steps so screen readers hear the full context. */
+  parentStepName?: string;
 }>;
+
+/** Recursively extracts plain-text content from any ReactNode. */
+function extractText(node: React.ReactNode): string {
+  if (typeof node === 'string' || typeof node === 'number') {
+    return String(node);
+  }
+  if (Array.isArray(node)) {
+    return node.map(extractText).join('');
+  }
+  if (React.isValidElement(node) && node.props.children) {
+    return extractText(node.props.children as React.ReactNode);
+  }
+  return '';
+}
 
 export class ProgressStepTitle extends React.Component<Props> {
   render(): React.ReactElement {
-    const { children, className, hasChildren, distance, isError, isWarning } = this.props;
+    const { children, className, hasChildren, distance, isError, isWarning, parentStepName } =
+      this.props;
 
     let readiness = styles.ready;
     if (distance === 0) {
@@ -49,15 +68,23 @@ export class ProgressStepTitle extends React.Component<Props> {
         <span data-testid="step-title" className={fullClassName}>
           {children}
         </span>
-        {/* Live region: announces the active step to screen readers when it becomes active.
-            The region is always present so screen readers register it on page load;
-            content is only set when the step is active (distance === 0) so the
-            announcement fires exactly once per step transition.
-            The "Step: " prefix ensures the live region text differs from the visible
-            step title, preventing ambiguous matches in DOM queries. */}
-        <span role="status" aria-live="polite" aria-atomic="true" className="pf-v6-screen-reader">
-          {distance === 0 && typeof children === 'string' ? `Step: ${children}` : ''}
-        </span>
+        {/* Live region: rendered via portal so it sits outside the wizard nav button DOM
+            tree, preventing its text from leaking into the button's accessible name
+            (dom-accessibility-api includes role="status" text in name computation despite
+            the ARIA spec's nameFrom:author rule). The portal still announces changes to
+            screen readers because live regions work document-wide regardless of DOM
+            position. Content is only set when the step is active (distance === 0). */}
+        {ReactDOM.createPortal(
+          <span role="status" aria-live="polite" aria-atomic="true" className="pf-v6-screen-reader">
+            {(() => {
+              if (distance !== 0) return '';
+              const stepText = extractText(children);
+              if (!stepText) return '';
+              return parentStepName ? `Step: ${parentStepName} / ${stepText}` : `Step: ${stepText}`;
+            })()}
+          </span>,
+          document.body,
+        )}
       </>
     );
   }
