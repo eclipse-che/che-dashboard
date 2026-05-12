@@ -12,6 +12,12 @@
 
 import React from 'react';
 
+// react-test-renderer does not support ReactDOM.createPortal; render portals inline.
+jest.mock('react-dom', () => ({
+  ...jest.requireActual<typeof import('react-dom')>('react-dom'),
+  createPortal: (children: React.ReactNode) => children,
+}));
+
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 
 import { ProgressStepTitle } from '..';

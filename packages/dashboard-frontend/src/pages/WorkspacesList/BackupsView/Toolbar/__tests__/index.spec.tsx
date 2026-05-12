@@ -44,7 +44,7 @@ describe('Backups List Toolbar', () => {
 
     expect(screen.queryByRole('searchbox')).toBeTruthy();
     expect(screen.queryByRole('button', { name: /search backups/i })).toBeTruthy();
-    expect(screen.queryByRole('button', { name: /restore workspace/i })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: /restore from backup/i })).toBeTruthy();
   });
 
   it('should call onFilterChange when typing in search', async () => {
@@ -86,7 +86,7 @@ describe('Backups List Toolbar', () => {
   it('should call onRestoreClick when clicking Restore Workspace', async () => {
     renderComponent();
 
-    const restoreButton = screen.getByRole('button', { name: /restore workspace/i });
+    const restoreButton = screen.getByRole('button', { name: /restore from backup/i });
     await userEvent.click(restoreButton);
 
     expect(mockOnRestoreClick).toHaveBeenCalled();
