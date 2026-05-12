@@ -23,6 +23,14 @@ exports[`ProgressStepTitle snapshot - active step 1`] = `
   >
     Step 1
   </span>,
+  <span
+    aria-atomic="true"
+    aria-live="polite"
+    className="pf-v6-screen-reader"
+    role="status"
+  >
+    Step: Step 1
+  </span>,
 ]
 `;
 
@@ -49,16 +57,34 @@ exports[`ProgressStepTitle snapshot - active step failed 1`] = `
   >
     Step 1
   </span>,
+  <span
+    aria-atomic="true"
+    aria-live="polite"
+    className="pf-v6-screen-reader"
+    role="status"
+  >
+    Step: Step 1
+  </span>,
 ]
 `;
 
 exports[`ProgressStepTitle snapshot - active step has children 1`] = `
-<span
-  className="progress"
-  data-testid="step-title"
->
-  Step 1
-</span>
+[
+  <span
+    className="progress"
+    data-testid="step-title"
+  >
+    Step 1
+  </span>,
+  <span
+    aria-atomic="true"
+    aria-live="polite"
+    className="pf-v6-screen-reader"
+    role="status"
+  >
+    Step: Step 1
+  </span>,
+]
 `;
 
 exports[`ProgressStepTitle snapshot - active step warning 1`] = `
@@ -84,14 +110,30 @@ exports[`ProgressStepTitle snapshot - active step warning 1`] = `
   >
     Step 1
   </span>,
+  <span
+    aria-atomic="true"
+    aria-live="polite"
+    className="pf-v6-screen-reader"
+    role="status"
+  >
+    Step: Step 1
+  </span>,
 ]
 `;
 
 exports[`ProgressStepTitle snapshot - non-active step 1`] = `
-<span
-  className="ready"
-  data-testid="step-title"
->
-  Step 1
-</span>
+[
+  <span
+    className="ready"
+    data-testid="step-title"
+  >
+    Step 1
+  </span>,
+  <span
+    aria-atomic="true"
+    aria-live="polite"
+    className="pf-v6-screen-reader"
+    role="status"
+  />,
+]
 `;
