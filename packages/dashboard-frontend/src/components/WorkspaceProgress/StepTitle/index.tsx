@@ -49,6 +49,15 @@ export class ProgressStepTitle extends React.Component<Props> {
         <span data-testid="step-title" className={fullClassName}>
           {children}
         </span>
+        {/* Live region: announces the active step to screen readers when it becomes active.
+            The region is always present so screen readers register it on page load;
+            content is only set when the step is active (distance === 0) so the
+            announcement fires exactly once per step transition.
+            The "Step: " prefix ensures the live region text differs from the visible
+            step title, preventing ambiguous matches in DOM queries. */}
+        <span role="status" aria-live="polite" aria-atomic="true" className="pf-v6-screen-reader">
+          {distance === 0 && typeof children === 'string' ? `Step: ${children}` : ''}
+        </span>
       </>
     );
   }

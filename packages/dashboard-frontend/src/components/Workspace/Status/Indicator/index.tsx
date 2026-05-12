@@ -51,19 +51,23 @@ const WorkspaceStatusIndicatorComponent: React.FC<Props> = ({
       ? 'Deprecated workspace'
       : status.toLocaleUpperCase();
 
+  const statusAriaLabel = sccMismatch
+    ? 'Workspace status has SCC mismatch warning'
+    : `Workspace status is ${status}`;
+
   return (
     <CheTooltip content={tooltip}>
       <span
         role="img"
         className={styles.statusIndicator}
         data-testid="workspace-status-indicator"
-        aria-label={
-          sccMismatch
-            ? 'Workspace status has SCC mismatch warning'
-            : `Workspace status is ${status}`
-        }
+        aria-label={statusAriaLabel}
       >
         {icon}
+        {/* Live region: announces status changes to screen readers without requiring user focus */}
+        <span role="status" aria-atomic="true" className="pf-v6-screen-reader">
+          {statusAriaLabel}
+        </span>
       </span>
     </CheTooltip>
   );
