@@ -54,6 +54,7 @@ const WorkspaceStatusIndicatorComponent: React.FC<Props> = ({
   return (
     <CheTooltip content={tooltip}>
       <span
+        role="img"
         className={styles.statusIndicator}
         data-testid="workspace-status-indicator"
         aria-label={
