@@ -45,6 +45,13 @@ exports[`Workspace indicator component Che Workspaces should render ERROR status
           </svg>
         </span>
       </span>
+      <span
+        aria-atomic="true"
+        className="pf-v6-screen-reader"
+        role="status"
+      >
+        Workspace status is ERROR
+      </span>
     </span>
   </div>
 </div>
@@ -94,6 +101,13 @@ exports[`Workspace indicator component Che Workspaces should render RUNNING stat
             />
           </svg>
         </span>
+      </span>
+      <span
+        aria-atomic="true"
+        className="pf-v6-screen-reader"
+        role="status"
+      >
+        Workspace status is RUNNING
       </span>
     </span>
   </div>
@@ -145,6 +159,13 @@ exports[`Workspace indicator component Che Workspaces should render STARTING sta
             />
           </svg>
         </span>
+      </span>
+      <span
+        aria-atomic="true"
+        className="pf-v6-screen-reader"
+        role="status"
+      >
+        Workspace status is STARTING
       </span>
     </span>
   </div>
@@ -207,6 +228,13 @@ exports[`Workspace indicator component Che Workspaces should render STOPPED stat
           </svg>
         </span>
       </span>
+      <span
+        aria-atomic="true"
+        className="pf-v6-screen-reader"
+        role="status"
+      >
+        Workspace status is STOPPED
+      </span>
     </span>
   </div>
 </div>
@@ -258,6 +286,13 @@ exports[`Workspace indicator component Che Workspaces should render STOPPING sta
           </svg>
         </span>
       </span>
+      <span
+        aria-atomic="true"
+        className="pf-v6-screen-reader"
+        role="status"
+      >
+        Workspace status is STOPPING
+      </span>
     </span>
   </div>
 </div>
@@ -308,6 +343,13 @@ exports[`Workspace indicator component Deprecated workspaces should render "Depr
           </svg>
         </span>
       </span>
+      <span
+        aria-atomic="true"
+        className="pf-v6-screen-reader"
+        role="status"
+      >
+        Workspace status is Deprecated
+      </span>
     </span>
   </div>
 </div>
@@ -357,6 +399,13 @@ exports[`Workspace indicator component DevWorkspaces should render FAILED status
             />
           </svg>
         </span>
+      </span>
+      <span
+        aria-atomic="true"
+        className="pf-v6-screen-reader"
+        role="status"
+      >
+        Workspace status is Failed
       </span>
     </span>
   </div>
@@ -409,6 +458,13 @@ exports[`Workspace indicator component DevWorkspaces should render FAILING statu
           </svg>
         </span>
       </span>
+      <span
+        aria-atomic="true"
+        className="pf-v6-screen-reader"
+        role="status"
+      >
+        Workspace status is Failing
+      </span>
     </span>
   </div>
 </div>
@@ -458,6 +514,13 @@ exports[`Workspace indicator component DevWorkspaces should render RUNNING statu
             />
           </svg>
         </span>
+      </span>
+      <span
+        aria-atomic="true"
+        className="pf-v6-screen-reader"
+        role="status"
+      >
+        Workspace status is Running
       </span>
     </span>
   </div>
@@ -520,6 +583,13 @@ exports[`Workspace indicator component DevWorkspaces should render STOPPED statu
           </svg>
         </span>
       </span>
+      <span
+        aria-atomic="true"
+        className="pf-v6-screen-reader"
+        role="status"
+      >
+        Workspace status is Stopped
+      </span>
     </span>
   </div>
 </div>
@@ -569,6 +639,13 @@ exports[`Workspace indicator component SCC Mismatch should render normal status 
             />
           </svg>
         </span>
+      </span>
+      <span
+        aria-atomic="true"
+        className="pf-v6-screen-reader"
+        role="status"
+      >
+        Workspace status is Running
       </span>
     </span>
   </div>
@@ -631,6 +708,13 @@ exports[`Workspace indicator component SCC Mismatch should render normal status 
           </svg>
         </span>
       </span>
+      <span
+        aria-atomic="true"
+        className="pf-v6-screen-reader"
+        role="status"
+      >
+        Workspace status is Stopped
+      </span>
     </span>
   </div>
 </div>
@@ -692,6 +776,13 @@ exports[`Workspace indicator component SCC Mismatch should render normal status 
           </svg>
         </span>
       </span>
+      <span
+        aria-atomic="true"
+        className="pf-v6-screen-reader"
+        role="status"
+      >
+        Workspace status is Stopped
+      </span>
     </span>
   </div>
 </div>
@@ -752,6 +843,13 @@ exports[`Workspace indicator component SCC Mismatch should render warning for ST
             />
           </svg>
         </span>
+      </span>
+      <span
+        aria-atomic="true"
+        className="pf-v6-screen-reader"
+        role="status"
+      >
+        Workspace status is Stopped
       </span>
     </span>
   </div>
@@ -820,6 +918,13 @@ exports[`Workspace indicator component SCC Mismatch should render warning triang
           </svg>
         </span>
       </span>
+      <span
+        aria-atomic="true"
+        className="pf-v6-screen-reader"
+        role="status"
+      >
+        Workspace status has SCC mismatch warning
+      </span>
     </span>
   </div>
 </div>
@@ -870,6 +975,13 @@ exports[`Workspace indicator component should render default status correctly 1`
             />
           </svg>
         </span>
+      </span>
+      <span
+        aria-atomic="true"
+        className="pf-v6-screen-reader"
+        role="status"
+      >
+        Workspace status is STOPPING
       </span>
     </span>
   </div>
