@@ -92,7 +92,11 @@ class AppAlertGroup extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    return <AlertGroup isToast>{this.state.alerts.map(alert => this.getAlert(alert))}</AlertGroup>;
+    const { alerts } = this.state;
+    if (alerts.length === 0) {
+      return <></>;
+    }
+    return <AlertGroup isToast>{alerts.map(alert => this.getAlert(alert))}</AlertGroup>;
   }
 }
 
