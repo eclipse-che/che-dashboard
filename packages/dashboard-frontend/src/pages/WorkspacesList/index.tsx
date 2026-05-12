@@ -15,12 +15,16 @@ import 'reflect-metadata';
 import { BackupConfig, BackupInfo } from '@eclipse-che/common';
 import {
   Content,
+  ContentVariants,
+  Level,
+  LevelItem,
   PageSection,
   PageSectionVariants,
   ToggleGroup,
   ToggleGroupItem,
 } from '@patternfly/react-core';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
+import cronstrue from 'cronstrue';
 import React from 'react';
 import { Location, NavigateFunction } from 'react-router-dom';
 
@@ -33,6 +37,7 @@ import { Workspace } from '@/services/workspace-adapter';
 
 type Props = {
   backupConfig?: BackupConfig;
+  backupSchedule: string | undefined;
   backupsByWorkspace: Record<string, BackupInfo>;
   branding: BrandingData;
   editors: devfileApi.Devfile[];
@@ -82,10 +87,28 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { backupConfig, backupsByWorkspace, branding, editors, navigate, workspaces } =
-      this.props;
+    const {
+      backupConfig,
+      backupsByWorkspace,
+      backupSchedule,
+      branding,
+      editors,
+      navigate,
+      workspaces,
+    } = this.props;
     const { workspace: workspacesDocsLink } = branding.docs;
     const { viewMode } = this.state;
+
+    let scheduleLabel: string;
+    if (backupSchedule) {
+      try {
+        scheduleLabel = `Backup schedule: ${cronstrue.toString(backupSchedule)}`;
+      } catch {
+        scheduleLabel = `Backup schedule: ${backupSchedule}`;
+      }
+    } else {
+      scheduleLabel = 'No backup schedule configured';
+    }
 
     return (
       <React.Fragment>
@@ -104,20 +127,33 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
           </Content>
         </PageSection>
         <PageSection variant={PageSectionVariants.default}>
-          <ToggleGroup aria-label="View toggle">
-            <ToggleGroupItem
-              text="Active Workspaces"
-              buttonId="view-workspaces"
-              isSelected={viewMode === 'workspaces'}
-              onChange={() => this.handleViewModeChange('workspaces')}
-            />
-            <ToggleGroupItem
-              text="Backups"
-              buttonId="view-backups"
-              isSelected={viewMode === 'backups'}
-              onChange={() => this.handleViewModeChange('backups')}
-            />
-          </ToggleGroup>
+          <Level>
+            <LevelItem>
+              <ToggleGroup aria-label="View toggle">
+                <ToggleGroupItem
+                  text="Active Workspaces"
+                  buttonId="view-workspaces"
+                  isSelected={viewMode === 'workspaces'}
+                  onChange={() => this.handleViewModeChange('workspaces')}
+                />
+                <ToggleGroupItem
+                  text="Backups"
+                  buttonId="view-backups"
+                  isSelected={viewMode === 'backups'}
+                  onChange={() => this.handleViewModeChange('backups')}
+                />
+              </ToggleGroup>
+            </LevelItem>
+            <LevelItem>
+              <Content
+                id="next-scheduled-backup-label"
+                component={ContentVariants.small}
+                data-testid="next-scheduled-backup"
+              >
+                {scheduleLabel}
+              </Content>
+            </LevelItem>
+          </Level>
         </PageSection>
         {viewMode === 'backups' ? (
           <BackupsView navigate={navigate} />

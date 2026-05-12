@@ -31,7 +31,6 @@ import {
 import { RootState } from '@/store';
 import { fetchBackupConfig, fetchBackupList } from '@/store/Backups/actions';
 import {
-  selectBackupSchedule,
   selectBackupsError,
   selectHasEverFetchedBackupList,
   selectIsUpdatingBackups,
@@ -49,7 +48,7 @@ export class BackupsView extends React.PureComponent<Props> {
   public componentDidMount(): void {
     const { namespace } = this.props;
     if (namespace) {
-      this.props.fetchBackupList({ namespace, force: true });
+      this.props.fetchBackupList({ namespace });
       this.props.fetchBackupConfig({ namespace });
     }
   }
@@ -57,7 +56,7 @@ export class BackupsView extends React.PureComponent<Props> {
   public componentDidUpdate(prevProps: Props): void {
     const { namespace } = this.props;
     if (namespace && namespace !== prevProps.namespace) {
-      this.props.fetchBackupList({ namespace, force: true });
+      this.props.fetchBackupList({ namespace });
       this.props.fetchBackupConfig({ namespace });
     }
   }
@@ -75,8 +74,7 @@ export class BackupsView extends React.PureComponent<Props> {
   }
 
   public render(): React.ReactElement {
-    const { isLoading, hasEverFetched, error, backups, namespace, navigate, backupSchedule } =
-      this.props;
+    const { isLoading, hasEverFetched, error, backups, namespace, navigate } = this.props;
 
     if (isLoading || !hasEverFetched) {
       return this.renderLoading();
@@ -104,12 +102,7 @@ export class BackupsView extends React.PureComponent<Props> {
             </Alert>
           </PageSection>
         )}
-        <BackupsTableView
-          backups={backups}
-          namespace={namespace}
-          navigate={navigate}
-          backupSchedule={backupSchedule}
-        />
+        <BackupsTableView backups={backups} namespace={namespace} navigate={navigate} />
       </div>
     );
   }
@@ -124,7 +117,6 @@ const mapStateToProps = (state: RootState) => {
     isLoading: selectIsUpdatingBackups(state),
     hasEverFetched: selectHasEverFetchedBackupList(state),
     error: selectBackupsError(state),
-    backupSchedule: selectBackupSchedule(state),
   };
 };
 
