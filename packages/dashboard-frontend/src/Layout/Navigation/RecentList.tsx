@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { NavGroup, NavList } from '@patternfly/react-core';
+import { NavGroup } from '@patternfly/react-core';
 import React from 'react';
 
 import { NavigationRecentItem } from '@/Layout/Navigation/RecentItem';
@@ -51,11 +51,9 @@ function NavigationRecentList(props: {
     );
   });
   return (
-    <NavList>
-      <NavGroup title="RECENT WORKSPACES" style={{ marginTop: '25px' }}>
-        {recentWorkspaceItems}
-      </NavGroup>
-    </NavList>
+    <NavGroup title="RECENT WORKSPACES" style={{ marginTop: '25px' }}>
+      {recentWorkspaceItems}
+    </NavGroup>
   );
 }
 NavigationRecentList.displayName = 'NavigationRecentListComponent';
