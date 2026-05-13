@@ -176,6 +176,8 @@ export const stubShowDeprecatedEditors = true;
 
 export const stubHideEditorsById: string[] = ['che-incubator/che-idea-server/next'];
 
+export const stubSessionTimeout = 86400;
+
 export const getDevWorkspaceClient = jest.fn(
   (..._args: Parameters<typeof helper>): ReturnType<typeof helper> => {
     return {
@@ -205,6 +207,7 @@ export const getDevWorkspaceClient = jest.fn(
         getAllowedSourceUrls: _cheCustomResource => stubAllowedSourceUrls,
         getShowDeprecatedEditors: _cheCustomResource => stubShowDeprecatedEditors,
         getHideEditorsById: _cheCustomResource => stubHideEditorsById,
+        getSessionTimeout: _cheCustomResource => Promise.resolve(stubSessionTimeout),
       } as IServerConfigApi,
       devworkspaceApi: {
         create: (_devworkspace, _namespace) =>

@@ -19,6 +19,7 @@ import { HashRouter } from 'react-router-dom';
 import AppAlertGroup from '@/components/AppAlertGroup';
 import Fallback from '@/components/Fallback';
 import Head from '@/components/Head';
+import SessionTimeoutModal from '@/components/SessionTimeoutModal';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { UIThemeProvider } from '@/contexts/UITheme';
 import Layout from '@/Layout';
@@ -31,6 +32,7 @@ function AppComponent(props: { history: History }): React.ReactElement {
         <HashRouter>
           <Head />
           <AppAlertGroup />
+          <SessionTimeoutModal />
           <Layout history={props.history}>
             <Suspense fallback={Fallback}>
               <AppRoutes />

@@ -1,0 +1,171 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`SessionTimeoutModal snapshot — modal closed 1`] = `null`;
+
+exports[`SessionTimeoutModal snapshot — modal open at 45 s 1`] = `
+<div
+  data-testid="modal"
+>
+  <div
+    data-testid="modal-header"
+  >
+    Session about to expire
+  </div>
+  <div
+    data-testid="modal-body"
+  >
+    <div
+      aria-hidden="true"
+      className="countdownRing"
+    >
+      45
+    </div>
+    <div
+      className="pf-v6-c-content"
+      data-ouia-component-id="OUIA-Generated-Content-1"
+      data-ouia-component-type="PF6/Content"
+      data-ouia-safe={true}
+      data-pf-content={true}
+    >
+      <p>
+        Your session will expire due to inactivity.
+      </p>
+      <p>
+        Click 
+        <strong>
+          Extend session
+        </strong>
+         within 
+        45
+         seconds to stay signed in.
+      </p>
+      <p>
+        If you take no action, you will be signed out and any unsaved changes may be lost.
+      </p>
+    </div>
+    <div
+      className="clearFloat"
+    />
+  </div>
+  <div
+    data-testid="modal-footer"
+  >
+    <button
+      aria-label={null}
+      className="pf-v6-c-button pf-m-primary"
+      data-ouia-component-id="OUIA-Generated-Button-primary-1"
+      data-ouia-component-type="PF6/Button"
+      data-ouia-safe={true}
+      disabled={false}
+      onClick={[MockFunction]}
+      type="button"
+    >
+      <span
+        className="pf-v6-c-button__text"
+      >
+        Extend session
+      </span>
+    </button>
+    <button
+      aria-label={null}
+      className="pf-v6-c-button pf-m-link"
+      data-ouia-component-id="OUIA-Generated-Button-link-1"
+      data-ouia-component-type="PF6/Button"
+      data-ouia-safe={true}
+      disabled={false}
+      onClick={[MockFunction]}
+      type="button"
+    >
+      <span
+        className="pf-v6-c-button__text"
+      >
+        Sign out now
+      </span>
+    </button>
+  </div>
+</div>
+`;
+
+exports[`SessionTimeoutModal snapshot — urgent state at 15 s 1`] = `
+<div
+  data-testid="modal"
+>
+  <div
+    data-testid="modal-header"
+  >
+    Session about to expire
+  </div>
+  <div
+    data-testid="modal-body"
+  >
+    <div
+      aria-hidden="true"
+      className="countdownRing countdownRingUrgent"
+    >
+      15
+    </div>
+    <div
+      className="pf-v6-c-content"
+      data-ouia-component-id="OUIA-Generated-Content-2"
+      data-ouia-component-type="PF6/Content"
+      data-ouia-safe={true}
+      data-pf-content={true}
+    >
+      <p>
+        Your session will expire due to inactivity.
+      </p>
+      <p>
+        Click 
+        <strong>
+          Extend session
+        </strong>
+         within 
+        15
+         seconds to stay signed in.
+      </p>
+      <p>
+        If you take no action, you will be signed out and any unsaved changes may be lost.
+      </p>
+    </div>
+    <div
+      className="clearFloat"
+    />
+  </div>
+  <div
+    data-testid="modal-footer"
+  >
+    <button
+      aria-label={null}
+      className="pf-v6-c-button pf-m-primary"
+      data-ouia-component-id="OUIA-Generated-Button-primary-2"
+      data-ouia-component-type="PF6/Button"
+      data-ouia-safe={true}
+      disabled={false}
+      onClick={[MockFunction]}
+      type="button"
+    >
+      <span
+        className="pf-v6-c-button__text"
+      >
+        Extend session
+      </span>
+    </button>
+    <button
+      aria-label={null}
+      className="pf-v6-c-button pf-m-link"
+      data-ouia-component-id="OUIA-Generated-Button-link-2"
+      data-ouia-component-type="PF6/Button"
+      data-ouia-safe={true}
+      disabled={false}
+      onClick={[MockFunction]}
+      type="button"
+    >
+      <span
+        className="pf-v6-c-button__text"
+      >
+        Sign out now
+      </span>
+    </button>
+  </div>
+</div>
+`;

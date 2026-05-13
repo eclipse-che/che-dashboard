@@ -52,6 +52,7 @@ export function registerServerConfigRoute(instance: FastifyInstance) {
       const axiosRequestTimeout = serverConfigApi.getAxiosRequestTimeout();
       const showDeprecated = serverConfigApi.getShowDeprecatedEditors(cheCustomResource);
       const hideById = serverConfigApi.getHideEditorsById(cheCustomResource);
+      const sessionTimeout = await serverConfigApi.getSessionTimeout(cheCustomResource);
 
       const serverConfig: api.IServerConfig = {
         containerBuild,
@@ -67,6 +68,7 @@ export function registerServerConfigRoute(instance: FastifyInstance) {
           runTimeout,
           startTimeout,
           axiosRequestTimeout,
+          sessionTimeout,
         },
         devfileRegistry: {
           disableInternalRegistry,

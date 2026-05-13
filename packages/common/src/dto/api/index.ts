@@ -136,6 +136,7 @@ export interface IServerConfig {
     runTimeout: number;
     startTimeout: number;
     axiosRequestTimeout: number;
+    sessionTimeout: number; // seconds until OAuth cookie expires; <=0 means disabled
   };
   networking?: {
     auth?: {

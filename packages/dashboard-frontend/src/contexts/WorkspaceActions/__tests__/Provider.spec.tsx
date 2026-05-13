@@ -370,6 +370,7 @@ describe('WorkspaceActionsProvider', () => {
               runTimeout: -1,
               startTimeout: 300,
               axiosRequestTimeout: 30000,
+              sessionTimeout: 86400,
             },
             defaultNamespace: {
               autoProvision: true,
@@ -475,6 +476,7 @@ describe('WorkspaceActionsProvider', () => {
               runTimeout: -1,
               startTimeout: 300,
               axiosRequestTimeout: 30000,
+              sessionTimeout: 86400,
             },
             defaultNamespace: {
               autoProvision: true,

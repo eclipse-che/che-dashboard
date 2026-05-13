@@ -20,6 +20,10 @@ import { requestTimeoutSeconds, startTimeoutSeconds } from '@/constants/server-c
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import { run } from '@/devworkspaceClient/services/helpers/exec';
 import {
+  CoreV1API,
+  prepareCoreV1API,
+} from '@/devworkspaceClient/services/helpers/prepareCoreV1API';
+import {
   CustomObjectAPI,
   prepareCustomObjectAPI,
 } from '@/devworkspaceClient/services/helpers/prepareCustomObjectAPI';
@@ -34,16 +38,39 @@ import { logger } from '@/utils/logger';
 
 const CUSTOM_RESOURCE_DEFINITIONS_API_ERROR_LABEL = 'CUSTOM_RESOURCE_DEFINITIONS_API_ERROR';
 
+// Parses Go time.Duration strings: "24h0m0s", "30m0s", "1h30m".
+// Returns -1 for empty or unmatched input so the frontend hook disables itself.
+export function parseDurationToSeconds(duration: string): number {
+  const matches = [...duration.matchAll(/(\d+(?:\.\d+)?)(h|m|s)/g)];
+  if (matches.length === 0) {
+    return -1;
+  }
+  let total = 0;
+  for (const match of matches) {
+    const value = parseFloat(match[1]);
+    if (match[2] === 'h') {
+      total += value * 3600;
+    } else if (match[2] === 'm') {
+      total += value * 60;
+    } else if (match[2] === 's') {
+      total += value;
+    }
+  }
+  return Math.floor(total);
+}
+
 const GROUP = 'org.eclipse.che';
 const VERSION = 'v2';
 const PLURAL = 'checlusters';
 
 export class ServerConfigApiService implements IServerConfigApi {
   private readonly customObjectAPI: CustomObjectAPI;
+  private readonly coreV1API: CoreV1API;
   private static currentArchitecture: Architecture | undefined;
 
   constructor(kc: k8s.KubeConfig) {
     this.customObjectAPI = prepareCustomObjectAPI(kc);
+    this.coreV1API = prepareCoreV1API(kc);
 
     if (isLocalRun()) {
       ServerConfigApiService.currentArchitecture = process.env[
@@ -310,6 +337,38 @@ export class ServerConfigApiService implements IServerConfigApi {
       return [];
     }
     return value.split(',').map(val => val.trim());
+  }
+
+  async getSessionTimeout(cheCustomResource: CheClusterCustomResource): Promise<number> {
+    // Prefer cookieExpireSeconds from the CheCluster CR (che-operator PR #1760).
+    // The CRD carries +kubebuilder:default:=86400, so new clusters always have it populated.
+    const fromCR =
+      cheCustomResource.spec.networking?.auth?.gateway?.oAuthProxy?.cookieExpireSeconds;
+    if (fromCR !== undefined) {
+      return fromCR;
+    }
+    // Fallback: read cookie_expire from the oauth-proxy ConfigMap.
+    // Covers existing CheCluster CRs created before the operator was updated to include PR #1760,
+    // where the field is absent but the ConfigMap still holds the real enforced value.
+    const CONFIGMAP_NAME = 'che-gateway-config-oauth-proxy';
+    const namespace = this.env.NAMESPACE;
+    if (!namespace) {
+      return -1;
+    }
+    try {
+      const response = await this.coreV1API.readNamespacedConfigMap({
+        name: CONFIGMAP_NAME,
+        namespace,
+      });
+      const cfg = response.data?.['oauth-proxy.cfg'] ?? '';
+      const cookieExpireMatch = /cookie_expire\s*=\s*"([^"]+)"/.exec(cfg);
+      if (cookieExpireMatch) {
+        return parseDurationToSeconds(cookieExpireMatch[1]);
+      }
+    } catch (e) {
+      logger.warn(`Unable to read ConfigMap ${CONFIGMAP_NAME}: ${e}`);
+    }
+    return -1;
   }
 }
 

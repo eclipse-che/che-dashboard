@@ -52,6 +52,7 @@ describe('Server Config Route', () => {
         runTimeout: 0,
         startTimeout: 0,
         axiosRequestTimeout: 0,
+        sessionTimeout: 86400, // stub value from mock
       },
       editorsVisibility: {
         hideById: ['che-incubator/che-idea-server/next'],

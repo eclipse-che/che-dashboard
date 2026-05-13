@@ -93,3 +93,8 @@ export const selectServerConfigError = createSelector(selectState, state => stat
  * Returns undefined if no SCC is required (all container capabilities are disabled).
  */
 export const selectCurrentScc = createSelector(selectState, state => getCurrentScc(state.config));
+
+export const selectSessionTimeout = createSelector(
+  selectState,
+  state => state.config.timeouts?.sessionTimeout ?? 86400,
+);

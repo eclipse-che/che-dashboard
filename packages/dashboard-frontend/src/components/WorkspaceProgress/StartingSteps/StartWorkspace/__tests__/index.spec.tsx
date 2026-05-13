@@ -79,6 +79,7 @@ const serverConfig: api.IServerConfig = {
     runTimeout: -1,
     startTimeout,
     axiosRequestTimeout: 30000,
+    sessionTimeout: 86400,
   },
   defaultNamespace: {
     autoProvision: true,
@@ -743,6 +744,7 @@ describe('Starting steps, starting a workspace', () => {
             runTimeout: -1,
             startTimeout,
             axiosRequestTimeout: 30000,
+            sessionTimeout: 86400,
           },
           defaultNamespace: {
             autoProvision: true,
@@ -806,6 +808,7 @@ describe('Starting steps, starting a workspace', () => {
             runTimeout: -1,
             startTimeout,
             axiosRequestTimeout: 30000,
+            sessionTimeout: 86400,
           },
           defaultNamespace: {
             autoProvision: true,
@@ -866,6 +869,7 @@ describe('Starting steps, starting a workspace', () => {
             runTimeout: -1,
             startTimeout,
             axiosRequestTimeout: 30000,
+            sessionTimeout: 86400,
           },
           defaultNamespace: {
             autoProvision: true,
