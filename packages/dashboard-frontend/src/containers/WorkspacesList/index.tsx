@@ -69,7 +69,7 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
         this.props.fetchWorkspaceBackupStatus({
           namespace: workspace.namespace,
           workspaceUID: workspace.uid,
-          workspaceName: workspace.name,
+          workspaceName: workspace.resourceName,
         });
       }
     });

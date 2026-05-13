@@ -21,9 +21,11 @@ import { fetchResources } from '@/services/backend-client/devworkspaceResourcesA
 import * as DwtApi from '@/services/backend-client/devWorkspaceTemplateApi';
 import devfileApi from '@/services/devfileApi';
 import { DEVWORKSPACE_CHE_EDITOR } from '@/services/devfileApi/devWorkspace/metadata';
+import { generateWorkspaceName } from '@/services/helpers/generateName';
 import { loadResourcesContent } from '@/services/registry/resources';
 import {
   COMPONENT_UPDATE_POLICY,
+  DEVWORKSPACE_LABEL_METADATA_NAME,
   REGISTRY_URL,
 } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { AppThunk } from '@/store';
@@ -129,9 +131,14 @@ export const restoreWorkspaceFromBackup =
         throw new Error('Failed to find DevWorkspaceTemplate in fetched resources.');
       }
 
-      // Ensure the workspace name matches user input (generator may produce a different name)
-      devWorkspaceResource.metadata.name = workspaceName;
+      // Auto-generate a unique K8s resource name and store the user-typed name as the
+      // display name label — consistent with factory workspace creation (see ADR-001).
+      devWorkspaceResource.metadata.name = generateWorkspaceName(workspaceName);
       devWorkspaceResource.metadata.namespace = namespace;
+      if (!devWorkspaceResource.metadata.labels) {
+        devWorkspaceResource.metadata.labels = {};
+      }
+      devWorkspaceResource.metadata.labels[DEVWORKSPACE_LABEL_METADATA_NAME] = workspaceName;
 
       if (!devWorkspaceResource.metadata.annotations) {
         devWorkspaceResource.metadata.annotations = {};

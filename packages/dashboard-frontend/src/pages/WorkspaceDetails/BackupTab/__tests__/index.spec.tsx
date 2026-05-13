@@ -50,7 +50,7 @@ describe('BackupTab', () => {
       expect(mockFetchBackupStatus).toHaveBeenCalledWith({
         namespace: workspace.namespace,
         workspaceUID: workspace.uid,
-        workspaceName: workspace.name,
+        workspaceName: workspace.resourceName,
       });
     });
 
@@ -72,7 +72,29 @@ describe('BackupTab', () => {
       expect(mockFetchBackupStatus).toHaveBeenLastCalledWith({
         namespace: newWorkspace.namespace,
         workspaceUID: newWorkspace.uid,
-        workspaceName: newWorkspace.name,
+        workspaceName: newWorkspace.resourceName,
+      });
+    });
+
+    test('should use resource name (metadata.name) for renamed workspaces, not display name', () => {
+      const renamedDevWorkspace = new DevWorkspaceBuilder()
+        .withName('original-k8s-name')
+        .withNamespace('user-namespace')
+        .withUID('uid-renamed')
+        .withMetadata({
+          labels: {
+            'kubernetes.io/metadata.name': 'user-display-name',
+          },
+        })
+        .build();
+      const renamedWorkspace = constructWorkspace(renamedDevWorkspace);
+
+      renderComponent(renamedWorkspace);
+
+      expect(mockFetchBackupStatus).toHaveBeenCalledWith({
+        namespace: 'user-namespace',
+        workspaceUID: 'uid-renamed',
+        workspaceName: 'original-k8s-name',
       });
     });
 
