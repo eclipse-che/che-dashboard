@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-05-13
-- **Issue:** [CRW-10477](https://redhat.atlassian.net/browse/CRW-10477)
+- **PR:** [#1565](https://github.com/eclipse-che/che-dashboard/pull/1565)
 
 ## Context
 
