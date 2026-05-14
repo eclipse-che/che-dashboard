@@ -122,7 +122,8 @@ export function BackupStatusBadge(props: Props): React.ReactElement {
   const icon = getStatusIcon(status);
   const tooltipContent = getTooltipContent(status, lastBackupTime, backupImageUrl);
 
-  const className = styles.backupStatusBadge;
+  const sizeClassName = styles['size-md'] || '';
+  const className = `${styles.backupStatusBadge} ${sizeClassName}`.trim();
 
   const statusLabel = BACKUP_STATUS_LABELS[status];
 

@@ -21,9 +21,10 @@ import GitConfig from '@/pages/UserPreferences/GitConfig';
 import GitServices from '@/pages/UserPreferences/GitServices';
 import PersonalAccessTokens from '@/pages/UserPreferences/PersonalAccessTokens';
 import SshKeys from '@/pages/UserPreferences/SshKeys';
+import { getPluginTabs } from '@/plugin-registry';
 import { ROUTE } from '@/Routes';
 import { UserPreferencesTab } from '@/services/helpers/types';
-import { RootState } from '@/store';
+import { RootState, store } from '@/store';
 import { gitOauthConfigActionCreators } from '@/store/GitOauthConfig';
 import { selectIsLoading } from '@/store/GitOauthConfig/selectors';
 
@@ -33,7 +34,7 @@ export type Props = {
 } & MappedProps;
 
 export type State = {
-  activeTabKey: UserPreferencesTab;
+  activeTabKey: UserPreferencesTab | string;
 };
 
 class UserPreferences extends React.PureComponent<Props, State> {
@@ -55,21 +56,18 @@ class UserPreferences extends React.PureComponent<Props, State> {
     };
   }
 
-  private getActiveTabKey(): UserPreferencesTab {
+  private getActiveTabKey(): UserPreferencesTab | string {
     const { pathname, search } = this.props.location;
 
     if (search) {
       const searchParam = new URLSearchParams(search);
       const tab = searchParam.get('tab');
-      if (
-        pathname === ROUTE.USER_PREFERENCES &&
-        (tab === UserPreferencesTab.CONTAINER_REGISTRIES ||
-          tab === UserPreferencesTab.GITCONFIG ||
-          tab === UserPreferencesTab.GIT_SERVICES ||
-          tab === UserPreferencesTab.PERSONAL_ACCESS_TOKENS ||
-          tab === UserPreferencesTab.SSH_KEYS)
-      ) {
-        return searchParam.get('tab') as UserPreferencesTab;
+      if (pathname === ROUTE.USER_PREFERENCES && tab) {
+        const knownTabs = Object.values(UserPreferencesTab) as string[];
+        const pluginTabKeys = getPluginTabs().map(t => t.tabKey);
+        if (knownTabs.includes(tab) || pluginTabKeys.includes(tab)) {
+          return tab as UserPreferencesTab;
+        }
       }
     }
 
@@ -95,7 +93,7 @@ class UserPreferences extends React.PureComponent<Props, State> {
     }
 
     const { activeTabKey } = this.state;
-    const currentIndex = this.tabOrder.indexOf(activeTabKey);
+    const currentIndex = (this.tabOrder as ReadonlyArray<string>).indexOf(activeTabKey);
     let nextIndex = -1;
 
     if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
@@ -174,6 +172,23 @@ class UserPreferences extends React.PureComponent<Props, State> {
             >
               <SshKeys />
             </Tab>
+            <React.Fragment>
+              {getPluginTabs()
+                .filter(tab => !tab.visible || tab.visible(store.getState()))
+                .map(tab => {
+                  const SlotComponent = tab.component;
+                  return (
+                    <Tab
+                      key={tab.tabKey}
+                      eventKey={tab.tabKey}
+                      title={tab.name}
+                      tabIndex={activeTabKey === tab.tabKey ? 0 : -1}
+                    >
+                      <SlotComponent />
+                    </Tab>
+                  );
+                })}
+            </React.Fragment>
           </Tabs>
         </PageSection>
       </React.Fragment>

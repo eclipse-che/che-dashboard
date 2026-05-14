@@ -25,6 +25,7 @@ import {
 } from '@/components/WorkspaceProgress/StartingSteps/StartWorkspace/prepareRestart';
 import { ToggleBarsContext } from '@/contexts/ToggleBars';
 import styles from '@/pages/Loader/index.module.css';
+import LoaderAgentPanelTab from '@/plugins/dashboard-ai-agent/components/LoaderAgentPanelTab';
 import { DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
 import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
 
@@ -144,6 +145,17 @@ export class LoaderPage extends React.PureComponent<Props, State> {
               isAriaDisabled={isEventsTabDisabled}
             >
               <WorkspaceEvents workspaceUID={workspace?.uid} />
+            </Tab>
+            <Tab
+              eventKey="DevWorkspaces"
+              title="DevWorkspaces"
+              data-testid="loader-devworkspaces-tab"
+              id="loader-devworkspaces-tab"
+            >
+              <LoaderAgentPanelTab
+                workspace={workspace}
+                isActive={activeTabKey === ('DevWorkspaces' as LoaderTab)}
+              />
             </Tab>
           </Tabs>
         </PageSection>

@@ -66,7 +66,7 @@
 | `@devfile/api@2.3.0-1757407014` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@devfile/api/2.3.0-1757407014) |
 | `@discoveryjs/json-ext@0.5.7` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@discoveryjs/json-ext/0.5.7) |
 | `@dual-bundle/import-meta-resolve@4.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@dual-bundle/import-meta-resolve/4.1.0) |
-| `@eclipse-che/license-tool@2.0.0` |  | ecd.che |
+| `@eclipse-che/license-tool@2.0.0` | (Apache-2.0 AND EPL-2.0 AND LicenseRef-scancode-unknown-license-reference) OR (EPL-2.0 AND LicenseRef-scancode-unknown-license-reference AND MIT) | ecd.che |
 | `@emnapi/core@1.7.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@emnapi/core/1.7.1) |
 | `@emnapi/runtime@1.7.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@emnapi/runtime/1.7.1) |
 | `@emnapi/wasi-threads@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@emnapi/wasi-threads/1.1.0) |
@@ -182,6 +182,7 @@
 | `@types/react-router@5.1.20` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/react-router/5.1.20) |
 | `@types/react-test-renderer@18.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/react-test-renderer/18.3.0) |
 | `@types/react@18.2.36` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/react/18.2.36) |
+| `@types/react@18.3.28` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/react/18.3.28) |
 | `@types/redux-logger@3.0.13` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/redux-logger/3.0.13) |
 | `@types/redux-mock-store@1.0.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/redux-mock-store/1.0.6) |
 | `@types/request@2.48.12` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/request/2.48.12) |
@@ -304,13 +305,14 @@
 | `aws-sign2@0.7.0` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/aws-sign2/0.7.0) |
 | `aws4@1.13.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/aws4/1.13.2) |
 | `axios-mock-adapter@1.22.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios-mock-adapter/1.22.0) |
-| `axios@1.15.2` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios/1.15.2) |
+| `axios@1.15.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios/1.15.2) |
 | `b4a@1.7.3` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/b4a/1.7.3) |
 | `babel-jest@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/babel-jest/30.2.0) |
 | `babel-plugin-istanbul@7.0.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/babel-plugin-istanbul/7.0.1) |
 | `babel-plugin-jest-hoist@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/babel-plugin-jest-hoist/30.2.0) |
 | `babel-preset-current-node-syntax@1.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/babel-preset-current-node-syntax/1.2.0) |
 | `babel-preset-jest@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/babel-preset-jest/30.2.0) |
+| `balanced-match@1.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/balanced-match/1.0.2) |
 | `balanced-match@2.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/balanced-match/2.0.0) |
 | `bare-events@2.8.2` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/bare-events/2.8.2) |
 | `bare-fs@4.5.2` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/bare-fs/4.5.2) |
@@ -326,6 +328,7 @@
 | `binary-extensions@2.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/binary-extensions/2.2.0) |
 | `boolbase@1.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/boolbase/1.0.0) |
 | `bplist-parser@0.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/bplist-parser/0.2.0) |
+| `brace-expansion@1.1.12` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/brace-expansion/1.1.12) |
 | `braces@3.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/braces/3.0.3) |
 | `browserslist@4.22.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/browserslist/4.22.1) |
 | `browserslist@4.24.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/browserslist/4.24.2) |
@@ -375,6 +378,7 @@
 | `commander@7.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/commander/7.2.0) |
 | `commander@8.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/commander/8.3.0) |
 | `commondir@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/commondir/1.0.1) |
+| `concat-map@0.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/concat-map/0.0.1) |
 | `convert-source-map@2.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/convert-source-map/2.0.0) |
 | `copy-webpack-plugin@11.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/copy-webpack-plugin/11.0.0) |
 | `core-util-is@1.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/core-util-is/1.0.2) |
@@ -395,6 +399,7 @@
 | `cssom@0.5.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cssom/0.5.0) |
 | `cssstyle@2.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cssstyle/2.3.0) |
 | `csstype@3.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/csstype/3.1.2) |
+| `csstype@3.2.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/csstype/3.2.3) |
 | `dashdash@1.14.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/dashdash/1.14.1) |
 | `data-urls@3.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/data-urls/3.0.2) |
 | `debounce@1.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/debounce/1.2.1) |

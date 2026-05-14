@@ -87,14 +87,21 @@ export function webSocketHandler(ws: WebSocket, request: FastifyRequest): void {
         }
         break;
       }
+      case channel.CONFIGMAP: {
+        // ConfigMap real-time updates not yet implemented in the backend;
+        // the subscription is accepted silently so the frontend doesn't error.
+        break;
+      }
     }
   }
-  function handleChannelUnsubscribe(channel: api.webSocket.Channel) {
-    subscriptionManager.unsubscribe(channel);
+  function handleChannelUnsubscribe(channelToUnsubscribe: api.webSocket.Channel) {
+    subscriptionManager.unsubscribe(channelToUnsubscribe);
 
-    const watcher = watchers[channel];
-    watcher.detach();
-    watcher.stop();
+    if (channelToUnsubscribe in watchers) {
+      const watcher = watchers[channelToUnsubscribe as keyof typeof watchers];
+      watcher.detach();
+      watcher.stop();
+    }
   }
   function handleUnsubscribeAll() {
     [channel.DEV_WORKSPACE, channel.EVENT, channel.LOGS, channel.POD].forEach(channel =>
