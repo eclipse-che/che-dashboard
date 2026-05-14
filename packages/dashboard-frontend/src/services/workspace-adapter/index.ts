@@ -202,17 +202,18 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
         location?: string;
       };
     };
-    // Check if the devfile source has a factory with parameters
-    const factoryParams = devfileSourse?.factory?.params;
-    if (factoryParams) {
-      // Split the factory params string into an array of parameters
-      const paramsArr = factoryParams.split('&');
-      if (paramsArr.length > 0) {
-        // Find the URL parameter in the factory params
-        const targetParam = paramsArr.find(param => param.startsWith('url='));
-        if (targetParam) {
-          return targetParam.split('=')[1];
-        }
+    // Check if the devfile source has a factory with parameters.
+    // Use URLSearchParams.get() so that '=' characters inside the URL value are
+    // handled correctly (the old split('=')[1] approach truncates the value at the
+    // second '=' which breaks URLs containing query parameters like ?id=foo).
+    // URLSearchParams.get() also decodes percent-encoded characters (%3F → ?, %3D → =)
+    // matching the decoding applied in buildFactoryParams.getSourceUrl().
+    const rawFactoryParams = devfileSourse?.factory?.params;
+    if (rawFactoryParams) {
+      const factoryParams = new URLSearchParams(rawFactoryParams);
+      const location = factoryParams.get('url');
+      if (location) {
+        return location;
       }
     }
     // Check if the devfile source has a repository URL
