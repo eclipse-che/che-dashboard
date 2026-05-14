@@ -21,6 +21,7 @@ exports[`Workspace indicator component Che Workspaces should render ERROR status
       aria-label="Workspace status is ERROR"
       className="statusIndicator"
       data-testid="workspace-status-indicator"
+      role="img"
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
@@ -70,6 +71,7 @@ exports[`Workspace indicator component Che Workspaces should render RUNNING stat
       aria-label="Workspace status is RUNNING"
       className="statusIndicator"
       data-testid="workspace-status-indicator"
+      role="img"
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
@@ -119,6 +121,7 @@ exports[`Workspace indicator component Che Workspaces should render STARTING sta
       aria-label="Workspace status is STARTING"
       className="statusIndicator"
       data-testid="workspace-status-indicator"
+      role="img"
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
@@ -169,6 +172,7 @@ exports[`Workspace indicator component Che Workspaces should render STOPPED stat
       aria-label="Workspace status is STOPPED"
       className="statusIndicator"
       data-testid="workspace-status-indicator"
+      role="img"
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
@@ -229,6 +233,7 @@ exports[`Workspace indicator component Che Workspaces should render STOPPING sta
       aria-label="Workspace status is STOPPING"
       className="statusIndicator"
       data-testid="workspace-status-indicator"
+      role="img"
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
@@ -279,6 +284,7 @@ exports[`Workspace indicator component Deprecated workspaces should render "Depr
       aria-label="Workspace status is Deprecated"
       className="statusIndicator"
       data-testid="workspace-status-indicator"
+      role="img"
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
@@ -328,6 +334,7 @@ exports[`Workspace indicator component DevWorkspaces should render FAILED status
       aria-label="Workspace status is Failed"
       className="statusIndicator"
       data-testid="workspace-status-indicator"
+      role="img"
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
@@ -377,6 +384,7 @@ exports[`Workspace indicator component DevWorkspaces should render FAILING statu
       aria-label="Workspace status is Failing"
       className="statusIndicator"
       data-testid="workspace-status-indicator"
+      role="img"
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
@@ -427,6 +435,7 @@ exports[`Workspace indicator component DevWorkspaces should render RUNNING statu
       aria-label="Workspace status is Running"
       className="statusIndicator"
       data-testid="workspace-status-indicator"
+      role="img"
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
@@ -476,6 +485,7 @@ exports[`Workspace indicator component DevWorkspaces should render STOPPED statu
       aria-label="Workspace status is Stopped"
       className="statusIndicator"
       data-testid="workspace-status-indicator"
+      role="img"
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
@@ -536,6 +546,7 @@ exports[`Workspace indicator component SCC Mismatch should render normal status 
       aria-label="Workspace status is Running"
       className="statusIndicator"
       data-testid="workspace-status-indicator"
+      role="img"
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
@@ -585,6 +596,7 @@ exports[`Workspace indicator component SCC Mismatch should render normal status 
       aria-label="Workspace status is Stopped"
       className="statusIndicator"
       data-testid="workspace-status-indicator"
+      role="img"
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
@@ -645,6 +657,7 @@ exports[`Workspace indicator component SCC Mismatch should render normal status 
       aria-label="Workspace status is Stopped"
       className="statusIndicator"
       data-testid="workspace-status-indicator"
+      role="img"
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
@@ -705,6 +718,7 @@ exports[`Workspace indicator component SCC Mismatch should render warning for ST
       aria-label="Workspace status is Stopped"
       className="statusIndicator"
       data-testid="workspace-status-indicator"
+      role="img"
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
@@ -782,6 +796,7 @@ exports[`Workspace indicator component SCC Mismatch should render warning triang
       aria-label="Workspace status has SCC mismatch warning"
       className="statusIndicator"
       data-testid="workspace-status-indicator"
+      role="img"
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
@@ -831,6 +846,7 @@ exports[`Workspace indicator component should render default status correctly 1`
       aria-label="Workspace status is STOPPING"
       className="statusIndicator"
       data-testid="workspace-status-indicator"
+      role="img"
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
