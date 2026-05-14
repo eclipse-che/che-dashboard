@@ -15,6 +15,7 @@ import {
   EDITOR_ATTR,
   EXISTING_WORKSPACE_NAME,
   FACTORY_ID_IGNORE_ATTRS,
+  FACTORY_URL_ATTR,
   POLICIES_CREATE_ATTR,
   STORAGE_TYPE_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
@@ -97,6 +98,92 @@ describe('buildFactoryParams', () => {
       expect(buildFactoryParams(searchParams).factoryId).toEqual(
         'che-editor=che-incubator/che-code/next&storageType=ephemeral',
       );
+    });
+  });
+
+  describe('sourceUrl', () => {
+    it('should return the plain factory URL when no additional attributes are present', () => {
+      const baseUrl =
+        'http://localhost:8080/dashboard/api/airgap-sample/devfile/download?id=java-lombok';
+      const searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: baseUrl,
+      });
+
+      expect(buildFactoryParams(searchParams).sourceUrl).toEqual(baseUrl);
+    });
+
+    it('should return only the factory URL, not factory attributes like che-editor or storageType', () => {
+      const baseUrl =
+        'http://localhost:8080/dashboard/api/airgap-sample/devfile/download?id=java-lombok';
+      const searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: baseUrl,
+        [EDITOR_ATTR]: 'che-incubator/che-code/latest',
+        [STORAGE_TYPE_ATTR]: 'per-workspace',
+      });
+
+      // sourceUrl must not include factory orchestration params — they are not part of
+      // the workspace source and would produce a wrong "Git repo URL" in the UI.
+      expect(buildFactoryParams(searchParams).sourceUrl).toEqual(baseUrl);
+      expect(buildFactoryParams(searchParams).sourceUrl).not.toContain('che-editor');
+      expect(buildFactoryParams(searchParams).sourceUrl).not.toContain('storageType');
+    });
+
+    it('should return empty string when no factory URL is present', () => {
+      const searchParams = new URLSearchParams({
+        [EDITOR_ATTR]: 'che-code',
+        [STORAGE_TYPE_ATTR]: 'ephemeral',
+      });
+
+      expect(buildFactoryParams(searchParams).sourceUrl).toEqual('');
+    });
+
+    it('should decode %3F and %3D in airgap sample URLs to match workspace.source format', () => {
+      // When a factory URL is constructed for an airgap sample, the inner URL is
+      // double-encoded in the hash: %253F becomes %3F after first URLSearchParams decode.
+      // workspace.source reads the annotation via URLSearchParams again, decoding %3F→?
+      // and %3D→=. sourceUrl must apply the same decoding so comparison succeeds.
+      //
+      // Factory hash param:  url=…download%253Fid%253Dnodejs-express
+      // After searchParams.get('url'): …download%3Fid%3Dnodejs-express
+      // After decodeURIComponent:      …download?id=nodejs-express   ← matches workspace.source
+      const encodedUrl =
+        'http://che-dashboard.eclipse-che.svc:8080/dashboard/api/airgap-sample/devfile/download%3Fid%3Dnodejs-express';
+      const searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: encodedUrl,
+        [EDITOR_ATTR]: 'che-incubator/che-code/latest',
+        [STORAGE_TYPE_ATTR]: 'per-user',
+      });
+
+      const result = buildFactoryParams(searchParams);
+
+      // The decoded URL matches what workspace.source returns from the annotation
+      expect(result.sourceUrl).toEqual(
+        'http://che-dashboard.eclipse-che.svc:8080/dashboard/api/airgap-sample/devfile/download?id=nodejs-express',
+      );
+      // Factory params must NOT be appended to the source URL
+      expect(result.sourceUrl).not.toContain('che-editor');
+      expect(result.sourceUrl).not.toContain('storageType');
+    });
+
+    it('should not append EXISTING_WORKSPACE_NAME or other factory attrs to sourceUrl', () => {
+      const baseUrl = 'http://localhost:8080/dashboard/api/airgap-sample/devfile/download?id=test';
+      const searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: baseUrl,
+        [EDITOR_ATTR]: 'che-incubator/che-code/latest',
+        [STORAGE_TYPE_ATTR]: 'per-workspace',
+        [POLICIES_CREATE_ATTR]: 'peruser',
+        [EXISTING_WORKSPACE_NAME]: 'test',
+      });
+
+      const result = buildFactoryParams(searchParams);
+
+      expect(result.sourceUrl).toEqual(baseUrl);
+      expect(result.sourceUrl).not.toContain('che-editor');
+      expect(result.sourceUrl).not.toContain('storageType');
+      expect(result.sourceUrl).not.toContain('policies.create');
+      expect(result.sourceUrl).not.toContain('existing');
+      // Other factoryParams fields are still parsed correctly
+      expect(result.existing).toBe('test');
     });
   });
 });

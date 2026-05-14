@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import { che } from '@/services/models';
 
 export const NAME_ATTR = 'name';
@@ -28,7 +29,6 @@ export const EDITOR_IMAGE_ATTR = 'editor-image';
 export const USE_DEFAULT_DEVFILE = 'useDefaultDevfile';
 export const DEBUG_WORKSPACE_START = 'debugWorkspaceStart';
 export const EXISTING_WORKSPACE_NAME = 'existing';
-export const REVISION = 'revision';
 
 export const PROPAGATE_FACTORY_ATTRS = [
   'workspaceDeploymentAnnotations',
@@ -44,7 +44,7 @@ export const PROPAGATE_FACTORY_ATTRS = [
   MEMORY_LIMIT_ATTR,
   EDITOR_IMAGE_ATTR,
   EXISTING_WORKSPACE_NAME,
-  REVISION,
+  REVISION_ATTR,
   NAME_ATTR,
 ];
 export const OVERRIDE_ATTR_PREFIX = 'override.';
@@ -103,9 +103,39 @@ export function buildFactoryParams(searchParams: URLSearchParams): FactoryParams
 
 function getSourceUrl(searchParams: URLSearchParams): string {
   const devworkspaceResourcesUrl = getDevworkspaceResourcesUrl(searchParams);
-  return devworkspaceResourcesUrl !== undefined
-    ? devworkspaceResourcesUrl
-    : getFactoryUrl(searchParams);
+  if (devworkspaceResourcesUrl !== undefined) {
+    return devworkspaceResourcesUrl;
+  }
+
+  const sourceUrl = getFactoryUrl(searchParams);
+  if (!sourceUrl) {
+    return sourceUrl;
+  }
+
+  // Normalize percent-encoding so that this value matches workspace.source, which is
+  // read back from the DevWorkspace annotation via URLSearchParams.get() and therefore
+  // has one additional level of decoding applied (e.g. %3F → ?, %3D → =).
+  // Without this step, airgap sample URLs encoded as double-%25-escaped sequences in
+  // the factory hash (e.g. %253Fid%253Dnodejs-express) produce a mismatch:
+  //   factoryParams.sourceUrl  → "…download%3Fid%3Dnodejs-express"
+  //   workspace.source         → "…download?id=nodejs-express"
+  let normalizedUrl: string;
+  try {
+    normalizedUrl = decodeURIComponent(sourceUrl);
+  } catch {
+    normalizedUrl = sourceUrl;
+  }
+
+  // For SSH URLs, append the revision so that checkouts of the same repo at different
+  // branches are treated as distinct sources — matching workspace.source behaviour.
+  if (FactoryLocationAdapter.isSshLocation(normalizedUrl)) {
+    const revision = searchParams.get(REVISION_ATTR);
+    if (revision) {
+      normalizedUrl += (normalizedUrl.includes('?') ? '&' : '?') + `${REVISION_ATTR}=${revision}`;
+    }
+  }
+
+  return normalizedUrl;
 }
 
 function getDevworkspaceResourcesUrl(searchParams: URLSearchParams): string | undefined {

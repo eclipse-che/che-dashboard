@@ -12,15 +12,14 @@
 
 import { Button, FormGroup } from '@patternfly/react-core';
 import { CopyIcon } from '@patternfly/react-icons';
-import { load } from 'js-yaml';
 import React from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 
 import { CheTooltip } from '@/components/CheTooltip';
 import overviewStyles from '@/pages/WorkspaceDetails/OverviewTab/index.module.css';
 import devfileApi from '@/services/devfileApi';
-import { Workspace } from '@/services/workspace-adapter';
-import { DEVWORKSPACE_DEVFILE_SOURCE } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
+import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
+import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
 
 export type Props = {
   workspace: Workspace;
@@ -52,7 +51,7 @@ class GitRepoFormGroup extends React.PureComponent<Props, State> {
     this.setState({ timerId });
   }
 
-  public getSource(workspace: devfileApi.DevWorkspace): {
+  public getSource(devWorkspace: devfileApi.DevWorkspace): {
     isUrl: boolean;
     gitRepo: string;
     fieldName: string;
@@ -63,52 +62,16 @@ class GitRepoFormGroup extends React.PureComponent<Props, State> {
       fieldName: '',
     };
 
-    const devfileSourceStr = workspace.metadata.annotations?.[DEVWORKSPACE_DEVFILE_SOURCE];
+    const workspace = constructWorkspace(devWorkspace);
 
-    if (devfileSourceStr === undefined) {
-      return source;
+    source.gitRepo = workspace.source || '';
+    source.isUrl = FactoryLocationAdapter.isHttpLocation(source.gitRepo);
+    source.fieldName = source.isUrl
+      ? new URL(source.gitRepo).pathname.replace(/^\//, '')
+      : source.gitRepo;
+    if (source.fieldName.length > 50) {
+      source.fieldName = source.fieldName.substring(0, 50) + '...';
     }
-
-    const devfileSource = load(devfileSourceStr) as {
-      scm?: {
-        repo?: string;
-        fileName?: string;
-      };
-      factory?: {
-        params?: string;
-      };
-    };
-
-    const factoryParams = devfileSource?.factory?.params;
-    if (factoryParams === undefined) {
-      return source;
-    }
-
-    const paramsArr = factoryParams.split('&');
-    if (paramsArr.length === 0) {
-      return source;
-    }
-
-    paramsArr.forEach(param => {
-      const [key, value] = param.split('=');
-      if (key === 'url') {
-        if (!source.gitRepo && paramsArr.length === 1) {
-          source.gitRepo = value;
-        } else {
-          source.gitRepo = value + '?' + source.gitRepo;
-        }
-        source.isUrl = new RegExp('^https?://').test(value);
-        source.fieldName = source.isUrl ? new URL(value).pathname.replace(/^\//, '') : value;
-        if (source.fieldName.length > 50) {
-          source.fieldName = source.fieldName.substring(0, 50) + '...';
-        }
-      } else {
-        if (source.gitRepo.length !== 0 && !source.gitRepo.endsWith('?')) {
-          source.gitRepo = source.gitRepo + '&';
-        }
-        source.gitRepo = source.gitRepo + key + '=' + value;
-      }
-    });
 
     return source;
   }

@@ -28,7 +28,7 @@ exports[`GitRepoURL screenshot when factory params is available 1`] = `
       data-ouia-component-type="PF6/Button"
       data-ouia-safe={true}
       disabled={null}
-      href="https://github.com/eclipse-che/che-dashboard?editor-image=test-images/che-code:tag"
+      href="https://github.com/eclipse-che/che-dashboard"
       target="_blank"
       type={null}
     >

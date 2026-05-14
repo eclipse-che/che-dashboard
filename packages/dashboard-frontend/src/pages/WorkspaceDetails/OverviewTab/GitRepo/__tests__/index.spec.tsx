@@ -109,9 +109,7 @@ describe('GitRepoURL', () => {
     const copyButton = screen.getByRole('button', { name: copyButtonName });
     await user.click(copyButton);
 
-    expect(mockClipboard).toHaveBeenCalledWith(
-      'https://github.com/eclipse-che/che-dashboard?editor-image=test-images/che-code:tag',
-    );
+    expect(mockClipboard).toHaveBeenCalledWith('https://github.com/eclipse-che/che-dashboard');
 
     /* 'Copy to clipboard' should be hidden for a while */
 

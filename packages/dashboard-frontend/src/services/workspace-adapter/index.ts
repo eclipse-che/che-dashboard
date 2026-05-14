@@ -18,6 +18,8 @@ import {
   DEVWORKSPACE_CONTAINER_SCC_ATTR,
   DEVWORKSPACE_STORAGE_TYPE_ATTR,
 } from '@/services/devfileApi/devWorkspace/spec/template';
+import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
+import { FACTORY_URL_ATTR, REVISION_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import {
   DeprecatedWorkspaceStatus,
   DevWorkspaceStatus,
@@ -185,12 +187,12 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
    * It can be an HTTPS or SSH URL.
    */
   get source(): string | undefined {
-    const devfileSourseStr = this.workspace.metadata.annotations?.[DEVWORKSPACE_DEVFILE_SOURCE];
-    if (!devfileSourseStr) {
+    const devfileSourceStr = this.workspace.metadata.annotations?.[DEVWORKSPACE_DEVFILE_SOURCE];
+    if (!devfileSourceStr) {
       return undefined;
     }
     // Parse the devfile source annotation to extract the repository URL
-    const devfileSourse = load(devfileSourseStr) as {
+    const devfileSource = load(devfileSourceStr) as {
       factory?: {
         params?: string;
       };
@@ -203,25 +205,48 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
       };
     };
     // Check if the devfile source has a factory with parameters
-    const factoryParams = devfileSourse?.factory?.params;
-    if (factoryParams) {
-      // Split the factory params string into an array of parameters
-      const paramsArr = factoryParams.split('&');
-      if (paramsArr.length > 0) {
-        // Find the URL parameter in the factory params
-        const targetParam = paramsArr.find(param => param.startsWith('url='));
-        if (targetParam) {
-          return targetParam.split('=')[1];
+    const factoryParams = new URLSearchParams(devfileSource?.factory?.params);
+    if (factoryParams.has(FACTORY_URL_ATTR)) {
+      // URLSearchParams.get() decodes percent-encoded characters in values, so a URL
+      // stored as "url=http://…%3Fid%3Dfoo" is returned as "http://…?id=foo".
+      // This matches factoryParams.sourceUrl which also applies decodeURIComponent().
+      let location = factoryParams.get(FACTORY_URL_ATTR);
+      if (location) {
+        const isSshLocation = FactoryLocationAdapter.isSshLocation(location);
+
+        // For SSH URLs, append the revision so that checkouts of the same repo at
+        // different branches are treated as distinct sources — matching the behaviour
+        // of buildFactoryParams.getSourceUrl() which also appends revision for SSH.
+        if (isSshLocation) {
+          const revisionFromParams = factoryParams.get(REVISION_ATTR);
+          if (revisionFromParams) {
+            // Revision was explicitly set in the factory URL — use it directly.
+            location +=
+              (location.includes('?') ? '&' : '?') + `${REVISION_ATTR}=${revisionFromParams}`;
+          } else {
+            // Fall back to the git project's checkoutFrom revision.
+            const projects = this.workspace.spec.template.projects;
+            if (projects && projects.length > 0) {
+              const git = projects[0].git;
+              if (git?.checkoutFrom?.revision) {
+                location +=
+                  (location.includes('?') ? '&' : '?') +
+                  `${REVISION_ATTR}=${git.checkoutFrom.revision}`;
+              }
+            }
+          }
         }
+
+        return location;
       }
     }
     // Check if the devfile source has a repository URL
-    const repo = devfileSourse?.scm?.repo;
+    const repo = devfileSource?.scm?.repo;
     if (repo) {
       return repo;
     }
     // Check if the devfile source has a URL location
-    const location = devfileSourse?.url?.location;
+    const location = devfileSource?.url?.location;
     if (location) {
       return location;
     }
@@ -274,7 +299,7 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
   }
 
   get error(): string | undefined {
-    if (this.hasError === false) {
+    if (!this.hasError) {
       return;
     }
     return this.workspace.status?.message;
