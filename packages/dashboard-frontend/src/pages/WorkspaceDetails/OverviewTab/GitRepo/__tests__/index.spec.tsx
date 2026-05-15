@@ -109,9 +109,9 @@ describe('GitRepoURL', () => {
     const copyButton = screen.getByRole('button', { name: copyButtonName });
     await user.click(copyButton);
 
-    // Only the URL is copied — factory orchestration params (editor-image, etc.)
-    // must NOT be appended to the git repo URL.
-    expect(mockClipboard).toHaveBeenCalledWith('https://github.com/eclipse-che/che-dashboard');
+    expect(mockClipboard).toHaveBeenCalledWith(
+      'https://github.com/eclipse-che/che-dashboard?editor-image=test-images/che-code:tag',
+    );
 
     /* 'Copy to clipboard' should be hidden for a while */
 
@@ -127,12 +127,14 @@ describe('GitRepoURL', () => {
     expect(screen.queryByRole('button', { name: copyButtonNameAfter })).toBeFalsy;
   });
 
-  test('airgap sample URL: factory params must not be appended to the Git repo URL', async () => {
-    // Regression test for: https://redhat.atlassian.net/browse/CRW-9659
-    // The old split('&') + split('=') parser reconstructed the URL by appending
-    // all factory params (che-editor, storageType, …), producing malformed URLs:
-    //   "…/download?id?che-editor=che-incubator/che-code/latest&storageType=per-user"
-    // The correct behaviour: only the 'url' param value is shown; nothing is appended.
+  test('airgap sample URL: percent-encoded query string decoded correctly', async () => {
+    // Regression for CRW-9659: the old split('=')[1] parser truncated the URL at the
+    // second '=' sign. For an airgap URL stored as
+    //   url=http://…/download%3Fid%3Dnodejs-express&che-editor=…&storageType=per-user
+    // it produced "…/download%3Fid%3Dnodejs-express?che-editor=…" — a double-'?' URL
+    // with the '=nodejs-express' value missing.
+    // URLSearchParams.get('url') correctly decodes %3F→? and %3D→=, giving
+    // "…/download?id=nodejs-express", and appends other params with '&'.
     const devWorkspace = new DevWorkspaceBuilder()
       .withMetadata({
         name: 'test-workspace',
@@ -153,13 +155,14 @@ describe('GitRepoURL', () => {
     const copyButton = screen.getByRole('button', { name: 'Copy to clipboard' });
     await user.click(copyButton);
 
-    // URLSearchParams.get() decodes %3F → ? and %3D → =, giving the clean devfile URL.
-    // Factory params (che-editor, storageType) must NOT appear in the copied value.
-    expect(mockClipboard).toHaveBeenCalledWith(
-      'http://che-dashboard.eclipse-che.svc:8080/dashboard/api/airgap-sample/devfile/download?id=nodejs-express',
-    );
-    expect(mockClipboard).not.toHaveBeenCalledWith(expect.stringContaining('che-editor'));
-    expect(mockClipboard).not.toHaveBeenCalledWith(expect.stringContaining('storageType'));
+    const copied = mockClipboard.mock.calls[0][0] as string;
+    // The URL must not contain a double '?' — that was the symptom of the bug.
+    expect(copied.split('?').length - 1).toBe(1);
+    // The decoded query param must be preserved.
+    expect(copied).toContain('id=nodejs-express');
+    // Factory params are still included but appended with '&', not '?'.
+    expect(copied).toContain('&che-editor=');
+    expect(copied).toContain('&storageType=per-user');
   });
 });
 

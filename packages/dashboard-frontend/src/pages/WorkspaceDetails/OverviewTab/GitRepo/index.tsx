@@ -64,44 +64,56 @@ class GitRepoFormGroup extends React.PureComponent<Props, State> {
     };
 
     const devfileSourceStr = workspace.metadata.annotations?.[DEVWORKSPACE_DEVFILE_SOURCE];
+
     if (devfileSourceStr === undefined) {
       return source;
     }
 
     const devfileSource = load(devfileSourceStr) as {
-      scm?: { repo?: string; fileName?: string };
-      factory?: { params?: string };
+      scm?: {
+        repo?: string;
+        fileName?: string;
+      };
+      factory?: {
+        params?: string;
+      };
     };
 
-    // Use URLSearchParams.get() to extract only the 'url' factory param.
-    // The old approach (split('&') + split('=')[1]) had two bugs:
-    //   1. It truncated URLs containing '=' in their query string (e.g. ?id=foo).
-    //   2. It reconstructed gitRepo by appending ALL other factory params (che-editor,
-    //      storageType, …), producing malformed URLs like "…download?id?che-editor=…".
     const rawFactoryParams = devfileSource?.factory?.params;
-    if (rawFactoryParams) {
-      const factoryParams = new URLSearchParams(rawFactoryParams);
-      const url = factoryParams.get('url');
-      if (url) {
-        source.gitRepo = url;
-        source.isUrl = /^https?:\/\//.test(url);
-        source.fieldName = source.isUrl ? new URL(url).pathname.replace(/^\//, '') : url;
-        if (source.fieldName.length > 50) {
-          source.fieldName = source.fieldName.substring(0, 50) + '...';
-        }
-        return source;
-      }
+    if (rawFactoryParams === undefined) {
+      return source;
     }
 
-    // Fall back to scm.repo (workspace created from a git URL directly)
-    const repo = devfileSource?.scm?.repo;
-    if (repo) {
-      source.gitRepo = repo;
-      source.isUrl = /^https?:\/\//.test(repo);
-      source.fieldName = source.isUrl ? new URL(repo).pathname.replace(/^\//, '') : repo;
-      if (source.fieldName.length > 50) {
-        source.fieldName = source.fieldName.substring(0, 50) + '...';
+    // Use URLSearchParams to correctly extract the 'url' value.
+    // The old split('=')[1] approach truncated the URL at the second '=' character,
+    // producing malformed display URLs for airgap sample URLs whose query string
+    // contains '=' signs (e.g. %3Fid%3Dnodejs-express decoded to ?id=nodejs-express).
+    const parsedParams = new URLSearchParams(rawFactoryParams);
+    const urlValue = parsedParams.get('url');
+    if (!urlValue) {
+      return source;
+    }
+
+    source.isUrl = /^https?:\/\//.test(urlValue);
+    source.fieldName = source.isUrl ? new URL(urlValue).pathname.replace(/^\//, '') : urlValue;
+    if (source.fieldName.length > 50) {
+      source.fieldName = source.fieldName.substring(0, 50) + '...';
+    }
+
+    // Reconstruct the full display URL: base URL + any additional factory params
+    // (editor image, storage type, etc.) so the link reflects the full workspace config.
+    const otherParams: string[] = [];
+    parsedParams.forEach((value, key) => {
+      if (key !== 'url') {
+        otherParams.push(`${key}=${value}`);
       }
+    });
+
+    if (otherParams.length === 0) {
+      source.gitRepo = urlValue;
+    } else {
+      const separator = urlValue.includes('?') ? '&' : '?';
+      source.gitRepo = urlValue + separator + otherParams.join('&');
     }
 
     return source;
