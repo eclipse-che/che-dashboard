@@ -64,51 +64,45 @@ class GitRepoFormGroup extends React.PureComponent<Props, State> {
     };
 
     const devfileSourceStr = workspace.metadata.annotations?.[DEVWORKSPACE_DEVFILE_SOURCE];
-
     if (devfileSourceStr === undefined) {
       return source;
     }
 
     const devfileSource = load(devfileSourceStr) as {
-      scm?: {
-        repo?: string;
-        fileName?: string;
-      };
-      factory?: {
-        params?: string;
-      };
+      scm?: { repo?: string; fileName?: string };
+      factory?: { params?: string };
     };
 
-    const factoryParams = devfileSource?.factory?.params;
-    if (factoryParams === undefined) {
-      return source;
-    }
-
-    const paramsArr = factoryParams.split('&');
-    if (paramsArr.length === 0) {
-      return source;
-    }
-
-    paramsArr.forEach(param => {
-      const [key, value] = param.split('=');
-      if (key === 'url') {
-        if (!source.gitRepo && paramsArr.length === 1) {
-          source.gitRepo = value;
-        } else {
-          source.gitRepo = value + '?' + source.gitRepo;
-        }
-        source.isUrl = new RegExp('^https?://').test(value);
-        source.fieldName = source.isUrl ? new URL(value).pathname.replace(/^\//, '') : value;
+    // Use URLSearchParams.get() to extract only the 'url' factory param.
+    // The old approach (split('&') + split('=')[1]) had two bugs:
+    //   1. It truncated URLs containing '=' in their query string (e.g. ?id=foo).
+    //   2. It reconstructed gitRepo by appending ALL other factory params (che-editor,
+    //      storageType, …), producing malformed URLs like "…download?id?che-editor=…".
+    const rawFactoryParams = devfileSource?.factory?.params;
+    if (rawFactoryParams) {
+      const factoryParams = new URLSearchParams(rawFactoryParams);
+      const url = factoryParams.get('url');
+      if (url) {
+        source.gitRepo = url;
+        source.isUrl = /^https?:\/\//.test(url);
+        source.fieldName = source.isUrl ? new URL(url).pathname.replace(/^\//, '') : url;
         if (source.fieldName.length > 50) {
           source.fieldName = source.fieldName.substring(0, 50) + '...';
         }
-      } else {
-        if (source.gitRepo.length !== 0 && !source.gitRepo.endsWith('?')) {
-          source.gitRepo = source.gitRepo + '&';
-        }
-        source.gitRepo = source.gitRepo + key + '=' + value;
+        return source;
       }
-    });
+    }
+
+    // Fall back to scm.repo (workspace created from a git URL directly)
+    const repo = devfileSource?.scm?.repo;
+    if (repo) {
+      source.gitRepo = repo;
+      source.isUrl = /^https?:\/\//.test(repo);
+      source.fieldName = source.isUrl ? new URL(repo).pathname.replace(/^\//, '') : repo;
+      if (source.fieldName.length > 50) {
+        source.fieldName = source.fieldName.substring(0, 50) + '...';
+      }
+    }
 
     return source;
   }

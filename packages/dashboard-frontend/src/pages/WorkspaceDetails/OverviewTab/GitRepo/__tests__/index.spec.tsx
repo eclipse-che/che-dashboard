@@ -109,9 +109,9 @@ describe('GitRepoURL', () => {
     const copyButton = screen.getByRole('button', { name: copyButtonName });
     await user.click(copyButton);
 
-    expect(mockClipboard).toHaveBeenCalledWith(
-      'https://github.com/eclipse-che/che-dashboard?editor-image=test-images/che-code:tag',
-    );
+    // Only the URL is copied — factory orchestration params (editor-image, etc.)
+    // must NOT be appended to the git repo URL.
+    expect(mockClipboard).toHaveBeenCalledWith('https://github.com/eclipse-che/che-dashboard');
 
     /* 'Copy to clipboard' should be hidden for a while */
 
@@ -125,6 +125,41 @@ describe('GitRepoURL', () => {
     jest.advanceTimersByTime(4000);
     expect(screen.queryByRole('button', { name: copyButtonName })).toBeTruthy;
     expect(screen.queryByRole('button', { name: copyButtonNameAfter })).toBeFalsy;
+  });
+
+  test('airgap sample URL: factory params must not be appended to the Git repo URL', async () => {
+    // Regression test for: https://redhat.atlassian.net/browse/CRW-9659
+    // The old split('&') + split('=') parser reconstructed the URL by appending
+    // all factory params (che-editor, storageType, …), producing malformed URLs:
+    //   "…/download?id?che-editor=che-incubator/che-code/latest&storageType=per-user"
+    // The correct behaviour: only the 'url' param value is shown; nothing is appended.
+    const devWorkspace = new DevWorkspaceBuilder()
+      .withMetadata({
+        name: 'test-workspace',
+        annotations: {
+          [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+            factory: {
+              params:
+                'url=http://che-dashboard.eclipse-che.svc:8080/dashboard/api/airgap-sample/devfile/download%3Fid%3Dnodejs-express&che-editor=che-incubator%2Fche-code%2Flatest&storageType=per-user',
+            },
+          }),
+        },
+      })
+      .build();
+
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    renderComponent(constructWorkspace(devWorkspace));
+
+    const copyButton = screen.getByRole('button', { name: 'Copy to clipboard' });
+    await user.click(copyButton);
+
+    // URLSearchParams.get() decodes %3F → ? and %3D → =, giving the clean devfile URL.
+    // Factory params (che-editor, storageType) must NOT appear in the copied value.
+    expect(mockClipboard).toHaveBeenCalledWith(
+      'http://che-dashboard.eclipse-che.svc:8080/dashboard/api/airgap-sample/devfile/download?id=nodejs-express',
+    );
+    expect(mockClipboard).not.toHaveBeenCalledWith(expect.stringContaining('che-editor'));
+    expect(mockClipboard).not.toHaveBeenCalledWith(expect.stringContaining('storageType'));
   });
 });
 
