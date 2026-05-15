@@ -36,13 +36,12 @@ describe('UserProfile, actions', () => {
 
   describe('requestUserProfile', () => {
     it('should dispatch receive action on successful fetch', async () => {
-      const mockNamespace = 'test-namespace';
       const mockUserProfile = { username: 'test-user' } as api.IUserProfile;
 
       (verifyAuthorized as jest.Mock).mockResolvedValue(true);
       (fetchUserProfile as jest.Mock).mockResolvedValue(mockUserProfile);
 
-      await store.dispatch(actionCreators.requestUserProfile(mockNamespace));
+      await store.dispatch(actionCreators.requestUserProfile());
 
       const actions = store.getActions();
       expect(actions).toHaveLength(2);
@@ -51,16 +50,15 @@ describe('UserProfile, actions', () => {
     });
 
     it('should dispatch error action on failed fetch', async () => {
-      const mockNamespace = 'test-namespace';
       const errorMessage = 'Network error';
 
       (verifyAuthorized as jest.Mock).mockResolvedValue(true);
       (fetchUserProfile as jest.Mock).mockRejectedValue(new Error(errorMessage));
       (common.helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
 
-      await expect(
-        store.dispatch(actionCreators.requestUserProfile(mockNamespace)),
-      ).rejects.toThrow(errorMessage);
+      await expect(store.dispatch(actionCreators.requestUserProfile())).rejects.toThrow(
+        errorMessage,
+      );
 
       const actions = store.getActions();
       expect(actions).toHaveLength(2);

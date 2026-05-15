@@ -38,7 +38,6 @@ import {
   IPodmanApi,
   IServerConfigApi,
   IShhKeysApi,
-  IUserProfileApi,
   IWorkspacePreferencesApi,
 } from '@/devworkspaceClient';
 import { getDevWorkspaceClient as helper } from '@/routes/api/helpers/getDevWorkspaceClient';
@@ -235,9 +234,6 @@ export const getDevWorkspaceClient = jest.fn(
         patch: (_namespace, _name, _patches) => Promise.resolve(stubDevWorkspaceTemplate),
         delete: (_namespace, _name) => Promise.resolve(undefined),
       } as IDevWorkspaceTemplateApi,
-      userProfileApi: {
-        getUserProfile: _namespace => Promise.resolve(stubUserProfile),
-      } as IUserProfileApi,
       editorsApi: {
         list: () => Promise.resolve(editorsArray),
         get: _id => Promise.resolve(editorsArray[0]),

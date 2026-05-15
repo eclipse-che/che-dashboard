@@ -22,20 +22,18 @@ export const userProfileReceiveAction = createAction<api.IUserProfile>('userProf
 export const userProfileErrorAction = createAction<string>('userProfile/error');
 
 export const actionCreators = {
-  requestUserProfile:
-    (namespace: string): AppThunk =>
-    async (dispatch, getState) => {
-      try {
-        await verifyAuthorized(dispatch, getState);
+  requestUserProfile: (): AppThunk => async (dispatch, getState) => {
+    try {
+      await verifyAuthorized(dispatch, getState);
 
-        dispatch(userProfileRequestAction());
+      dispatch(userProfileRequestAction());
 
-        const userProfile = await fetchUserProfile(namespace);
-        dispatch(userProfileReceiveAction(userProfile));
-      } catch (e) {
-        const errorMessage = common.helpers.errors.getMessage(e);
-        dispatch(userProfileErrorAction(errorMessage));
-        throw e;
-      }
-    },
+      const userProfile = await fetchUserProfile();
+      dispatch(userProfileReceiveAction(userProfile));
+    } catch (e) {
+      const errorMessage = common.helpers.errors.getMessage(e);
+      dispatch(userProfileErrorAction(errorMessage));
+      throw e;
+    }
+  },
 };

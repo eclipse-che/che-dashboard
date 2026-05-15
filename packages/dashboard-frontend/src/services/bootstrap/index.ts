@@ -393,15 +393,8 @@ export default class Bootstrap {
   }
 
   private async fetchUserProfile(): Promise<void> {
-    const defaultKubernetesNamespace = selectDefaultNamespace(this.store.getState());
-    const defaultNamespace = defaultKubernetesNamespace.name;
-
     const { requestUserProfile } = userProfileActionCreators;
-    return requestUserProfile(defaultNamespace)(
-      this.store.dispatch,
-      this.store.getState,
-      undefined,
-    );
+    return requestUserProfile()(this.store.dispatch, this.store.getState, undefined);
   }
 
   private checkWorkspaceStopped(): void {

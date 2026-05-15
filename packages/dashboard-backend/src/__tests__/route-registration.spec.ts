@@ -182,12 +182,6 @@ describe('Route Registration Integration Tests', () => {
       expect(res.statusCode).toBeLessThan(500);
     });
 
-    it('should not break existing user-profile route', async () => {
-      const res = await app.inject().get(`${baseApiPath}/userprofile/${namespace}`);
-
-      expect(res.statusCode).not.toBe(404);
-    });
-
     it('should preserve existing devworkspaces routes', async () => {
       const routes = app.printRoutes();
 

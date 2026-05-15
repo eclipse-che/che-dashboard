@@ -13,17 +13,17 @@
 import common, { api } from '@eclipse-che/common';
 
 import { AxiosWrapper } from '@/services/axios-wrapper/axiosWrapper';
-import { dashboardBackendPrefix } from '@/services/backend-client/const';
+import { cheServerPrefix } from '@/services/backend-client/const';
 
 /**
  * Returns object with user profile data.
  */
-export async function fetchUserProfile(namespace: string): Promise<api.IUserProfile> {
-  const url = `${dashboardBackendPrefix}/userprofile/${namespace}`;
+export async function fetchUserProfile(): Promise<api.IUserProfile> {
+  const url = `${cheServerPrefix}/user`;
   try {
-    const response =
-      await AxiosWrapper.createToRetryMissedBearerTokenError().get<api.IUserProfile>(url);
-    return response.data;
+    const response = await AxiosWrapper.createToRetryAnyErrors().get(url);
+    const data = response.data;
+    return { username: data.name, email: data.email };
   } catch (e) {
     throw new Error(
       `Failed to fetch the user profile data. ${common.helpers.errors.getMessage(e)}`,
