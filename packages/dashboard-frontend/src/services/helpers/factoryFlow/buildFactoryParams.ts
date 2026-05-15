@@ -103,9 +103,24 @@ export function buildFactoryParams(searchParams: URLSearchParams): FactoryParams
 
 function getSourceUrl(searchParams: URLSearchParams): string {
   const devworkspaceResourcesUrl = getDevworkspaceResourcesUrl(searchParams);
-  return devworkspaceResourcesUrl !== undefined
-    ? devworkspaceResourcesUrl
-    : getFactoryUrl(searchParams);
+  if (devworkspaceResourcesUrl !== undefined) {
+    return devworkspaceResourcesUrl;
+  }
+  const factoryUrl = getFactoryUrl(searchParams);
+  if (!factoryUrl) {
+    return factoryUrl;
+  }
+  // Decode percent-encoded characters so this value matches workspace.source, which is
+  // read via URLSearchParams.get() from the DevWorkspace annotation and therefore has
+  // one additional level of decoding applied (e.g. %3F → ?, %3D → =).
+  // This fixes comparison failures for airgap sample URLs that are double-encoded in
+  // the factory hash (%253Fid%253Dnodejs-express → %3Fid%3Dnodejs-express after first
+  // decode, then ?id=nodejs-express after the second decode in workspace.source).
+  try {
+    return decodeURIComponent(factoryUrl);
+  } catch {
+    return factoryUrl;
+  }
 }
 
 function getDevworkspaceResourcesUrl(searchParams: URLSearchParams): string | undefined {
