@@ -79,36 +79,42 @@ class GitRepoFormGroup extends React.PureComponent<Props, State> {
       };
     };
 
-    const factoryParams = devfileSource?.factory?.params;
-    if (factoryParams === undefined) {
+    const rawFactoryParams = devfileSource?.factory?.params;
+    if (rawFactoryParams === undefined) {
       return source;
     }
 
-    const paramsArr = factoryParams.split('&');
-    if (paramsArr.length === 0) {
+    // Use URLSearchParams to correctly extract the 'url' value.
+    // The old split('=')[1] approach truncated the URL at the second '=' character,
+    // producing malformed display URLs for airgap sample URLs whose query string
+    // contains '=' signs (e.g. %3Fid%3Dnodejs-express decoded to ?id=nodejs-express).
+    const parsedParams = new URLSearchParams(rawFactoryParams);
+    const urlValue = parsedParams.get('url');
+    if (!urlValue) {
       return source;
     }
 
-    paramsArr.forEach(param => {
-      const [key, value] = param.split('=');
-      if (key === 'url') {
-        if (!source.gitRepo && paramsArr.length === 1) {
-          source.gitRepo = value;
-        } else {
-          source.gitRepo = value + '?' + source.gitRepo;
-        }
-        source.isUrl = new RegExp('^https?://').test(value);
-        source.fieldName = source.isUrl ? new URL(value).pathname.replace(/^\//, '') : value;
-        if (source.fieldName.length > 50) {
-          source.fieldName = source.fieldName.substring(0, 50) + '...';
-        }
-      } else {
-        if (source.gitRepo.length !== 0 && !source.gitRepo.endsWith('?')) {
-          source.gitRepo = source.gitRepo + '&';
-        }
-        source.gitRepo = source.gitRepo + key + '=' + value;
+    source.isUrl = /^https?:\/\//.test(urlValue);
+    source.fieldName = source.isUrl ? new URL(urlValue).pathname.replace(/^\//, '') : urlValue;
+    if (source.fieldName.length > 50) {
+      source.fieldName = source.fieldName.substring(0, 50) + '...';
+    }
+
+    // Reconstruct the full display URL: base URL + any additional factory params
+    // (editor image, storage type, etc.) so the link reflects the full workspace config.
+    const otherParams: string[] = [];
+    parsedParams.forEach((value, key) => {
+      if (key !== 'url') {
+        otherParams.push(`${key}=${value}`);
       }
     });
+
+    if (otherParams.length === 0) {
+      source.gitRepo = urlValue;
+    } else {
+      const separator = urlValue.includes('?') ? '&' : '?';
+      source.gitRepo = urlValue + separator + otherParams.join('&');
+    }
 
     return source;
   }
