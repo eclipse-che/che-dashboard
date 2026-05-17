@@ -11,7 +11,6 @@ exports[`Devfile Metadata Card snapshot 1`] = `
   id="sample-card-go"
   onClick={[Function]}
   onKeyDown={[Function]}
-  role="button"
   tabIndex={0}
 >
   <div
@@ -19,7 +18,18 @@ exports[`Devfile Metadata Card snapshot 1`] = `
   >
     <div
       className="pf-v6-c-card__actions"
-    />
+    >
+      <div
+        className="pf-v6-c-card__selectable-actions"
+      >
+        <button
+          aria-labelledby="sample-card-go"
+          className="pf-v6-c-card__clickable-action pf-v6-screen-reader"
+          disabled={false}
+          type="button"
+        />
+      </div>
+    </div>
     <div
       className="pf-v6-c-card__header-main"
     >

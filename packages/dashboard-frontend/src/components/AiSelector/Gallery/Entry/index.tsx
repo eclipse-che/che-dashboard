@@ -128,8 +128,8 @@ export class AiProviderEntry extends React.PureComponent<Props> {
             )}
             {provider.name}
             {provider.envVarName && hasExistingKey && (
-              <Badge isRead style={{ marginLeft: '8px', bottom: '2px' }}>
-                <CheckCircleIcon style={{ verticalAlign: '-.145em' }} /> Key configured
+              <Badge isRead style={{ whiteSpace: 'nowrap' }}>
+                <CheckCircleIcon /> Key configured
               </Badge>
             )}
           </CardTitle>
