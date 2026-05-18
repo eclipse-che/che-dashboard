@@ -23,14 +23,6 @@ exports[`ProgressStepTitle snapshot - active step 1`] = `
   >
     Step 1
   </span>,
-  <span
-    aria-atomic="true"
-    aria-live="polite"
-    className="pf-v6-screen-reader"
-    role="status"
-  >
-    Step: Step 1
-  </span>,
 ]
 `;
 
@@ -57,34 +49,16 @@ exports[`ProgressStepTitle snapshot - active step failed 1`] = `
   >
     Step 1
   </span>,
-  <span
-    aria-atomic="true"
-    aria-live="polite"
-    className="pf-v6-screen-reader"
-    role="status"
-  >
-    Step: Step 1
-  </span>,
 ]
 `;
 
 exports[`ProgressStepTitle snapshot - active step has children 1`] = `
-[
-  <span
-    className="progress"
-    data-testid="step-title"
-  >
-    Step 1
-  </span>,
-  <span
-    aria-atomic="true"
-    aria-live="polite"
-    className="pf-v6-screen-reader"
-    role="status"
-  >
-    Step: Step 1
-  </span>,
-]
+<span
+  className="progress"
+  data-testid="step-title"
+>
+  Step 1
+</span>
 `;
 
 exports[`ProgressStepTitle snapshot - active step warning 1`] = `
@@ -110,30 +84,40 @@ exports[`ProgressStepTitle snapshot - active step warning 1`] = `
   >
     Step 1
   </span>,
-  <span
-    aria-atomic="true"
-    aria-live="polite"
-    className="pf-v6-screen-reader"
-    role="status"
-  >
-    Step: Step 1
-  </span>,
 ]
 `;
 
-exports[`ProgressStepTitle snapshot - non-active step 1`] = `
+exports[`ProgressStepTitle snapshot - already-done step 1`] = `
 [
+  <svg
+    aria-hidden={true}
+    aria-labelledby={null}
+    className="pf-v6-svg successIcon stepIcon"
+    data-testid="step-done-icon"
+    fill="currentColor"
+    height="1em"
+    role="img"
+    viewBox="0 0 512 512"
+    width="1em"
+  >
+    <path
+      d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"
+    />
+  </svg>,
   <span
     className="ready"
     data-testid="step-title"
   >
     Step 1
   </span>,
-  <span
-    aria-atomic="true"
-    aria-live="polite"
-    className="pf-v6-screen-reader"
-    role="status"
-  />,
 ]
+`;
+
+exports[`ProgressStepTitle snapshot - non-active step 1`] = `
+<span
+  className="ready"
+  data-testid="step-title"
+>
+  Step 1
+</span>
 `;
