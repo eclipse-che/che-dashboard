@@ -11,8 +11,8 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import ReactDOM from 'react-dom';
 
+import { enqueueAnnouncement } from '@/components/WorkspaceProgress/StepTitle/announceQueue';
 import { ProgressStepTitleIcon } from '@/components/WorkspaceProgress/StepTitle/Icon';
 import styles from '@/components/WorkspaceProgress/StepTitle/index.module.css';
 
@@ -42,9 +42,37 @@ function extractText(node: React.ReactNode): string {
 }
 
 export class ProgressStepTitle extends React.Component<Props> {
+  private buildAnnouncementText(): string {
+    const { children, parentStepName } = this.props;
+    const stepText = extractText(children);
+    if (!stepText) return '';
+    return parentStepName ? `Step: ${parentStepName} / ${stepText}` : `Step: ${stepText}`;
+  }
+
+  private announce(): void {
+    const text = this.buildAnnouncementText();
+    if (text) {
+      enqueueAnnouncement(text);
+    }
+  }
+
+  componentDidMount(): void {
+    // All announcements go through the single persistent queue node so screen
+    // readers hear a real content change. Newly-created aria-live nodes that
+    // already have content on mount are silently ignored by most screen readers.
+    if (this.props.distance === 0 || this.props.distance === 1) {
+      this.announce();
+    }
+  }
+
+  componentDidUpdate(prevProps: Props): void {
+    if (prevProps.distance !== 0 && this.props.distance === 0) {
+      this.announce();
+    }
+  }
+
   render(): React.ReactElement {
-    const { children, className, hasChildren, distance, isError, isWarning, parentStepName } =
-      this.props;
+    const { children, className, hasChildren, distance, isError, isWarning } = this.props;
 
     let readiness = styles.ready;
     if (distance === 0) {
@@ -68,23 +96,6 @@ export class ProgressStepTitle extends React.Component<Props> {
         <span data-testid="step-title" className={fullClassName}>
           {children}
         </span>
-        {/* Live region: rendered via portal so it sits outside the wizard nav button DOM
-            tree, preventing its text from leaking into the button's accessible name
-            (dom-accessibility-api includes role="status" text in name computation despite
-            the ARIA spec's nameFrom:author rule). The portal still announces changes to
-            screen readers because live regions work document-wide regardless of DOM
-            position. Content is only set when the step is active (distance === 0). */}
-        {ReactDOM.createPortal(
-          <span role="status" aria-live="polite" aria-atomic="true" className="pf-v6-screen-reader">
-            {(() => {
-              if (distance !== 0) return '';
-              const stepText = extractText(children);
-              if (!stepText) return '';
-              return parentStepName ? `Step: ${parentStepName} / ${stepText}` : `Step: ${stepText}`;
-            })()}
-          </span>,
-          document.body,
-        )}
       </>
     );
   }

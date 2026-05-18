@@ -483,6 +483,7 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
           hasChildren={hasChildren}
           isError={isError}
           isWarning={isWarning}
+          parentStepName="Creating a workspace"
         >
           {name}
         </ProgressStepTitle>
