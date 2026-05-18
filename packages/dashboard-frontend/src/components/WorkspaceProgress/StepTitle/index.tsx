@@ -69,6 +69,9 @@ export class ProgressStepTitle extends React.Component<Props> {
     if (prevProps.distance !== 0 && this.props.distance === 0) {
       this.announce();
     }
+    if (prevProps.distance === 0 && this.props.distance === 1) {
+      this.announce();
+    }
   }
 
   render(): React.ReactElement {
