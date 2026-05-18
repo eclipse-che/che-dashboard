@@ -10,6 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { PageContext, pageContextDefaults, PageContextProps } from '@patternfly/react-core';
+import { render } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 
@@ -21,12 +23,35 @@ jest.mock('@/Layout/Navigation');
 const { createSnapshot } = getComponentRenderer(getComponent);
 
 describe('Sidebar', () => {
-  test('snapshot', () => {
-    expect(createSnapshot().toJSON()).toMatchSnapshot();
+  test('snapshot - open', () => {
+    expect(createSnapshot(true).toJSON()).toMatchSnapshot();
+  });
+
+  test('snapshot - closed', () => {
+    expect(createSnapshot(false).toJSON()).toMatchSnapshot();
+  });
+
+  it('does not have inert attribute when the sidebar is open', () => {
+    const { baseElement } = render(getComponent(true));
+    const sidebar = baseElement.querySelector('#page-sidebar');
+    expect(sidebar).not.toBeNull();
+    expect(sidebar?.hasAttribute('inert')).toBe(false);
+  });
+
+  it('has inert attribute when the sidebar is collapsed', () => {
+    const { baseElement } = render(getComponent(false));
+    const sidebar = baseElement.querySelector('#page-sidebar');
+    expect(sidebar).not.toBeNull();
+    expect(sidebar?.hasAttribute('inert')).toBe(true);
   });
 });
 
-function getComponent(): React.ReactElement {
+function getComponent(isSidebarOpen = true): React.ReactElement {
   const history = createMemoryHistory();
-  return <Sidebar history={history} />;
+  const context: PageContextProps = { ...pageContextDefaults, isSidebarOpen };
+  return (
+    <PageContext.Provider value={context}>
+      <Sidebar history={history} />
+    </PageContext.Provider>
+  );
 }

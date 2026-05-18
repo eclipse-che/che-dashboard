@@ -1,6 +1,23 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`Sidebar snapshot 1`] = `
+exports[`Sidebar snapshot - closed 1`] = `
+<div
+  aria-hidden={false}
+  className="pf-v6-c-page__sidebar pf-m-expanded"
+  id="page-sidebar"
+  inert=""
+>
+  <div
+    className="pf-v6-c-page__sidebar-body"
+  >
+    <div>
+      Mock Navigation component
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Sidebar snapshot - open 1`] = `
 <div
   aria-hidden={false}
   className="pf-v6-c-page__sidebar pf-m-expanded"
