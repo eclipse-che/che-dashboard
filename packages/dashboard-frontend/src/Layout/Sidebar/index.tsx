@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { PageSidebar, PageSidebarBody } from '@patternfly/react-core';
+import { PageContext, PageSidebar, PageSidebarBody } from '@patternfly/react-core';
 import { History } from 'history';
 import React from 'react';
 
@@ -20,16 +20,21 @@ export type Props = {
   history: History;
 };
 
-export class Sidebar extends React.PureComponent<Props> {
-  public render(): React.ReactElement {
-    const { history } = this.props;
+export function Sidebar({ history }: Props): React.ReactElement {
+  const { isSidebarOpen } = React.useContext(PageContext);
 
-    return (
-      <PageSidebar>
-        <PageSidebarBody>
-          <Navigation history={history} />
-        </PageSidebarBody>
-      </PageSidebar>
-    );
-  }
+  // When the sidebar is collapsed PatternFly sets aria-hidden="true" on
+  // #page-sidebar but leaves child <a> / <button> elements in the tab order,
+  // violating WCAG 4.1.2.  Adding the HTML `inert` attribute when closed
+  // removes the entire subtree from keyboard navigation and the accessibility
+  // tree without unmounting it, which is the correct fix.
+  const inertProp = isSidebarOpen ? {} : ({ inert: '' } as React.HTMLAttributes<HTMLDivElement>);
+
+  return (
+    <PageSidebar {...inertProp}>
+      <PageSidebarBody>
+        <Navigation history={history} />
+      </PageSidebarBody>
+    </PageSidebar>
+  );
 }
