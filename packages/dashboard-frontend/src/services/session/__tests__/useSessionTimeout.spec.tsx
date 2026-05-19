@@ -19,7 +19,24 @@ import { useSessionTimeout } from '@/services/session/useSessionTimeout';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 const mockGet = jest.fn();
-jest.mock('axios', () => ({ get: (...args: unknown[]) => mockGet(...args) }));
+const mockInterceptorEject = jest.fn();
+
+// Capture the response handler registered by the hook so tests can simulate
+// completed requests and verify the idle timer resets correctly.
+let capturedResponseHandler: ((r: unknown) => unknown) | null = null;
+
+jest.mock('axios', () => ({
+  get: (...args: unknown[]) => mockGet(...args),
+  interceptors: {
+    response: {
+      use: (handler: (r: unknown) => unknown) => {
+        capturedResponseHandler = handler;
+        return 0;
+      },
+      eject: (...args: unknown[]) => mockInterceptorEject(...args),
+    },
+  },
+}));
 
 const mockSignOut = jest.fn();
 jest.mock('@/services/helpers/login', () => ({ signOut: () => mockSignOut() }));
@@ -49,6 +66,8 @@ describe('useSessionTimeout', () => {
     mockGet.mockResolvedValue({});
     mockSignOut.mockClear();
     mockGet.mockClear();
+    mockInterceptorEject.mockClear();
+    capturedResponseHandler = null;
   });
 
   afterEach(() => {
@@ -58,6 +77,16 @@ describe('useSessionTimeout', () => {
   it('does not open modal when sessionTimeout <= 0', () => {
     const { result } = renderHook(() => useSessionTimeout(), {
       wrapper: buildWrapper(buildStore(0)),
+    });
+    act(() => {
+      jest.advanceTimersByTime(999999000);
+    });
+    expect(result.current.isModalOpen).toBe(false);
+  });
+
+  it('does not open modal when sessionTimeout < 90 s (too short for a useful warning)', () => {
+    const { result } = renderHook(() => useSessionTimeout(), {
+      wrapper: buildWrapper(buildStore(89)),
     });
     act(() => {
       jest.advanceTimersByTime(999999000);
@@ -94,6 +123,54 @@ describe('useSessionTimeout', () => {
       jest.advanceTimersByTime(15_000);
     });
     expect(result.current.isModalOpen).toBe(true);
+  });
+
+  it('resets idle timer when an authenticated request completes', () => {
+    // Simulates background workspace polling: a request completes at 50 s,
+    // which refreshes the OAuth cookie. The JS idle timer must also reset so
+    // the modal fires 60 s after the last request — not 60 s after mount.
+    const { result } = renderHook(() => useSessionTimeout(), {
+      wrapper: buildWrapper(buildStore(120)),
+    });
+    act(() => {
+      jest.advanceTimersByTime(50_000);
+    });
+    // Simulate a successful authenticated response (e.g., workspace-status poll)
+    act(() => {
+      capturedResponseHandler!({});
+    });
+    act(() => {
+      jest.advanceTimersByTime(50_000);
+    });
+    expect(result.current.isModalOpen).toBe(false);
+    act(() => {
+      jest.advanceTimersByTime(15_000);
+    });
+    expect(result.current.isModalOpen).toBe(true);
+  });
+
+  it('does not reset idle timer via interceptor while modal is open', () => {
+    // Once the modal is visible, an incoming response must NOT dismiss it —
+    // the user must interact explicitly to extend or end the session.
+    const { result } = renderHook(() => useSessionTimeout(), {
+      wrapper: buildWrapper(buildStore(120)),
+    });
+    act(() => {
+      jest.advanceTimersByTime(60_000);
+    });
+    expect(result.current.isModalOpen).toBe(true);
+    act(() => {
+      capturedResponseHandler!({});
+    });
+    expect(result.current.isModalOpen).toBe(true);
+  });
+
+  it('ejects the axios interceptor on unmount', () => {
+    const { unmount } = renderHook(() => useSessionTimeout(), {
+      wrapper: buildWrapper(buildStore(120)),
+    });
+    unmount();
+    expect(mockInterceptorEject).toHaveBeenCalledWith(0);
   });
 
   it('countdown decrements once per second', () => {

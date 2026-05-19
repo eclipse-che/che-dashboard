@@ -20,6 +20,9 @@ import { signOut } from '@/services/helpers/login';
 import { selectSessionTimeout } from '@/store/ServerConfig/selectors';
 
 const WARNING_LEAD_SECONDS = 60;
+// Sessions shorter than this offer less than WARNING_LEAD_SECONDS of warning time,
+// which is too brief to be useful. The modal is suppressed for such short timeouts.
+const MIN_SESSION_TIMEOUT_SECONDS = 90;
 const ACTIVITY_EVENTS = ['mousemove', 'keydown', 'click', 'touchstart'] as const;
 
 export type SessionTimeoutState = {
@@ -54,7 +57,7 @@ export function useSessionTimeout(): SessionTimeoutState {
     clearTimeout(idleTimerRef.current);
     clearInterval(countdownTimerRef.current);
     setIsModalOpen(false);
-    if (sessionTimeout <= 0) {
+    if (sessionTimeout <= 0 || sessionTimeout < MIN_SESSION_TIMEOUT_SECONDS) {
       return;
     }
     const delay = (sessionTimeout - WARNING_LEAD_SECONDS) * 1000;
@@ -91,7 +94,7 @@ export function useSessionTimeout(): SessionTimeoutState {
   }, [clearTimers]);
 
   useEffect(() => {
-    if (sessionTimeout <= 0) {
+    if (sessionTimeout <= 0 || sessionTimeout < MIN_SESSION_TIMEOUT_SECONDS) {
       return;
     }
     startIdleTimer();
@@ -103,9 +106,24 @@ export function useSessionTimeout(): SessionTimeoutState {
       }
     };
     ACTIVITY_EVENTS.forEach(event => document.addEventListener(event, handleActivity));
+    // Reset the idle timer whenever an authenticated request completes successfully.
+    // The OAuth proxy refreshes the session cookie on every such request (including
+    // background workspace-status polling), so the JS timer must align with that clock.
+    // Without this, background polling keeps the real session alive while the JS idle
+    // timer fires — producing false-positive sign-outs and missed warnings.
+    const interceptorId = axios.interceptors.response.use(
+      response => {
+        if (!isModalOpenRef.current) {
+          startIdleTimer();
+        }
+        return response;
+      },
+      error => Promise.reject(error),
+    );
     return () => {
       clearTimers();
       ACTIVITY_EVENTS.forEach(event => document.removeEventListener(event, handleActivity));
+      axios.interceptors.response.eject(interceptorId);
     };
   }, [sessionTimeout, startIdleTimer, clearTimers]);
 
