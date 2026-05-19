@@ -11,7 +11,7 @@
  */
 
 // How long each message is held in the live region before clearing.
-export const ANNOUNCE_HOLD_MS = 900;
+export const ANNOUNCE_HOLD_MS = 3000;
 // Gap between clearing one message and showing the next.
 export const ANNOUNCE_GAP_MS = 150;
 
