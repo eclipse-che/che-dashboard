@@ -105,6 +105,38 @@ describe('useSessionTimeout', () => {
     expect(result.current.isModalOpen).toBe(true);
   });
 
+  it('silently pings keep-alive when user is active and session is approaching expiry', async () => {
+    // sessionTimeout=120 s → keepAliveThreshold = max(30, (120-60)/2) = 30 s.
+    // After 31 s of idle with no requests, any UI event triggers a silent ping
+    // so the OAuth cookie is refreshed before the modal would appear at 60 s.
+    renderHook(() => useSessionTimeout(), {
+      wrapper: buildWrapper(buildStore(120)),
+    });
+    // Advance past the 30 s keep-alive threshold (modal does NOT open until 60 s)
+    act(() => {
+      jest.advanceTimersByTime(31_000);
+    });
+    await act(async () => {
+      document.dispatchEvent(new MouseEvent('mousemove'));
+      await Promise.resolve();
+    });
+    expect(mockGet).toHaveBeenCalledWith('/dashboard/api/user/id');
+  });
+
+  it('does not ping keep-alive when user is active but below the keep-alive threshold', () => {
+    // At 10 s of idle the threshold (30 s) has not been reached — just reset JS timer.
+    renderHook(() => useSessionTimeout(), {
+      wrapper: buildWrapper(buildStore(120)),
+    });
+    act(() => {
+      jest.advanceTimersByTime(10_000);
+    });
+    act(() => {
+      document.dispatchEvent(new MouseEvent('mousemove'));
+    });
+    expect(mockGet).not.toHaveBeenCalled();
+  });
+
   it('resets idle timer on document activity', () => {
     const { result } = renderHook(() => useSessionTimeout(), {
       wrapper: buildWrapper(buildStore(120)),

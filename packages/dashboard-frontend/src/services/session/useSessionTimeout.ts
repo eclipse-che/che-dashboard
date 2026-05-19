@@ -23,6 +23,7 @@ const WARNING_LEAD_SECONDS = 60;
 // Sessions shorter than this offer less than WARNING_LEAD_SECONDS of warning time,
 // which is too brief to be useful. The modal is suppressed for such short timeouts.
 const MIN_SESSION_TIMEOUT_SECONDS = 90;
+const KEEP_ALIVE_URL = '/dashboard/api/user/id';
 const ACTIVITY_EVENTS = ['mousemove', 'keydown', 'click', 'touchstart'] as const;
 
 export type SessionTimeoutState = {
@@ -41,6 +42,9 @@ export function useSessionTimeout(): SessionTimeoutState {
   const countdownTimerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
   // Ref updated synchronously alongside state so event handlers never see a stale value.
   const isModalOpenRef = useRef(false);
+  // Timestamp (ms) when the current idle-timer period started (set by startIdleTimer).
+  // Used by the activity handler to decide when to issue a silent keep-alive ping.
+  const idleStartedAtRef = useRef<number>(Date.now());
 
   // Always update ref and state together so the activity-event guard is never stale.
   const setIsModalOpen = useCallback((open: boolean) => {
@@ -57,6 +61,7 @@ export function useSessionTimeout(): SessionTimeoutState {
     clearTimeout(idleTimerRef.current);
     clearInterval(countdownTimerRef.current);
     setIsModalOpen(false);
+    idleStartedAtRef.current = Date.now();
     if (sessionTimeout <= 0 || sessionTimeout < MIN_SESSION_TIMEOUT_SECONDS) {
       return;
     }
@@ -82,7 +87,7 @@ export function useSessionTimeout(): SessionTimeoutState {
     clearTimers();
     setIsModalOpen(false);
     try {
-      await axios.get('/dashboard/api/user/id');
+      await axios.get(KEEP_ALIVE_URL);
     } finally {
       startIdleTimer();
     }
@@ -98,19 +103,42 @@ export function useSessionTimeout(): SessionTimeoutState {
       return;
     }
     startIdleTimer();
-    // While the warning modal is visible, activity events must NOT reset the timer.
-    // The user must interact explicitly (button, Space, Tab+Enter) to extend the session.
+
+    // Throttle threshold: ping at most once every half the idle window.
+    // For a 120 s session: ping after 30 s of idle-but-active.
+    // For a 24 h session:  ping after ~12 h of idle-but-active.
+    // This covers the case where the user is active on a page with no background
+    // polling — the UI events alone reset the JS timer but NOT the OAuth cookie.
+    const keepAliveThresholdMs = Math.max(30, (sessionTimeout - WARNING_LEAD_SECONDS) / 2) * 1000;
+
     const handleActivity = () => {
-      if (!isModalOpenRef.current) {
-        startIdleTimer();
+      if (isModalOpenRef.current) {
+        // Modal is visible — user must interact explicitly to extend or sign out.
+        return;
+      }
+      // Capture elapsed BEFORE resetting so we can check against the threshold.
+      const elapsed = Date.now() - idleStartedAtRef.current;
+      // Always reset the JS idle timer immediately (synchronous).
+      startIdleTimer();
+      if (elapsed >= keepAliveThresholdMs) {
+        // The user is active but the session hasn't been refreshed for a while
+        // (no requests have gone through the OAuth proxy). Silently ping the
+        // keep-alive endpoint so the OAuth cookie is renewed. The Axios response
+        // interceptor will call startIdleTimer() again on success, which is fine
+        // (it just restarts the clock from the actual response time).
+        axios.get(KEEP_ALIVE_URL).catch(() => {
+          // Keep-alive failed — the session may have already expired.
+          // The JS idle timer was already reset above; the modal will fire if the
+          // user stays idle for another full sessionTimeout − WARNING_LEAD_SECONDS.
+        });
       }
     };
+
     ACTIVITY_EVENTS.forEach(event => document.addEventListener(event, handleActivity));
+
     // Reset the idle timer whenever an authenticated request completes successfully.
     // The OAuth proxy refreshes the session cookie on every such request (including
     // background workspace-status polling), so the JS timer must align with that clock.
-    // Without this, background polling keeps the real session alive while the JS idle
-    // timer fires — producing false-positive sign-outs and missed warnings.
     const interceptorId = axios.interceptors.response.use(
       response => {
         if (!isModalOpenRef.current) {
@@ -120,6 +148,7 @@ export function useSessionTimeout(): SessionTimeoutState {
       },
       error => Promise.reject(error),
     );
+
     return () => {
       clearTimers();
       ACTIVITY_EVENTS.forEach(event => document.removeEventListener(event, handleActivity));
