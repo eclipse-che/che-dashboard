@@ -85,12 +85,28 @@ describe('ProgressStepTitle', () => {
       expect(mockEnqueueAnnouncement).toHaveBeenCalledWith('Step: Step 1');
     });
 
-    it('queues announcement when active step completes (distance 0→1)', () => {
+    it('does not re-announce when step completes with unchanged text (distance 0→1)', () => {
       const { reRenderComponent } = renderComponent(0, {});
       expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(1);
 
       reRenderComponent(1, {});
+      expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(1);
+    });
+
+    it('announces when step completes with changed text (distance 0→1)', () => {
+      const { reRenderComponent } = renderComponent(0, {
+        parentStepName: 'Waiting for workspace to start',
+      });
+      expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(1);
+
+      reRenderComponent(1, {
+        parentStepName: 'Waiting for workspace to start',
+        children: 'StorageReady',
+      });
       expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(2);
+      expect(mockEnqueueAnnouncement).toHaveBeenLastCalledWith(
+        'Step: Waiting for workspace to start / StorageReady',
+      );
     });
 
     it('does not re-queue when already-active step re-renders without distance change', () => {
@@ -120,11 +136,18 @@ describe('ProgressStepTitle', () => {
 function getComponent(
   distance: -1 | 0 | 1 | undefined,
   {
+    children = 'Step 1',
     hasChildren = false,
     isError = false,
     isWarning = false,
     parentStepName,
-  }: { isError?: boolean; isWarning?: boolean; hasChildren?: boolean; parentStepName?: string },
+  }: {
+    children?: string;
+    isError?: boolean;
+    isWarning?: boolean;
+    hasChildren?: boolean;
+    parentStepName?: string;
+  },
 ) {
   return (
     <ProgressStepTitle
@@ -134,7 +157,7 @@ function getComponent(
       isWarning={isWarning}
       parentStepName={parentStepName}
     >
-      Step 1
+      {children}
     </ProgressStepTitle>
   );
 }
