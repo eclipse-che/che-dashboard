@@ -42,6 +42,8 @@ function extractText(node: React.ReactNode): string {
 }
 
 export class ProgressStepTitle extends React.Component<Props> {
+  private lastAnnouncedText = '';
+
   private buildAnnouncementText(): string {
     const { children, parentStepName } = this.props;
     const stepText = extractText(children);
@@ -51,7 +53,8 @@ export class ProgressStepTitle extends React.Component<Props> {
 
   private announce(): void {
     const text = this.buildAnnouncementText();
-    if (text) {
+    if (text && text !== this.lastAnnouncedText) {
+      this.lastAnnouncedText = text;
       enqueueAnnouncement(text);
     }
   }
@@ -64,6 +67,9 @@ export class ProgressStepTitle extends React.Component<Props> {
 
   componentDidUpdate(prevProps: Props): void {
     if (prevProps.distance !== 0 && this.props.distance === 0) {
+      this.announce();
+    }
+    if (prevProps.distance === 0 && this.props.distance === 1) {
       this.announce();
     }
   }
