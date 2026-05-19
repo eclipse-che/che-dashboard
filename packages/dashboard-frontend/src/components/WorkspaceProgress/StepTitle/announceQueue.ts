@@ -10,8 +10,10 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-// How long each message is held in the live region before clearing.
-export const ANNOUNCE_HOLD_MS = 900;
+// Minimum hold time and per-character rate for computing how long each message
+// stays in the live region before clearing.
+export const ANNOUNCE_MIN_HOLD_MS = 1500;
+export const ANNOUNCE_MS_PER_CHAR = 60;
 // Gap between clearing one message and showing the next.
 export const ANNOUNCE_GAP_MS = 150;
 
@@ -37,11 +39,12 @@ function drainQueue(): void {
     return;
   }
   const text = queue.shift()!;
+  const holdMs = Math.max(ANNOUNCE_MIN_HOLD_MS, text.length * ANNOUNCE_MS_PER_CHAR);
   getLiveNode().textContent = text;
   timer = setTimeout(() => {
     getLiveNode().textContent = '';
     timer = setTimeout(drainQueue, ANNOUNCE_GAP_MS);
-  }, ANNOUNCE_HOLD_MS);
+  }, holdMs);
 }
 
 export function enqueueAnnouncement(text: string): void {
