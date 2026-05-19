@@ -12,6 +12,7 @@
 
 import { Alert, AlertActionCloseButton, AlertGroup, AlertVariant } from '@patternfly/react-core';
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 import { lazyInject } from '@/inversify.config';
 import { AppAlerts } from '@/services/alerts/appAlerts';
@@ -96,7 +97,14 @@ class AppAlertGroup extends React.PureComponent<Props, State> {
     if (alerts.length === 0) {
       return <></>;
     }
-    return <AlertGroup isToast>{alerts.map(alert => this.getAlert(alert))}</AlertGroup>;
+    // Use ReactDOM.createPortal directly (synchronous commit-phase cleanup) instead of
+    // AlertGroup isToast (which uses useEffect for portal cleanup, leaving an empty
+    // <ul role="list"> briefly visible between React commit and passive-effect teardown).
+    // The empty list violates WCAG 4.1.2 / aria-required-children (CRW-10740).
+    return ReactDOM.createPortal(
+      <AlertGroup className="pf-m-toast">{alerts.map(alert => this.getAlert(alert))}</AlertGroup>,
+      document.body,
+    );
   }
 }
 
