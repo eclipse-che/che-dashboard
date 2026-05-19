@@ -18,28 +18,35 @@ import { Store } from 'redux';
 import { useSessionTimeout } from '@/services/session/useSessionTimeout';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
-const mockGet = jest.fn();
-const mockInterceptorEject = jest.fn();
-
-// Capture the response handler registered by the hook so tests can simulate
-// completed requests and verify the idle timer resets correctly.
-let capturedResponseHandler: ((r: unknown) => unknown) | null = null;
-
-jest.mock('axios', () => ({
-  get: (...args: unknown[]) => mockGet(...args),
-  interceptors: {
-    response: {
-      use: (handler: (r: unknown) => unknown) => {
-        capturedResponseHandler = handler;
-        return 0;
-      },
-      eject: (...args: unknown[]) => mockInterceptorEject(...args),
-    },
-  },
+// Single mock for fetchServerConfig used by both backgroundPing and pingKeepAlive.
+const mockFetchServerConfig = jest.fn();
+jest.mock('@/services/backend-client/serverConfigApi', () => ({
+  fetchServerConfig: () => mockFetchServerConfig(),
 }));
+
+// Track whether serverConfigReceiveAction was called (i.e. store is being updated).
 
 const mockSignOut = jest.fn();
 jest.mock('@/services/helpers/login', () => ({ signOut: () => mockSignOut() }));
+
+// Mock the shared axios instance used for the response interceptor.
+// Capture the handler so tests can simulate completed background requests.
+const mockInterceptorEject = jest.fn();
+let capturedResponseHandler: ((r: unknown) => unknown) | null = null;
+
+jest.mock('@/services/axios-wrapper/getAxiosInstance', () => ({
+  getAxiosInstance: () => ({
+    interceptors: {
+      response: {
+        use: (handler: (r: unknown) => unknown) => {
+          capturedResponseHandler = handler;
+          return 0;
+        },
+        eject: (...args: unknown[]) => mockInterceptorEject(...args),
+      },
+    },
+  }),
+}));
 
 const defaultTimeouts = {
   inactivityTimeout: -1,
@@ -63,9 +70,9 @@ function buildWrapper(store: Store) {
 describe('useSessionTimeout', () => {
   beforeEach(() => {
     jest.useFakeTimers();
-    mockGet.mockResolvedValue({});
+    mockFetchServerConfig.mockResolvedValue({});
     mockSignOut.mockClear();
-    mockGet.mockClear();
+    mockFetchServerConfig.mockClear();
     mockInterceptorEject.mockClear();
     capturedResponseHandler = null;
   });
@@ -82,6 +89,14 @@ describe('useSessionTimeout', () => {
       jest.advanceTimersByTime(999999000);
     });
     expect(result.current.isModalOpen).toBe(false);
+  });
+
+  it('does not install interceptor when sessionTimeout is disabled', () => {
+    renderHook(() => useSessionTimeout(), {
+      wrapper: buildWrapper(buildStore(0)),
+    });
+    // The useEffect returns early, so the interceptor is never registered.
+    expect(capturedResponseHandler).toBeNull();
   });
 
   it('does not open modal when sessionTimeout < 90 s (too short for a useful warning)', () => {
@@ -106,25 +121,67 @@ describe('useSessionTimeout', () => {
   });
 
   it('silently pings keep-alive when user is active and session is approaching expiry', async () => {
-    // sessionTimeout=120 s → keepAliveThreshold = max(30, (120-60)/2) = 30 s.
-    // After 31 s of idle with no requests, any UI event triggers a silent ping
-    // so the OAuth cookie is refreshed before the modal would appear at 60 s.
+    // sessionTimeout=120, WARNING_LEAD_SECONDS=60, AUTO_EXTEND_BUFFER=15
+    // → keepAliveThreshold = (120 - 60 - 15) = 45 s
+    // Modal would open at 60 s; keep-alive fires 15 s earlier when user is active.
     renderHook(() => useSessionTimeout(), {
       wrapper: buildWrapper(buildStore(120)),
     });
-    // Advance past the 30 s keep-alive threshold (modal does NOT open until 60 s)
+    // Advance past the 45 s keep-alive threshold (modal does NOT open until 60 s)
     act(() => {
-      jest.advanceTimersByTime(31_000);
+      jest.advanceTimersByTime(46_000);
     });
     await act(async () => {
       document.dispatchEvent(new MouseEvent('mousemove'));
       await Promise.resolve();
     });
-    expect(mockGet).toHaveBeenCalledWith('/dashboard/api/user/id');
+    expect(mockFetchServerConfig).toHaveBeenCalledTimes(1);
+  });
+
+  it('background ping calls fetchServerConfig exactly once (not multiple times)', async () => {
+    // Verifies that the silent ping uses the proper API and not a raw fetch.
+    renderHook(() => useSessionTimeout(), { wrapper: buildWrapper(buildStore(120)) });
+    act(() => {
+      jest.advanceTimersByTime(46_000);
+    });
+    await act(async () => {
+      document.dispatchEvent(new MouseEvent('mousemove'));
+      await Promise.resolve();
+    });
+    expect(mockFetchServerConfig).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not fire concurrent background pings on rapid activity', async () => {
+    // isPingingRef guard: second mousemove while a ping is in-flight must not
+    // trigger a second fetch.
+    renderHook(() => useSessionTimeout(), {
+      wrapper: buildWrapper(buildStore(120)),
+    });
+    // Hold the first request pending so the guard stays active
+    let resolveFirst!: () => void;
+    mockFetchServerConfig.mockReturnValueOnce(
+      new Promise<void>(resolve => {
+        resolveFirst = resolve;
+      }),
+    );
+    act(() => {
+      jest.advanceTimersByTime(46_000);
+    });
+    await act(async () => {
+      document.dispatchEvent(new MouseEvent('mousemove'));
+      await Promise.resolve();
+    });
+    // Second mousemove while first is still in-flight
+    await act(async () => {
+      document.dispatchEvent(new MouseEvent('mousemove'));
+      await Promise.resolve();
+    });
+    expect(mockFetchServerConfig).toHaveBeenCalledTimes(1);
+    resolveFirst();
   });
 
   it('does not ping keep-alive when user is active but below the keep-alive threshold', () => {
-    // At 10 s of idle the threshold (30 s) has not been reached — just reset JS timer.
+    // At 10 s of idle the threshold (45 s) has not been reached — just reset JS timer.
     renderHook(() => useSessionTimeout(), {
       wrapper: buildWrapper(buildStore(120)),
     });
@@ -134,7 +191,7 @@ describe('useSessionTimeout', () => {
     act(() => {
       document.dispatchEvent(new MouseEvent('mousemove'));
     });
-    expect(mockGet).not.toHaveBeenCalled();
+    expect(mockFetchServerConfig).not.toHaveBeenCalled();
   });
 
   it('resets idle timer on document activity', () => {
@@ -158,9 +215,9 @@ describe('useSessionTimeout', () => {
   });
 
   it('resets idle timer when an authenticated request completes', () => {
-    // Simulates background workspace polling: a request completes at 50 s,
-    // which refreshes the OAuth cookie. The JS idle timer must also reset so
-    // the modal fires 60 s after the last request — not 60 s after mount.
+    // Simulates background workspace polling: a request completes at 50 s via the
+    // shared axios instance. The JS idle timer must also reset so the modal fires
+    // 60 s after the last request — not 60 s after mount.
     const { result } = renderHook(() => useSessionTimeout(), {
       wrapper: buildWrapper(buildStore(120)),
     });
@@ -227,7 +284,7 @@ describe('useSessionTimeout', () => {
     expect(mockSignOut).toHaveBeenCalledTimes(1);
   });
 
-  it('onExtend pings keep-alive, closes modal, restarts idle timer', async () => {
+  it('onExtend fetches server-config, closes modal, and restarts idle timer', async () => {
     const { result } = renderHook(() => useSessionTimeout(), {
       wrapper: buildWrapper(buildStore(120)),
     });
@@ -238,7 +295,7 @@ describe('useSessionTimeout', () => {
     await act(async () => {
       await result.current.onExtend();
     });
-    expect(mockGet).toHaveBeenCalledWith('/dashboard/api/user/id');
+    expect(mockFetchServerConfig).toHaveBeenCalledTimes(1);
     expect(result.current.isModalOpen).toBe(false);
     act(() => {
       jest.advanceTimersByTime(59_000);
@@ -257,7 +314,7 @@ describe('useSessionTimeout', () => {
   });
 
   it('restarts idle timer even if onExtend network call fails', async () => {
-    mockGet.mockRejectedValueOnce(new Error('network error'));
+    mockFetchServerConfig.mockRejectedValueOnce(new Error('network error'));
     const { result } = renderHook(() => useSessionTimeout(), {
       wrapper: buildWrapper(buildStore(120)),
     });
