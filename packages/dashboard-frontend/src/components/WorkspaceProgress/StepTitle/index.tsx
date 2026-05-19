@@ -57,9 +57,6 @@ export class ProgressStepTitle extends React.Component<Props> {
   }
 
   componentDidMount(): void {
-    // All announcements go through the single persistent queue node so screen
-    // readers hear a real content change. Newly-created aria-live nodes that
-    // already have content on mount are silently ignored by most screen readers.
     if (this.props.distance === 0 || this.props.distance === 1) {
       this.announce();
     }
@@ -67,9 +64,6 @@ export class ProgressStepTitle extends React.Component<Props> {
 
   componentDidUpdate(prevProps: Props): void {
     if (prevProps.distance !== 0 && this.props.distance === 0) {
-      this.announce();
-    }
-    if (prevProps.distance === 0 && this.props.distance === 1) {
       this.announce();
     }
   }

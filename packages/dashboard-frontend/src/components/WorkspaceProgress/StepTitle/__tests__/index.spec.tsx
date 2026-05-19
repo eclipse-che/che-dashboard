@@ -85,12 +85,12 @@ describe('ProgressStepTitle', () => {
       expect(mockEnqueueAnnouncement).toHaveBeenCalledWith('Step: Step 1');
     });
 
-    it('queues announcement when active step completes (distance 0→1)', () => {
+    it('does not re-announce when active step completes (distance 0→1)', () => {
       const { reRenderComponent } = renderComponent(0, {});
       expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(1);
 
       reRenderComponent(1, {});
-      expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(2);
+      expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(1);
     });
 
     it('does not re-queue when already-active step re-renders without distance change', () => {
