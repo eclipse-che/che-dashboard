@@ -12,6 +12,7 @@
 
 import { Alert, AlertActionLink, AlertGroup } from '@patternfly/react-core';
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 import { ActionGroupSelector } from '@/components/WorkspaceProgress/Alert/ActionGroupSelector';
 import styles from '@/components/WorkspaceProgress/Alert/index.module.css';
@@ -62,12 +63,25 @@ export class ProgressAlert extends React.PureComponent<Props> {
     const isInline = !isToast;
     const alerts = this.buildAlerts(alertItems, isInline);
 
+    if (isToast) {
+      // Use ReactDOM.createPortal directly (synchronous commit-phase cleanup) instead of
+      // AlertGroup isToast (which uses useEffect for portal cleanup, leaving an empty
+      // <ul role="list"> briefly visible between React commit and passive-effect teardown).
+      // The empty list violates WCAG 4.1.2 / aria-required-children (CRW-10740).
+      return ReactDOM.createPortal(
+        <AlertGroup
+          data-testid="loader-alerts-group"
+          aria-label="Loader Alerts Group"
+          className="pf-m-toast"
+        >
+          {alerts}
+        </AlertGroup>,
+        document.body,
+      );
+    }
+
     return (
-      <AlertGroup
-        data-testid="loader-alerts-group"
-        aria-label="Loader Alerts Group"
-        isToast={isToast}
-      >
+      <AlertGroup data-testid="loader-alerts-group" aria-label="Loader Alerts Group">
         {alerts}
       </AlertGroup>
     );
