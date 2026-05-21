@@ -22,14 +22,19 @@ import { registerCors } from '@/plugins/cors';
 import { registerStaticServer } from '@/plugins/staticServer';
 import { registerSwagger } from '@/plugins/swagger';
 import { registerWebSocket } from '@/plugins/webSocket';
+import { registerAgentsRoute } from '@/routes/api/agents';
+import { registerAiAgentRegistryRoute } from '@/routes/api/aiAgentRegistry';
 import { registerAirGapSampleRoute } from '@/routes/api/airGapSample';
 import { registerBackupRoutes } from '@/routes/api/backup';
 import { registerClusterConfigRoute } from '@/routes/api/clusterConfig';
 import { registerClusterInfoRoute } from '@/routes/api/clusterInfo';
 import { registerDataResolverRoute } from '@/routes/api/dataResolver';
+import { registerDevfilesRoute } from '@/routes/api/devfiles';
+import { registerDevfileSchemaRoute } from '@/routes/api/devfileSchema';
 import { registerDevWorkspaceClusterRoutes } from '@/routes/api/devworkspaceCluster';
 import { registerDevworkspaceResourcesRoute } from '@/routes/api/devworkspaceResources';
 import { registerDevworkspacesRoutes } from '@/routes/api/devworkspaces';
+import { registerDevWorkspaceSchemaRoute } from '@/routes/api/devworkspaceSchema';
 import { registerDevWorkspaceTemplates } from '@/routes/api/devworkspaceTemplates';
 import { registerDockerConfigRoutes } from '@/routes/api/dockerConfig';
 import { registerEditorsRoutes } from '@/routes/api/editors';
@@ -143,5 +148,15 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
     registerAirGapSampleRoute(server),
 
     registerBackupRoutes(server),
+
+    registerDevfilesRoute(server),
+
+    registerAgentsRoute(server),
+
+    registerDevfileSchemaRoute(server),
+
+    registerDevWorkspaceSchemaRoute(server),
+
+    registerAiAgentRegistryRoute(server),
   ]);
 }

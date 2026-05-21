@@ -120,7 +120,7 @@ if [[ -z "$CLUSTER_ACCESS_TOKEN" ]]; then
   fi
 fi
 
-DASHBOARD_POD_NAME=$(kubectl get pods -n "$CHE_NAMESPACE" -o=custom-columns=:metadata.name | grep dashboard)
+DASHBOARD_POD_NAME=$(kubectl get pods -n "$CHE_NAMESPACE" --field-selector=status.phase=Running -o=custom-columns=:metadata.name | grep dashboard | head -1)
 
 if [ "$CHE_IN_CHE" == "true" ]; then
   export SERVICE_ACCOUNT_TOKEN=$(cat /run/secrets/kubernetes.io/serviceaccount/token)

@@ -148,7 +148,6 @@
 | `@types/babel__template@7.4.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/babel__template/7.4.3) |
 | `@types/babel__traverse@7.20.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/babel__traverse/7.20.3) |
 | `@types/caseless@0.12.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/caseless/0.12.4) |
-| `@types/codemirror@5.60.15` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/codemirror/5.60.15) |
 | `@types/eslint-scope@3.7.7` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/eslint-scope/3.7.7) |
 | `@types/eslint@8.44.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/eslint/8.44.6) |
 | `@types/eslint@9.6.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/eslint/9.6.1) |
@@ -191,7 +190,6 @@
 | `@types/stack-utils@2.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/stack-utils/2.0.2) |
 | `@types/stack-utils@2.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/stack-utils/2.0.3) |
 | `@types/stream-buffers@3.0.8` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/stream-buffers/3.0.8) |
-| `@types/tern@0.23.9` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/tern/0.23.9) |
 | `@types/tough-cookie@4.0.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/tough-cookie/4.0.4) |
 | `@types/webpack@5.28.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/webpack/5.28.5) |
 | `@types/ws@8.18.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/ws/8.18.1) |

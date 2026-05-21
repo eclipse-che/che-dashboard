@@ -17,6 +17,8 @@ import { connect, ConnectedProps } from 'react-redux';
 import NavigationMainItem from '@/Layout/Navigation/MainItem';
 import { ROUTE } from '@/Routes';
 import { RootState } from '@/store';
+import { selectAiAgentRegistryEnabled } from '@/store/AiAgentRegistry';
+import { selectLocalDevfiles } from '@/store/LocalDevfiles/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 import { NavigationItemObject } from '.';
@@ -27,14 +29,18 @@ type Props = MappedProps & {
 
 export class NavigationMainList extends React.PureComponent<Props> {
   private get items(): NavigationItemObject[] {
-    const { allWorkspaces } = this.props;
+    const { workspaces, devfiles, agentRegistryEnabled } = this.props;
 
-    const allWorkspacesNumber = allWorkspaces.length;
+    const allWorkspacesNumber = workspaces.length;
+    const devfilesNumber = devfiles.length;
 
-    return [
-      { to: ROUTE.GET_STARTED, label: 'Create Workspace' },
-      { to: ROUTE.WORKSPACES, label: `Workspaces (${allWorkspacesNumber})` },
-    ];
+    const items: NavigationItemObject[] = [{ to: ROUTE.GET_STARTED, label: 'Create Workspace' }];
+    if (agentRegistryEnabled) {
+      items.push({ to: ROUTE.DEVFILE_CREATOR, label: `Devfiles (${devfilesNumber})` });
+    }
+    items.push({ to: ROUTE.WORKSPACES, label: `Workspaces (${allWorkspacesNumber})` });
+
+    return items;
   }
 
   public render(): React.ReactElement {
@@ -49,7 +55,9 @@ export class NavigationMainList extends React.PureComponent<Props> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  allWorkspaces: selectAllWorkspaces(state),
+  workspaces: selectAllWorkspaces(state),
+  devfiles: selectLocalDevfiles(state),
+  agentRegistryEnabled: selectAiAgentRegistryEnabled(state),
 });
 
 const connector = connect(mapStateToProps);

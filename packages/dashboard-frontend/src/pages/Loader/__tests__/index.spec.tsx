@@ -19,7 +19,7 @@ import { Store } from 'redux';
 
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import devfileApi from '@/services/devfileApi';
-import { LoaderTab } from '@/services/helpers/types';
+import { DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
@@ -29,6 +29,11 @@ import { LoaderPage, Props } from '..';
 jest.mock('@/components/WorkspaceProgress');
 jest.mock('@/components/WorkspaceLogs');
 jest.mock('@/components/WorkspaceEvents');
+jest.mock('@/components/LoaderAgentPanel', () => {
+  const MockLoaderAgentPanel = () => <div data-testid="loader-agent-panel" />;
+  MockLoaderAgentPanel.displayName = 'MockLoaderAgentPanel';
+  return { __esModule: true, default: MockLoaderAgentPanel };
+});
 
 const { renderComponent } = getComponentRenderer(getComponent);
 
@@ -119,7 +124,7 @@ describe('Loader page', () => {
 
 function getComponent(
   store: Store,
-  props: Omit<Props, 'onTabChange' | 'searchParams' | 'location' | 'navigate'>,
+  props: Pick<Props, 'tabParam' | 'workspace'>,
 ): React.ReactElement {
   return (
     <Provider store={store}>
@@ -129,7 +134,24 @@ function getComponent(
         tabParam={props.tabParam}
         searchParams={new URLSearchParams()}
         workspace={props.workspace}
+        workspaceContent=""
+        workspaceStatus={DevWorkspaceStatus.STOPPED}
+        devWorkspaceSchema={undefined}
         onTabChange={mockOnTabChange}
+        agentPodStatus={undefined}
+        agentTerminalUrl={undefined}
+        agentEnabled={false}
+        agentInitCommand={undefined}
+        agentInstanceId={undefined}
+        agentName={undefined}
+        agentDescription={undefined}
+        isDarkTheme={false}
+        isLoading={false}
+        onStartAgent={jest.fn()}
+        onStopAgent={jest.fn()}
+        onStartWorkspace={jest.fn()}
+        onStopWorkspace={jest.fn()}
+        onSaveWorkspace={jest.fn()}
       />
     </Provider>
   );

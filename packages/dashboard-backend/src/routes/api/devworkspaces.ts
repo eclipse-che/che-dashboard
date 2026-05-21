@@ -28,6 +28,12 @@ import { PostStartInjector } from '@/services/PostStartInjector';
 
 const tags = ['Devworkspace'];
 
+const RESOURCE_TYPE_LABEL = 'che.eclipse.org/type';
+
+function isAgentWorkspace(labels: Record<string, string> | undefined): boolean {
+  return labels?.[RESOURCE_TYPE_LABEL] === 'agent';
+}
+
 export function registerDevworkspacesRoutes(instance: FastifyInstance) {
   instance.register(async server => {
     server.get(
@@ -66,8 +72,13 @@ export function registerDevworkspacesRoutes(instance: FastifyInstance) {
         // Trigger server-side injection when workspace is created in started mode
         // (e.g. factory URL flow). Without this the watch would only be set up on
         // PATCH /spec/started=true (restart), missing first-time creation.
+        // Skip for agent workspaces — they don't need kubeconfig/podman injection.
         const workspaceName = devWorkspace.metadata?.name;
-        if (devworkspace.spec?.started === true && workspaceName) {
+        if (
+          devworkspace.spec?.started === true &&
+          workspaceName &&
+          !isAgentWorkspace(devworkspace.metadata?.labels)
+        ) {
           const kc = getKubeConfig(token);
           PostStartInjector.watchAndInject(
             kc,
@@ -110,7 +121,7 @@ export function registerDevworkspacesRoutes(instance: FastifyInstance) {
         );
 
         const isStarting = patch.some(p => p.path === '/spec/started' && p.value === true);
-        if (isStarting) {
+        if (isStarting && !isAgentWorkspace(devWorkspace.metadata?.labels)) {
           const kc = getKubeConfig(token);
           PostStartInjector.watchAndInject(
             kc,

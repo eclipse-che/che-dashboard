@@ -153,19 +153,16 @@ describe('Dashboard bootstrap', () => {
 
     expect(mockWebsocketClient.connect).toHaveBeenCalledTimes(3);
 
-    expect(mockWebsocketClient.addChannelMessageListener).toHaveBeenCalledTimes(3);
-    expect(mockWebsocketClient.addChannelMessageListener).toHaveBeenNthCalledWith(
-      1,
+    expect(mockWebsocketClient.addChannelMessageListener).toHaveBeenCalledTimes(4);
+    expect(mockWebsocketClient.addChannelMessageListener).toHaveBeenCalledWith(
       'devWorkspace',
       expect.any(Function),
     );
-    expect(mockWebsocketClient.addChannelMessageListener).toHaveBeenNthCalledWith(
-      2,
+    expect(mockWebsocketClient.addChannelMessageListener).toHaveBeenCalledWith(
       'event',
       expect.any(Function),
     );
-    expect(mockWebsocketClient.addChannelMessageListener).toHaveBeenNthCalledWith(
-      3,
+    expect(mockWebsocketClient.addChannelMessageListener).toHaveBeenCalledWith(
       'pod',
       expect.any(Function),
     );

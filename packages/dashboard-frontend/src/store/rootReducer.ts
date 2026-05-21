@@ -10,12 +10,15 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { aiAgentRegistryReducer } from '@/store/AiAgentRegistry';
 import { backupsReducer } from '@/store/Backups';
 import { bannerAlertReducer } from '@/store/BannerAlert';
 import { brandingReducer } from '@/store/Branding';
 import { clusterConfigReducer } from '@/store/ClusterConfig';
 import { clusterInfoReducer } from '@/store/ClusterInfo';
 import { devfileRegistriesReducer } from '@/store/DevfileRegistries';
+import { devfileSchemaReducer } from '@/store/DevfileSchema';
+import { devWorkspaceSchemaReducer } from '@/store/DevWorkspaceSchema';
 import { devWorkspacesClusterReducer } from '@/store/DevWorkspacesCluster';
 import { dockerConfigReducer } from '@/store/DockerConfig';
 import { eventsReducer } from '@/store/Events';
@@ -23,6 +26,7 @@ import { factoryResolverReducer } from '@/store/FactoryResolver';
 import { gitConfigReducer } from '@/store/GitConfig';
 import { gitOauthConfigReducer } from '@/store/GitOauthConfig';
 import { infrastructureNamespacesReducer } from '@/store/InfrastructureNamespaces';
+import { localDevfilesReducer } from '@/store/LocalDevfiles';
 import { personalAccessTokenReducer } from '@/store/PersonalAccessTokens';
 import { chePluginsReducer } from '@/store/Plugins/chePlugins';
 import { devWorkspacePluginsReducer } from '@/store/Plugins/devWorkspacePlugins';
@@ -38,12 +42,15 @@ import { devWorkspacesReducer } from '@/store/Workspaces/devWorkspaces';
 import { workspacePreferencesReducer } from '@/store/Workspaces/Preferences';
 
 export const rootReducer = {
+  aiAgentRegistry: aiAgentRegistryReducer,
   backups: backupsReducer,
   bannerAlert: bannerAlertReducer,
   branding: brandingReducer,
   clusterConfig: clusterConfigReducer,
   clusterInfo: clusterInfoReducer,
   devfileRegistries: devfileRegistriesReducer,
+  devfileSchema: devfileSchemaReducer,
+  devWorkspaceSchema: devWorkspaceSchemaReducer,
   devWorkspaces: devWorkspacesReducer,
   devWorkspacesCluster: devWorkspacesClusterReducer,
   dockerConfig: dockerConfigReducer,
@@ -54,6 +61,7 @@ export const rootReducer = {
   gitConfig: gitConfigReducer,
   gitOauthConfig: gitOauthConfigReducer,
   infrastructureNamespaces: infrastructureNamespacesReducer,
+  localDevfiles: localDevfilesReducer,
   logs: podLogsReducer,
   personalAccessToken: personalAccessTokenReducer,
   plugins: chePluginsReducer,

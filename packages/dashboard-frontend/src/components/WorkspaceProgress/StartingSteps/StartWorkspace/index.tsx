@@ -40,6 +40,8 @@ import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
 import { selectApplications } from '@/store/ClusterInfo/selectors';
+import { AgentPodPhase, AgentPodStatus } from '@/store/LocalDevfiles';
+import { selectAgentPodStatuses } from '@/store/LocalDevfiles/selectors';
 import { selectCurrentScc, selectStartTimeout } from '@/store/ServerConfig/selectors';
 import { workspacesActionCreators } from '@/store/Workspaces';
 import { selectDevWorkspaceWarnings } from '@/store/Workspaces/devWorkspaces/selectors';
@@ -128,6 +130,10 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       this.props.devWorkspaceWarnings[workspace.uid] !==
         nextProps.devWorkspaceWarnings[nextWorkspace.uid]
     ) {
+      return true;
+    }
+
+    if (!isEqual(this.props.agentPodStatuses, nextProps.agentPodStatuses)) {
       return true;
     }
 
@@ -287,7 +293,7 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
     const isOpenshift = this.props.applications.length === 1;
     if (isOpenshift) {
       actionCallbacks.push({
-        title: 'Edit the DevWorkspace spec',
+        title: 'OpenShift console',
         callback: () => {
           this.openDevWorkspaceClusterConsole();
         },
@@ -332,10 +338,13 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
     const isWarning = lastError !== undefined;
 
     const workspace = this.findTargetWorkspace(this.props);
+    const hasRunningAgent = this.props.agentPodStatuses.some(
+      (s: AgentPodStatus) => s.phase === AgentPodPhase.RUNNING && s.ready,
+    );
 
     return (
       <React.Fragment>
-        {isActive && (
+        {isActive && !hasRunningAgent && (
           <TimeLimit timeLimitSec={startTimeout} onTimeout={() => this.handleTimeout(workspace)} />
         )}
         <ProgressStepTitle
@@ -358,6 +367,7 @@ const mapStateToProps = (state: RootState) => ({
   currentScc: selectCurrentScc(state),
   startTimeout: selectStartTimeout(state),
   devWorkspaceWarnings: selectDevWorkspaceWarnings(state),
+  agentPodStatuses: selectAgentPodStatuses(state),
 });
 
 const connector = connect(mapStateToProps, workspacesActionCreators, null, {
