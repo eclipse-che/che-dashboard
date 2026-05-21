@@ -64,7 +64,7 @@ export class DockerConfigApiService implements IDockerConfigApi {
       return this.getDockerConfig(body);
     } catch (error) {
       if (helpers.errors.isKubeClientError(error) && error.code === 404) {
-        return this.createNamespacedSecret(namespace);
+        return this.createNamespacedSecret(namespace, dockerCfg);
       }
       const additionalMessage = `Unable to update dockerConfig in the specified namespace "${namespace}"`;
       throw createError(error, DOCKER_CONFIG_API_ERROR_LABEL, additionalMessage);
