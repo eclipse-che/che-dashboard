@@ -16,18 +16,18 @@
 | `@fastify/accept-negotiator@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/accept-negotiator/2.0.1) |
 | `@fastify/ajv-compiler@4.0.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/ajv-compiler/4.0.5) |
 | `@fastify/cookie@11.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/cookie/11.0.2) |
-| `@fastify/cors@11.2.0` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/cors/11.2.0) |
+| `@fastify/cors@11.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/cors/11.2.0) |
 | `@fastify/error@4.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/error/4.2.0) |
 | `@fastify/fast-json-stringify-compiler@5.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/fast-json-stringify-compiler/5.0.3) |
 | `@fastify/forwarded@3.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/forwarded/3.0.1) |
-| `@fastify/http-proxy@11.4.4` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/http-proxy/11.4.4) |
+| `@fastify/http-proxy@11.4.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/http-proxy/11.4.4) |
 | `@fastify/merge-json-schemas@0.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/merge-json-schemas/0.2.1) |
 | `@fastify/oauth2@8.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/oauth2/8.2.0) |
 | `@fastify/proxy-addr@5.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/proxy-addr/5.1.0) |
 | `@fastify/rate-limit@10.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/rate-limit/10.3.0) |
-| `@fastify/reply-from@12.6.2` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/reply-from/12.6.2) |
+| `@fastify/reply-from@12.6.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/reply-from/12.6.2) |
 | `@fastify/send@4.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/send/4.1.0) |
-| `@fastify/static@9.1.3` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/static/9.1.3) |
+| `@fastify/static@9.1.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/static/9.1.3) |
 | `@fastify/swagger-ui@5.2.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/swagger-ui/5.2.5) |
 | `@fastify/swagger@9.7.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/swagger/9.7.0) |
 | `@fastify/websocket@11.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/websocket/11.2.0) |
@@ -47,10 +47,10 @@
 | `@lezer/yaml@1.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lezer/yaml/1.0.3) |
 | `@lukeed/ms@2.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lukeed/ms/2.0.2) |
 | `@marijn/find-cluster-break@1.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@marijn/find-cluster-break/1.0.2) |
-| `@patternfly/react-core@6.4.2` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-core/6.4.2) |
+| `@patternfly/react-core@6.4.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-core/6.4.2) |
 | `@patternfly/react-icons@6.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-icons/6.4.0) |
 | `@patternfly/react-styles@6.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-styles/6.4.0) |
-| `@patternfly/react-table@6.4.2` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-table/6.4.2) |
+| `@patternfly/react-table@6.4.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-table/6.4.2) |
 | `@patternfly/react-tokens@6.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-tokens/6.4.0) |
 | `@pinojs/redact@0.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@pinojs/redact/0.4.0) |
 | `@reduxjs/toolkit@2.2.7` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@reduxjs/toolkit/2.2.7) |
@@ -60,8 +60,8 @@
 | `@sideway/pinpoint@2.0.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sideway/pinpoint/2.0.0) |
 | `@types/use-sync-external-store@0.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/use-sync-external-store/0.0.3) |
 | `@uiw/codemirror-extensions-basic-setup@4.23.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/codemirror-extensions-basic-setup/4.23.5) |
-| `@uiw/codemirror-theme-github@4.25.9` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/codemirror-theme-github/4.25.9) |
-| `@uiw/codemirror-themes@4.25.9` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/codemirror-themes/4.25.9) |
+| `@uiw/codemirror-theme-github@4.25.9` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/codemirror-theme-github/4.25.9) |
+| `@uiw/codemirror-themes@4.25.9` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/codemirror-themes/4.25.9) |
 | `@uiw/react-codemirror@4.23.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/react-codemirror/4.23.5) |
 | `abort-controller@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/abort-controller/3.0.0) |
 | `abstract-logging@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/abstract-logging/2.0.1) |
@@ -74,7 +74,7 @@
 | `atomic-sleep@1.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/atomic-sleep/1.0.0) |
 | `attr-accept@2.2.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/attr-accept/2.2.5) |
 | `avvio@9.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/avvio/9.2.0) |
-| `axios@1.15.2` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios/1.15.2) |
+| `axios@1.15.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios/1.15.2) |
 | `blueimp-md5@2.19.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/blueimp-md5/2.19.0) |
 | `brorand@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/brorand/1.1.0) |
 | `browserify-aes@1.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/browserify-aes/1.2.0) |
@@ -122,7 +122,7 @@
 | `fast-safe-stringify@2.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-safe-stringify/2.1.1) |
 | `fastify-plugin@5.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/5.0.1) |
 | `fastify-plugin@5.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/5.1.0) |
-| `fastify@5.8.5` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/5.8.5) |
+| `fastify@5.8.5` | BSD-2-Clause AND BSD-3-Clause AND MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/5.8.5) |
 | `fastq@1.17.1` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastq/1.17.1) |
 | `file-selector@2.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/file-selector/2.1.2) |
 | `focus-trap@7.6.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/focus-trap/7.6.4) |
