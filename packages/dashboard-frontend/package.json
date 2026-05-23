@@ -58,7 +58,7 @@
     "lodash": "^4.18.0",
     "multi-ini": "^2.3.2",
     "process": "^0.11.10",
-    "qs": "^6.14.2",
+    "qs": "^6.15.2",
     "react": "^18.3.1",
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18.3.1",
