@@ -16,7 +16,7 @@ import { FastifyInstance } from 'fastify';
 
 import { logger } from '@/utils/logger';
 
-const ROUTE_PREFIX = '/dashboard/api/swagger';
+const ROUTE_PREFIX = '/dashboard/swagger';
 
 type MySchema = {
   headers?: {
