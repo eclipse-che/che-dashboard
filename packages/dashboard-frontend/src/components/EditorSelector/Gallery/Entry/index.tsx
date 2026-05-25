@@ -204,7 +204,7 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
         <CardHeader
           selectableActions={{
             selectableActionId: this.selectableActionId,
-            selectableActionAriaLabelledby: this.id,
+            selectableActionAriaLabel: `Select editor ${groupName}`,
             name: 'editor-selector',
             variant: 'single',
             onChange: this.handleSelectableAction,

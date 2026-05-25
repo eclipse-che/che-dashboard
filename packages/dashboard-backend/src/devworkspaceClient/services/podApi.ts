@@ -97,7 +97,7 @@ export class PodApiService implements IPodApi {
       apiVersion: 'v1',
       status: 'Failure',
       message: error instanceof Error ? error.message : String(error),
-      code: (error as { statusCode?: number }).statusCode,
+      code: error != null ? (error as { statusCode?: number }).statusCode : undefined,
     };
     listener({ eventPhase: api.webSocket.EventPhase.ERROR, status, params });
   }

@@ -340,41 +340,42 @@ export default class Bootstrap {
 
   private async fetchRegistriesMetadata(): Promise<void> {
     const { requestRegistriesMetadata } = devfileRegistriesActionCreators;
-    const defaultRegistry = DEFAULT_REGISTRY.startsWith('http')
-      ? DEFAULT_REGISTRY
-      : new URL(DEFAULT_REGISTRY, window.location.origin).href;
-    await requestRegistriesMetadata(defaultRegistry, false)(
-      this.store.dispatch,
-      this.store.getState,
-      undefined,
-    );
-
-    const gettingStartedSampleURL = new URL(
-      '/dashboard/api/getting-started-sample',
-      window.location.origin,
-    ).href;
-    await requestRegistriesMetadata(gettingStartedSampleURL, false)(
-      this.store.dispatch,
-      this.store.getState,
-      undefined,
-    );
-
     const serverConfig = this.store.getState().dwServerConfig.config;
     const devfileRegistry = serverConfig.devfileRegistry;
-    if (
-      devfileRegistry?.disableInternalRegistry !== undefined &&
-      devfileRegistry?.disableInternalRegistry !== true
-    ) {
-      const airGapedSampleURL = new URL('/dashboard/api/airgap-sample', window.location.origin)
-        .href;
-      await requestRegistriesMetadata(airGapedSampleURL, false)(
+    const isInternalRegistryDisabled = devfileRegistry?.disableInternalRegistry === true;
+
+    if (!isInternalRegistryDisabled) {
+      const defaultRegistry = DEFAULT_REGISTRY.startsWith('http')
+        ? DEFAULT_REGISTRY
+        : new URL(DEFAULT_REGISTRY, window.location.origin).href;
+      await requestRegistriesMetadata(defaultRegistry, false)(
         this.store.dispatch,
         this.store.getState,
         undefined,
       );
+
+      const gettingStartedSampleURL = new URL(
+        '/dashboard/api/getting-started-sample',
+        window.location.origin,
+      ).href;
+      await requestRegistriesMetadata(gettingStartedSampleURL, false)(
+        this.store.dispatch,
+        this.store.getState,
+        undefined,
+      );
+
+      if (devfileRegistry?.disableInternalRegistry === false) {
+        const airGapedSampleURL = new URL('/dashboard/api/airgap-sample', window.location.origin)
+          .href;
+        await requestRegistriesMetadata(airGapedSampleURL, false)(
+          this.store.dispatch,
+          this.store.getState,
+          undefined,
+        );
+      }
     }
 
-    const externalRegistries = devfileRegistry.externalDevfileRegistries.map(
+    const externalRegistries = (devfileRegistry?.externalDevfileRegistries ?? []).map(
       registry => registry?.url,
     );
     if (externalRegistries.length > 0) {

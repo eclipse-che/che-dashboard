@@ -62,6 +62,7 @@ describe('RegistryApiService', () => {
     jest.clearAllMocks();
   });
 
+
   describe('listBackupImages — external registry (quay.io) path', () => {
     const quayRegistryPath = 'quay.io/my-org/backups';
 

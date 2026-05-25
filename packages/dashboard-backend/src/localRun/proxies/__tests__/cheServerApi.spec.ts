@@ -33,6 +33,4 @@ describe('registerCheApiProxy', () => {
     const prefixes = mockServer.register.mock.calls.map(call => call[1]?.prefix);
     expect(prefixes).toContain('/api/');
   });
-
-
 });
