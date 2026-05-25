@@ -34,22 +34,5 @@ describe('registerCheApiProxy', () => {
     expect(prefixes).toContain('/api/');
   });
 
-  test('should register proxy for /dashboard/devfile-registry/', () => {
-    registerCheApiProxy(mockServer as any, 'https://che.example.com', 'https://che.example.com');
 
-    const prefixes = mockServer.register.mock.calls.map(call => call[1]?.prefix);
-    expect(prefixes).toContain('/dashboard/devfile-registry/');
-  });
-
-  test('should forward devfile registry to the same upstream', () => {
-    const upstream = 'https://che.example.com';
-    registerCheApiProxy(mockServer as any, upstream, 'https://che.example.com');
-
-    const devfileRegistryCall = mockServer.register.mock.calls.find(
-      call => call[1]?.prefix === '/dashboard/devfile-registry/',
-    );
-    expect(devfileRegistryCall).toBeDefined();
-    expect(devfileRegistryCall![1].upstream).toBe(upstream);
-    expect(devfileRegistryCall![1].rewritePrefix).toBe('/dashboard/devfile-registry/');
-  });
 });

@@ -15,6 +15,7 @@ import { FastifyInstance } from 'fastify';
 import { authenticateApiRequestsHook } from '@/localRun/hooks/authenticateApiRequests';
 import { addAuthorizationHooks } from '@/localRun/hooks/authorizationHooks';
 import { registerOauth2Plugin } from '@/localRun/plugins/oauth2';
+import { registerOpenShiftOauth2Plugin } from '@/localRun/plugins/openshiftOauth2';
 import { registerCheApiProxy } from '@/localRun/proxies/cheServerApi';
 import { registerDexProxies } from '@/localRun/proxies/dexProxies';
 import { registerDexCallback } from '@/localRun/routes/dexCallback';
@@ -41,7 +42,14 @@ export function registerLocalRun(server: FastifyInstance) {
     upstream = cheApiProxyUpstream ? cheApiProxyUpstream : cheHostOrigin;
   }
 
-  if (dexIngress) {
+  const openShiftOAuthUrl = process.env['OPENSHIFT_OAUTH_URL'] || '';
+
+  if (openShiftOAuthUrl) {
+    registerOpenShiftOauth2Plugin(server);
+    registerDexCallback(server);
+    registerSignOut(server);
+    addAuthorizationHooks(server);
+  } else if (dexIngress) {
     registerDexProxies(server, `https://${dexIngress}`);
     registerDexCallback(server);
     registerOauth2Plugin(server);

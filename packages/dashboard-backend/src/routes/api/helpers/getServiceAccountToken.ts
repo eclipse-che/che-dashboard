@@ -19,6 +19,13 @@ export const SERVICE_ACCOUNT_TOKEN_PATH = '/run/secrets/kubernetes.io/serviceacc
 
 export function getServiceAccountToken(): string {
   if (isLocalRun()) {
+    // On OpenShift local run, CLUSTER_ACCESS_TOKEN holds the user's own OAuth token
+    // (from `oc whoami -t`). Use it for Kubernetes API calls so workspace operations
+    // run under the developer's identity, not the dashboard service account.
+    const clusterAccessToken = process.env.CLUSTER_ACCESS_TOKEN;
+    if (clusterAccessToken) {
+      return clusterAccessToken;
+    }
     return process.env.SERVICE_ACCOUNT_TOKEN as string;
   }
   if (!existsSync(SERVICE_ACCOUNT_TOKEN_PATH)) {
