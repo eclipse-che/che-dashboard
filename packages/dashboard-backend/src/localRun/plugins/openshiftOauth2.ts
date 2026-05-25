@@ -20,22 +20,29 @@ declare module 'fastify' {
 }
 
 const CHE_HOST = 'http://localhost:8080';
-const CLIENT_ID = process.env.CLIENT_ID as string;
-const CLIENT_SECRET = process.env.CLIENT_SECRET as string;
-const OPENSHIFT_OAUTH_URL = process.env.OPENSHIFT_OAUTH_URL as string;
 
 export function registerOpenShiftOauth2Plugin(server: FastifyInstance) {
+  const clientId = process.env.CLIENT_ID;
+  const clientSecret = process.env.CLIENT_SECRET;
+  const openShiftOAuthUrl = process.env.OPENSHIFT_OAUTH_URL;
+
+  if (!clientId || !clientSecret || !openShiftOAuthUrl) {
+    throw new Error(
+      'CLIENT_ID, CLIENT_SECRET and OPENSHIFT_OAUTH_URL must be set for OpenShift OAuth local run',
+    );
+  }
+
   server.register(oauth2Plugin, {
     name: 'localStart',
     credentials: {
       client: {
-        id: CLIENT_ID,
-        secret: CLIENT_SECRET,
+        id: clientId,
+        secret: clientSecret,
       },
       auth: {
-        authorizeHost: OPENSHIFT_OAUTH_URL,
+        authorizeHost: openShiftOAuthUrl,
         authorizePath: '/oauth/authorize',
-        tokenHost: OPENSHIFT_OAUTH_URL,
+        tokenHost: openShiftOAuthUrl,
         tokenPath: '/oauth/token',
       },
     },

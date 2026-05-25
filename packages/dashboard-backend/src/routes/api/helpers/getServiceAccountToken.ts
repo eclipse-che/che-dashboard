@@ -26,7 +26,12 @@ export function getServiceAccountToken(): string {
     if (clusterAccessToken) {
       return clusterAccessToken;
     }
-    return process.env.SERVICE_ACCOUNT_TOKEN as string;
+    const serviceAccountToken = process.env.SERVICE_ACCOUNT_TOKEN;
+    if (!serviceAccountToken) {
+      logger.fatal('Neither CLUSTER_ACCESS_TOKEN nor SERVICE_ACCOUNT_TOKEN is set for local run');
+      process.exit(1);
+    }
+    return serviceAccountToken;
   }
   if (!existsSync(SERVICE_ACCOUNT_TOKEN_PATH)) {
     logger.fatal('SERVICE_ACCOUNT_TOKEN is required');
