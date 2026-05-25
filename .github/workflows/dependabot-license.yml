@@ -1,0 +1,110 @@
+#
+# Copyright (c) 2018-2026 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
+name: Dependabot License Update
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  update-licenses:
+    runs-on: ubuntu-22.04
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Use Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Regenerate licenses
+        run: |
+          # Build a ClearlyDefined URL for a package identifier (name@version).
+          # Scoped:   @scope/name@ver -> npm/npmjs/@scope/name/ver
+          # Unscoped: name@ver        -> npm/npmjs/-/name/ver
+          pkg_to_cd_url() {
+            local pkg="$1"
+            local version="${pkg##*@}"
+            local name="${pkg%@*}"
+            if [[ "$name" == @* ]]; then
+              local scope="${name%%/*}"
+              local pkgname="${name#*/}"
+              echo "https://clearlydefined.io/definitions/npm/npmjs/${scope}/${pkgname}/${version}"
+            else
+              echo "https://clearlydefined.io/definitions/npm/npmjs/-/${name}/${version}"
+            fi
+          }
+
+          MAX_ATTEMPTS=3
+          for attempt in $(seq 1 $MAX_ATTEMPTS); do
+            echo "=== Attempt $attempt of $MAX_ATTEMPTS ==="
+
+            if yarn license:generate --harvest; then
+              echo "License generation succeeded."
+              break
+            fi
+
+            if [ ! -f .deps/problems.md ]; then
+              echo "::error::License generation failed but no problems.md found."
+              exit 1
+            fi
+
+            SECTION=""
+            while IFS= read -r line; do
+              if echo "$line" | grep -q "## UNRESOLVED Production dependencies"; then
+                SECTION="prod"
+              elif echo "$line" | grep -q "## UNRESOLVED Development dependencies"; then
+                SECTION="dev"
+              fi
+
+              PKG=$(echo "$line" | grep -oP '`\K[^`]+' || true)
+              if [ -z "$PKG" ] || [ -z "$SECTION" ]; then
+                continue
+              fi
+
+              EXCLUDED_FILE=".deps/EXCLUDED/${SECTION}.md"
+              if grep -qF "\`${PKG}\`" "$EXCLUDED_FILE" 2>/dev/null; then
+                echo "Already excluded: $PKG"
+                continue
+              fi
+
+              CD_URL=$(pkg_to_cd_url "$PKG")
+              echo "| \`${PKG}\` | [clearlydefined](${CD_URL}) |" >> "$EXCLUDED_FILE"
+              echo "Added $PKG to $EXCLUDED_FILE"
+            done < .deps/problems.md
+
+            if [ "$attempt" -eq "$MAX_ATTEMPTS" ]; then
+              echo "::error::Failed to resolve all dependencies after $MAX_ATTEMPTS attempts."
+              exit 1
+            fi
+          done
+
+      - name: Commit and push changes
+        run: |
+          git diff --quiet .deps/ && exit 0
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .deps/
+          git commit -s -m "chore(deps): regenerate license dependency files"
+          git push
