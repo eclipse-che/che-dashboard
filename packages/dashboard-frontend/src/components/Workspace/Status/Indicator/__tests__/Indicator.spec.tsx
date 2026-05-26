@@ -10,14 +10,20 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { render } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { ReactTestRendererJSON } from 'react-test-renderer';
 
 import { WorkspaceStatusIndicator } from '@/components/Workspace/Status/Indicator';
+import { enqueueAnnouncement } from '@/components/WorkspaceProgress/StepTitle/announceQueue';
 import { BRANDING_DEFAULT } from '@/services/bootstrap/branding.constant';
 import { DevWorkspaceStatus, WorkspaceStatus } from '@/services/helpers/types';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+
+jest.mock('@/components/WorkspaceProgress/StepTitle/announceQueue', () => ({
+  enqueueAnnouncement: jest.fn(),
+}));
 
 describe('Workspace indicator component', () => {
   it('should render default status correctly', () => {
@@ -136,6 +142,41 @@ describe('Workspace indicator component', () => {
       );
       expect(getComponentSnapshot(element, undefined)).toMatchSnapshot();
     });
+  });
+});
+
+describe('screen reader announcements', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it('does not announce on mount', () => {
+    const store = new MockStoreBuilder()
+      .withBranding(BRANDING_DEFAULT)
+      .withCurrentScc(undefined)
+      .build();
+    render(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator status={DevWorkspaceStatus.STARTING} containerScc={undefined} />
+      </Provider>,
+    );
+    expect(enqueueAnnouncement).not.toHaveBeenCalled();
+  });
+
+  it('announces status change via shared queue', () => {
+    const store = new MockStoreBuilder()
+      .withBranding(BRANDING_DEFAULT)
+      .withCurrentScc(undefined)
+      .build();
+    const { rerender } = render(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator status={DevWorkspaceStatus.STARTING} containerScc={undefined} />
+      </Provider>,
+    );
+    rerender(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator status={DevWorkspaceStatus.RUNNING} containerScc={undefined} />
+      </Provider>,
+    );
+    expect(enqueueAnnouncement).toHaveBeenCalledWith('Workspace status is Running');
   });
 });
 

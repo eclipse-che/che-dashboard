@@ -25,6 +25,7 @@ import React from 'react';
 
 import styles from '@/components/BackupStatusBadge/index.module.css';
 import { CheTooltip } from '@/components/CheTooltip';
+import { useAnnounceOnChange } from '@/components/WorkspaceProgress/StepTitle/useAnnounceOnChange';
 import { formatDate } from '@/services/helpers/dates';
 
 export type Props = {
@@ -117,6 +118,8 @@ function getTooltipContent(
 
 export function BackupStatusBadge(props: Props): React.ReactElement {
   const { status, lastBackupTime, backupImageUrl } = props;
+
+  useAnnounceOnChange(status, s => `Backup status: ${BACKUP_STATUS_LABELS[s]}`);
 
   const color = STATUS_COLORS[status];
   const icon = getStatusIcon(status);

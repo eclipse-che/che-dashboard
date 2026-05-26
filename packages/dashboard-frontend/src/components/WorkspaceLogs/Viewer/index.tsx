@@ -60,7 +60,15 @@ export class WorkspaceLogsViewer extends React.PureComponent<Props> {
     return (
       <div className={`${styles.viewer} ${expandedStyle}`}>
         <div className={styles.linesCounter}>{linesNumber} lines</div>
-        <pre id={LOGS_CONTAINER_ID} tabIndex={0} className={styles.logs}>
+        <pre
+          id={LOGS_CONTAINER_ID}
+          role="log"
+          aria-label="Workspace logs"
+          aria-live="polite"
+          aria-atomic="false"
+          tabIndex={0}
+          className={styles.logs}
+        >
           {logs}
         </pre>
       </div>
