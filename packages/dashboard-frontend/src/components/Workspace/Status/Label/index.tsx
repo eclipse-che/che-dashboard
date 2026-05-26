@@ -17,6 +17,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { CheTooltip } from '@/components/CheTooltip';
 import { getSccMismatchTooltip, useStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
 import styles from '@/components/Workspace/Status/index.module.css';
+import { useAnnounceOnChange } from '@/components/WorkspaceProgress/StepTitle/useAnnounceOnChange';
 import { hasSccMismatch } from '@/services/helpers/sccMismatch';
 import {
   DeprecatedWorkspaceStatus,
@@ -41,6 +42,8 @@ const WorkspaceStatusLabelComponent: React.FC<Props> = ({
   // Only check SCC mismatch for stopped workspaces
   const isStopped = status === DevWorkspaceStatus.STOPPED;
   const sccMismatch = isStopped && hasSccMismatch(containerScc, currentScc);
+
+  useAnnounceOnChange(status, s => `Workspace status is ${s}`);
 
   let statusLabelColor: LabelProps['color'];
   switch (status) {

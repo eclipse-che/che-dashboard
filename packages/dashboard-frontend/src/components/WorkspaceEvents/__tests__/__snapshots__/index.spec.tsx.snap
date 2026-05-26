@@ -55,9 +55,7 @@ exports[`The WorkspaceEvents component snapshot - no events 1`] = `
     className="pf-v6-c-page__main-body"
   >
     <div
-      aria-atomic="false"
       aria-label="Workspace events"
-      aria-live="polite"
       role="log"
     >
       <div
@@ -130,9 +128,7 @@ exports[`The WorkspaceEvents component snapshot - with events 1`] = `
     className="pf-v6-c-page__main-body"
   >
     <div
-      aria-atomic="false"
       aria-label="Workspace events"
-      aria-live="polite"
       role="log"
     >
       <div

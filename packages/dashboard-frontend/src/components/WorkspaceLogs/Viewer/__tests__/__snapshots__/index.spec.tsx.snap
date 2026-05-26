@@ -11,9 +11,7 @@ exports[`WorkspaceLogsViewer snapshot compressed viewer 1`] = `
      lines
   </div>
   <pre
-    aria-atomic="false"
     aria-label="Workspace logs"
-    aria-live="polite"
     className="logs"
     id="output-logs"
     role="log"
@@ -36,9 +34,7 @@ exports[`WorkspaceLogsViewer snapshot error logs 1`] = `
      lines
   </div>
   <pre
-    aria-atomic="false"
     aria-label="Workspace logs"
-    aria-live="polite"
     className="logs"
     id="output-logs"
     role="log"
@@ -58,9 +54,7 @@ exports[`WorkspaceLogsViewer snapshot expanded viewer 1`] = `
      lines
   </div>
   <pre
-    aria-atomic="false"
     aria-label="Workspace logs"
-    aria-live="polite"
     className="logs"
     id="output-logs"
     role="log"
