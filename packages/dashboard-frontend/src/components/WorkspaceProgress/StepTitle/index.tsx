@@ -29,6 +29,9 @@ export type Props = PropsWithChildren<{
 
 /** Recursively extracts plain-text content from any ReactNode. */
 function extractText(node: React.ReactNode): string {
+  if (node == null || typeof node === 'boolean') {
+    return '';
+  }
   if (typeof node === 'string' || typeof node === 'number') {
     return String(node);
   }

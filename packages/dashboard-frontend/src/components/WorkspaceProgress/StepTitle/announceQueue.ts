@@ -11,7 +11,10 @@
  */
 
 // How long each message is held in the live region before clearing.
-export const ANNOUNCE_HOLD_MS = 900;
+// 1200 ms gives screen readers enough time to finish reading long messages
+// (e.g. "Step: Waiting for workspace to start / Networking is preparing")
+// even at slower voice speeds.
+export const ANNOUNCE_HOLD_MS = 1200;
 // Gap between clearing one message and showing the next.
 export const ANNOUNCE_GAP_MS = 150;
 
