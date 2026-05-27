@@ -1,0 +1,32 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+/* Service name: bold and vertically centred next to the status icon. */
+.serviceName {
+  font-weight: var(--pf-t--global--font--weight--body--bold);
+}
+
+/* Name cell: min-width so short names don't squeeze. */
+.nameCell {
+  min-width: 8rem;
+}
+
+/* Server URL wraps cleanly at path boundaries (WCAG 1.4.10 Reflow). */
+.serverCell {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Authorization cell: stays compact. */
+.authCell {
+  flex: 0 0 auto !important;
+}
