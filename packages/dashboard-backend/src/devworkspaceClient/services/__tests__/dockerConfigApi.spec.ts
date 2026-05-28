@@ -36,10 +36,14 @@ describe('Docker Config API Service', () => {
     replaceNamespacedSecret: (_params: { name: string; namespace: string; body: V1Secret }) => {
       return Promise.resolve(buildSecret(namespace, updatedConfig).body);
     },
+    createNamespacedSecret: (_params: { namespace: string; body: V1Secret }) => {
+      return Promise.resolve(buildSecret(namespace, updatedConfig).body);
+    },
   } as unknown as CoreV1Api;
 
   const spyReadNamespacedSecret = jest.spyOn(stubCoreV1Api, 'readNamespacedSecret');
   const spyReplaceNamespacedSecret = jest.spyOn(stubCoreV1Api, 'replaceNamespacedSecret');
+  const spyCreateNamespacedSecret = jest.spyOn(stubCoreV1Api, 'createNamespacedSecret');
 
   beforeEach(() => {
     const { KubeConfig } = mockClient;
@@ -65,6 +69,38 @@ describe('Docker Config API Service', () => {
     expect(dockerconfig).toEqual(updatedConfig);
     expect(spyReplaceNamespacedSecret).toHaveBeenCalledWith({
       name: SECRET_NAME,
+      namespace,
+      body: expect.objectContaining({
+        data: {
+          [SECRET_KEY]: updatedConfig,
+        },
+      }),
+    });
+  });
+
+  test('updating dockerconfig should create secret with provided config when secret does not exist', async () => {
+    // Mock replaceNamespacedSecret to throw a 404 error (KubeClient error format)
+    const notFoundError = new Error('Not Found');
+    Object.assign(notFoundError, {
+      code: 404,
+      headers: {},
+      body: { message: 'Not Found' },
+    });
+    spyReplaceNamespacedSecret.mockRejectedValueOnce(notFoundError);
+
+    const dockerconfig = await dockerConfigService.update(namespace, updatedConfig);
+
+    expect(dockerconfig).toEqual(updatedConfig);
+    expect(spyReplaceNamespacedSecret).toHaveBeenCalledWith({
+      name: SECRET_NAME,
+      namespace,
+      body: expect.objectContaining({
+        data: {
+          [SECRET_KEY]: updatedConfig,
+        },
+      }),
+    });
+    expect(spyCreateNamespacedSecret).toHaveBeenCalledWith({
       namespace,
       body: expect.objectContaining({
         data: {
