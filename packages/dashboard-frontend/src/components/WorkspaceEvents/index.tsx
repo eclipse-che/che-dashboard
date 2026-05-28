@@ -40,6 +40,10 @@ import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 export type Props = {
   workspaceUID: string | undefined;
+  /** When true (default), hides events and shows an empty state while the
+   * workspace is STOPPED. Set to false on the loader page so startup events
+   * remain visible after the user presses Stop. */
+  hideWhenStopped?: boolean;
 } & MappedProps;
 
 class WorkspaceEvents extends React.PureComponent<Props> {
@@ -69,14 +73,14 @@ class WorkspaceEvents extends React.PureComponent<Props> {
   }
 
   render() {
-    const { workspaceUID, allWorkspaces, startedWorkspaces } = this.props;
+    const { workspaceUID, allWorkspaces, startedWorkspaces, hideWhenStopped = true } = this.props;
 
     const workspace = this.findWorkspace(workspaceUID, allWorkspaces);
 
     if (
       workspaceUID === undefined ||
       workspace === undefined ||
-      workspace.status === DevWorkspaceStatus.STOPPED
+      (hideWhenStopped && workspace.status === DevWorkspaceStatus.STOPPED)
     ) {
       return (
         <EmptyState icon={FileIcon} titleText="No events to show.">

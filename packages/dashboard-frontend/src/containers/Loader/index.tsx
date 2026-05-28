@@ -19,9 +19,10 @@ import { LoaderPage } from '@/pages/Loader';
 import { WorkspaceRouteParams } from '@/Routes';
 import { findTargetWorkspace } from '@/services/helpers/factoryFlow/findTargetWorkspace';
 import { getLoaderMode } from '@/services/helpers/factoryFlow/getLoaderMode';
-import { LoaderTab } from '@/services/helpers/types';
+import { DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
 import { Workspace } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
+import { workspacesActionCreators } from '@/store/Workspaces';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 type RouteParams = Partial<WorkspaceRouteParams> | undefined;
@@ -74,11 +75,20 @@ class LoaderContainer extends React.Component<Props, State> {
     this.props.navigate(location);
   }
 
+  private handleStartWorkspace(workspace: Workspace): void {
+    this.props.startWorkspace(workspace);
+  }
+
+  private handleStopWorkspace(workspace: Workspace): void {
+    this.props.stopWorkspace(workspace);
+  }
+
   render(): React.ReactElement {
     const { location, navigate } = this.props;
     const { tabParam, searchParams } = this.state;
 
     const workspace = this.findTargetWorkspace(this.props);
+    const workspaceStatus = (workspace?.status as DevWorkspaceStatus) || DevWorkspaceStatus.STOPPED;
 
     return (
       <LoaderPage
@@ -87,7 +97,10 @@ class LoaderContainer extends React.Component<Props, State> {
         searchParams={searchParams}
         tabParam={tabParam}
         workspace={workspace}
+        workspaceStatus={workspaceStatus}
         onTabChange={tab => this.handleTabChange(tab)}
+        onStartWorkspace={() => workspace && this.handleStartWorkspace(workspace)}
+        onStopWorkspace={() => workspace && this.handleStopWorkspace(workspace)}
       />
     );
   }
@@ -107,7 +120,12 @@ const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
 });
 
-const connector = connect(mapStateToProps, null, null, {
+const mapDispatchToProps = {
+  startWorkspace: workspacesActionCreators.startWorkspace,
+  stopWorkspace: workspacesActionCreators.stopWorkspace,
+};
+
+const connector = connect(mapStateToProps, mapDispatchToProps, null, {
   // forwardRef is mandatory for using `@react-mock/state` in unit tests
   forwardRef: true,
 });
