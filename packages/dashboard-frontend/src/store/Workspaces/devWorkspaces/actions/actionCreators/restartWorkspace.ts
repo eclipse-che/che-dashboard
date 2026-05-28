@@ -19,7 +19,7 @@ import { AppThunk } from '@/store';
 import { actionCreators, onStatusChangeCallbacks } from '@/store/Workspaces/devWorkspaces/actions';
 
 export const restartWorkspace =
-  (workspace: devfileApi.DevWorkspace): AppThunk =>
+  (workspace: devfileApi.DevWorkspace, debugWorkspace = false): AppThunk =>
   async dispatch => {
     const defer: IDeferred<void> = getDefer();
     const toDispose = new DisposableCollection();
@@ -28,7 +28,7 @@ export const restartWorkspace =
       if (status === DevWorkspaceStatus.STOPPED || status === DevWorkspaceStatus.FAILED) {
         toDispose.dispose();
         try {
-          await dispatch(actionCreators.startWorkspace(workspace));
+          await dispatch(actionCreators.startWorkspace(workspace, debugWorkspace));
           defer.resolve();
         } catch (e) {
           defer.reject(

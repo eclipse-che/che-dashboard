@@ -128,7 +128,7 @@ describe('Workspaces Actions', () => {
       const actions = store.getActions();
       expect(actions).toHaveLength(0);
 
-      expect(mockRestartWorkspace).toHaveBeenCalledWith(mockWorkspace.ref);
+      expect(mockRestartWorkspace).toHaveBeenCalledWith(mockWorkspace.ref, undefined);
     });
   });
 

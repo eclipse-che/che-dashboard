@@ -116,6 +116,7 @@ export enum WorkspaceAction {
   DELETE_WORKSPACE = 'Delete Workspace',
   OPEN_IDE = 'Open',
   RESTART_WORKSPACE = 'Restart Workspace',
+  RESTART_DEBUG_AND_OPEN_LOGS = 'Restart in Debug mode',
   START_DEBUG_AND_OPEN_LOGS = 'Open in Debug mode',
   START_IN_BACKGROUND = 'Start in background',
   STOP_WORKSPACE = 'Stop Workspace',

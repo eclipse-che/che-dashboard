@@ -186,6 +186,7 @@ class WorkspaceActionsDropdownComponent extends React.PureComponent<Props, State
       getItem(WorkspaceAction.START_DEBUG_AND_OPEN_LOGS, isTerminating || !isStopped),
       getItem(WorkspaceAction.START_IN_BACKGROUND, isTerminating || !isStopped),
       getItem(WorkspaceAction.RESTART_WORKSPACE, isTerminating || isStopped),
+      getItem(WorkspaceAction.RESTART_DEBUG_AND_OPEN_LOGS, isTerminating || isStopped),
       getItem(WorkspaceAction.STOP_WORKSPACE, isTerminating || isStopped),
       getItem(WorkspaceAction.DELETE_WORKSPACE, isTerminating),
     ];

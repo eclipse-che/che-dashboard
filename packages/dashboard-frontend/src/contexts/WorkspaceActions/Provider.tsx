@@ -177,6 +177,19 @@ class WorkspaceActionsProvider extends React.Component<Props, State> {
           await this.props.restartWorkspace(workspace);
         }
         break;
+      case WorkspaceAction.RESTART_DEBUG_AND_OPEN_LOGS:
+        {
+          if (this.checkSccMismatch(workspace)) {
+            console.warn(
+              `Workspace "${workspace.name}" has SCC mismatch. The workspace was created with a different container SCC than what is currently configured.`,
+            );
+          }
+          await this.props.restartWorkspace(workspace, {
+            'debug-workspace-start': true,
+          });
+          this.handleLocation(buildIdeLoaderLocation(workspace, LoaderTab.Logs));
+        }
+        break;
       default:
         console.warn(`Unhandled action type: "${action}".`);
     }

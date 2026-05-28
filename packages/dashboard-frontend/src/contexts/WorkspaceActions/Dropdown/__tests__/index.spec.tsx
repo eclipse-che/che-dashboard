@@ -221,6 +221,34 @@ describe('WorkspaceActionsDropdown', () => {
       );
     });
 
+    test('action: restart in debug mode', async () => {
+      mockHandleAction.mockResolvedValueOnce(undefined);
+
+      workspace.status = DevWorkspaceStatus.RUNNING;
+      renderComponent(workspace, 'kebab-toggle', { isExpanded: true });
+
+      const actionRestartDebug = screen.getByRole('menuitem', {
+        name: 'Action: Restart in Debug mode',
+      });
+
+      expect(actionRestartDebug).not.toBeNull();
+
+      await user.click(actionRestartDebug!);
+
+      await jest.advanceTimersByTimeAsync(1000);
+
+      expect(mockShowConfirmation).not.toHaveBeenCalled();
+      expect(mockHandleAction).toHaveBeenCalledWith(
+        WorkspaceAction.RESTART_DEBUG_AND_OPEN_LOGS,
+        workspace.uid,
+      );
+      expect(mockOnAction).toHaveBeenCalledWith(
+        WorkspaceAction.RESTART_DEBUG_AND_OPEN_LOGS,
+        workspace.uid,
+        true, // succeeded
+      );
+    });
+
     test('action: stop workspace', async () => {
       mockHandleAction.mockResolvedValueOnce(undefined);
 
@@ -364,6 +392,11 @@ describe('WorkspaceActionsDropdown', () => {
         }),
       ).toBeDisabled();
       expect(
+        screen.getByRole('menuitem', {
+          name: 'Action: ' + WorkspaceAction.RESTART_DEBUG_AND_OPEN_LOGS,
+        }),
+      ).toBeDisabled();
+      expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.STOP_WORKSPACE }),
       ).toBeDisabled();
       expect(
@@ -389,6 +422,11 @@ describe('WorkspaceActionsDropdown', () => {
       expect(
         screen.getByRole('menuitem', {
           name: 'Action: ' + WorkspaceAction.RESTART_WORKSPACE,
+        }),
+      ).not.toBeDisabled();
+      expect(
+        screen.getByRole('menuitem', {
+          name: 'Action: ' + WorkspaceAction.RESTART_DEBUG_AND_OPEN_LOGS,
         }),
       ).not.toBeDisabled();
       expect(
@@ -420,6 +458,11 @@ describe('WorkspaceActionsDropdown', () => {
         }),
       ).not.toBeDisabled();
       expect(
+        screen.getByRole('menuitem', {
+          name: 'Action: ' + WorkspaceAction.RESTART_DEBUG_AND_OPEN_LOGS,
+        }),
+      ).not.toBeDisabled();
+      expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.STOP_WORKSPACE }),
       ).not.toBeDisabled();
       expect(
@@ -445,6 +488,11 @@ describe('WorkspaceActionsDropdown', () => {
       expect(
         screen.getByRole('menuitem', {
           name: 'Action: ' + WorkspaceAction.RESTART_WORKSPACE,
+        }),
+      ).not.toBeDisabled();
+      expect(
+        screen.getByRole('menuitem', {
+          name: 'Action: ' + WorkspaceAction.RESTART_DEBUG_AND_OPEN_LOGS,
         }),
       ).not.toBeDisabled();
       expect(
@@ -476,6 +524,11 @@ describe('WorkspaceActionsDropdown', () => {
         }),
       ).toBeDisabled();
       expect(
+        screen.getByRole('menuitem', {
+          name: 'Action: ' + WorkspaceAction.RESTART_DEBUG_AND_OPEN_LOGS,
+        }),
+      ).toBeDisabled();
+      expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.STOP_WORKSPACE }),
       ).toBeDisabled();
       expect(
@@ -504,6 +557,11 @@ describe('WorkspaceActionsDropdown', () => {
         }),
       ).not.toBeDisabled();
       expect(
+        screen.getByRole('menuitem', {
+          name: 'Action: ' + WorkspaceAction.RESTART_DEBUG_AND_OPEN_LOGS,
+        }),
+      ).not.toBeDisabled();
+      expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.STOP_WORKSPACE }),
       ).not.toBeDisabled();
       expect(
@@ -529,6 +587,11 @@ describe('WorkspaceActionsDropdown', () => {
       expect(
         screen.getByRole('menuitem', {
           name: 'Action: ' + WorkspaceAction.RESTART_WORKSPACE,
+        }),
+      ).toBeDisabled();
+      expect(
+        screen.getByRole('menuitem', {
+          name: 'Action: ' + WorkspaceAction.RESTART_DEBUG_AND_OPEN_LOGS,
         }),
       ).toBeDisabled();
       expect(
