@@ -33,6 +33,7 @@ import {
 // Note: PageSectionVariants.default was removed in PF6
 
 type Props = {
+  actions?: React.ReactNode;
   hideBreadcrumbs?: boolean;
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   containerScc: string | undefined;
@@ -46,7 +47,7 @@ class Header extends React.PureComponent<Props> {
   }
 
   public render(): React.ReactElement {
-    const { title, status, containerScc, hideBreadcrumbs } = this.props;
+    const { actions, title, status, containerScc, hideBreadcrumbs } = this.props;
 
     return (
       <PageSection>
@@ -71,6 +72,7 @@ class Header extends React.PureComponent<Props> {
               <FlexItem>
                 <WorkspaceStatusLabel status={status} containerScc={containerScc} />
               </FlexItem>
+              {actions && <FlexItem align={{ default: 'alignRight' }}>{actions}</FlexItem>}
             </Flex>
           </StackItem>
         </Stack>

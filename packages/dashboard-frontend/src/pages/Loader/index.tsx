@@ -10,7 +10,17 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { PageSection, PageSectionVariants, Tab, Tabs } from '@patternfly/react-core';
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  MenuToggle,
+  PageSection,
+  PageSectionVariants,
+  Tab,
+  Tabs,
+} from '@patternfly/react-core';
+import { EllipsisVIcon, PlayIcon, StopIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { Location, NavigateFunction } from 'react-router-dom';
 
@@ -34,11 +44,15 @@ export type Props = {
   searchParams: URLSearchParams;
   tabParam: string | undefined;
   workspace: Workspace | undefined;
+  workspaceStatus: DevWorkspaceStatus;
   onTabChange: (tab: LoaderTab) => void;
+  onStartWorkspace: () => void;
+  onStopWorkspace: () => void;
 };
 
 export type State = {
   activeTabKey: LoaderTab;
+  isActionsOpen: boolean;
 };
 
 export class LoaderPage extends React.PureComponent<Props, State> {
@@ -55,13 +69,13 @@ export class LoaderPage extends React.PureComponent<Props, State> {
 
     this.state = {
       activeTabKey,
+      isActionsOpen: false,
     };
 
     this.appliedSafeMode = {};
   }
 
   componentDidMount(): void {
-    // hide top and side bars
     this.context.hideAll();
   }
 
@@ -75,12 +89,23 @@ export class LoaderPage extends React.PureComponent<Props, State> {
     this.props.onTabChange(tab);
   }
 
+  private handleActionsToggle = () => {
+    this.setState(prev => ({ isActionsOpen: !prev.isActionsOpen }));
+  };
+
   render(): React.ReactNode {
-    const { searchParams, workspace, location, navigate } = this.props;
-    const { activeTabKey } = this.state;
+    const {
+      searchParams,
+      workspace,
+      workspaceStatus,
+      location,
+      navigate,
+      onStartWorkspace,
+      onStopWorkspace,
+    } = this.props;
+    const { activeTabKey, isActionsOpen } = this.state;
 
     let pageTitle = workspace ? `Starting workspace ${workspace.name}` : 'Creating a workspace';
-    const workspaceStatus = workspace?.status || DevWorkspaceStatus.STOPPED;
     if (getRestartInSafeModeLocation(location) || this.appliedSafeMode[location.pathname]) {
       pageTitle += ' with default devfile';
       this.appliedSafeMode[location.pathname] = true;
@@ -94,10 +119,63 @@ export class LoaderPage extends React.PureComponent<Props, State> {
 
     const containerScc = workspace ? WorkspaceAdapter.getContainerScc(workspace.ref) : undefined;
 
+    const isWorkspaceActive =
+      workspaceStatus === DevWorkspaceStatus.STARTING ||
+      workspaceStatus === DevWorkspaceStatus.RUNNING;
+
+    const actionsDropdown = workspace ? (
+      <Dropdown
+        isOpen={isActionsOpen}
+        onOpenChange={(open: boolean) => this.setState({ isActionsOpen: open })}
+        toggle={(toggleRef: React.Ref<HTMLButtonElement>) => (
+          <MenuToggle
+            ref={toggleRef}
+            variant="plain"
+            onClick={this.handleActionsToggle}
+            isExpanded={isActionsOpen}
+            aria-label="Workspace actions"
+          >
+            <EllipsisVIcon />
+          </MenuToggle>
+        )}
+        popperProps={{ position: 'right' }}
+      >
+        <DropdownList>
+          <DropdownItem
+            key="start"
+            icon={<PlayIcon />}
+            onClick={() => {
+              this.setState({ isActionsOpen: false });
+              onStartWorkspace();
+            }}
+            isDisabled={isWorkspaceActive}
+          >
+            Start
+          </DropdownItem>
+          <DropdownItem
+            key="stop"
+            icon={<StopIcon />}
+            onClick={() => {
+              this.setState({ isActionsOpen: false });
+              onStopWorkspace();
+            }}
+            isDisabled={!isWorkspaceActive}
+          >
+            Stop
+          </DropdownItem>
+        </DropdownList>
+      </Dropdown>
+    ) : undefined;
+
     return (
       <React.Fragment>
         <Head pageName={pageTitle} />
-        <Header title={pageTitle} status={workspaceStatus} containerScc={containerScc} />
+        <Header
+          title={pageTitle}
+          status={workspaceStatus}
+          containerScc={containerScc}
+          actions={actionsDropdown}
+        />
         <PageSection
           variant={PageSectionVariants.default}
           isFilled={true}
@@ -143,7 +221,7 @@ export class LoaderPage extends React.PureComponent<Props, State> {
               isDisabled={isEventsTabDisabled}
               isAriaDisabled={isEventsTabDisabled}
             >
-              <WorkspaceEvents workspaceUID={workspace?.uid} />
+              <WorkspaceEvents workspaceUID={workspace?.uid} hideWhenStopped={false} />
             </Tab>
           </Tabs>
         </PageSection>
