@@ -96,5 +96,5 @@ export const selectCurrentScc = createSelector(selectState, state => getCurrentS
 
 export const selectSessionTimeout = createSelector(
   selectState,
-  state => state.config.timeouts?.sessionTimeout ?? 86400,
+  state => state.config.timeouts?.sessionTimeout ?? -1,
 );
