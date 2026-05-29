@@ -32,7 +32,7 @@ import { sanityCheckReducer } from '@/store/SanityCheck';
 import { serverConfigReducer } from '@/store/ServerConfig';
 import { sshKeysReducer } from '@/store/SshKeys';
 import { UserIdReducer } from '@/store/User/Id';
-import { UserProfileReducer } from '@/store/User/Profile';
+import { UsernameReducer } from '@/store/User/Name';
 import { workspacesReducer } from '@/store/Workspaces';
 import { devWorkspacesReducer } from '@/store/Workspaces/devWorkspaces';
 import { workspacePreferencesReducer } from '@/store/Workspaces/Preferences';
@@ -61,7 +61,7 @@ export const rootReducer = {
   sanityCheck: sanityCheckReducer,
   sshKeys: sshKeysReducer,
   userId: UserIdReducer,
-  userProfile: UserProfileReducer,
+  username: UsernameReducer,
   workspacePreferences: workspacePreferencesReducer,
   workspaces: workspacesReducer,
 };

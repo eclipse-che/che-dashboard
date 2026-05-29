@@ -96,9 +96,3 @@ jest.mock('@/components/BasicViewer', () => {
     }),
   };
 });
-
-jest.mock('gravatar-url', () => {
-  return function () {
-    return 'avatar/source/location';
-  };
-});

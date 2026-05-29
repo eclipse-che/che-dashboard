@@ -10,25 +10,24 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api } from '@eclipse-che/common';
 import { UnknownAction } from 'redux';
 
 import {
-  userProfileErrorAction,
-  userProfileReceiveAction,
-  userProfileRequestAction,
-} from '@/store/User/Profile/actions';
-import { reducer, State, unloadedState } from '@/store/User/Profile/reducer';
+  usernameErrorAction,
+  usernameReceiveAction,
+  usernameRequestAction,
+} from '@/store/User/Name/actions';
+import { reducer, State, unloadedState } from '@/store/User/Name/reducer';
 
-describe('UserProfile, reducer', () => {
+describe('Username, reducer', () => {
   let initialState: State;
 
   beforeEach(() => {
     initialState = { ...unloadedState };
   });
 
-  it('should handle userProfileRequestAction', () => {
-    const action = userProfileRequestAction();
+  it('should handle usernameRequestAction', () => {
+    const action = usernameRequestAction();
     const expectedState: State = {
       ...initialState,
       isLoading: true,
@@ -37,21 +36,21 @@ describe('UserProfile, reducer', () => {
     expect(reducer(initialState, action)).toEqual(expectedState);
   });
 
-  it('should handle userProfileReceiveAction', () => {
-    const userProfile = { email: 'test@example.com', username: 'testuser' } as api.IUserProfile;
-    const action = userProfileReceiveAction(userProfile);
+  it('should handle usernameReceiveAction', () => {
+    const username = 'testuser';
+    const action = usernameReceiveAction(username);
     const expectedState: State = {
       ...initialState,
       isLoading: false,
-      userProfile,
+      username,
     };
 
     expect(reducer(initialState, action)).toEqual(expectedState);
   });
 
-  it('should handle userProfileErrorAction', () => {
+  it('should handle usernameErrorAction', () => {
     const error = 'Error message';
-    const action = userProfileErrorAction(error);
+    const action = usernameErrorAction(error);
     const expectedState: State = {
       ...initialState,
       isLoading: false,

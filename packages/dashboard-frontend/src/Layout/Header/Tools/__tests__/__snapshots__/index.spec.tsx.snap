@@ -72,15 +72,6 @@ exports[`Page header tools should correctly render the component 1`] = `
           </button>
         </div>
       </div>
-      <div
-        className="pf-v6-c-toolbar__item"
-      >
-        <img
-          alt="Avatar image"
-          className="pf-v6-c-avatar pf-m-md"
-          src="avatar/source/location"
-        />
-      </div>
     </div>
   </div>
   <div

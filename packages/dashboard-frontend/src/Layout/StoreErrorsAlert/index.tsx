@@ -22,7 +22,7 @@ import { selectInfrastructureNamespacesError } from '@/store/InfrastructureNames
 import { selectPluginsError } from '@/store/Plugins/chePlugins/selectors';
 import { selectDwDefaultEditorError } from '@/store/Plugins/devWorkspacePlugins/selectors';
 import { selectSanityCheckError } from '@/store/SanityCheck/selectors';
-import { selectUserProfileError } from '@/store/User/Profile/selectors';
+import { selectUsernameError } from '@/store/User/Name/selectors';
 import { selectWorkspacesError } from '@/store/Workspaces/selectors';
 
 type Props = MappedProps;
@@ -101,10 +101,10 @@ export class StoreErrorsAlert extends React.PureComponent<Props> {
       });
     }
     // user profile error
-    if (this.props.userProfileError) {
+    if (this.props.usernameError) {
       this.appAlerts.showAlert({
         key: 'user-profile-error',
-        title: this.props.userProfileError,
+        title: this.props.usernameError,
         variant: AlertVariant.danger,
       });
     }
@@ -121,7 +121,7 @@ const mapStateToProps = (state: RootState) => ({
   sanityCheckError: selectSanityCheckError(state),
   dwDefaultEditorError: selectDwDefaultEditorError(state),
   infrastructureNamespacesError: selectInfrastructureNamespacesError(state),
-  userProfileError: selectUserProfileError(state),
+  usernameError: selectUsernameError(state),
   workspacesError: selectWorkspacesError(state),
 });
 

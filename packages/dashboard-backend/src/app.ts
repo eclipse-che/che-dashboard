@@ -45,7 +45,6 @@ import { registerPodmanLoginRoute } from '@/routes/api/podmanLogin';
 import { registerPodsRoutes } from '@/routes/api/pods';
 import { registerServerConfigRoute } from '@/routes/api/serverConfig';
 import { registerSShKeysRoutes } from '@/routes/api/sshKeys';
-import { registerUserProfileRoute } from '@/routes/api/userProfile';
 import { registerWebsocket } from '@/routes/api/websocket';
 import { registerWorkspacePreferencesRoute } from '@/routes/api/workspacePreferences';
 import { registerFactoryAcceptanceRedirect } from '@/routes/factoryAcceptanceRedirect';
@@ -119,8 +118,6 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
     registerPodmanLoginRoute(server),
 
     registerServerConfigRoute(server),
-
-    registerUserProfileRoute(server),
 
     registerGitBranchesRoute(server),
 

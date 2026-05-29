@@ -27,7 +27,6 @@ import {
   IPodApi,
   IServerConfigApi,
   IShhKeysApi,
-  IUserProfileApi,
   IWorkspacePreferencesApi,
 } from '@/devworkspaceClient/types';
 
@@ -50,9 +49,6 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
     throw new Error('Method not implemented.');
   }
   get kubeConfigApi(): IKubeConfigApi {
-    throw new Error('Method not implemented.');
-  }
-  get userProfileApi(): IUserProfileApi {
     throw new Error('Method not implemented.');
   }
   get logsApi(): ILogsApi {

@@ -10,23 +10,23 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import common, { api } from '@eclipse-che/common';
+import common from '@eclipse-che/common';
 
-import { fetchUserProfile } from '@/services/backend-client/userProfileApi';
+import { fetchUsername } from '@/services/backend-client/userProfileApi';
 import { createMockStore } from '@/store/__mocks__/mockActionsTestStore';
 import { verifyAuthorized } from '@/store/SanityCheck';
 import {
   actionCreators,
-  userProfileErrorAction,
-  userProfileReceiveAction,
-  userProfileRequestAction,
-} from '@/store/User/Profile/actions';
+  usernameErrorAction,
+  usernameReceiveAction,
+  usernameRequestAction,
+} from '@/store/User/Name/actions';
 
 jest.mock('@eclipse-che/common');
 jest.mock('@/services/backend-client/userProfileApi');
 jest.mock('@/store/SanityCheck');
 
-describe('UserProfile, actions', () => {
+describe('Username, actions', () => {
   let store: ReturnType<typeof createMockStore>;
 
   beforeEach(() => {
@@ -34,38 +34,34 @@ describe('UserProfile, actions', () => {
     jest.clearAllMocks();
   });
 
-  describe('requestUserProfile', () => {
+  describe('requestUsername', () => {
     it('should dispatch receive action on successful fetch', async () => {
-      const mockNamespace = 'test-namespace';
-      const mockUserProfile = { username: 'test-user' } as api.IUserProfile;
+      const username = 'test-user';
 
       (verifyAuthorized as jest.Mock).mockResolvedValue(true);
-      (fetchUserProfile as jest.Mock).mockResolvedValue(mockUserProfile);
+      (fetchUsername as jest.Mock).mockResolvedValue(username);
 
-      await store.dispatch(actionCreators.requestUserProfile(mockNamespace));
+      await store.dispatch(actionCreators.requestUsername());
 
       const actions = store.getActions();
       expect(actions).toHaveLength(2);
-      expect(actions[0]).toEqual(userProfileRequestAction());
-      expect(actions[1]).toEqual(userProfileReceiveAction(mockUserProfile));
+      expect(actions[0]).toEqual(usernameRequestAction());
+      expect(actions[1]).toEqual(usernameReceiveAction(username));
     });
 
     it('should dispatch error action on failed fetch', async () => {
-      const mockNamespace = 'test-namespace';
       const errorMessage = 'Network error';
 
       (verifyAuthorized as jest.Mock).mockResolvedValue(true);
-      (fetchUserProfile as jest.Mock).mockRejectedValue(new Error(errorMessage));
+      (fetchUsername as jest.Mock).mockRejectedValue(new Error(errorMessage));
       (common.helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
 
-      await expect(
-        store.dispatch(actionCreators.requestUserProfile(mockNamespace)),
-      ).rejects.toThrow(errorMessage);
+      await expect(store.dispatch(actionCreators.requestUsername())).rejects.toThrow(errorMessage);
 
       const actions = store.getActions();
       expect(actions).toHaveLength(2);
-      expect(actions[0]).toEqual(userProfileRequestAction());
-      expect(actions[1]).toEqual(userProfileErrorAction(errorMessage));
+      expect(actions[0]).toEqual(usernameRequestAction());
+      expect(actions[1]).toEqual(usernameErrorAction(errorMessage));
     });
   });
 });

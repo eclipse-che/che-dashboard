@@ -10,7 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api } from '@eclipse-che/common';
 import { createHashHistory } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -22,12 +21,6 @@ import { BRANDING_DEFAULT, BrandingData } from '@/services/bootstrap/branding.co
 import { AppThunk } from '@/store';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { infrastructureNamespacesActionCreators } from '@/store/InfrastructureNamespaces';
-
-jest.mock('gravatar-url', () => {
-  return function () {
-    return 'avatar/source/location';
-  };
-});
 
 jest.mock('@/store/InfrastructureNamespaces', () => {
   return {
@@ -43,9 +36,8 @@ describe('Page header tools', () => {
   const mockLogout = jest.fn();
 
   const productCli = 'crwctl';
-  const email = 'johndoe@example.com';
   const name = 'John Doe';
-  const store = createStore(productCli, name, email);
+  const store = createStore(productCli, name);
   const history = createHashHistory();
 
   const component = (
@@ -63,12 +55,9 @@ describe('Page header tools', () => {
   });
 });
 
-function createStore(cheCliTool: string, name: string, email: string): Store {
+function createStore(cheCliTool: string, name: string): Store {
   return new MockStoreBuilder()
-    .withUserProfile({
-      username: name,
-      email,
-    } as api.IUserProfile)
+    .withUsername(name)
     .withBranding({
       configuration: {
         cheCliTool,

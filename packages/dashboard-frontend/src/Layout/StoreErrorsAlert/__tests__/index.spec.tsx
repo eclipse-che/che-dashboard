@@ -54,13 +54,7 @@ describe('StoreErrorAlert component', () => {
         // sanity check passes
         error: undefined,
       })
-      .withUserProfile(
-        {
-          email: 'user1@che',
-          username: 'user1',
-        },
-        'expected error 6',
-      )
+      .withUsername('user1', 'expected error 6')
       .build();
     renderComponent(store);
 
@@ -84,8 +78,8 @@ describe('StoreErrorAlert component', () => {
     });
     expect(sanityCheckAlert).toBeFalsy();
 
-    const userProfileAlert = screen.queryByRole('heading', { name: /expected error 6/i });
-    expect(userProfileAlert).toBeTruthy();
+    const usernameAlert = screen.queryByRole('heading', { name: /expected error 6/i });
+    expect(usernameAlert).toBeTruthy();
   });
 
   it('should show sanity check error and hide other errors', () => {
@@ -104,13 +98,7 @@ describe('StoreErrorAlert component', () => {
         // sanity check fails
         error: 'expected error 5',
       })
-      .withUserProfile(
-        {
-          email: 'user1@che',
-          username: 'user1',
-        },
-        'expected error 6',
-      )
+      .withUsername('user1')
       .build();
     renderComponent(store);
 
@@ -134,8 +122,8 @@ describe('StoreErrorAlert component', () => {
     });
     expect(sanityCheckAlert).toBeTruthy();
 
-    const userProfileAlert = screen.queryByRole('heading', { name: /expected error 6/i });
-    expect(userProfileAlert).toBeFalsy();
+    const usernameAlert = screen.queryByRole('heading', { name: /expected error 6/i });
+    expect(usernameAlert).toBeFalsy();
 
     const workspacesSettingsAlert = screen.queryByRole('heading', { name: /expected error 7/i });
     expect(workspacesSettingsAlert).toBeFalsy();

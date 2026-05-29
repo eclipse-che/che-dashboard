@@ -10,39 +10,35 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api } from '@eclipse-che/common';
 import { createReducer } from '@reduxjs/toolkit';
 
 import {
-  userProfileErrorAction,
-  userProfileReceiveAction,
-  userProfileRequestAction,
-} from '@/store/User/Profile/actions';
+  usernameErrorAction,
+  usernameReceiveAction,
+  usernameRequestAction,
+} from '@/store/User/Name/actions';
 
 export interface State {
-  userProfile: api.IUserProfile;
+  username: string;
   error?: string;
   isLoading: boolean;
 }
 
 export const unloadedState: State = {
-  userProfile: {
-    email: '',
-    username: 'unknown',
-  },
+  username: 'unknown',
   isLoading: false,
 };
 
 export const reducer = createReducer(unloadedState, builder =>
   builder
-    .addCase(userProfileRequestAction, state => {
+    .addCase(usernameRequestAction, state => {
       state.isLoading = true;
     })
-    .addCase(userProfileReceiveAction, (state, action) => {
+    .addCase(usernameReceiveAction, (state, action) => {
       state.isLoading = false;
-      state.userProfile = action.payload;
+      state.username = action.payload;
     })
-    .addCase(userProfileErrorAction, (state, action) => {
+    .addCase(usernameErrorAction, (state, action) => {
       state.isLoading = false;
       state.error = action.payload;
     })

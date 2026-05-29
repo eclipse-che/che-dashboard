@@ -38,7 +38,6 @@ import {
   IPodmanApi,
   IServerConfigApi,
   IShhKeysApi,
-  IUserProfileApi,
   IWorkspacePreferencesApi,
 } from '@/devworkspaceClient';
 import { getDevWorkspaceClient as helper } from '@/routes/api/helpers/getDevWorkspaceClient';
@@ -97,11 +96,6 @@ export const stubDevWorkspaceTemplate: V1alpha2DevWorkspaceTemplate = {
 };
 
 export const stubDockerConfig = {};
-
-export const stubUserProfile: api.IUserProfile = {
-  email: 'user1@che',
-  username: 'user1',
-};
 
 export const stubEventsList: api.IEventList = {
   apiVersion: 'workspace.devfile.io/v1alpha2',
@@ -235,9 +229,6 @@ export const getDevWorkspaceClient = jest.fn(
         patch: (_namespace, _name, _patches) => Promise.resolve(stubDevWorkspaceTemplate),
         delete: (_namespace, _name) => Promise.resolve(undefined),
       } as IDevWorkspaceTemplateApi,
-      userProfileApi: {
-        getUserProfile: _namespace => Promise.resolve(stubUserProfile),
-      } as IUserProfileApi,
       editorsApi: {
         list: () => Promise.resolve(editorsArray),
         get: _id => Promise.resolve(editorsArray[0]),

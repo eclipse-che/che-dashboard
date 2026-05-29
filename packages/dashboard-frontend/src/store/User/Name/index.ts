@@ -12,9 +12,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-export { actionCreators as userProfileActionCreators } from '@/store/User/Profile/actions';
-export {
-  reducer as UserProfileReducer,
-  State as UserProfileState,
-} from '@/store/User/Profile/reducer';
-export * from '@/store/User/Profile/selectors';
+export { actionCreators as usernameActionCreators } from '@/store/User/Name/actions';
+export { reducer as UsernameReducer, State as UsernameState } from '@/store/User/Name/reducer';
+export * from '@/store/User/Name/selectors';
