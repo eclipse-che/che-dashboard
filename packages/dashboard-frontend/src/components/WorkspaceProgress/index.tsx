@@ -30,6 +30,7 @@ import StartingStepInitialize from '@/components/WorkspaceProgress/StartingSteps
 import StartingStepOpenWorkspace from '@/components/WorkspaceProgress/StartingSteps/OpenWorkspace';
 import StartingStepStartWorkspace from '@/components/WorkspaceProgress/StartingSteps/StartWorkspace';
 import StartingStepWorkspaceConditions from '@/components/WorkspaceProgress/StartingSteps/WorkspaceConditions';
+import { enqueueAnnouncement } from '@/components/WorkspaceProgress/StepTitle/announceQueue';
 import {
   ConditionType,
   getWorkspaceConditions,
@@ -148,8 +149,36 @@ class Progress extends React.Component<Props, State> {
     this.init(this.props, this.state, undefined);
   }
 
-  public componentDidUpdate(prevProps: Props): void {
+  public componentDidUpdate(prevProps: Props, prevState: State): void {
     this.init(this.props, this.state, prevProps);
+
+    // Announce the step that just became active so screen readers hear progress
+    // from a single stable place instead of from remounting child ProgressStepTitle
+    // components (which fire duplicate announcements during factory-flow re-renders).
+    if (prevState.activeStepId !== this.state.activeStepId) {
+      const label = this.getStepAnnouncementLabel(this.state.activeStepId);
+      if (label) {
+        enqueueAnnouncement(`Step: ${label}`);
+      }
+    }
+  }
+
+  private getStepAnnouncementLabel(stepId: StepId): string {
+    const stepNames: Partial<Record<Step, string>> = {
+      [Step.INITIALIZE]: 'Initializing',
+      [Step.LIMIT_CHECK]: 'Checking running workspaces limit',
+      [Step.CREATE]: 'Creating a workspace',
+      [Step.FETCH]: 'Fetching a devfile',
+      [Step.CONFLICT_CHECK]: 'Checking existing workspaces',
+      [Step.APPLY]: 'Applying a devfile',
+      [Step.START]: 'Waiting for workspace to start',
+      [Step.OPEN]: 'Open IDE',
+    };
+    // Condition sub-steps are announced by WorkspaceConditions via ProgressStepTitle.componentDidUpdate
+    if (stepId.startsWith('condition-')) {
+      return '';
+    }
+    return stepNames[stepId as Step] ?? '';
   }
 
   private init(props: Props, state: State, prevProps: Props | undefined): void {

@@ -64,16 +64,14 @@ describe('ProgressStepTitle', () => {
       expect(mockEnqueueAnnouncement).not.toHaveBeenCalled();
     });
 
-    it('queues announcement when step mounts as active (distance=0)', () => {
+    it('does not queue announcement when step mounts as active (distance=0) — announcements are driven by WorkspaceProgress', () => {
       renderComponent(0, {});
-      expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(1);
-      expect(mockEnqueueAnnouncement).toHaveBeenCalledWith('Step: Step 1');
+      expect(mockEnqueueAnnouncement).not.toHaveBeenCalled();
     });
 
-    it('queues announcement when step mounts already done (distance=1)', () => {
+    it('does not queue announcement when step mounts already done (distance=1) — announcements are driven by WorkspaceProgress', () => {
       renderComponent(1, {});
-      expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(1);
-      expect(mockEnqueueAnnouncement).toHaveBeenCalledWith('Step: Step 1');
+      expect(mockEnqueueAnnouncement).not.toHaveBeenCalled();
     });
 
     it('queues announcement when step transitions to active (distance→0)', () => {
@@ -87,31 +85,40 @@ describe('ProgressStepTitle', () => {
 
     it('queues announcement when active step completes (distance 0→1)', () => {
       const { reRenderComponent } = renderComponent(0, {});
-      expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(1);
+      expect(mockEnqueueAnnouncement).not.toHaveBeenCalled();
 
       reRenderComponent(1, {});
-      expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(2);
+      expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(1);
     });
 
     it('does not re-queue when already-active step re-renders without distance change', () => {
       const { reRenderComponent } = renderComponent(0, {});
-      expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(1);
+      expect(mockEnqueueAnnouncement).not.toHaveBeenCalled();
 
       reRenderComponent(0, {});
-      expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(1);
+      expect(mockEnqueueAnnouncement).not.toHaveBeenCalled();
     });
 
-    it('includes parent step name in the queued announcement for a sub-step', () => {
-      renderComponent(1, { parentStepName: 'Waiting for workspace to start' });
+    it('includes parent step name in the queued announcement for a sub-step (on transition)', () => {
+      const { reRenderComponent } = renderComponent(-1, {
+        parentStepName: 'Waiting for workspace to start',
+      });
+      reRenderComponent(0, { parentStepName: 'Waiting for workspace to start' });
       expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(1);
       expect(mockEnqueueAnnouncement).toHaveBeenCalledWith(
         'Step: Waiting for workspace to start / Step 1',
       );
     });
 
-    it('queues each already-done sub-step independently', () => {
-      renderComponent(1, { parentStepName: 'Waiting for workspace to start' });
-      renderComponent(1, { parentStepName: 'Waiting for workspace to start' });
+    it('queues each sub-step independently when they transition to done', () => {
+      const { reRenderComponent: reRender1 } = renderComponent(0, {
+        parentStepName: 'Waiting for workspace to start',
+      });
+      reRender1(1, { parentStepName: 'Waiting for workspace to start' });
+      const { reRenderComponent: reRender2 } = renderComponent(0, {
+        parentStepName: 'Waiting for workspace to start',
+      });
+      reRender2(1, { parentStepName: 'Waiting for workspace to start' });
       expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(2);
     });
   });

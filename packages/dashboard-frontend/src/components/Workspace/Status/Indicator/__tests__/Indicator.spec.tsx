@@ -148,20 +148,7 @@ describe('Workspace indicator component', () => {
 describe('screen reader announcements', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('does not announce on mount', () => {
-    const store = new MockStoreBuilder()
-      .withBranding(BRANDING_DEFAULT)
-      .withCurrentScc(undefined)
-      .build();
-    render(
-      <Provider store={store}>
-        <WorkspaceStatusIndicator status={DevWorkspaceStatus.STARTING} containerScc={undefined} />
-      </Provider>,
-    );
-    expect(enqueueAnnouncement).not.toHaveBeenCalled();
-  });
-
-  it('announces status change via shared queue', () => {
+  it('does not announce on mount or status change (announcements moved to WorkspaceStatusLabel)', () => {
     const store = new MockStoreBuilder()
       .withBranding(BRANDING_DEFAULT)
       .withCurrentScc(undefined)
@@ -176,7 +163,7 @@ describe('screen reader announcements', () => {
         <WorkspaceStatusIndicator status={DevWorkspaceStatus.RUNNING} containerScc={undefined} />
       </Provider>,
     );
-    expect(enqueueAnnouncement).toHaveBeenCalledWith('Workspace status is Running');
+    expect(enqueueAnnouncement).not.toHaveBeenCalled();
   });
 });
 

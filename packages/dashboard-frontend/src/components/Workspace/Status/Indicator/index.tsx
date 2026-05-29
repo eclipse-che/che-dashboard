@@ -16,7 +16,6 @@ import { connect, ConnectedProps } from 'react-redux';
 import { CheTooltip } from '@/components/CheTooltip';
 import { getSccMismatchTooltip, useStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
 import styles from '@/components/Workspace/Status/index.module.css';
-import { useAnnounceOnChange } from '@/components/WorkspaceProgress/StepTitle/useAnnounceOnChange';
 import { hasSccMismatch } from '@/services/helpers/sccMismatch';
 import {
   DeprecatedWorkspaceStatus,
@@ -55,8 +54,6 @@ const WorkspaceStatusIndicatorComponent: React.FC<Props> = ({
   const statusAriaLabel = sccMismatch
     ? 'Workspace status has SCC mismatch warning'
     : `Workspace status is ${status}`;
-
-  useAnnounceOnChange(statusAriaLabel, v => v);
 
   return (
     <CheTooltip content={tooltip}>

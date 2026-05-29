@@ -176,10 +176,16 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
               <BackupTab workspace={workspace} />
             </Tab>
             <Tab eventKey={WorkspaceDetailsTab.LOGS} title={WorkspaceDetailsTab.LOGS}>
-              <WorkspaceLogs workspaceUID={workspace.uid} />
+              <WorkspaceLogs
+                workspaceUID={workspace.uid}
+                isActive={this.state.activeTabKey === WorkspaceDetailsTab.LOGS}
+              />
             </Tab>
             <Tab eventKey={WorkspaceDetailsTab.EVENTS} title={WorkspaceDetailsTab.EVENTS}>
-              <WorkspaceEvents workspaceUID={workspace.uid} />
+              <WorkspaceEvents
+                workspaceUID={workspace.uid}
+                isActive={this.state.activeTabKey === WorkspaceDetailsTab.EVENTS}
+              />
             </Tab>
           </Tabs>
         </PageSection>

@@ -48,6 +48,12 @@ function drainQueue(): void {
 }
 
 export function enqueueAnnouncement(text: string): void {
+  // Skip if the identical text is already waiting at the back of the queue —
+  // multiple status-indicator instances for the same workspace would otherwise
+  // announce the same message several times in quick succession.
+  if (queue.length > 0 && queue[queue.length - 1] === text) {
+    return;
+  }
   queue.push(text);
   if (timer === null) {
     drainQueue();

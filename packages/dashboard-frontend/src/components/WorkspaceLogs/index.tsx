@@ -30,6 +30,8 @@ import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 export type Props = {
   workspaceUID: string | undefined;
+  /** When false, new log lines are not announced (tab is not visible). */
+  isActive?: boolean;
 } & MappedProps;
 
 export type State = {
@@ -200,7 +202,11 @@ class WorkspaceLogs extends React.PureComponent<Props, State> {
           }
         />
         <div className={styles.panelViewerDivider} />
-        <WorkspaceLogsViewer isExpanded={isExpanded} logsData={containerLogs} />
+        <WorkspaceLogsViewer
+          isExpanded={isExpanded}
+          logsData={containerLogs}
+          isActive={this.props.isActive !== false}
+        />
       </PageSection>
     );
   }

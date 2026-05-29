@@ -45,6 +45,8 @@ export type Props = {
    * workspace is STOPPED. Set to false on the loader page so startup events
    * remain visible after the user presses Stop. */
   hideWhenStopped?: boolean;
+  /** When false, new events are tracked but not announced (tab is not visible). */
+  isActive?: boolean;
 } & MappedProps;
 
 class WorkspaceEvents extends React.PureComponent<Props> {
@@ -52,8 +54,13 @@ class WorkspaceEvents extends React.PureComponent<Props> {
   private readonly announcedUIDs = new Set<string>();
 
   public componentDidUpdate(): void {
-    const { workspaceUID, allWorkspaces, startedWorkspaces, eventsFromResourceVersionFn } =
-      this.props;
+    const {
+      workspaceUID,
+      allWorkspaces,
+      startedWorkspaces,
+      eventsFromResourceVersionFn,
+      isActive = true,
+    } = this.props;
 
     const workspace = this.findWorkspace(workspaceUID, allWorkspaces);
     if (!workspace || workspace.status === DevWorkspaceStatus.STOPPED) {
@@ -70,7 +77,9 @@ class WorkspaceEvents extends React.PureComponent<Props> {
       const uid = event.metadata?.uid ?? `${event.message}${event.lastTimestamp ?? ''}`;
       if (!this.announcedUIDs.has(uid)) {
         this.announcedUIDs.add(uid);
-        enqueueAnnouncement(`Event: ${event.message}`);
+        if (isActive) {
+          enqueueAnnouncement(`Event: ${event.message}`);
+        }
       }
     }
   }

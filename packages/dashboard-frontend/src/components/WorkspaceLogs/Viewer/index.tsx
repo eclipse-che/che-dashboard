@@ -21,6 +21,8 @@ const LOGS_CONTAINER_ID = 'output-logs';
 export type Props = {
   isExpanded: boolean;
   logsData: ContainerLogs | undefined;
+  /** When false, new log lines are not announced (Logs tab is not active). */
+  isActive?: boolean;
 };
 
 export class WorkspaceLogsViewer extends React.PureComponent<Props> {
@@ -38,7 +40,7 @@ export class WorkspaceLogsViewer extends React.PureComponent<Props> {
     const prevLogs = prevProps.logsData?.failure === false ? prevProps.logsData?.logs ?? '' : '';
     const currLogs = this.props.logsData?.failure === false ? this.props.logsData?.logs ?? '' : '';
 
-    if (currLogs.length > prevLogs.length) {
+    if (currLogs.length > prevLogs.length && this.props.isActive !== false) {
       // Announce only the last non-empty line of newly appended content so
       // screen readers hear incremental progress without repeating everything.
       const newContent = currLogs.slice(prevLogs.length);
