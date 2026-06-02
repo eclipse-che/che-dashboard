@@ -12,7 +12,7 @@
 
 import 'reflect-metadata';
 
-import { BackupConfig, BackupInfo } from '@eclipse-che/common';
+import { api, BackupConfig, BackupInfo } from '@eclipse-che/common';
 import {
   Content,
   ContentVariants,
@@ -36,6 +36,8 @@ import devfileApi from '@/services/devfileApi';
 import { Workspace } from '@/services/workspace-adapter';
 
 type Props = {
+  aiProviders: api.AiProviderDefinition[];
+  aiTools: api.AiToolDefinition[];
   backupConfig?: BackupConfig;
   backupSchedule: string | undefined;
   backupsByWorkspace: Record<string, BackupInfo>;
@@ -88,6 +90,8 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
 
   public render(): React.ReactElement {
     const {
+      aiProviders,
+      aiTools,
       backupConfig,
       backupsByWorkspace,
       backupSchedule,
@@ -159,9 +163,11 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
           <BackupsView navigate={navigate} />
         ) : (
           <WorkspacesView
-            backupConfig={backupConfig}
             workspaces={workspaces}
             editors={editors}
+            aiProviders={aiProviders}
+            aiTools={aiTools}
+            backupConfig={backupConfig}
             backupsByWorkspace={backupsByWorkspace}
             branding={branding}
             navigate={navigate}

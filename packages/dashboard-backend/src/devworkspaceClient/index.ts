@@ -12,6 +12,8 @@
 
 import * as k8s from '@kubernetes/client-node';
 
+import { AiProviderKeyApiService } from '@/devworkspaceClient/services/aiProviderKeyApi';
+import { AiRegistryApiService } from '@/devworkspaceClient/services/aiRegistryApi';
 import { AirGapSampleApiService } from '@/devworkspaceClient/services/airGapSampleApi';
 import { DevWorkspaceApiService } from '@/devworkspaceClient/services/devWorkspaceApi';
 import { DevWorkspaceClusterApiService } from '@/devworkspaceClient/services/devWorkspaceClusterApiService';
@@ -31,6 +33,8 @@ import { SshKeysService } from '@/devworkspaceClient/services/sshKeysApi';
 import { UserProfileApiService } from '@/devworkspaceClient/services/userProfileApi';
 import { WorkspacePreferencesApiService } from '@/devworkspaceClient/services/workspacePreferencesApi';
 import {
+  IAiProviderKeyApi,
+  IAiRegistryApi,
   IAirGapSampleApi,
   IDevWorkspaceApi,
   IDevWorkspaceClient,
@@ -131,5 +135,13 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
 
   get workspacePreferencesApi(): IWorkspacePreferencesApi {
     return new WorkspacePreferencesApiService(this.kubeConfig);
+  }
+
+  get aiProviderKeyApi(): IAiProviderKeyApi {
+    return new AiProviderKeyApiService(this.kubeConfig);
+  }
+
+  get aiRegistryApi(): IAiRegistryApi {
+    return new AiRegistryApiService(this.kubeConfig);
   }
 }

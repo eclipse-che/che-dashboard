@@ -17,6 +17,7 @@ import { Location, NavigateFunction, useLocation, useNavigate } from 'react-rout
 import Fallback from '@/components/Fallback';
 import WorkspacesList from '@/pages/WorkspacesList';
 import { RootState } from '@/store';
+import { selectAiProviders, selectAiTools } from '@/store/AiConfig/selectors';
 import { fetchBackupConfig, fetchWorkspaceBackupStatus } from '@/store/Backups/actions';
 import {
   selectAllBackupsByWorkspace,
@@ -77,6 +78,8 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
 
   render() {
     const {
+      aiProviders,
+      aiTools,
       allWorkspaces,
       backupConfig,
       backupsByWorkspace,
@@ -102,6 +105,8 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
         location={location}
         navigate={navigate}
         workspaces={allWorkspaces}
+        aiProviders={aiProviders}
+        aiTools={aiTools}
       />
     );
   }
@@ -123,6 +128,8 @@ const mapStateToProps = (state: RootState) => {
     branding: selectBranding(state),
     editors: selectCmEditors(state),
     isLoading: selectIsLoading(state),
+    aiProviders: selectAiProviders(state),
+    aiTools: selectAiTools(state),
   };
 };
 

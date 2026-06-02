@@ -91,15 +91,25 @@ export class SampleCard extends React.PureComponent<Props> {
         isClickable
         onClick={this.handleSelectableAction}
         onKeyDown={(e: React.KeyboardEvent) => this.handleKeyDown(e)}
-        role="button"
         tabIndex={0}
         aria-label={`Create workspace from sample ${metadata.displayName}`}
         className={`${styles.sampleCard} sample-card`}
         data-testid="sample-card"
       >
-        <CardHeader actions={{ actions: <>{tags}</> }}>
+        {/* PF v6: clickable-only cards require selectableActions with an aria label
+            and must not use CardHeader.actions (use CardTitle for badges instead). */}
+        <CardHeader
+          selectableActions={{
+            selectableActionAriaLabelledby: this.cardId,
+            name: 'sample-cards',
+            isHidden: true,
+          }}
+        >
           {devfileIcon}
-          <CardTitle>{metadata.displayName}</CardTitle>
+          <CardTitle>
+            {metadata.displayName}
+            {tags.length > 0 && <span className={styles.tagGroup}>{tags}</span>}
+          </CardTitle>
         </CardHeader>
         <CardBody>{metadata.description}</CardBody>
       </Card>

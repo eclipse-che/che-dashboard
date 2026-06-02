@@ -15,6 +15,8 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Location, NavigateFunction } from 'react-router-dom';
 
+import AiSelector from '@/components/AiSelector';
+import { AiSelectorErrorBoundary } from '@/components/AiSelector/ErrorBoundary';
 import EditorSelector from '@/components/EditorSelector';
 import Head from '@/components/Head';
 import ImportFromGit from '@/components/ImportFromGit';
@@ -22,6 +24,7 @@ import { Spacer } from '@/components/Spacer';
 import SamplesList from '@/pages/GetStarted/SamplesList';
 import { ROUTE } from '@/Routes';
 import { RootState } from '@/store';
+import { selectAiConfigEnabled } from '@/store/AiConfig/selectors';
 import { selectDefaultEditor } from '@/store/ServerConfig/selectors';
 
 type Props = MappedProps & {
@@ -31,6 +34,7 @@ type Props = MappedProps & {
 type State = {
   editorDefinition: string | undefined;
   editorImage: string | undefined;
+  aiProviders: string[];
   presetFilter: string | undefined;
 };
 
@@ -41,6 +45,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
     this.state = {
       editorDefinition: undefined,
       editorImage: undefined,
+      aiProviders: [],
       presetFilter: this.getPresetFilter(),
     };
   }
@@ -77,8 +82,8 @@ export class GetStarted extends React.PureComponent<Props, State> {
   }
 
   render(): React.ReactNode {
-    const { defaultEditor, navigate } = this.props;
-    const { editorDefinition, editorImage, presetFilter } = this.state;
+    const { aiEnabled, defaultEditor, navigate } = this.props;
+    const { editorDefinition, editorImage, aiProviders, presetFilter } = this.state;
 
     const title = 'Create Workspace';
 
@@ -100,11 +105,22 @@ export class GetStarted extends React.PureComponent<Props, State> {
             }
           />
 
+          {aiEnabled && (
+            <React.Fragment>
+              <Spacer />
+
+              <AiSelectorErrorBoundary>
+                <AiSelector onSelect={providerIds => this.setState({ aiProviders: providerIds })} />
+              </AiSelectorErrorBoundary>
+            </React.Fragment>
+          )}
+
           <Spacer />
 
           <ImportFromGit
             editorDefinition={editorDefinition}
             editorImage={editorImage}
+            aiProviders={aiProviders}
             navigate={navigate}
           />
 
@@ -113,6 +129,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
           <SamplesList
             editorDefinition={editorDefinition}
             editorImage={editorImage}
+            aiProviders={aiProviders}
             presetFilter={presetFilter}
           />
         </PageSection>
@@ -122,6 +139,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
+  aiEnabled: selectAiConfigEnabled(state),
   defaultEditor: selectDefaultEditor(state),
 });
 

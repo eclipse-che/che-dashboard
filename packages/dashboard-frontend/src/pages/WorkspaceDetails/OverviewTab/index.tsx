@@ -14,6 +14,7 @@ import { Form, PageSection, PageSectionVariants } from '@patternfly/react-core';
 import cloneDeep from 'lodash/cloneDeep';
 import React from 'react';
 
+import AiToolFormGroup from '@/pages/WorkspaceDetails/OverviewTab/AiTool';
 import GitRepoFormGroup from '@/pages/WorkspaceDetails/OverviewTab/GitRepo';
 import { InfrastructureNamespaceFormGroup } from '@/pages/WorkspaceDetails/OverviewTab/InfrastructureNamespace';
 import { ProjectsFormGroup } from '@/pages/WorkspaceDetails/OverviewTab/Projects';
@@ -117,6 +118,16 @@ export class OverviewTab extends React.Component<Props, State> {
               storageType={storageType}
               parentStorageType={parentStorageType}
               onSave={storageType => this.handleStorageSave(storageType)}
+            />
+            <AiToolFormGroup
+              readonly={
+                isDeprecated ||
+                workspace.status === DevWorkspaceStatus.TERMINATING ||
+                (workspace.status !== DevWorkspaceStatus.STOPPED &&
+                  workspace.status !== DevWorkspaceStatus.FAILED)
+              }
+              workspace={workspace}
+              onSave={workspace => this.props.onSave(workspace)}
             />
             <ProjectsFormGroup projects={projects} />
             <GitRepoFormGroup workspace={workspace} />
