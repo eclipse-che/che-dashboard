@@ -61,7 +61,11 @@ class Header extends React.PureComponent<Props> {
                 </Content>
               </FlexItem>
               <FlexItem>
-                <WorkspaceStatusLabel status={status} containerScc={containerScc} />
+                <WorkspaceStatusLabel
+                  status={status}
+                  containerScc={containerScc}
+                  workspaceName={workspaceName}
+                />
               </FlexItem>
               <FlexItem className={styles.actionButtons} align={{ default: 'alignRight' }}>
                 {children}

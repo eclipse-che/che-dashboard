@@ -31,6 +31,8 @@ import { selectCurrentScc } from '@/store/ServerConfig/selectors';
 export type Props = MappedProps & {
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   containerScc: string | undefined;
+  /** When provided, status-change announcements include the workspace name. */
+  workspaceName?: string;
 };
 
 const WorkspaceStatusLabelComponent: React.FC<Props> = ({
@@ -38,12 +40,15 @@ const WorkspaceStatusLabelComponent: React.FC<Props> = ({
   containerScc,
   currentScc,
   branding,
+  workspaceName,
 }) => {
   // Only check SCC mismatch for stopped workspaces
   const isStopped = status === DevWorkspaceStatus.STOPPED;
   const sccMismatch = isStopped && hasSccMismatch(containerScc, currentScc);
 
-  useAnnounceOnChange(status, s => `Workspace status is ${s}`);
+  useAnnounceOnChange(status, s =>
+    workspaceName ? `Workspace ${workspaceName} status is ${s}` : `Workspace status is ${s}`,
+  );
 
   let statusLabelColor: LabelProps['color'];
   switch (status) {
