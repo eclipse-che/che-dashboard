@@ -53,6 +53,30 @@ class WorkspaceEvents extends React.PureComponent<Props> {
   // Tracks UIDs of events already announced so we never repeat them.
   private readonly announcedUIDs = new Set<string>();
 
+  public componentDidMount(): void {
+    // Pre-seed announced UIDs with all events that already exist at mount time
+    // so only events that arrive *after* mount are treated as new and announced.
+    this.seedAnnouncedUIDs();
+  }
+
+  private seedAnnouncedUIDs(): void {
+    const { workspaceUID, allWorkspaces, startedWorkspaces, eventsFromResourceVersionFn } =
+      this.props;
+    const workspace = this.findWorkspace(workspaceUID, allWorkspaces);
+    if (!workspace || workspace.status === DevWorkspaceStatus.STOPPED) {
+      return;
+    }
+    const startResourceVersion = startedWorkspaces[workspaceUID!] || '0';
+    const events = eventsFromResourceVersionFn(startResourceVersion);
+    for (const event of events) {
+      if (!event.message) {
+        continue;
+      }
+      const uid = event.metadata?.uid ?? `${event.message}${event.lastTimestamp ?? ''}`;
+      this.announcedUIDs.add(uid);
+    }
+  }
+
   public componentDidUpdate(): void {
     const {
       workspaceUID,
