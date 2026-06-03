@@ -148,7 +148,50 @@ describe('Workspace indicator component', () => {
 describe('screen reader announcements', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('does not announce on mount or status change (announcements moved to WorkspaceStatusLabel)', () => {
+  it('does not announce on initial mount', () => {
+    const store = new MockStoreBuilder()
+      .withBranding(BRANDING_DEFAULT)
+      .withCurrentScc(undefined)
+      .build();
+    render(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.STARTING}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    expect(enqueueAnnouncement).not.toHaveBeenCalled();
+  });
+
+  it('announces status change with workspace name when workspaceName is provided', () => {
+    const store = new MockStoreBuilder()
+      .withBranding(BRANDING_DEFAULT)
+      .withCurrentScc(undefined)
+      .build();
+    const { rerender } = render(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.STARTING}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    rerender(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.RUNNING}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    expect(enqueueAnnouncement).toHaveBeenCalledWith('Workspace my-workspace status is Running');
+  });
+
+  it('announces status change without name when workspaceName is not provided', () => {
     const store = new MockStoreBuilder()
       .withBranding(BRANDING_DEFAULT)
       .withCurrentScc(undefined)
@@ -163,7 +206,7 @@ describe('screen reader announcements', () => {
         <WorkspaceStatusIndicator status={DevWorkspaceStatus.RUNNING} containerScc={undefined} />
       </Provider>,
     );
-    expect(enqueueAnnouncement).not.toHaveBeenCalled();
+    expect(enqueueAnnouncement).toHaveBeenCalledWith('Workspace status is Running');
   });
 });
 

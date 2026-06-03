@@ -96,6 +96,7 @@ export class NavigationRecentItem extends React.PureComponent<Props, State> {
           <WorkspaceStatusIndicator
             status={item.workspace.status}
             containerScc={WorkspaceAdapter.getContainerScc(item.workspace.ref)}
+            workspaceName={item.workspace.name}
           />
           <span className={titleClassName}>{item.label}</span>
         </span>

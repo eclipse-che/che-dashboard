@@ -144,7 +144,11 @@ export function buildRow(
   /* workspace status indicator */
   const containerScc = WorkspaceAdapter.getContainerScc(workspace.ref);
   const statusIndicator = (
-    <WorkspaceStatusIndicator status={workspace.status} containerScc={containerScc} />
+    <WorkspaceStatusIndicator
+      status={workspace.status}
+      containerScc={containerScc}
+      workspaceName={workspace.name}
+    />
   );
   /* workspace name */
   const details = (

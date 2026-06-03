@@ -16,6 +16,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { CheTooltip } from '@/components/CheTooltip';
 import { getSccMismatchTooltip, useStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
 import styles from '@/components/Workspace/Status/index.module.css';
+import { useAnnounceOnChange } from '@/components/WorkspaceProgress/StepTitle/useAnnounceOnChange';
 import { hasSccMismatch } from '@/services/helpers/sccMismatch';
 import {
   DeprecatedWorkspaceStatus,
@@ -29,6 +30,8 @@ import { selectCurrentScc } from '@/store/ServerConfig/selectors';
 export type Props = MappedProps & {
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   containerScc: string | undefined;
+  /** When provided, status-change announcements include the workspace name. */
+  workspaceName?: string;
 };
 
 const WorkspaceStatusIndicatorComponent: React.FC<Props> = ({
@@ -36,10 +39,15 @@ const WorkspaceStatusIndicatorComponent: React.FC<Props> = ({
   containerScc,
   branding,
   currentScc,
+  workspaceName,
 }) => {
   // Only check SCC mismatch for stopped workspaces
   const isStopped = status === DevWorkspaceStatus.STOPPED;
   const sccMismatch = isStopped && hasSccMismatch(containerScc, currentScc);
+
+  useAnnounceOnChange(status, s =>
+    workspaceName ? `Workspace ${workspaceName} status is ${s}` : `Workspace status is ${s}`,
+  );
 
   const statusIcon = useStatusIcon(status);
   const warningIcon = useStatusIcon(DevWorkspaceStatus.FAILED);
