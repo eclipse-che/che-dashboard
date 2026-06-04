@@ -112,6 +112,63 @@ yarn lint:fix
 - **No skipping**: All three steps are mandatory for every surgical change
 - **Fix immediately**: Do not defer fixing test, format, or lint failures
 
+## Testing Changes on a Cluster
+
+### MANDATORY: Compile TypeScript before building the Docker image
+
+The Dockerfile (`build/dockerfiles/skaffold.Dockerfile`) copies **compiled artifacts** from `lib/`, not the TypeScript source. Editing `.ts` files and running the Docker build without compiling first silently produces an image with stale code — no error is raised.
+
+Always compile the changed package before building:
+
+```bash
+# Backend changes
+yarn workspace @eclipse-che/dashboard-backend build
+
+# Frontend changes
+yarn workspace @eclipse-che/dashboard-frontend build
+
+# Both
+yarn build
+```
+
+Then build and push the image using `run/build-multiarch.sh`. Always build for **both** `linux/amd64` and `linux/arm64` — a single-arch image will fail on nodes with a different architecture:
+
+```bash
+export IMAGE_REGISTRY_HOST=<your-registry-host>   # e.g. quay.io, ghcr.io, your private registry
+export IMAGE_REGISTRY_USER_NAME=<your-username-or-org>
+export PLATFORMS=linux/amd64,linux/arm64
+./run/build-multiarch.sh
+```
+
+Use `run/patch.sh` to update the dashboard image on the cluster after pushing.
+
+### Use a unique image tag when iterating
+
+If you push a new build under an existing tag, nodes with `imagePullPolicy: IfNotPresent` (the default) will silently reuse the cached image. Deleting a pod does **not** force a fresh pull from the registry — the node cache persists.
+
+Either:
+- Use a fresh unique tag per build (e.g., append a timestamp or iteration counter), **or**
+- Set `imagePullPolicy: Always` in the operator CR before deploying (see below)
+
+### Patch the CheCluster CR, not the Deployment directly
+
+The dashboard Deployment (named `devspaces-dashboard` or `che-dashboard` depending on the product) is managed by the CheCluster operator. Any direct `kubectl/oc patch deploy` is silently reverted within seconds by the operator's reconcile loop.
+
+All spec changes — image, imagePullPolicy, env vars — must go through the CheCluster CR. Use `run/patch.sh` for the common case of updating the image alone. For other changes such as `imagePullPolicy`, patch the CR directly:
+
+```bash
+# Find the CheCluster CR name and namespace first:
+kubectl get checluster --all-namespaces
+
+# Then patch — adjust CR name, namespace, and container name to match your deployment:
+kubectl patch checluster <cr-name> -n <namespace> --type=json \
+  -p='[{"op":"replace","path":"/spec/components/dashboard/deployment/containers/0","value":{"name":"che-dashboard","image":"<image>","imagePullPolicy":"Always"}}]'
+```
+
+### Do not use background agents for Docker or cluster commands
+
+Background agents cannot respond to interactive `dangerouslyDisableSandbox` permission prompts. Docker builds, `kubectl`, and `oc` commands that need sandbox bypass must be run directly in the main session, not delegated to a background agent.
+
 ## Red Hat Compliance and Responsible AI Rules
 
 See `./redhat-compliance-and-responsible-ai.md` and the Cursor rules file under `./.cursor/rules/`.
