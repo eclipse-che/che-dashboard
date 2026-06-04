@@ -13,9 +13,12 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { useEffect, useRef } from 'react';
+
 import { CheTooltip } from '@/components/CheTooltip';
 import { getSccMismatchTooltip, useStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
 import styles from '@/components/Workspace/Status/index.module.css';
+import { enqueueAnnouncement } from '@/components/WorkspaceProgress/StepTitle/announceQueue';
 import { useAnnounceOnChange } from '@/components/WorkspaceProgress/StepTitle/useAnnounceOnChange';
 import { hasSccMismatch } from '@/services/helpers/sccMismatch';
 import {
@@ -45,9 +48,28 @@ const WorkspaceStatusIndicatorComponent: React.FC<Props> = ({
   const isStopped = status === DevWorkspaceStatus.STOPPED;
   const sccMismatch = isStopped && hasSccMismatch(containerScc, currentScc);
 
-  useAnnounceOnChange(status, s =>
-    workspaceName ? `Workspace ${workspaceName} status is ${s}` : `Workspace status is ${s}`,
-  );
+  useAnnounceOnChange(status, s => {
+    // STOPPED is the default/terminal state — announcing it causes "workspace stopped,
+    // workspace starting" sequences that confuse screen readers when users start a
+    // previously stopped workspace. The visual indicator still shows the status.
+    if (s === DevWorkspaceStatus.STOPPED || s === WorkspaceStatus.STOPPED) {
+      return '';
+    }
+    return workspaceName ? `Workspace ${workspaceName} status is ${s}` : `Workspace status is ${s}`;
+  });
+
+  // Track current status in a ref so the unmount cleanup can read the last value.
+  const statusRef = useRef(status);
+  statusRef.current = status;
+  useEffect(() => {
+    return () => {
+      // When the component unmounts while TERMINATING, the workspace was deleted.
+      if (statusRef.current === DevWorkspaceStatus.TERMINATING && workspaceName) {
+        enqueueAnnouncement(`Workspace ${workspaceName} removed`);
+      }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const statusIcon = useStatusIcon(status);
   const warningIcon = useStatusIcon(DevWorkspaceStatus.FAILED);

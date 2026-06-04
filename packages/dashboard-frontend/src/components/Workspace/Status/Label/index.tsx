@@ -46,9 +46,15 @@ const WorkspaceStatusLabelComponent: React.FC<Props> = ({
   const isStopped = status === DevWorkspaceStatus.STOPPED;
   const sccMismatch = isStopped && hasSccMismatch(containerScc, currentScc);
 
-  useAnnounceOnChange(status, s =>
-    workspaceName ? `Workspace ${workspaceName} status is ${s}` : `Workspace status is ${s}`,
-  );
+  useAnnounceOnChange(status, s => {
+    // STOPPED is the default/terminal state — announcing it causes "workspace stopped,
+    // workspace starting" sequences that confuse screen readers when users start a
+    // previously stopped workspace. The visual label still shows the status.
+    if (s === DevWorkspaceStatus.STOPPED || s === WorkspaceStatus.STOPPED) {
+      return '';
+    }
+    return workspaceName ? `Workspace ${workspaceName} status is ${s}` : `Workspace status is ${s}`;
+  });
 
   let statusLabelColor: LabelProps['color'];
   switch (status) {

@@ -208,6 +208,68 @@ describe('screen reader announcements', () => {
     );
     expect(enqueueAnnouncement).toHaveBeenCalledWith('Workspace status is Running');
   });
+
+  it('does not announce when status transitions to STOPPED', () => {
+    const store = new MockStoreBuilder()
+      .withBranding(BRANDING_DEFAULT)
+      .withCurrentScc(undefined)
+      .build();
+    const { rerender } = render(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.STOPPING}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    rerender(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.STOPPED}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    expect(enqueueAnnouncement).not.toHaveBeenCalled();
+  });
+
+  it('announces workspace removed when unmounting in TERMINATING state', () => {
+    const store = new MockStoreBuilder()
+      .withBranding(BRANDING_DEFAULT)
+      .withCurrentScc(undefined)
+      .build();
+    const { unmount } = render(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.TERMINATING}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    unmount();
+    expect(enqueueAnnouncement).toHaveBeenCalledWith('Workspace my-workspace removed');
+  });
+
+  it('does not announce removed when unmounting in non-TERMINATING state', () => {
+    const store = new MockStoreBuilder()
+      .withBranding(BRANDING_DEFAULT)
+      .withCurrentScc(undefined)
+      .build();
+    const { unmount } = render(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.STOPPED}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    unmount();
+    expect(enqueueAnnouncement).not.toHaveBeenCalled();
+  });
 });
 
 function getComponentSnapshot(

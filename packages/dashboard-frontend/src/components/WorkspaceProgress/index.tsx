@@ -147,6 +147,11 @@ class Progress extends React.Component<Props, State> {
 
   public componentDidMount(): void {
     this.init(this.props, this.state, undefined);
+    // Announce the first active step — componentDidUpdate never fires for the initial state.
+    const label = this.getStepAnnouncementLabel(this.state.activeStepId);
+    if (label) {
+      enqueueAnnouncement(`Step: ${label}`);
+    }
   }
 
   public componentDidUpdate(prevProps: Props, prevState: State): void {
