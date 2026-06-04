@@ -17,10 +17,15 @@
 export const ANNOUNCE_HOLD_MS = 1200;
 // Gap between clearing one message and showing the next.
 export const ANNOUNCE_GAP_MS = 150;
+// Maximum number of pending messages. When exceeded the oldest pending entry
+// is dropped so log floods do not cause a minutes-long announcement backlog.
+export const MAX_QUEUE_SIZE = 10;
 
 const queue: string[] = [];
 let timer: ReturnType<typeof setTimeout> | null = null;
 let node: HTMLElement | null = null;
+// Text currently shown in the live region (reset when the region is cleared).
+let currentText = '';
 
 function getLiveNode(): HTMLElement {
   if (!node || !document.body.contains(node)) {
@@ -37,22 +42,34 @@ function getLiveNode(): HTMLElement {
 function drainQueue(): void {
   if (queue.length === 0) {
     timer = null;
+    currentText = '';
     return;
   }
   const text = queue.shift()!;
+  currentText = text;
   getLiveNode().textContent = text;
   timer = setTimeout(() => {
     getLiveNode().textContent = '';
+    currentText = '';
     timer = setTimeout(drainQueue, ANNOUNCE_GAP_MS);
   }, ANNOUNCE_HOLD_MS);
 }
 
 export function enqueueAnnouncement(text: string): void {
-  // Skip if the identical text is already waiting at the back of the queue —
-  // multiple status-indicator instances for the same workspace would otherwise
-  // announce the same message several times in quick succession.
+  // Skip if this text is already being displayed in the live region — this
+  // catches dual-path duplicates (e.g. WorkspaceProgress + WorkspaceStatusIndicator)
+  // that fire synchronously in the same React commit and drain the queue immediately.
+  if (text === currentText) {
+    return;
+  }
+  // Skip if the identical text is already at the back of the pending queue.
   if (queue.length > 0 && queue[queue.length - 1] === text) {
     return;
+  }
+  // Drop the oldest pending entry when the queue is full so verbose log output
+  // does not build a minutes-long announcement backlog.
+  if (queue.length >= MAX_QUEUE_SIZE) {
+    queue.shift();
   }
   queue.push(text);
   if (timer === null) {
@@ -62,6 +79,7 @@ export function enqueueAnnouncement(text: string): void {
 
 export function _resetQueueForTests(): void {
   queue.length = 0;
+  currentText = '';
   if (timer !== null) {
     clearTimeout(timer);
     timer = null;
