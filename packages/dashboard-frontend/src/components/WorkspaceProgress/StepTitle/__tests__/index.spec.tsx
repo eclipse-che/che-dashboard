@@ -74,21 +74,16 @@ describe('ProgressStepTitle', () => {
       expect(mockEnqueueAnnouncement).not.toHaveBeenCalled();
     });
 
-    it('queues announcement when step transitions to active (distance→0)', () => {
+    it('does not queue announcement for top-level step (no parentStepName) on distance→0 — handled by WorkspaceProgress', () => {
       const { reRenderComponent } = renderComponent(-1, {});
-      expect(mockEnqueueAnnouncement).not.toHaveBeenCalled();
-
       reRenderComponent(0, {});
-      expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(1);
-      expect(mockEnqueueAnnouncement).toHaveBeenCalledWith('Step: Step 1');
+      expect(mockEnqueueAnnouncement).not.toHaveBeenCalled();
     });
 
-    it('queues announcement when active step completes (distance 0→1)', () => {
+    it('does not queue announcement for top-level step (no parentStepName) on completion — handled by WorkspaceProgress', () => {
       const { reRenderComponent } = renderComponent(0, {});
-      expect(mockEnqueueAnnouncement).not.toHaveBeenCalled();
-
       reRenderComponent(1, {});
-      expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(1);
+      expect(mockEnqueueAnnouncement).not.toHaveBeenCalled();
     });
 
     it('does not re-queue when already-active step re-renders without distance change', () => {

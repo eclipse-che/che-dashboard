@@ -60,6 +60,11 @@ export class ProgressStepTitle extends React.Component<Props> {
   }
 
   componentDidUpdate(prevProps: Props): void {
+    // Top-level steps are announced centrally by WorkspaceProgress on activeStepId change.
+    // Only condition sub-steps (those with parentStepName) announce here to avoid duplicates.
+    if (!this.props.parentStepName) {
+      return;
+    }
     if (prevProps.distance !== 0 && this.props.distance === 0) {
       this.announce();
     }
