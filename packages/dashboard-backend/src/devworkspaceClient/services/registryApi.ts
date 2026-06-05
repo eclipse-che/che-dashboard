@@ -32,6 +32,7 @@ import {
   DEVWORKSPACE_VERSION,
 } from '@/constants/k8s';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
+import { logger } from '@/utils/logger';
 import {
   createRegistryClient,
   detectRegistryType,
@@ -49,6 +50,7 @@ const IMAGESTREAM_VERSION = 'v1';
 // DWO always copies the configured auth secret into the workspace namespace under this name.
 // Reading it from the workspace namespace avoids 403 errors that occur when the Dashboard SA
 // tries to read the original secret from the operator namespace.
+// Source: github.com/devfile/devworkspace-operator/pkg/constants/metadata.go (DevWorkspaceBackupAuthSecretName)
 const BACKUP_REGISTRY_AUTH_SECRET_NAME = 'devworkspace-backup-registry-auth';
 
 interface IBackupImage {
@@ -180,7 +182,7 @@ export class RegistryApiService {
   /**
    * Get backup registry path and auth secret name from DevWorkspaceOperatorConfig
    */
-  private async getBackupRegistryPath(): Promise<{ registryPath: string; authSecret?: string }> {
+  private async getBackupRegistryPath(): Promise<{ registryPath: string }> {
     try {
       const response = await this.saCustomObjectsApi.getNamespacedCustomObject({
         group: DEVWORKSPACE_OPERATOR_CONFIG_GROUP,
@@ -194,13 +196,12 @@ export class RegistryApiService {
         throw new Error('Unexpected response format for DevWorkspaceOperatorConfig');
       }
       const registryPath = response.config?.workspace?.backupCronJob?.registry?.path;
-      const authSecret = response.config?.workspace?.backupCronJob?.registry?.authSecret;
 
       if (!registryPath) {
         throw new Error('Backup registry path not configured');
       }
 
-      return { registryPath: registryPath.replace(/\/+$/, ''), authSecret };
+      return { registryPath: registryPath.replace(/\/+$/, '') };
     } catch (e) {
       throw createError(
         e,
@@ -250,7 +251,8 @@ export class RegistryApiService {
       }
 
       return `Basic ${authEntry.auth.trim()}`;
-    } catch {
+    } catch (error) {
+      logger.warn(error, 'Failed to read backup auth secret "%s" in namespace "%s"', BACKUP_REGISTRY_AUTH_SECRET_NAME, namespace);
       return '';
     }
   }
