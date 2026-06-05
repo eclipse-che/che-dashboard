@@ -97,6 +97,18 @@ describe('RegistryApiService', () => {
     jest.clearAllMocks();
   });
 
+  describe('SA API regression guard', () => {
+    it('should use prepareCoreV1API exactly once (user kubeconfig only, no SA)', () => {
+      const { prepareCoreV1API } = jest.requireMock(
+        '@/devworkspaceClient/services/helpers/prepareCoreV1API',
+      );
+      prepareCoreV1API.mockClear();
+      new RegistryApiService(mockKubeConfig as any, mockSaKubeConfig as any);
+      expect(prepareCoreV1API).toHaveBeenCalledTimes(1);
+      expect(prepareCoreV1API).toHaveBeenCalledWith(mockKubeConfig);
+    });
+  });
+
   describe('K8s DNS-1123 Validation', () => {
     it('should reject empty namespace', async () => {
       await expect(service.listBackupImages('')).rejects.toMatchObject({
