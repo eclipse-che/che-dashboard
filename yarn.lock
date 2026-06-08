@@ -934,7 +934,7 @@ __metadata:
     webpack-bundle-analyzer: "npm:^4.10.2"
     webpack-cli: "npm:^5.1.4"
     webpack-merge: "npm:^5.9.0"
-    ws: "npm:^8.17.1"
+    ws: "npm:^8.20.1"
   languageName: unknown
   linkType: soft
 
