@@ -26,7 +26,6 @@ import { LogsApiService } from '@/devworkspaceClient/services/logsApi';
 import { PodApiService } from '@/devworkspaceClient/services/podApi';
 import { ServerConfigApiService } from '@/devworkspaceClient/services/serverConfigApi';
 import { SshKeysService } from '@/devworkspaceClient/services/sshKeysApi';
-import { UserProfileApiService } from '@/devworkspaceClient/services/userProfileApi';
 
 jest.mock('@/devworkspaceClient/services/devWorkspaceApi.ts');
 
@@ -54,7 +53,6 @@ describe('DevWorkspace client', () => {
     expect(client.logsApi).toBeInstanceOf(LogsApiService);
     expect(client.podApi).toBeInstanceOf(PodApiService);
     expect(client.serverConfigApi).toBeInstanceOf(ServerConfigApiService);
-    expect(client.userProfileApi).toBeInstanceOf(UserProfileApiService);
     expect(client.gitConfigApi).toBeInstanceOf(GitConfigApiService);
     expect(client.gettingStartedSampleApi).toBeInstanceOf(GettingStartedSamplesApiService);
     expect(client.sshKeysApi).toBeInstanceOf(SshKeysService);

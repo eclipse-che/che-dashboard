@@ -12,37 +12,32 @@
 
 import { RootState } from '@/store';
 import {
-  selectUserProfile,
-  selectUserProfileError,
-  selectUserProfileState,
-} from '@/store/User/Profile/selectors';
+  selectUsername,
+  selectUsernameError,
+  selectUsernameState,
+} from '@/store/User/Name/selectors';
 
-describe('UserProfile Selectors', () => {
+describe('Username Selectors', () => {
   const mockState = {
-    userProfile: {
-      userProfile: {
-        email: 'test@example.com',
-        username: 'testuser',
-      },
+    username: {
+      username: 'testuser',
       error: 'Something went wrong',
+      isLoading: false,
     },
   } as RootState;
 
   it('should select the user profile state', () => {
-    const result = selectUserProfileState(mockState);
-    expect(result).toEqual(mockState.userProfile);
+    const result = selectUsernameState(mockState);
+    expect(result).toEqual(mockState.username);
   });
 
-  it('should select the user profile', () => {
-    const result = selectUserProfile(mockState);
-    expect(result).toEqual({
-      email: 'test@example.com',
-      username: 'testuser',
-    });
+  it('should select the username', () => {
+    const result = selectUsername(mockState);
+    expect(result).toEqual('testuser');
   });
 
   it('should select the user profile error', () => {
-    const result = selectUserProfileError(mockState);
+    const result = selectUsernameError(mockState);
     expect(result).toEqual('Something went wrong');
   });
 });

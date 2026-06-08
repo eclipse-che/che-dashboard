@@ -996,7 +996,6 @@ __metadata:
     eslint-plugin-simple-import-sort: "npm:^10.0.0"
     eslint-webpack-plugin: "npm:^4.0.1"
     file-loader: "npm:^6.2.0"
-    gravatar-url: "npm:^4.0.1"
     hard-source-webpack-plugin: "npm:^0.13.1"
     history: "npm:^4.10.1"
     html-webpack-plugin: "npm:^5.5.3"
@@ -4370,13 +4369,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"blueimp-md5@npm:^2.18.0":
-  version: 2.19.0
-  resolution: "blueimp-md5@npm:2.19.0"
-  checksum: 10/84dc5f86e0d890e50c067a52b85654ec02e56d019c6af88f5a2810b1353adfd37b09ae34f540ef5cd1f19fe0023cb69d0dd68877123044cc49fbf6e7ff4c9a18
-  languageName: node
-  linkType: hard
-
 "bn.js@npm:^5.2.0":
   version: 5.2.1
   resolution: "bn.js@npm:5.2.1"
@@ -7395,16 +7387,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gravatar-url@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "gravatar-url@npm:4.0.1"
-  dependencies:
-    md5-hex: "npm:^4.0.0"
-    type-fest: "npm:^1.0.2"
-  checksum: 10/38bd26066ec9ad217cb4fb7857983310abb7b8efc939a7616ef2137763e8a58aece458341e8d9e702d997eb306fba454e265de94305b0841ddbc19db6b750501
-  languageName: node
-  linkType: hard
-
 "gzip-size@npm:^6.0.0":
   version: 6.0.0
   resolution: "gzip-size@npm:6.0.0"
@@ -9695,15 +9677,6 @@ __metadata:
   version: 2.1.3
   resolution: "mathml-tag-names@npm:2.1.3"
   checksum: 10/1201a25a137d6b9e328facd67912058b8b45b19a6c4cc62641c9476195da28a275ca6e0eca070af5378b905c2b11abc1114676ba703411db0b9ce007de921ad0
-  languageName: node
-  linkType: hard
-
-"md5-hex@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "md5-hex@npm:4.0.0"
-  dependencies:
-    blueimp-md5: "npm:^2.18.0"
-  checksum: 10/e1c48ea8f2bab0f83ea909f8dc5602f9ecb8c2f8bf2bb43019f48e7468f94e2631d888aa427c3cffb0e8c59fb286abea6ba1bb0cb6436406622d2974bda5ec33
   languageName: node
   linkType: hard
 
@@ -13591,13 +13564,6 @@ __metadata:
   version: 0.21.3
   resolution: "type-fest@npm:0.21.3"
   checksum: 10/f4254070d9c3d83a6e573bcb95173008d73474ceadbbf620dd32d273940ca18734dff39c2b2480282df9afe5d1675ebed5499a00d791758748ea81f61a38961f
-  languageName: node
-  linkType: hard
-
-"type-fest@npm:^1.0.2":
-  version: 1.4.0
-  resolution: "type-fest@npm:1.4.0"
-  checksum: 10/89875c247564601c2650bacad5ff80b859007fbdb6c9e43713ae3ffa3f584552eea60f33711dd762e16496a1ab4debd409822627be14097d9a17e39c49db591a
   languageName: node
   linkType: hard
 

@@ -213,7 +213,7 @@ describe('Backup Store Integration', () => {
         'sanityCheck',
         'sshKeys',
         'userId',
-        'userProfile',
+        'username',
         'workspacePreferences',
         'workspaces',
       ];

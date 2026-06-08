@@ -57,7 +57,7 @@ import { podsActionCreators, selectPodsResourceVersion } from '@/store/Pods';
 import { backendCheckRequestAction } from '@/store/SanityCheck/actions';
 import { serverConfigActionCreators } from '@/store/ServerConfig';
 import { sshKeysActionCreators } from '@/store/SshKeys';
-import { userProfileActionCreators } from '@/store/User/Profile';
+import { usernameActionCreators } from '@/store/User/Name';
 import { workspacesActionCreators } from '@/store/Workspaces';
 import {
   devWorkspacesActionCreators,
@@ -109,7 +109,7 @@ export default class Bootstrap {
     ]);
 
     const results = await Promise.allSettled([
-      this.fetchUserProfile(),
+      this.fetchUserName(),
       this.fetchPlugins().then(() => this.fetchDwDefaultEditor()),
       this.fetchDefaultDwPlugins(),
       this.fetchRegistriesMetadata().then(() => this.fetchEmptyWorkspace()),
@@ -395,16 +395,9 @@ export default class Bootstrap {
     }
   }
 
-  private async fetchUserProfile(): Promise<void> {
-    const defaultKubernetesNamespace = selectDefaultNamespace(this.store.getState());
-    const defaultNamespace = defaultKubernetesNamespace.name;
-
-    const { requestUserProfile } = userProfileActionCreators;
-    return requestUserProfile(defaultNamespace)(
-      this.store.dispatch,
-      this.store.getState,
-      undefined,
-    );
+  private async fetchUserName(): Promise<void> {
+    const { requestUsername } = usernameActionCreators;
+    return requestUsername()(this.store.dispatch, this.store.getState, undefined);
   }
 
   private checkWorkspaceStopped(): void {

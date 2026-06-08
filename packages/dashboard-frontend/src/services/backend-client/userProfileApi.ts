@@ -10,19 +10,18 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import common, { api } from '@eclipse-che/common';
+import common from '@eclipse-che/common';
 
 import { AxiosWrapper } from '@/services/axios-wrapper/axiosWrapper';
-import { dashboardBackendPrefix } from '@/services/backend-client/const';
+import { cheServerPrefix } from '@/services/backend-client/const';
 
 /**
- * Returns object with user profile data.
+ * Returns username string.
  */
-export async function fetchUserProfile(namespace: string): Promise<api.IUserProfile> {
-  const url = `${dashboardBackendPrefix}/userprofile/${namespace}`;
+export async function fetchUsername(): Promise<string> {
+  const url = `${cheServerPrefix}/user/name`;
   try {
-    const response =
-      await AxiosWrapper.createToRetryMissedBearerTokenError().get<api.IUserProfile>(url);
+    const response = await AxiosWrapper.createToRetryAnyErrors().get(url);
     return response.data;
   } catch (e) {
     throw new Error(

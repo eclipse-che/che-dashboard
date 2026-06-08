@@ -14,9 +14,9 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import { RootState } from '@/store';
 
-const selectState = (state: RootState) => state.userProfile;
-export const selectUserProfileState = selectState;
+const selectState = (state: RootState) => state.username;
+export const selectUsernameState = selectState;
 
-export const selectUserProfile = createSelector(selectState, state => state.userProfile);
+export const selectUsername = createSelector(selectState, state => state.username);
 
-export const selectUserProfileError = createSelector(selectState, state => state.error);
+export const selectUsernameError = createSelector(selectState, state => state.error);

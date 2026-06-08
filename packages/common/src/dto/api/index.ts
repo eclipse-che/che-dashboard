@@ -208,10 +208,6 @@ export interface IPluginRegistry {
   openVSXURL?: string;
 }
 
-export interface IUserProfile {
-  email: string;
-  username: string;
-}
 export interface IWorkspacePreferences {
   'skip-authorisation': GitProvider[];
   'trusted-sources'?: TrustedSources;

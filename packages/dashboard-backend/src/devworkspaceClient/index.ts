@@ -30,7 +30,6 @@ import { PodApiService } from '@/devworkspaceClient/services/podApi';
 import { PodmanApiService } from '@/devworkspaceClient/services/podmanApi';
 import { ServerConfigApiService } from '@/devworkspaceClient/services/serverConfigApi';
 import { SshKeysService } from '@/devworkspaceClient/services/sshKeysApi';
-import { UserProfileApiService } from '@/devworkspaceClient/services/userProfileApi';
 import { WorkspacePreferencesApiService } from '@/devworkspaceClient/services/workspacePreferencesApi';
 import {
   IAiProviderKeyApi,
@@ -52,7 +51,6 @@ import {
   IPodmanApi,
   IServerConfigApi,
   IShhKeysApi,
-  IUserProfileApi,
   IWorkspacePreferencesApi,
 } from '@/devworkspaceClient/types';
 
@@ -95,10 +93,6 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
 
   get podmanApi(): IPodmanApi {
     return new PodmanApiService(this.kubeConfig);
-  }
-
-  get userProfileApi(): IUserProfileApi {
-    return new UserProfileApiService(this.kubeConfig);
   }
 
   get logsApi(): ILogsApi {

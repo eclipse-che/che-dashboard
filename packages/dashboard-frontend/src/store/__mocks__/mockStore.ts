@@ -219,11 +219,11 @@ export class MockStoreBuilder {
     return this;
   }
 
-  public withUserProfile(profile: api.IUserProfile, error?: string): MockStoreBuilder {
+  public withUsername(username: string, error?: string): MockStoreBuilder {
     this.state = {
       ...this.state,
-      userProfile: {
-        userProfile: profile,
+      username: {
+        username,
         isLoading: false,
         error,
       },

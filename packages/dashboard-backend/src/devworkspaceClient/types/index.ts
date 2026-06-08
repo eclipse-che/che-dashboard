@@ -449,13 +449,6 @@ export interface IPodmanApi {
   podmanLogin(namespace: string, devworkspaceId: string): Promise<void>;
 }
 
-export interface IUserProfileApi {
-  /**
-   * Returns user profile object that contains username and email.
-   */
-  getUserProfile(namespace: string): Promise<api.IUserProfile | undefined>;
-}
-
 export interface IWorkspacePreferencesApi {
   /**
    * Returns workspace preferences object that contains skip-authorisation info.
@@ -522,7 +515,6 @@ export interface IDevWorkspaceClient {
   personalAccessTokenApi: IPersonalAccessTokenApi;
   podApi: IPodApi;
   serverConfigApi: IServerConfigApi;
-  userProfileApi: IUserProfileApi;
   gitConfigApi: IGitConfigApi;
   gettingStartedSampleApi: IGettingStartedSampleApi;
   airGapSampleApi: IAirGapSampleApi;

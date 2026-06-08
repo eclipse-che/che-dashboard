@@ -28,7 +28,7 @@ import { devWorkspacePluginsActionCreators } from '@/store/Plugins/devWorkspaceP
 import { podsActionCreators } from '@/store/Pods';
 import { serverConfigActionCreators } from '@/store/ServerConfig';
 import { sshKeysActionCreators } from '@/store/SshKeys';
-import { userProfileActionCreators } from '@/store/User/Profile';
+import { usernameActionCreators } from '@/store/User/Name';
 import { workspacesActionCreators } from '@/store/Workspaces';
 import { workspacePreferencesActionCreators } from '@/store/Workspaces/Preferences';
 
@@ -58,7 +58,7 @@ jest
   .spyOn(infrastructureNamespacesActionCreators, 'requestNamespaces')
   .mockImplementation(() => jest.fn());
 jest.spyOn(clusterInfoActionCreators, 'requestClusterInfo').mockImplementation(() => jest.fn());
-jest.spyOn(userProfileActionCreators, 'requestUserProfile').mockImplementation(() => jest.fn());
+jest.spyOn(usernameActionCreators, 'requestUsername').mockImplementation(() => jest.fn());
 jest.spyOn(chePluginsActionCreators, 'requestPlugins').mockImplementation(() => jest.fn());
 jest
   .spyOn(devWorkspacePluginsActionCreators, 'requestDwDefaultEditor')
@@ -136,7 +136,7 @@ describe('Dashboard bootstrap', () => {
     expect(infrastructureNamespacesActionCreators.requestNamespaces).toHaveBeenCalledTimes(1);
     expect(clusterInfoActionCreators.requestClusterInfo).toHaveBeenCalledTimes(1);
 
-    expect(userProfileActionCreators.requestUserProfile).toHaveBeenCalledTimes(1);
+    expect(usernameActionCreators.requestUsername).toHaveBeenCalledTimes(1);
     expect(chePluginsActionCreators.requestPlugins).toHaveBeenCalledTimes(1);
     expect(devWorkspacePluginsActionCreators.requestDwDefaultEditor).toHaveBeenCalledTimes(1);
     expect(devWorkspacePluginsActionCreators.requestDwDefaultPlugins).toHaveBeenCalledTimes(1);

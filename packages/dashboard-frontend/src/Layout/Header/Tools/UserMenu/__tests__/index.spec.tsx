@@ -10,7 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api } from '@eclipse-che/common';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { createHashHistory } from 'history';
 import React from 'react';
@@ -39,9 +38,8 @@ describe('User Menu', () => {
   const mockLogout = jest.fn();
   global.open = jest.fn();
 
-  const email = 'johndoe@example.com';
   const username = 'John Doe';
-  const store = createStore(username, email);
+  const store = createStore(username);
   const history = createHashHistory();
   const branding = selectBranding(store.getState());
 
@@ -83,12 +81,9 @@ describe('User Menu', () => {
   });
 });
 
-function createStore(name: string, email: string): Store {
+function createStore(name: string): Store {
   return new MockStoreBuilder()
-    .withUserProfile({
-      username: name,
-      email,
-    } as api.IUserProfile)
+    .withUsername(name)
     .withBranding({
       links: BRANDING_DEFAULT.links,
       docs: {},
