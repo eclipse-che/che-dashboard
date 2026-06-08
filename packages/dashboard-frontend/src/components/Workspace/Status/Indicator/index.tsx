@@ -10,10 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-
-import { useEffect, useRef } from 'react';
 
 import { CheTooltip } from '@/components/CheTooltip';
 import { getSccMismatchTooltip, useStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
@@ -68,7 +66,7 @@ const WorkspaceStatusIndicatorComponent: React.FC<Props> = ({
         enqueueAnnouncement(`Workspace ${workspaceName} removed`);
       }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const statusIcon = useStatusIcon(status);

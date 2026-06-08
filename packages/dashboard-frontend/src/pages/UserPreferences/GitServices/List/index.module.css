@@ -22,8 +22,8 @@
 
 /* Server URL wraps cleanly at path boundaries (WCAG 1.4.10 Reflow). */
 .serverCell {
-  overflow-wrap: anywhere;
   word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 /* Authorization cell: stays compact. */
