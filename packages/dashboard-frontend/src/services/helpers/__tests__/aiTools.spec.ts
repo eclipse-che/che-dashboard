@@ -670,7 +670,7 @@ describe('aiTools', () => {
         {
           name: 'injected-tools',
           attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
-          volume: { size: '256Mi' },
+          volume: { size: '512Mi' },
         },
       ]);
 
@@ -711,7 +711,7 @@ describe('aiTools', () => {
         {
           name: 'injected-tools',
           attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
-          volume: { size: '256Mi' },
+          volume: { size: '512Mi' },
         },
       ]);
 
@@ -1027,7 +1027,7 @@ describe('aiTools', () => {
         {
           name: 'injected-tools',
           attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
-          volume: { size: '256Mi' },
+          volume: { size: '512Mi' },
         },
       ]);
 
@@ -1073,7 +1073,7 @@ describe('aiTools', () => {
         {
           name: 'injected-tools',
           attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
-          volume: { size: '256Mi' },
+          volume: { size: '512Mi' },
         },
       ]);
 
@@ -1104,7 +1104,7 @@ describe('aiTools', () => {
         {
           name: 'injected-tools',
           attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
-          volume: { size: '256Mi' },
+          volume: { size: '512Mi' },
         },
       ]);
 

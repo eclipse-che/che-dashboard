@@ -238,7 +238,7 @@ export function addAiToolToWorkspace(
     template.components.push({
       name: 'injected-tools',
       attributes: { [ADMIN_MANAGEABLE_ATTRIBUTE]: true },
-      volume: { size: '256Mi' },
+      volume: { size: '512Mi' },
     } as unknown as DevWorkspaceComponent);
   }
 
@@ -254,7 +254,7 @@ export function addAiToolToWorkspace(
           '-c',
           `rm -f /injected-tools/bin/${tool.binary} /injected-tools/bin/${tool.binary}-bin 2>/dev/null; mkdir -p /injected-tools/bin && cp /usr/local/bin/${tool.binary} /injected-tools/bin/${tool.binary} && { test -f /usr/local/bin/${tool.binary}-bin && cp /usr/local/bin/${tool.binary}-bin /injected-tools/bin/${tool.binary}-bin || true; }`,
         ],
-        memoryLimit: '512Mi',
+        memoryLimit: '1024Mi',
         mountSources: false,
         volumeMounts: [{ name: 'injected-tools', path: '/injected-tools' }],
       },
@@ -270,7 +270,7 @@ export function addAiToolToWorkspace(
           '-c',
           `rm -rf /injected-tools/${slug} 2>/dev/null; cp -a /opt/${slug}/. /injected-tools/${slug}/`,
         ],
-        memoryLimit: '512Mi',
+        memoryLimit: '1024Mi',
         mountSources: false,
         volumeMounts: [{ name: 'injected-tools', path: '/injected-tools' }],
       },
