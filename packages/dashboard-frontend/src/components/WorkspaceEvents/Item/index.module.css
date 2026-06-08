@@ -11,12 +11,12 @@
  */
 
 .header {
-  display: block;
-
   /* Override PatternFly's subtle color for <small> meta-text in the event card
      header. The default --pf-t--global--text--color--subtle produces a contrast
      ratio of ~3.65:1 against the card background, which fails WCAG 1.4.3
      (Contrast Minimum, Level AA). Setting --pf-v6-c-content--small--Color to
      the regular text token achieves ≥4.5:1. (CRW-10318) */
   --pf-v6-c-content--small--Color: var(--pf-t--global--text--color--regular);
+
+  display: block;
 }
