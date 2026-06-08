@@ -3,7 +3,7 @@
 # Multi-Architecture Build Script for Eclipse Che Dashboard
 #
 # This script builds and pushes multi-architecture Docker images
-# supporting AMD64 and ARM64 platforms.
+# supporting AMD64, ARM64, and s390x platforms.
 #
 # Usage:
 #   export IMAGE_REGISTRY_HOST=quay.io
@@ -13,7 +13,8 @@
 # Environment Variables:
 #   IMAGE_REGISTRY_HOST     - Container registry host (required)
 #   IMAGE_REGISTRY_USER_NAME - Registry username/namespace (required)
-#   PLATFORMS               - Platforms to build (default: linux/amd64,linux/arm64)
+#   PLATFORMS               - Platforms to build (default: linux/amd64,linux/arm64;
+#                             use linux/amd64,linux/arm64,linux/s390x to match CI/CD)
 #   IMAGE_TAG               - Custom image tag (default: branch_timestamp)
 #
 # See run/MULTIARCH_BUILD.md for detailed documentation.
