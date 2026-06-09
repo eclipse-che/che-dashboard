@@ -32,12 +32,12 @@ import {
   DEVWORKSPACE_VERSION,
 } from '@/constants/k8s';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
-import { logger } from '@/utils/logger';
 import {
   createRegistryClient,
   detectRegistryType,
   IExternalRegistryClient,
 } from '@/devworkspaceClient/services/helpers/externalRegistry';
+import { logger } from '@/utils/logger';
 import {
   CoreV1API,
   prepareCoreV1API,
@@ -252,7 +252,12 @@ export class RegistryApiService {
 
       return `Basic ${authEntry.auth.trim()}`;
     } catch (error) {
-      logger.warn(error, 'Failed to read backup auth secret "%s" in namespace "%s"', BACKUP_REGISTRY_AUTH_SECRET_NAME, namespace);
+      logger.warn(
+        error,
+        'Failed to read backup auth secret "%s" in namespace "%s"',
+        BACKUP_REGISTRY_AUTH_SECRET_NAME,
+        namespace,
+      );
       return '';
     }
   }
