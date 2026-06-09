@@ -59,6 +59,18 @@ export class ProgressStepTitle extends React.Component<Props> {
     }
   }
 
+  componentDidMount(): void {
+    // Condition sub-steps (parentStepName set) announce on mount when already
+    // active (distance=0) or completed (distance=1). This covers:
+    // - Conditions that appear already True (re-starts / mid-creation navigation)
+    // - Sub-conditions (e.g. "Downloading IDE binaries") that appear while in progress
+    // Steps not yet started (distance=-1) are excluded — they announce via
+    // componentDidUpdate when they transition to active.
+    if (this.props.parentStepName && this.props.distance !== -1) {
+      this.announce();
+    }
+  }
+
   componentDidUpdate(prevProps: Props): void {
     // Top-level steps are announced centrally by WorkspaceProgress on activeStepId change.
     // Only condition sub-steps (those with parentStepName) announce here to avoid duplicates.

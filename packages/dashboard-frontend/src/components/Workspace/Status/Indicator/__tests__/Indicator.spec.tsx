@@ -209,7 +209,7 @@ describe('screen reader announcements', () => {
     expect(enqueueAnnouncement).toHaveBeenCalledWith('Workspace status is Running');
   });
 
-  it('does not announce when status transitions to STOPPED', () => {
+  it('announces when status transitions STOPPING → STOPPED (stop completed)', () => {
     const store = new MockStoreBuilder()
       .withBranding(BRANDING_DEFAULT)
       .withCurrentScc(undefined)
@@ -218,6 +218,32 @@ describe('screen reader announcements', () => {
       <Provider store={store}>
         <WorkspaceStatusIndicator
           status={DevWorkspaceStatus.STOPPING}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    rerender(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.STOPPED}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    expect(enqueueAnnouncement).toHaveBeenCalledWith('Workspace my-workspace status is Stopped');
+  });
+
+  it('does not announce when status is STOPPED from a non-stopping state (avoids stopped→starting noise)', () => {
+    const store = new MockStoreBuilder()
+      .withBranding(BRANDING_DEFAULT)
+      .withCurrentScc(undefined)
+      .build();
+    const { rerender } = render(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.RUNNING}
           containerScc={undefined}
           workspaceName="my-workspace"
         />

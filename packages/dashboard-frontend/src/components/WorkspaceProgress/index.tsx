@@ -60,6 +60,8 @@ export type Props = MappedProps & {
   searchParams: URLSearchParams;
   showToastAlert: boolean;
   onTabChange: (tab: LoaderTab) => void;
+  /** When false, step-change announcements are suppressed (another tab is active). */
+  isProgressTabActive?: boolean;
 };
 export type State = {
   activeStepId: StepId;
@@ -148,9 +150,11 @@ class Progress extends React.Component<Props, State> {
   public componentDidMount(): void {
     this.init(this.props, this.state, undefined);
     // Announce the first active step — componentDidUpdate never fires for the initial state.
-    const label = this.getStepAnnouncementLabel(this.state.activeStepId);
-    if (label) {
-      enqueueAnnouncement(`Step: ${label}`);
+    if (this.props.isProgressTabActive !== false) {
+      const label = this.getStepAnnouncementLabel(this.state.activeStepId);
+      if (label) {
+        enqueueAnnouncement(`Step: ${label}`);
+      }
     }
   }
 
@@ -160,7 +164,10 @@ class Progress extends React.Component<Props, State> {
     // Announce the step that just became active so screen readers hear progress
     // from a single stable place instead of from remounting child ProgressStepTitle
     // components (which fire duplicate announcements during factory-flow re-renders).
-    if (prevState.activeStepId !== this.state.activeStepId) {
+    if (
+      prevState.activeStepId !== this.state.activeStepId &&
+      this.props.isProgressTabActive !== false
+    ) {
       const label = this.getStepAnnouncementLabel(this.state.activeStepId);
       if (label) {
         enqueueAnnouncement(`Step: ${label}`);
@@ -171,7 +178,7 @@ class Progress extends React.Component<Props, State> {
   private getStepAnnouncementLabel(stepId: StepId): string {
     const stepNames: Partial<Record<Step, string>> = {
       [Step.INITIALIZE]: 'Initializing',
-      [Step.LIMIT_CHECK]: 'Checking running workspaces limit',
+      [Step.LIMIT_CHECK]: 'Checking for the limit of running workspaces',
       [Step.CREATE]: 'Creating a workspace',
       [Step.FETCH]: 'Fetching a devfile',
       [Step.CONFLICT_CHECK]: 'Checking existing workspaces',

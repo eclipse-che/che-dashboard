@@ -199,6 +199,7 @@ export class LoaderPage extends React.PureComponent<Props, State> {
                   navigate={navigate}
                   searchParams={searchParams}
                   showToastAlert={showToastAlert}
+                  isProgressTabActive={activeTabKey === LoaderTab.Progress}
                   onTabChange={tab => this.handleTabClick(tab)}
                 />
               </PageSection>

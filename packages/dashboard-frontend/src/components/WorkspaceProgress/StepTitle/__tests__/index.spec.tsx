@@ -64,12 +64,12 @@ describe('ProgressStepTitle', () => {
       expect(mockEnqueueAnnouncement).not.toHaveBeenCalled();
     });
 
-    it('does not queue announcement when step mounts as active (distance=0) — announcements are driven by WorkspaceProgress', () => {
+    it('does not queue announcement when top-level step mounts as active (distance=0) — handled by WorkspaceProgress', () => {
       renderComponent(0, {});
       expect(mockEnqueueAnnouncement).not.toHaveBeenCalled();
     });
 
-    it('does not queue announcement when step mounts already done (distance=1) — announcements are driven by WorkspaceProgress', () => {
+    it('does not queue announcement when top-level step mounts already done (distance=1) — handled by WorkspaceProgress', () => {
       renderComponent(1, {});
       expect(mockEnqueueAnnouncement).not.toHaveBeenCalled();
     });
@@ -84,6 +84,22 @@ describe('ProgressStepTitle', () => {
       const { reRenderComponent } = renderComponent(0, {});
       reRenderComponent(1, {});
       expect(mockEnqueueAnnouncement).not.toHaveBeenCalled();
+    });
+
+    it('queues announcement on mount for condition sub-step active (distance=0, parentStepName set)', () => {
+      renderComponent(0, { parentStepName: 'Waiting for workspace to start' });
+      expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(1);
+      expect(mockEnqueueAnnouncement).toHaveBeenCalledWith(
+        'Step: Waiting for workspace to start / Step 1',
+      );
+    });
+
+    it('queues announcement on mount for condition sub-step already done (distance=1, parentStepName set)', () => {
+      renderComponent(1, { parentStepName: 'Waiting for workspace to start' });
+      expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(1);
+      expect(mockEnqueueAnnouncement).toHaveBeenCalledWith(
+        'Step: Waiting for workspace to start / Step 1',
+      );
     });
 
     it('does not re-queue when already-active step re-renders without distance change', () => {
@@ -105,7 +121,7 @@ describe('ProgressStepTitle', () => {
       );
     });
 
-    it('queues each sub-step independently when they transition to done', () => {
+    it('queues each sub-step on mount and again on completion (4 total for 2 sub-steps)', () => {
       const { reRenderComponent: reRender1 } = renderComponent(0, {
         parentStepName: 'Waiting for workspace to start',
       });
@@ -114,7 +130,8 @@ describe('ProgressStepTitle', () => {
         parentStepName: 'Waiting for workspace to start',
       });
       reRender2(1, { parentStepName: 'Waiting for workspace to start' });
-      expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(2);
+      // Each sub-step announces twice: once on mount (distance=0) and once on completion (0→1).
+      expect(mockEnqueueAnnouncement).toHaveBeenCalledTimes(4);
     });
   });
 });

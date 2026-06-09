@@ -46,11 +46,22 @@ const WorkspaceStatusIndicatorComponent: React.FC<Props> = ({
   const isStopped = status === DevWorkspaceStatus.STOPPED;
   const sccMismatch = isStopped && hasSccMismatch(containerScc, currentScc);
 
+  // Track the previous status so we can decide whether to announce STOPPED.
+  const prevStatusRef = useRef(status);
   useAnnounceOnChange(status, s => {
-    // STOPPED is the default/terminal state — announcing it causes "workspace stopped,
-    // workspace starting" sequences that confuse screen readers when users start a
-    // previously stopped workspace. The visual indicator still shows the status.
-    if (s === DevWorkspaceStatus.STOPPED || s === WorkspaceStatus.STOPPED) {
+    const prev = prevStatusRef.current;
+    prevStatusRef.current = s;
+    // Suppress STOPPED unless the workspace was actively stopping (STOPPING/FAILING).
+    // This prevents the confusing "workspace stopped, workspace starting" sequence
+    // that occurs when re-starting a previously-stopped workspace: the component
+    // mounts with STOPPED (no announcement), then transitions to STARTING.
+    // But when a user explicitly stops a workspace (STOPPING → STOPPED), we DO
+    // announce completion so screen readers hear that the stop finished.
+    if (
+      (s === DevWorkspaceStatus.STOPPED || s === WorkspaceStatus.STOPPED) &&
+      prev !== DevWorkspaceStatus.STOPPING &&
+      prev !== DevWorkspaceStatus.FAILING
+    ) {
       return '';
     }
     return workspaceName ? `Workspace ${workspaceName} status is ${s}` : `Workspace status is ${s}`;
