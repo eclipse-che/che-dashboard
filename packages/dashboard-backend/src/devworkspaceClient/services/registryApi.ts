@@ -37,11 +37,11 @@ import {
   detectRegistryType,
   IExternalRegistryClient,
 } from '@/devworkspaceClient/services/helpers/externalRegistry';
-import { logger } from '@/utils/logger';
 import {
   CoreV1API,
   prepareCoreV1API,
 } from '@/devworkspaceClient/services/helpers/prepareCoreV1API';
+import { logger } from '@/utils/logger';
 
 // ImageStream constants
 const IMAGESTREAM_GROUP = 'image.openshift.io';
