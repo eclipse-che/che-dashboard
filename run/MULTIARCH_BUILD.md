@@ -4,6 +4,9 @@
 
 The `build-multiarch.sh` script builds Docker images for multiple architectures (AMD64, ARM64, and s390x) and pushes them to a container registry.
 
+**Note**:
+The `linux/s390x` platform support is maintained by IBM. For s390x-specific build failures, or investigations, contact: Swapnil Singh([swapnilsingh-ibm](https://github.com/swapnilsingh-ibm)) or Sudharshan Muralidharan([sudharshanibm](https://github.com/sudharshanibm)).
+
 ## Prerequisites
 
 ### For Docker:
