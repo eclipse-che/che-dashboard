@@ -209,13 +209,11 @@
 | `reselect@5.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/reselect/5.1.1) |
 | `resolve-pathname@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/resolve-pathname/3.0.0) |
 | `rfdc@1.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/rfdc/1.3.0) |
-| `rfdc@1.4.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/rfdc/1.4.1) |
 | `ripemd160@2.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ripemd160/2.0.2) |
 | `safe-stable-stringify@2.4.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safe-stable-stringify/2.4.3) |
 | `sanitize-html@2.17.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sanitize-html/2.17.0) |
 | `secure-json-parse@2.7.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/secure-json-parse/2.7.0) |
 | `secure-json-parse@4.1.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/secure-json-parse/4.1.0) |
-| `semver@7.7.4` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/semver/7.7.4) |
 | `set-cookie-parser@2.7.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/set-cookie-parser/2.7.2) |
 | `setprototypeof@1.2.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/setprototypeof/1.2.0) |
 | `side-channel-list@1.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/side-channel-list/1.0.0) |
