@@ -31,6 +31,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import compareEventTime from '@/components/WorkspaceEvents/compareEventTime';
 import styles from '@/components/WorkspaceEvents/index.module.css';
 import { WorkspaceEventsItem } from '@/components/WorkspaceEvents/Item';
+import { enqueueAnnouncement } from '@/components/WorkspaceProgress/StepTitle/announceQueue';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { Workspace } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
@@ -44,9 +45,69 @@ export type Props = {
    * workspace is STOPPED. Set to false on the loader page so startup events
    * remain visible after the user presses Stop. */
   hideWhenStopped?: boolean;
+  /** When false, new events are tracked but not announced (tab is not visible). */
+  isActive?: boolean;
 } & MappedProps;
 
 class WorkspaceEvents extends React.PureComponent<Props> {
+  // Tracks UIDs of events already announced so we never repeat them.
+  private readonly announcedUIDs = new Set<string>();
+
+  public componentDidMount(): void {
+    // Pre-seed announced UIDs with all events that already exist at mount time
+    // so only events that arrive *after* mount are treated as new and announced.
+    this.seedAnnouncedUIDs();
+  }
+
+  private seedAnnouncedUIDs(): void {
+    const { workspaceUID, allWorkspaces, startedWorkspaces, eventsFromResourceVersionFn } =
+      this.props;
+    const workspace = this.findWorkspace(workspaceUID, allWorkspaces);
+    if (!workspace || workspace.status === DevWorkspaceStatus.STOPPED) {
+      return;
+    }
+    const startResourceVersion = startedWorkspaces[workspaceUID!] || '0';
+    const events = eventsFromResourceVersionFn(startResourceVersion);
+    for (const event of events) {
+      if (!event.message) {
+        continue;
+      }
+      const uid = event.metadata?.uid ?? `${event.message}${event.lastTimestamp ?? ''}`;
+      this.announcedUIDs.add(uid);
+    }
+  }
+
+  public componentDidUpdate(): void {
+    const {
+      workspaceUID,
+      allWorkspaces,
+      startedWorkspaces,
+      eventsFromResourceVersionFn,
+      isActive = true,
+    } = this.props;
+
+    const workspace = this.findWorkspace(workspaceUID, allWorkspaces);
+    if (!workspace || workspace.status === DevWorkspaceStatus.STOPPED) {
+      return;
+    }
+
+    const startResourceVersion = startedWorkspaces[workspaceUID!] || '0';
+    const events = eventsFromResourceVersionFn(startResourceVersion);
+
+    for (const event of events) {
+      if (!event.message) {
+        continue;
+      }
+      const uid = event.metadata?.uid ?? `${event.message}${event.lastTimestamp ?? ''}`;
+      if (!this.announcedUIDs.has(uid)) {
+        this.announcedUIDs.add(uid);
+        if (isActive) {
+          enqueueAnnouncement(`Event: ${event.message}`);
+        }
+      }
+    }
+  }
+
   private findWorkspace(
     workspaceUID: string | undefined,
     allWorkspaces: Workspace[],
@@ -116,11 +177,13 @@ class WorkspaceEvents extends React.PureComponent<Props> {
 
     return (
       <PageSection variant={PageSectionVariants.default}>
-        <Stack hasGutter>
-          {tailStackItem}
-          {eventItems}
-          {headStackItem}
-        </Stack>
+        <div role="log" aria-label="Workspace events">
+          <Stack hasGutter>
+            {tailStackItem}
+            {eventItems}
+            {headStackItem}
+          </Stack>
+        </div>
       </PageSection>
     );
   }

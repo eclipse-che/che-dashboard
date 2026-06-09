@@ -13,6 +13,7 @@
 import React from 'react';
 
 import styles from '@/components/WorkspaceLogs/Viewer/index.module.css';
+import { enqueueAnnouncement } from '@/components/WorkspaceProgress/StepTitle/announceQueue';
 import { ContainerLogs } from '@/store/Pods/Logs';
 
 const LOGS_CONTAINER_ID = 'output-logs';
@@ -20,6 +21,8 @@ const LOGS_CONTAINER_ID = 'output-logs';
 export type Props = {
   isExpanded: boolean;
   logsData: ContainerLogs | undefined;
+  /** When false, new log lines are not announced (Logs tab is not active). */
+  isActive?: boolean;
 };
 
 export class WorkspaceLogsViewer extends React.PureComponent<Props> {
@@ -31,6 +34,25 @@ export class WorkspaceLogsViewer extends React.PureComponent<Props> {
 
   public componentDidMount(): void {
     window.addEventListener('resize', this.updateScrollTop, false);
+  }
+
+  public componentDidUpdate(prevProps: Props): void {
+    const prevLogs = prevProps.logsData?.failure === false ? prevProps.logsData?.logs ?? '' : '';
+    const currLogs = this.props.logsData?.failure === false ? this.props.logsData?.logs ?? '' : '';
+
+    if (currLogs.length > prevLogs.length && this.props.isActive !== false) {
+      // Announce only the last non-empty line of newly appended content so
+      // screen readers hear incremental progress without repeating everything.
+      const newContent = currLogs.slice(prevLogs.length);
+      const lastLine = newContent
+        .split('\n')
+        .map(l => l.trim())
+        .filter(Boolean)
+        .at(-1);
+      if (lastLine) {
+        enqueueAnnouncement(lastLine);
+      }
+    }
   }
 
   componentWillUnmount() {
@@ -60,7 +82,13 @@ export class WorkspaceLogsViewer extends React.PureComponent<Props> {
     return (
       <div className={`${styles.viewer} ${expandedStyle}`}>
         <div className={styles.linesCounter}>{linesNumber} lines</div>
-        <pre id={LOGS_CONTAINER_ID} tabIndex={0} className={styles.logs}>
+        <pre
+          id={LOGS_CONTAINER_ID}
+          role="log"
+          aria-label="Workspace logs"
+          tabIndex={0}
+          className={styles.logs}
+        >
           {logs}
         </pre>
       </div>

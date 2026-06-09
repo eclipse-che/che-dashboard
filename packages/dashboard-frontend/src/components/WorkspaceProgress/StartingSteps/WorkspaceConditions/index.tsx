@@ -176,9 +176,14 @@ class StartingStepWorkspaceConditions extends ProgressStep<Props, State> {
           hasChildren={hasChildren}
           isError={isError}
           isWarning={isWarning}
+          parentStepName="Waiting for workspace to start"
         >
           {this.name}
-          <PureSubCondition distance={distance} title={subConditionTitle} />
+          <PureSubCondition
+            distance={distance}
+            title={subConditionTitle}
+            parentStepName={this.name}
+          />
         </ProgressStepTitle>
       </React.Fragment>
     );

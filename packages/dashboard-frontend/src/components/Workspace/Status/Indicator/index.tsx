@@ -10,12 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { CheTooltip } from '@/components/CheTooltip';
 import { getSccMismatchTooltip, useStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
 import styles from '@/components/Workspace/Status/index.module.css';
+import { enqueueAnnouncement } from '@/components/WorkspaceProgress/StepTitle/announceQueue';
+import { useAnnounceOnChange } from '@/components/WorkspaceProgress/StepTitle/useAnnounceOnChange';
 import { hasSccMismatch } from '@/services/helpers/sccMismatch';
 import {
   DeprecatedWorkspaceStatus,
@@ -29,6 +31,8 @@ import { selectCurrentScc } from '@/store/ServerConfig/selectors';
 export type Props = MappedProps & {
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   containerScc: string | undefined;
+  /** When provided, status-change announcements include the workspace name. */
+  workspaceName?: string;
 };
 
 const WorkspaceStatusIndicatorComponent: React.FC<Props> = ({
@@ -36,10 +40,45 @@ const WorkspaceStatusIndicatorComponent: React.FC<Props> = ({
   containerScc,
   branding,
   currentScc,
+  workspaceName,
 }) => {
   // Only check SCC mismatch for stopped workspaces
   const isStopped = status === DevWorkspaceStatus.STOPPED;
   const sccMismatch = isStopped && hasSccMismatch(containerScc, currentScc);
+
+  // Track the previous status so we can decide whether to announce STOPPED.
+  const prevStatusRef = useRef(status);
+  useAnnounceOnChange(status, s => {
+    const prev = prevStatusRef.current;
+    prevStatusRef.current = s;
+    // Suppress STOPPED unless the workspace was actively stopping (STOPPING/FAILING).
+    // This prevents the confusing "workspace stopped, workspace starting" sequence
+    // that occurs when re-starting a previously-stopped workspace: the component
+    // mounts with STOPPED (no announcement), then transitions to STARTING.
+    // But when a user explicitly stops a workspace (STOPPING → STOPPED), we DO
+    // announce completion so screen readers hear that the stop finished.
+    if (
+      (s === DevWorkspaceStatus.STOPPED || s === WorkspaceStatus.STOPPED) &&
+      prev !== DevWorkspaceStatus.STOPPING &&
+      prev !== DevWorkspaceStatus.FAILING
+    ) {
+      return '';
+    }
+    return workspaceName ? `Workspace ${workspaceName} status is ${s}` : `Workspace status is ${s}`;
+  });
+
+  // Track current status in a ref so the unmount cleanup can read the last value.
+  const statusRef = useRef(status);
+  statusRef.current = status;
+  useEffect(() => {
+    return () => {
+      // When the component unmounts while TERMINATING, the workspace was deleted.
+      if (statusRef.current === DevWorkspaceStatus.TERMINATING && workspaceName) {
+        enqueueAnnouncement(`Workspace ${workspaceName} removed`);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const statusIcon = useStatusIcon(status);
   const warningIcon = useStatusIcon(DevWorkspaceStatus.FAILED);
@@ -51,17 +90,17 @@ const WorkspaceStatusIndicatorComponent: React.FC<Props> = ({
       ? 'Deprecated workspace'
       : status.toLocaleUpperCase();
 
+  const statusAriaLabel = sccMismatch
+    ? 'Workspace status has SCC mismatch warning'
+    : `Workspace status is ${status}`;
+
   return (
     <CheTooltip content={tooltip}>
       <span
         role="img"
         className={styles.statusIndicator}
         data-testid="workspace-status-indicator"
-        aria-label={
-          sccMismatch
-            ? 'Workspace status has SCC mismatch warning'
-            : `Workspace status is ${status}`
-        }
+        aria-label={statusAriaLabel}
       >
         {icon}
       </span>

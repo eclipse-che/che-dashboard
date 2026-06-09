@@ -55,60 +55,65 @@ exports[`The WorkspaceEvents component snapshot - no events 1`] = `
     className="pf-v6-c-page__main-body"
   >
     <div
-      className="pf-v6-l-stack pf-m-gutter"
+      aria-label="Workspace events"
+      role="log"
     >
       <div
-        className="pf-v6-l-stack__item"
+        className="pf-v6-l-stack pf-m-gutter"
       >
         <div
-          className="pf-v6-l-flex"
+          className="pf-v6-l-stack__item"
         >
           <div
-            className=""
+            className="pf-v6-l-flex"
           >
-            <small
-              className="pf-v6-c-content--small"
-              data-ouia-component-id="OUIA-Generated-Content-1"
-              data-ouia-component-type="PF6/Content"
-              data-ouia-safe={true}
-              data-pf-content={true}
+            <div
+              className=""
             >
-              Streaming events...
-            </small>
-          </div>
-          <div
-            className="pf-m-align-right"
-          >
-            <small
-              className="pf-v6-c-content--small"
-              data-ouia-component-id="OUIA-Generated-Content-2"
-              data-ouia-component-type="PF6/Content"
-              data-ouia-safe={true}
-              data-pf-content={true}
-            >
-              Showing 
-              <span
-                className={null}
-                style={{}}
+              <small
+                className="pf-v6-c-content--small"
+                data-ouia-component-id="OUIA-Generated-Content-1"
+                data-ouia-component-type="PF6/Content"
+                data-ouia-safe={true}
+                data-pf-content={true}
               >
-                0 events
-              </span>
-            </small>
+                Streaming events...
+              </small>
+            </div>
+            <div
+              className="pf-m-align-right"
+            >
+              <small
+                className="pf-v6-c-content--small"
+                data-ouia-component-id="OUIA-Generated-Content-2"
+                data-ouia-component-type="PF6/Content"
+                data-ouia-safe={true}
+                data-pf-content={true}
+              >
+                Showing 
+                <span
+                  className={null}
+                  style={{}}
+                >
+                  0 events
+                </span>
+              </small>
+            </div>
           </div>
         </div>
-      </div>
-      <div
-        className="pf-v6-l-stack__item"
-      >
-        <small
-          className="pf-v6-c-content--small"
-          data-ouia-component-id="OUIA-Generated-Content-3"
-          data-ouia-component-type="PF6/Content"
-          data-ouia-safe={true}
-          data-pf-content={true}
+        <div
+          className="pf-v6-l-stack__item"
         >
-          Older events are not stored.
-        </small>
+          <small
+            className="pf-v6-c-content--small"
+            data-ouia-component-id="OUIA-Generated-Content-3"
+            data-ouia-component-type="PF6/Content"
+            data-ouia-safe={true}
+            data-pf-content={true}
+          >
+            Older events are not stored.
+          </small>
+        </div>
       </div>
     </div>
   </div>
@@ -123,128 +128,133 @@ exports[`The WorkspaceEvents component snapshot - with events 1`] = `
     className="pf-v6-c-page__main-body"
   >
     <div
-      className="pf-v6-l-stack pf-m-gutter"
+      aria-label="Workspace events"
+      role="log"
     >
       <div
-        className="pf-v6-l-stack__item"
+        className="pf-v6-l-stack pf-m-gutter"
       >
         <div
-          className="pf-v6-l-flex"
+          className="pf-v6-l-stack__item"
         >
           <div
-            className=""
+            className="pf-v6-l-flex"
           >
-            <small
-              className="pf-v6-c-content--small"
-              data-ouia-component-id="OUIA-Generated-Content-4"
-              data-ouia-component-type="PF6/Content"
-              data-ouia-safe={true}
-              data-pf-content={true}
+            <div
+              className=""
             >
-              Streaming events...
-            </small>
-          </div>
-          <div
-            className="pf-m-align-right"
-          >
-            <small
-              className="pf-v6-c-content--small"
-              data-ouia-component-id="OUIA-Generated-Content-5"
-              data-ouia-component-type="PF6/Content"
-              data-ouia-safe={true}
-              data-pf-content={true}
-            >
-              Showing 
-              <span
-                className={null}
-                style={{}}
+              <small
+                className="pf-v6-c-content--small"
+                data-ouia-component-id="OUIA-Generated-Content-4"
+                data-ouia-component-type="PF6/Content"
+                data-ouia-safe={true}
+                data-pf-content={true}
               >
-                2 events
+                Streaming events...
+              </small>
+            </div>
+            <div
+              className="pf-m-align-right"
+            >
+              <small
+                className="pf-v6-c-content--small"
+                data-ouia-component-id="OUIA-Generated-Content-5"
+                data-ouia-component-type="PF6/Content"
+                data-ouia-safe={true}
+                data-pf-content={true}
+              >
+                Showing 
+                <span
+                  className={null}
+                  style={{}}
+                >
+                  2 events
+                </span>
+              </small>
+            </div>
+          </div>
+        </div>
+        <div
+          className="pf-v6-l-stack__item"
+        >
+          <div
+            className="fadeIn"
+          >
+            <div
+              data-testid="event-item"
+            >
+              <span
+                data-testid="event-message"
+              >
+                message 2
               </span>
-            </small>
+              <span
+                data-testid="event-time"
+              >
+                2021-03-31T14:01:00.000Z
+              </span>
+              <span
+                data-testid="event-source"
+              >
+                 on 
+              </span>
+              <span
+                data-testid="event-involved-object"
+              >
+                Pod
+                 
+                devWorkspace-pod
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-      <div
-        className="pf-v6-l-stack__item"
-      >
         <div
-          className="fadeIn"
+          className="pf-v6-l-stack__item"
         >
           <div
-            data-testid="event-item"
+            className="fadeIn"
           >
-            <span
-              data-testid="event-message"
+            <div
+              data-testid="event-item"
             >
-              message 2
-            </span>
-            <span
-              data-testid="event-time"
-            >
-              2021-03-31T14:01:00.000Z
-            </span>
-            <span
-              data-testid="event-source"
-            >
-               on 
-            </span>
-            <span
-              data-testid="event-involved-object"
-            >
-              Pod
-               
-              devWorkspace-pod
-            </span>
+              <span
+                data-testid="event-message"
+              >
+                message 1
+              </span>
+              <span
+                data-testid="event-time"
+              >
+                2021-03-31T14:00:00.000Z
+              </span>
+              <span
+                data-testid="event-source"
+              >
+                 on 
+              </span>
+              <span
+                data-testid="event-involved-object"
+              >
+                Pod
+                 
+                devWorkspace-pod
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-      <div
-        className="pf-v6-l-stack__item"
-      >
         <div
-          className="fadeIn"
+          className="pf-v6-l-stack__item"
         >
-          <div
-            data-testid="event-item"
+          <small
+            className="pf-v6-c-content--small"
+            data-ouia-component-id="OUIA-Generated-Content-6"
+            data-ouia-component-type="PF6/Content"
+            data-ouia-safe={true}
+            data-pf-content={true}
           >
-            <span
-              data-testid="event-message"
-            >
-              message 1
-            </span>
-            <span
-              data-testid="event-time"
-            >
-              2021-03-31T14:00:00.000Z
-            </span>
-            <span
-              data-testid="event-source"
-            >
-               on 
-            </span>
-            <span
-              data-testid="event-involved-object"
-            >
-              Pod
-               
-              devWorkspace-pod
-            </span>
-          </div>
+            Older events are not stored.
+          </small>
         </div>
-      </div>
-      <div
-        className="pf-v6-l-stack__item"
-      >
-        <small
-          className="pf-v6-c-content--small"
-          data-ouia-component-id="OUIA-Generated-Content-6"
-          data-ouia-component-type="PF6/Content"
-          data-ouia-safe={true}
-          data-pf-content={true}
-        >
-          Older events are not stored.
-        </small>
       </div>
     </div>
   </div>

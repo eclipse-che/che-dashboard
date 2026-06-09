@@ -199,6 +199,7 @@ export class LoaderPage extends React.PureComponent<Props, State> {
                   navigate={navigate}
                   searchParams={searchParams}
                   showToastAlert={showToastAlert}
+                  isProgressTabActive={activeTabKey === LoaderTab.Progress}
                   onTabChange={tab => this.handleTabClick(tab)}
                 />
               </PageSection>
@@ -211,7 +212,10 @@ export class LoaderPage extends React.PureComponent<Props, State> {
               isDisabled={isLogsTabDisabled}
               isAriaDisabled={isLogsTabDisabled}
             >
-              <WorkspaceLogs workspaceUID={workspace?.uid} />
+              <WorkspaceLogs
+                workspaceUID={workspace?.uid}
+                isActive={activeTabKey === LoaderTab.Logs}
+              />
             </Tab>
             <Tab
               eventKey={LoaderTab.Events}
@@ -221,7 +225,11 @@ export class LoaderPage extends React.PureComponent<Props, State> {
               isDisabled={isEventsTabDisabled}
               isAriaDisabled={isEventsTabDisabled}
             >
-              <WorkspaceEvents workspaceUID={workspace?.uid} hideWhenStopped={false} />
+              <WorkspaceEvents
+                workspaceUID={workspace?.uid}
+                hideWhenStopped={false}
+                isActive={activeTabKey === LoaderTab.Events}
+              />
             </Tab>
           </Tabs>
         </PageSection>

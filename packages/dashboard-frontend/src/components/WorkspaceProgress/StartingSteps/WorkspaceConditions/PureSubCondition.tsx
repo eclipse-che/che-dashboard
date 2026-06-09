@@ -17,11 +17,13 @@ import { ProgressStepTitle } from '@/components/WorkspaceProgress/StepTitle';
 export type Props = {
   distance: -1 | 0 | 1 | undefined;
   title: string | undefined;
+  /** Passed to ProgressStepTitle so sub-condition announcements include the parent name. */
+  parentStepName?: string;
 };
 
 export class PureSubCondition extends React.PureComponent<Props> {
   public render(): React.ReactElement {
-    const { distance, title } = this.props;
+    const { distance, title, parentStepName } = this.props;
 
     if (!title) {
       return <></>;
@@ -31,7 +33,9 @@ export class PureSubCondition extends React.PureComponent<Props> {
       <ol className="pf-c-wizard__nav-list">
         <li className="pf-c-wizard__nav-item">
           <div className="pf-c-wizard__nav-link">
-            <ProgressStepTitle distance={distance}>{title}</ProgressStepTitle>
+            <ProgressStepTitle distance={distance} parentStepName={parentStepName}>
+              {title}
+            </ProgressStepTitle>
           </div>
         </li>
       </ol>

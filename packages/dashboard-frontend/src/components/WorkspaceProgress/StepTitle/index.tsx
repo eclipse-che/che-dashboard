@@ -12,6 +12,7 @@
 
 import React, { PropsWithChildren } from 'react';
 
+import { enqueueAnnouncement } from '@/components/WorkspaceProgress/StepTitle/announceQueue';
 import { ProgressStepTitleIcon } from '@/components/WorkspaceProgress/StepTitle/Icon';
 import styles from '@/components/WorkspaceProgress/StepTitle/index.module.css';
 
@@ -21,9 +22,69 @@ export type Props = PropsWithChildren<{
   hasChildren?: boolean;
   isError?: boolean;
   isWarning?: boolean;
+  /** When set, the live-region announcement reads "Step: {parentStepName} / {step text}".
+   *  Use for condition sub-steps so screen readers hear the full context. */
+  parentStepName?: string;
 }>;
 
+/** Recursively extracts plain-text content from any ReactNode. */
+function extractText(node: React.ReactNode): string {
+  if (node == null || typeof node === 'boolean') {
+    return '';
+  }
+  if (typeof node === 'string' || typeof node === 'number') {
+    return String(node);
+  }
+  if (Array.isArray(node)) {
+    return node.map(extractText).join('');
+  }
+  if (React.isValidElement(node) && node.props.children) {
+    return extractText(node.props.children as React.ReactNode);
+  }
+  return '';
+}
+
 export class ProgressStepTitle extends React.Component<Props> {
+  private buildAnnouncementText(): string {
+    const { children, parentStepName } = this.props;
+    const stepText = extractText(children);
+    if (!stepText) return '';
+    return parentStepName ? `Step: ${parentStepName} / ${stepText}` : `Step: ${stepText}`;
+  }
+
+  private announce(): void {
+    const text = this.buildAnnouncementText();
+    if (text) {
+      enqueueAnnouncement(text);
+    }
+  }
+
+  componentDidMount(): void {
+    // Condition sub-steps (parentStepName set) announce on mount when already
+    // active (distance=0) or completed (distance=1). This covers:
+    // - Conditions that appear already True (re-starts / mid-creation navigation)
+    // - Sub-conditions (e.g. "Downloading IDE binaries") that appear while in progress
+    // Steps not yet started (distance=-1) are excluded — they announce via
+    // componentDidUpdate when they transition to active.
+    if (this.props.parentStepName && this.props.distance !== -1) {
+      this.announce();
+    }
+  }
+
+  componentDidUpdate(prevProps: Props): void {
+    // Top-level steps are announced centrally by WorkspaceProgress on activeStepId change.
+    // Only condition sub-steps (those with parentStepName) announce here to avoid duplicates.
+    if (!this.props.parentStepName) {
+      return;
+    }
+    if (prevProps.distance !== 0 && this.props.distance === 0) {
+      this.announce();
+    }
+    if (prevProps.distance === 0 && this.props.distance === 1) {
+      this.announce();
+    }
+  }
+
   render(): React.ReactElement {
     const { children, className, hasChildren, distance, isError, isWarning } = this.props;
 

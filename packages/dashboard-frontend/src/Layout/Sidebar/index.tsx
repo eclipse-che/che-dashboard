@@ -14,6 +14,7 @@ import { PageContext, PageSidebar, PageSidebarBody } from '@patternfly/react-cor
 import { History } from 'history';
 import React from 'react';
 
+import { useAnnounceOnChange } from '@/components/WorkspaceProgress/StepTitle/useAnnounceOnChange';
 import Navigation from '@/Layout/Navigation';
 
 export type Props = {
@@ -29,6 +30,10 @@ export function Sidebar({ history }: Props): React.ReactElement {
   // removes the entire subtree from keyboard navigation and the accessibility
   // tree without unmounting it, which is the correct fix.
   const inertProp = isSidebarOpen ? {} : ({ inert: '' } as React.HTMLAttributes<HTMLDivElement>);
+
+  useAnnounceOnChange(isSidebarOpen, open =>
+    open ? 'Navigation expanded' : 'Navigation collapsed',
+  );
 
   return (
     <PageSidebar {...inertProp}>

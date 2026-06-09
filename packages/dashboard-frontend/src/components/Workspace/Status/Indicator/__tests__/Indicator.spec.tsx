@@ -10,14 +10,20 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { render } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { ReactTestRendererJSON } from 'react-test-renderer';
 
 import { WorkspaceStatusIndicator } from '@/components/Workspace/Status/Indicator';
+import { enqueueAnnouncement } from '@/components/WorkspaceProgress/StepTitle/announceQueue';
 import { BRANDING_DEFAULT } from '@/services/bootstrap/branding.constant';
 import { DevWorkspaceStatus, WorkspaceStatus } from '@/services/helpers/types';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+
+jest.mock('@/components/WorkspaceProgress/StepTitle/announceQueue', () => ({
+  enqueueAnnouncement: jest.fn(),
+}));
 
 describe('Workspace indicator component', () => {
   it('should render default status correctly', () => {
@@ -136,6 +142,159 @@ describe('Workspace indicator component', () => {
       );
       expect(getComponentSnapshot(element, undefined)).toMatchSnapshot();
     });
+  });
+});
+
+describe('screen reader announcements', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it('does not announce on initial mount', () => {
+    const store = new MockStoreBuilder()
+      .withBranding(BRANDING_DEFAULT)
+      .withCurrentScc(undefined)
+      .build();
+    render(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.STARTING}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    expect(enqueueAnnouncement).not.toHaveBeenCalled();
+  });
+
+  it('announces status change with workspace name when workspaceName is provided', () => {
+    const store = new MockStoreBuilder()
+      .withBranding(BRANDING_DEFAULT)
+      .withCurrentScc(undefined)
+      .build();
+    const { rerender } = render(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.STARTING}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    rerender(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.RUNNING}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    expect(enqueueAnnouncement).toHaveBeenCalledWith('Workspace my-workspace status is Running');
+  });
+
+  it('announces status change without name when workspaceName is not provided', () => {
+    const store = new MockStoreBuilder()
+      .withBranding(BRANDING_DEFAULT)
+      .withCurrentScc(undefined)
+      .build();
+    const { rerender } = render(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator status={DevWorkspaceStatus.STARTING} containerScc={undefined} />
+      </Provider>,
+    );
+    rerender(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator status={DevWorkspaceStatus.RUNNING} containerScc={undefined} />
+      </Provider>,
+    );
+    expect(enqueueAnnouncement).toHaveBeenCalledWith('Workspace status is Running');
+  });
+
+  it('announces when status transitions STOPPING → STOPPED (stop completed)', () => {
+    const store = new MockStoreBuilder()
+      .withBranding(BRANDING_DEFAULT)
+      .withCurrentScc(undefined)
+      .build();
+    const { rerender } = render(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.STOPPING}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    rerender(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.STOPPED}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    expect(enqueueAnnouncement).toHaveBeenCalledWith('Workspace my-workspace status is Stopped');
+  });
+
+  it('does not announce when status is STOPPED from a non-stopping state (avoids stopped→starting noise)', () => {
+    const store = new MockStoreBuilder()
+      .withBranding(BRANDING_DEFAULT)
+      .withCurrentScc(undefined)
+      .build();
+    const { rerender } = render(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.RUNNING}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    rerender(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.STOPPED}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    expect(enqueueAnnouncement).not.toHaveBeenCalled();
+  });
+
+  it('announces workspace removed when unmounting in TERMINATING state', () => {
+    const store = new MockStoreBuilder()
+      .withBranding(BRANDING_DEFAULT)
+      .withCurrentScc(undefined)
+      .build();
+    const { unmount } = render(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.TERMINATING}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    unmount();
+    expect(enqueueAnnouncement).toHaveBeenCalledWith('Workspace my-workspace removed');
+  });
+
+  it('does not announce removed when unmounting in non-TERMINATING state', () => {
+    const store = new MockStoreBuilder()
+      .withBranding(BRANDING_DEFAULT)
+      .withCurrentScc(undefined)
+      .build();
+    const { unmount } = render(
+      <Provider store={store}>
+        <WorkspaceStatusIndicator
+          status={DevWorkspaceStatus.STOPPED}
+          containerScc={undefined}
+          workspaceName="my-workspace"
+        />
+      </Provider>,
+    );
+    unmount();
+    expect(enqueueAnnouncement).not.toHaveBeenCalled();
   });
 });
 
