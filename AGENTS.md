@@ -106,6 +106,30 @@ yarn lint:fix
 
 **Fix all linting issues before completing the change.**
 
+### Single-file lint and type-check
+
+To check a single file without running the full suite:
+
+```bash
+# Lint a single file
+npx eslint path/to/file.ts
+
+# Type-check a single file
+npx tsc --noEmit path/to/file.ts
+```
+
+### Single-file lint and type-check
+
+To check a single file without running the full suite:
+
+```bash
+# Lint a single file
+npx eslint path/to/file.ts
+
+# Type-check a single file
+npx tsc --noEmit path/to/file.ts
+```
+
 ### Important Notes
 
 - **Sequential**: Complete each step and fix all failures before moving to the next

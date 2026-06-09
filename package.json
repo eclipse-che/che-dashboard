@@ -35,10 +35,24 @@
     "format:fix": "yarn workspaces foreach -A run format:fix",
     "lint:check": "yarn workspaces foreach -A run lint:check",
     "lint:fix": "yarn workspaces foreach -A run lint:fix",
-    "deploy:patch": "$PWD/run/patch.sh"
+    "deploy:patch": "$PWD/run/patch.sh",
+    "prepare": "husky"
   },
   "devDependencies": {
-    "@eclipse-che/license-tool": "^2.0.0"
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
+    "@eclipse-che/license-tool": "^2.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.2"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint",
+      "prettier --check"
+    ],
+    "*.{css,scss,md,json}": [
+      "prettier --check"
+    ]
   },
   "resolutions": {
     "@babel/helpers": "^7.26.10",

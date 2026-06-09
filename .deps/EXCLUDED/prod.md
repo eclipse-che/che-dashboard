@@ -2,8 +2,6 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 
 | Packages | Resolved CQs |
 | --- | --- |
-| `@fastify/busboy@3.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/busboy/3.0.1) |
-| `@isaacs/brace-expansion@5.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@isaacs/brace-expansion/5.0.1) |
 | `any-signal@4.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/any-signal/4.2.0) |
 | `cronstrue@3.13.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cronstrue/3.13.0) |
 | `fast-uri@2.4.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-uri/2.4.0) |
@@ -15,3 +13,8 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 
 
 
+| `@commitlint/config-conventional@21.0.2` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@commitlint/config-conventional/21.0.2) |
+| `@commitlint/types@21.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@commitlint/types/21.0.1) |
+| `@simple-libs/stream-utils@1.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@simple-libs/stream-utils/1.2.0) |
+| `conventional-changelog-conventionalcommits@9.3.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/conventional-changelog-conventionalcommits/9.3.1) |
+| `conventional-commits-parser@6.4.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/conventional-commits-parser/6.4.0) |

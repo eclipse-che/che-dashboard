@@ -3,6 +3,7 @@
     "jsx": "react",
     "strict": true,
     "noImplicitAny": true,
+    "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -13,6 +14,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "noEmit": false,
-    "sourceMap": true,
-  },
+    "sourceMap": true
+  }
 }
