@@ -179,6 +179,53 @@ describe('Workspaces List Container', () => {
       );
     });
 
+    it('should use resource name (metadata.name) for renamed workspaces, not display name', async () => {
+      mockedBackupApi.getBackupConfig.mockResolvedValue({
+        enabled: true,
+        schedule: '0 1 * * *',
+        registry: 'registry.example.com',
+      });
+      mockedBackupApi.getWorkspaceBackupStatus.mockResolvedValue({
+        status: BackupStatus.NEVER,
+        backupSchedule: '0 1 * * *',
+      });
+
+      const workspaces = [
+        new DevWorkspaceBuilder()
+          .withName('original-k8s-name')
+          .withNamespace('user-che')
+          .withUID('uid-renamed')
+          .withMetadata({
+            labels: {
+              'kubernetes.io/metadata.name': 'user-display-name',
+            },
+          })
+          .build(),
+      ];
+      const store = new MockStoreBuilder({
+        backups: {
+          ...backupsUnloadedState,
+          backupConfig: {
+            enabled: true,
+            schedule: '0 1 * * *',
+            registry: 'registry.example.com',
+          },
+        },
+      })
+        .withDevWorkspaces({ workspaces }, false)
+        .withWorkspaces({}, false)
+        .build();
+
+      renderComponent(store);
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockedBackupApi.getWorkspaceBackupStatus).toHaveBeenCalledWith(
+        'user-che',
+        'original-k8s-name',
+      );
+    });
+
     it('should not fetch backup statuses when backup config has no registry', () => {
       mockedBackupApi.getBackupConfig.mockResolvedValue({
         enabled: false,

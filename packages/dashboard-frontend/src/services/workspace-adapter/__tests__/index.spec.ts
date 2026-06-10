@@ -180,6 +180,30 @@ describe('for DevWorkspace', () => {
     expect(workspace.name).toEqual('new-name');
   });
 
+  it('should return resourceName from metadata.name even when label overrides name', () => {
+    const metadataName = 'original-k8s-name';
+    const displayName = 'renamed-display-name';
+    const devWorkspace = new DevWorkspaceBuilder()
+      .withMetadata({
+        labels: {
+          [DEVWORKSPACE_LABEL_METADATA_NAME]: displayName,
+        },
+        name: metadataName,
+      })
+      .build();
+    const workspace = constructWorkspace(devWorkspace);
+    expect(workspace.name).toEqual(displayName);
+    expect(workspace.resourceName).toEqual(metadataName);
+  });
+
+  it('should return resourceName equal to name when no label is set', () => {
+    const name = 'wksp-1234';
+    const devWorkspace = new DevWorkspaceBuilder().withName(name).build();
+    const workspace = constructWorkspace(devWorkspace);
+    expect(workspace.resourceName).toEqual(name);
+    expect(workspace.name).toEqual(name);
+  });
+
   it('should return namespace', () => {
     const namespace = 'test-namespace';
     const devWorkspace = new DevWorkspaceBuilder().withNamespace(namespace).build();

@@ -35,6 +35,7 @@ export interface Workspace {
   readonly id: string;
   readonly uid: string;
   name: string;
+  readonly resourceName: string;
   readonly namespace: string;
   readonly infrastructureNamespace: string;
   readonly created: number;
@@ -155,6 +156,10 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
       this.workspace.metadata.labels = {};
     }
     this.workspace.metadata.labels[DEVWORKSPACE_LABEL_METADATA_NAME] = name;
+  }
+
+  get resourceName(): string {
+    return this.workspace.metadata.name;
   }
 
   get namespace(): string {

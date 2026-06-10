@@ -198,7 +198,7 @@ describe('restoreWorkspaceFromBackup', () => {
     );
   });
 
-  test('should set the workspace name from the argument, not the devfile', async () => {
+  test('should auto-generate metadata.name and set display name label', async () => {
     await store.dispatch(
       restoreWorkspaceFromBackup(
         'user-ns',
@@ -210,7 +210,12 @@ describe('restoreWorkspaceFromBackup', () => {
 
     expect(DwApi.createWorkspace).toHaveBeenCalledWith(
       expect.objectContaining({
-        metadata: expect.objectContaining({ name: 'my-custom-name' }),
+        metadata: expect.objectContaining({
+          name: expect.stringMatching(/^my-custom-name-[a-z0-9]{4}$/),
+          labels: expect.objectContaining({
+            'kubernetes.io/metadata.name': 'my-custom-name',
+          }),
+        }),
       }),
     );
   });
