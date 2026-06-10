@@ -2,7 +2,10 @@
 
 ## Overview
 
-The `build-multiarch.sh` script builds Docker images for multiple architectures (AMD64 and ARM64) and pushes them to a container registry.
+The `build-multiarch.sh` script builds Docker images for multiple architectures (AMD64, ARM64, and s390x) and pushes them to a container registry.
+
+**Note**:
+The `linux/s390x` platform support is maintained by IBM. For s390x-specific build failures, or investigations, contact: Swapnil Singh([swapnilsingh-ibm](https://github.com/swapnilsingh-ibm)) or Sudharshan Muralidharan([sudharshanibm](https://github.com/sudharshanibm)).
 
 ## Prerequisites
 
@@ -26,7 +29,7 @@ The `build-multiarch.sh` script builds Docker images for multiple architectures 
 
 ### Multi-Architecture Build (Default)
 
-Build for both AMD64 and ARM64:
+Build for AMD64 and ARM64 (default):
 
 ```bash
 export IMAGE_REGISTRY_HOST=quay.io
@@ -34,14 +37,25 @@ export IMAGE_REGISTRY_USER_NAME=your-username
 ./run/build-multiarch.sh
 ```
 
-### Custom Platforms
+### Build with s390x Support
 
-Specify custom platforms:
+Include s390x architecture:
 
 ```bash
 export IMAGE_REGISTRY_HOST=quay.io
 export IMAGE_REGISTRY_USER_NAME=your-username
-export PLATFORMS=linux/amd64,linux/arm64,linux/ppc64le
+export PLATFORMS=linux/amd64,linux/arm64,linux/s390x
+./run/build-multiarch.sh
+```
+
+### Custom Platforms
+
+Specify any combination of supported platforms:
+
+```bash
+export IMAGE_REGISTRY_HOST=quay.io
+export IMAGE_REGISTRY_USER_NAME=your-username
+export PLATFORMS=linux/amd64,linux/arm64,linux/s390x,linux/ppc64le
 ./run/build-multiarch.sh
 ```
 
@@ -86,6 +100,8 @@ export CHE_DASHBOARD_IMAGE=quay.io/your-username/che-dashboard:TAG
 | `IMAGE_REGISTRY_USER_NAME` | Registry username/namespace | - | Yes |
 | `PLATFORMS` | Comma-separated list of platforms | `linux/amd64,linux/arm64` | No |
 | `IMAGE_TAG` | Custom image tag | `branch_timestamp` | No |
+
+**Note**: Official CI/CD builds include s390x. For local development, the default is `linux/amd64,linux/arm64` for faster builds. To include s390x locally, set `PLATFORMS=linux/amd64,linux/arm64,linux/s390x`.
 
 ## How It Works
 
@@ -187,7 +203,7 @@ jobs:
         env:
           IMAGE_REGISTRY_HOST: ${{ secrets.REGISTRY_HOST }}
           IMAGE_REGISTRY_USER_NAME: ${{ secrets.REGISTRY_USER }}
-          PLATFORMS: linux/amd64,linux/arm64
+          PLATFORMS: linux/amd64,linux/arm64,linux/s390x
         run: ./run/build-multiarch.sh
 ```
 

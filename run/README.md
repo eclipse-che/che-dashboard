@@ -4,6 +4,8 @@
 
 This directory contains scripts for building, testing, and deploying the Eclipse Che dashboard.
 
+**Supported Architectures**: AMD64, ARM64, s390x
+
 ## Scripts
 
 ### `patch.sh` - Build and Deploy Dashboard Image
@@ -38,9 +40,9 @@ export CHE_DASHBOARD_IMAGE=quay.io/username/che-dashboard:tag
 
 ### `build-multiarch.sh` - Multi-Architecture Build
 
-Builds and pushes multi-architecture images (AMD64 + ARM64).
+Builds and pushes multi-architecture images (AMD64, ARM64, and optionally s390x).
 
-**Quick Start:**
+**Quick Start (AMD64 + ARM64):**
 
 ```bash
 export IMAGE_REGISTRY_HOST=quay.io
@@ -48,10 +50,19 @@ export IMAGE_REGISTRY_USER_NAME=your-username
 ./run/build-multiarch.sh
 ```
 
-**Build for specific platforms:**
+**Build with s390x support:**
 
 ```bash
-export PLATFORMS=linux/amd64,linux/arm64
+export IMAGE_REGISTRY_HOST=quay.io
+export IMAGE_REGISTRY_USER_NAME=your-username
+export PLATFORMS=linux/amd64,linux/arm64,linux/s390x
+./run/build-multiarch.sh
+```
+
+**Build for a specific platform only:**
+
+```bash
+export PLATFORMS=linux/amd64
 ./run/build-multiarch.sh
 ```
 
@@ -111,11 +122,16 @@ Revert changes made by local development scripts.
 
 ## Multi-Architecture Build
 
-For multi-architecture builds supporting AMD64 and ARM64:
+For multi-architecture builds supporting AMD64, ARM64, and s390x:
 
 ```bash
+# Default: AMD64 + ARM64 (faster for local development)
 export IMAGE_REGISTRY_HOST=quay.io
 export IMAGE_REGISTRY_USER_NAME=your-username
+./run/build-multiarch.sh
+
+# With s390x (matches CI/CD builds)
+export PLATFORMS=linux/amd64,linux/arm64,linux/s390x
 ./run/build-multiarch.sh
 ```
 

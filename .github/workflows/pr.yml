@@ -102,7 +102,7 @@ jobs:
         name: "Set up QEMU"
         uses: docker/setup-qemu-action@v3
         with:
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64,linux/s390x
       -
         name: "Set up Docker Buildx"
         uses: docker/setup-buildx-action@v3
@@ -126,14 +126,14 @@ jobs:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
       -
-        name: "Build and push multi-arch image (linux/amd64, linux/arm64)"
+        name: "Build and push multi-arch image (linux/amd64, linux/arm64, linux/s390x)"
         uses: docker/build-push-action@v5
         with:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           context: ./${{ env.DIR_DASHBOARD }}
           file: ./${{ env.DIR_DASHBOARD }}/build/dockerfiles/Dockerfile
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64,linux/s390x
           push: true
           provenance: false
           tags: ${{ env.ORGANIZATION }}/che-dashboard:${{ env.IMAGE_VERSION }}
@@ -146,7 +146,7 @@ jobs:
             const dashboardImage = "${{ env.ORGANIZATION }}/che-dashboard:${{ env.IMAGE_VERSION }}";
             const patchCommand = `kubectl patch -n eclipse-che "checluster/eclipse-che" --type=json -p="[{\"op\": \"replace\", \"path\": \"/spec/components/dashboard/deployment\", \"value\": {containers: [{image: \"${dashboardImage}\", name: che-dashboard}]}}]"`;
             const text = `
-            Docker image build succeeded: **${dashboardImage}** (linux/amd64, linux/arm64)
+            Docker image build succeeded: **${dashboardImage}** (linux/amd64, linux/arm64, linux/s390x)
             <details>
             <summary>kubectl patch command</summary>
             
