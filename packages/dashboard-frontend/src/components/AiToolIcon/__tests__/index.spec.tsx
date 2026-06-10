@@ -48,6 +48,7 @@ const mockWorkspace: Workspace = {
   id: 'test-id',
   uid: 'test-uid',
   name: 'test-workspace',
+  resourceName: 'test-workspace',
   namespace: 'test-ns',
   infrastructureNamespace: 'test-ns',
   created: Date.now(),
