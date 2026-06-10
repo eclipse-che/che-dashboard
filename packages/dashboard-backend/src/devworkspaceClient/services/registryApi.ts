@@ -41,10 +41,17 @@ import {
   CoreV1API,
   prepareCoreV1API,
 } from '@/devworkspaceClient/services/helpers/prepareCoreV1API';
+import { logger } from '@/utils/logger';
 
 // ImageStream constants
 const IMAGESTREAM_GROUP = 'image.openshift.io';
 const IMAGESTREAM_VERSION = 'v1';
+
+// DWO always copies the configured auth secret into the workspace namespace under this name.
+// Reading it from the workspace namespace avoids 403 errors that occur when the Dashboard SA
+// tries to read the original secret from the operator namespace.
+// Source: github.com/devfile/devworkspace-operator/pkg/constants/metadata.go (DevWorkspaceBackupAuthSecretName)
+const BACKUP_REGISTRY_AUTH_SECRET_NAME = 'devworkspace-backup-registry-auth';
 
 interface IBackupImage {
   workspaceName: string;
@@ -113,13 +120,11 @@ export class RegistryApiService {
   private customObjectsApi: CustomObjectsApi;
   private saCustomObjectsApi: CustomObjectsApi;
   private coreV1Api: CoreV1API;
-  private saCoreV1Api: CoreV1API;
 
   constructor(kubeConfig: KubeConfig, saKubeConfig: KubeConfig) {
     this.customObjectsApi = kubeConfig.makeApiClient(CustomObjectsApi);
     this.saCustomObjectsApi = saKubeConfig.makeApiClient(CustomObjectsApi);
     this.coreV1Api = prepareCoreV1API(kubeConfig);
-    this.saCoreV1Api = prepareCoreV1API(saKubeConfig);
   }
 
   /**
@@ -177,7 +182,7 @@ export class RegistryApiService {
   /**
    * Get backup registry path and auth secret name from DevWorkspaceOperatorConfig
    */
-  private async getBackupRegistryPath(): Promise<{ registryPath: string; authSecret?: string }> {
+  private async getBackupRegistryPath(): Promise<{ registryPath: string }> {
     try {
       const response = await this.saCustomObjectsApi.getNamespacedCustomObject({
         group: DEVWORKSPACE_OPERATOR_CONFIG_GROUP,
@@ -191,13 +196,12 @@ export class RegistryApiService {
         throw new Error('Unexpected response format for DevWorkspaceOperatorConfig');
       }
       const registryPath = response.config?.workspace?.backupCronJob?.registry?.path;
-      const authSecret = response.config?.workspace?.backupCronJob?.registry?.authSecret;
 
       if (!registryPath) {
         throw new Error('Backup registry path not configured');
       }
 
-      return { registryPath: registryPath.replace(/\/+$/, ''), authSecret };
+      return { registryPath: registryPath.replace(/\/+$/, '') };
     } catch (e) {
       throw createError(
         e,
@@ -208,7 +212,12 @@ export class RegistryApiService {
   }
 
   /**
-   * Reads the registry auth credentials from the DWOC authSecret.
+   * Reads the registry auth credentials from the workspace-namespace copy of the auth secret.
+   * DWO copies the configured auth secret into every workspace namespace as
+   * `devworkspace-backup-registry-auth`, so we read it there with the user kubeconfig
+   * instead of attempting to read the original from the operator namespace (which the
+   * Dashboard SA is not permitted to access — 403 Forbidden).
+   *
    * Returns a pre-formed Authorization header value, or empty string.
    *
    * Lookup order:
@@ -216,11 +225,11 @@ export class RegistryApiService {
    * 2. .dockerconfigjson auths entry → "Basic <rawBase64>"  (standard docker creds)
    * 3. Neither present → ""  (public repos, no auth header sent)
    */
-  private async getRegistryCredentials(secretName: string, registryHost: string): Promise<string> {
+  private async getRegistryCredentials(namespace: string, registryHost: string): Promise<string> {
     try {
-      const secret = await this.saCoreV1Api.readNamespacedSecret({
-        name: secretName,
-        namespace: dwoNamespace,
+      const secret = await this.coreV1Api.readNamespacedSecret({
+        name: BACKUP_REGISTRY_AUTH_SECRET_NAME,
+        namespace,
       });
 
       // 1. Preferred: dedicated OAuth/robot API token
@@ -242,7 +251,13 @@ export class RegistryApiService {
       }
 
       return `Basic ${authEntry.auth.trim()}`;
-    } catch {
+    } catch (error) {
+      logger.warn(
+        error,
+        'Failed to read backup auth secret "%s" in namespace "%s"',
+        BACKUP_REGISTRY_AUTH_SECRET_NAME,
+        namespace,
+      );
       return '';
     }
   }
@@ -316,21 +331,21 @@ export class RegistryApiService {
       // Step 1: Read DWOC registry config. If backup is not configured (or DWOC is not
       // accessible), return an empty list immediately — no point querying user-namespace data.
       let registryPath: string;
-      let authSecret: string | undefined;
       try {
-        ({ registryPath, authSecret } = await this.getBackupRegistryPath());
+        ({ registryPath } = await this.getBackupRegistryPath());
       } catch {
         return [];
       }
 
-      // Step 2: Get registry credentials for external registries
+      // Step 2: Get registry credentials for external registries.
+      // We always attempt to read the workspace-namespace copy of the auth secret
+      // (regardless of whether DWOC configured an authSecret), since DWO copies it
+      // unconditionally. If the secret does not exist, getRegistryCredentials returns ''.
       const registryType = detectRegistryType(registryPath);
       let registryClient: IExternalRegistryClient | undefined;
       if (registryType !== 'openshift-internal') {
         const registryHost = registryPath.split('/')[0];
-        const authHeader = authSecret
-          ? await this.getRegistryCredentials(authSecret, registryHost)
-          : '';
+        const authHeader = await this.getRegistryCredentials(namespace, registryHost);
         registryClient = createRegistryClient(registryPath, authHeader);
       }
 
