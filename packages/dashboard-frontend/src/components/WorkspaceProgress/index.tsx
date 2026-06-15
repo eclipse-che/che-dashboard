@@ -22,6 +22,7 @@ import CommonStepCheckRunningWorkspacesLimit from '@/components/WorkspaceProgres
 import CreatingStepApplyDevfile from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile';
 import CreatingStepApplyResources from '@/components/WorkspaceProgress/CreatingSteps/Apply/Resources';
 import CreatingStepCheckExistingWorkspaces from '@/components/WorkspaceProgress/CreatingSteps/CheckExistingWorkspaces';
+import CreatingStepCheckSccPermission from '@/components/WorkspaceProgress/CreatingSteps/CheckSccPermission';
 import CreatingStepCreateWorkspace from '@/components/WorkspaceProgress/CreatingSteps/CreateWorkspace';
 import CreatingStepFetchDevfile from '@/components/WorkspaceProgress/CreatingSteps/Fetch/Devfile';
 import CreatingStepFetchResources from '@/components/WorkspaceProgress/CreatingSteps/Fetch/Resources';
@@ -80,6 +81,7 @@ export enum Step {
   CREATE = 'create',
   FETCH = 'fetch',
   CONFLICT_CHECK = 'conflict-check',
+  SCC_CHECK = 'scc-check',
   APPLY = 'apply',
   START = 'start',
   OPEN = 'open',
@@ -182,6 +184,7 @@ class Progress extends React.Component<Props, State> {
       [Step.CREATE]: 'Creating a workspace',
       [Step.FETCH]: 'Fetching a devfile',
       [Step.CONFLICT_CHECK]: 'Checking existing workspaces',
+      [Step.SCC_CHECK]: 'Waiting for namespace provisioning to complete',
       [Step.APPLY]: 'Applying a devfile',
       [Step.START]: 'Waiting for workspace to start',
       [Step.OPEN]: 'Open IDE',
@@ -479,6 +482,7 @@ class Progress extends React.Component<Props, State> {
     const steps = [
       usePrebuiltResources ? this.getFactoryFetchResources() : this.getFactoryFetchDevfile(),
       this.getCheckExistingWorkspacesStep(),
+      this.getCheckSccPermissionStep(),
       usePrebuiltResources ? this.getFactoryApplyResources() : this.getFactoryApplyDevfile(),
     ];
 
@@ -527,6 +531,30 @@ class Progress extends React.Component<Props, State> {
           onHideError={alertId => this.handleCloseStepAlert(alertId)}
           onNextStep={() => this.handleStepsGoToNext(Step.CONFLICT_CHECK)}
           onRestart={tab => this.handleStepsRestart(Step.CONFLICT_CHECK, tab)}
+        />
+      ),
+      component: <></>,
+    };
+  }
+
+  private getCheckSccPermissionStep(): WorkspaceProgressWizardStep {
+    const { location, navigate } = this.props;
+    const distance = this.getDistance(Step.SCC_CHECK);
+
+    return {
+      id: Step.SCC_CHECK,
+      isFinishedStep: distance === 1,
+      name: (
+        <CreatingStepCheckSccPermission
+          distance={distance}
+          hasChildren={false}
+          location={location}
+          navigate={navigate}
+          onError={alertItem => this.handleStepsShowAlert(Step.SCC_CHECK, alertItem)}
+          onWarning={alertItem => this.handleStepsShowWarning(Step.SCC_CHECK, alertItem)}
+          onHideError={key => this.handleCloseStepAlert(key)}
+          onNextStep={() => this.handleStepsGoToNext(Step.SCC_CHECK)}
+          onRestart={tab => this.handleStepsRestart(Step.SCC_CHECK, tab)}
         />
       ),
       component: <></>,
