@@ -523,6 +523,7 @@ export interface IDevWorkspaceClient {
   editorsApi: IEditorsApi;
   aiProviderKeyApi: IAiProviderKeyApi;
   aiRegistryApi: IAiRegistryApi;
+  sccPermissionApi: ISccPermissionApi;
 }
 
 export interface IDevWorkspaceSingletonClient {
@@ -617,6 +618,14 @@ export interface IAiProviderKeyApi {
    * Deletes the API key Secret for the given provider from the given namespace.
    */
   delete(namespace: string, providerId: string): Promise<void>;
+}
+
+export interface ISccPermissionApi {
+  /**
+   * Checks whether the current user has 'use' permission on a specific SCC
+   * via SelfSubjectAccessReview.
+   */
+  checkSccPermission(namespace: string, sccName: string): Promise<boolean>;
 }
 
 export interface IBackupApi {
