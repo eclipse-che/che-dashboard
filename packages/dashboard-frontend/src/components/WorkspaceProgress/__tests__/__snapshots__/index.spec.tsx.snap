@@ -347,6 +347,67 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
                   <span
                     data-testid="step-name"
                   >
+                    Creating step: Check SCC permission
+                  </span>
+                  <input
+                    data-testid="onError"
+                    name="onError"
+                    onClick={[Function]}
+                    type="button"
+                    value="onError"
+                  />
+                  <input
+                    data-testid="onWarning"
+                    name="onWarning"
+                    onClick={[Function]}
+                    type="button"
+                    value="onWarning"
+                  />
+                  <input
+                    data-testid="onRestart"
+                    name="onRestart"
+                    onClick={[Function]}
+                    type="button"
+                    value="onRestart"
+                  />
+                  <input
+                    data-testid="onNextStep"
+                    name=" onNextStep"
+                    onClick={[Function]}
+                    type="button"
+                    value="onNextStep"
+                  />
+                </div>
+              </span>
+            </button>
+          </li>
+          <li
+            className="pf-v6-c-wizard__nav-item"
+          >
+            <button
+              aria-current={false}
+              aria-disabled={true}
+              className="pf-v6-c-wizard__nav-link pf-m-disabled"
+              data-ouia-component-id="OUIA-Generated-WizardNavItem-7"
+              data-ouia-component-type="PF6/WizardNavItem"
+              data-ouia-safe={true}
+              disabled={true}
+              onClick={[Function]}
+            >
+              <span
+                className="pf-v6-c-wizard__nav-link-main"
+              >
+                <div
+                  data-testid="progress-step"
+                >
+                  <span
+                    data-testid="step-distance"
+                  >
+                    -1
+                  </span>
+                  <span
+                    data-testid="step-name"
+                  >
                     Creating step: Apply devfile
                   </span>
                   <input
@@ -390,7 +451,7 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
           aria-current={false}
           aria-disabled={null}
           className="pf-v6-c-wizard__nav-link"
-          data-ouia-component-id="OUIA-Generated-WizardNavItem-7"
+          data-ouia-component-id="OUIA-Generated-WizardNavItem-8"
           data-ouia-component-type="PF6/WizardNavItem"
           data-ouia-safe={true}
           disabled={false}
@@ -451,7 +512,7 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
           aria-current={false}
           aria-disabled={null}
           className="pf-v6-c-wizard__nav-link"
-          data-ouia-component-id="OUIA-Generated-WizardNavItem-8"
+          data-ouia-component-id="OUIA-Generated-WizardNavItem-9"
           data-ouia-component-type="PF6/WizardNavItem"
           data-ouia-safe={true}
           disabled={false}
@@ -529,7 +590,7 @@ exports[`LoaderProgress workspace starting flow snapshot 1`] = `
           aria-current="step"
           aria-disabled={null}
           className="pf-v6-c-wizard__nav-link pf-m-current"
-          data-ouia-component-id="OUIA-Generated-WizardNavItem-118"
+          data-ouia-component-id="OUIA-Generated-WizardNavItem-132"
           data-ouia-component-type="PF6/WizardNavItem"
           data-ouia-safe={true}
           disabled={false}
@@ -590,7 +651,7 @@ exports[`LoaderProgress workspace starting flow snapshot 1`] = `
           aria-current={false}
           aria-disabled={null}
           className="pf-v6-c-wizard__nav-link"
-          data-ouia-component-id="OUIA-Generated-WizardNavItem-119"
+          data-ouia-component-id="OUIA-Generated-WizardNavItem-133"
           data-ouia-component-type="PF6/WizardNavItem"
           data-ouia-safe={true}
           disabled={false}
@@ -651,7 +712,7 @@ exports[`LoaderProgress workspace starting flow snapshot 1`] = `
           aria-current={false}
           aria-disabled={null}
           className="pf-v6-c-wizard__nav-link"
-          data-ouia-component-id="OUIA-Generated-WizardNavItem-120"
+          data-ouia-component-id="OUIA-Generated-WizardNavItem-134"
           data-ouia-component-type="PF6/WizardNavItem"
           data-ouia-safe={true}
           disabled={false}
@@ -712,7 +773,7 @@ exports[`LoaderProgress workspace starting flow snapshot 1`] = `
           aria-current={false}
           aria-disabled={null}
           className="pf-v6-c-wizard__nav-link"
-          data-ouia-component-id="OUIA-Generated-WizardNavItem-121"
+          data-ouia-component-id="OUIA-Generated-WizardNavItem-135"
           data-ouia-component-type="PF6/WizardNavItem"
           data-ouia-safe={true}
           disabled={false}

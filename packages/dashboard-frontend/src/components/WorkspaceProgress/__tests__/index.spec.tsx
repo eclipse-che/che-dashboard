@@ -41,6 +41,7 @@ jest.mock('../CommonSteps/CheckRunningWorkspacesLimit');
 jest.mock('../CreatingSteps/Apply/Devfile');
 jest.mock('../CreatingSteps/Apply/Resources');
 jest.mock('../CreatingSteps/CheckExistingWorkspaces');
+jest.mock('../CreatingSteps/CheckSccPermission');
 jest.mock('../CreatingSteps/CreateWorkspace');
 jest.mock('../CreatingSteps/Fetch/Devfile');
 jest.mock('../CreatingSteps/Fetch/Resources');
@@ -98,7 +99,7 @@ describe('LoaderProgress', () => {
 
         const steps = getSteps();
 
-        expect(steps.length).toEqual(8);
+        expect(steps.length).toEqual(9);
 
         expect(within(steps[0]).getByTestId('step-name')).toHaveTextContent('Initialize');
         expect(within(steps[1]).getByTestId('step-name')).toHaveTextContent(
@@ -109,9 +110,10 @@ describe('LoaderProgress', () => {
         expect(within(steps[4]).getByTestId('step-name')).toHaveTextContent(
           'Check existing workspaces',
         );
-        expect(within(steps[5]).getByTestId('step-name')).toHaveTextContent('Apply devfile');
-        expect(within(steps[6]).getByTestId('step-name')).toHaveTextContent('Start workspace');
-        expect(within(steps[7]).getByTestId('step-name')).toHaveTextContent('Open workspace');
+        expect(within(steps[5]).getByTestId('step-name')).toHaveTextContent('Check SCC permission');
+        expect(within(steps[6]).getByTestId('step-name')).toHaveTextContent('Apply devfile');
+        expect(within(steps[7]).getByTestId('step-name')).toHaveTextContent('Start workspace');
+        expect(within(steps[8]).getByTestId('step-name')).toHaveTextContent('Open workspace');
       });
 
       test('flow with resources', () => {
@@ -120,20 +122,21 @@ describe('LoaderProgress', () => {
 
         const steps = getSteps();
 
-        expect(steps.length).toEqual(8);
+        expect(steps.length).toEqual(9);
 
         expect(within(steps[0]).getByTestId('step-name')).toHaveTextContent('Initialize');
         expect(within(steps[1]).getByTestId('step-name')).toHaveTextContent(
           'Check running workspaces limit',
         );
         expect(within(steps[2]).getByTestId('step-name')).toHaveTextContent('Create workspace');
-        expect(within(steps[3]).getByTestId('step-name')).toHaveTextContent('Fetch resources'); // <-- this is different
+        expect(within(steps[3]).getByTestId('step-name')).toHaveTextContent('Fetch resources');
         expect(within(steps[4]).getByTestId('step-name')).toHaveTextContent(
           'Check existing workspaces',
         );
-        expect(within(steps[5]).getByTestId('step-name')).toHaveTextContent('Apply resources'); // <-- this is different
-        expect(within(steps[6]).getByTestId('step-name')).toHaveTextContent('Start workspace');
-        expect(within(steps[7]).getByTestId('step-name')).toHaveTextContent('Open workspace');
+        expect(within(steps[5]).getByTestId('step-name')).toHaveTextContent('Check SCC permission');
+        expect(within(steps[6]).getByTestId('step-name')).toHaveTextContent('Apply resources');
+        expect(within(steps[7]).getByTestId('step-name')).toHaveTextContent('Start workspace');
+        expect(within(steps[8]).getByTestId('step-name')).toHaveTextContent('Open workspace');
       });
     });
 
@@ -365,6 +368,7 @@ describe('LoaderProgress', () => {
               Step.CREATE,
               Step.FETCH, // <-- hidden
               Step.CONFLICT_CHECK, // <-- hidden
+              Step.SCC_CHECK, // <-- hidden
               Step.APPLY, // <-- hidden
               Step.START, // <-- not 7th but 4th step, non-active
             ],
