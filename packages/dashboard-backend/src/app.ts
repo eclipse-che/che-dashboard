@@ -27,6 +27,7 @@ import { registerAiRegistryRoute } from '@/routes/api/aiRegistry';
 import { registerAirGapSampleRoute } from '@/routes/api/airGapSample';
 import { registerBackupRoutes } from '@/routes/api/backup';
 import { registerClusterConfigRoute } from '@/routes/api/clusterConfig';
+import { registerSccPermissionRoute } from '@/routes/api/sccPermission';
 import { registerClusterInfoRoute } from '@/routes/api/clusterInfo';
 import { registerDataResolverRoute } from '@/routes/api/dataResolver';
 import { registerDevWorkspaceClusterRoutes } from '@/routes/api/devworkspaceCluster';
@@ -142,6 +143,8 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
     registerAirGapSampleRoute(server),
 
     registerBackupRoutes(server),
+
+    registerSccPermissionRoute(server),
 
     registerAiConfigRoutes(server),
 
