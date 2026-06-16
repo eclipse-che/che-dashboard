@@ -143,6 +143,29 @@ describe('Creating steps, checking SCC permission', () => {
     expect(mockOnError).not.toHaveBeenCalled();
   });
 
+  test('reports error when permission is not granted within timeout', async () => {
+    mockCheckSccPermission.mockResolvedValue({ permitted: false });
+
+    const store = new MockStoreBuilder()
+      .withCurrentScc('container-build')
+      .withInfrastructureNamespace([
+        { name: 'user-che', attributes: { default: 'true', phase: 'Active' } },
+      ])
+      .build();
+
+    renderComponent(store);
+
+    await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+    // advance past the 60s timeout in 10s chunks to let the polling loop iterate
+    for (let i = 0; i < 12; i++) {
+      await jest.advanceTimersByTimeAsync(10_000);
+    }
+
+    await waitFor(() => expect(mockOnError).toHaveBeenCalled());
+    expect(mockOnNextStep).not.toHaveBeenCalled();
+  });
+
   test('renders step title text', () => {
     const store = new MockStoreBuilder()
       .withInfrastructureNamespace([
