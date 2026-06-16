@@ -15,11 +15,13 @@
 import { AxiosWrapper } from '@/services/axios-wrapper/axiosWrapper';
 import { dashboardBackendPrefix } from '@/services/backend-client/const';
 
+const axiosWrapper = AxiosWrapper.createToRetryAnyErrors();
+
 export async function checkSccPermission(
   namespace: string,
   sccName: string,
 ): Promise<{ permitted: boolean }> {
   const url = `${dashboardBackendPrefix}/namespace/${namespace}/scc-permission/${sccName}`;
-  const response = await AxiosWrapper.createToRetryAnyErrors().get(url);
+  const response = await axiosWrapper.get(url);
   return response.data;
 }
