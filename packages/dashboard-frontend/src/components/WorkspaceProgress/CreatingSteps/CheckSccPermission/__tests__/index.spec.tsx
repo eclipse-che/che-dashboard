@@ -43,18 +43,17 @@ const mockOnError = jest.fn();
 const mockOnWarning = jest.fn();
 const mockOnHideError = jest.fn();
 
-// mute console.warn for fail-open tests
-console.warn = jest.fn();
-
 describe('Creating steps, checking SCC permission', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     jest.clearAllMocks();
+    jest.spyOn(console, 'warn').mockImplementation();
   });
 
   afterEach(() => {
     jest.clearAllTimers();
     jest.useRealTimers();
+    jest.restoreAllMocks();
   });
 
   test('skips step immediately when no SCC is configured', async () => {
