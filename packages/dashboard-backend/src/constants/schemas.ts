@@ -381,3 +381,16 @@ export const namespacedWorkspacePreferencesTrustedSourceSchema: JSONSchema7 = {
   },
   required: ['source'],
 };
+
+export const namespacedSccSchema: JSONSchema7 = {
+  type: 'object',
+  properties: {
+    namespace: {
+      type: 'string',
+    },
+    scc: {
+      type: 'string',
+    },
+  },
+  required: ['namespace', 'scc'],
+};

@@ -15,6 +15,7 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 
 import { baseApiPath } from '@/constants/config';
+import { namespacedSccSchema } from '@/constants/schemas';
 import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
 import { getToken } from '@/routes/api/helpers/getToken';
 import { getSchema } from '@/services/helpers';
@@ -25,17 +26,7 @@ export function registerSccPermissionRoute(instance: FastifyInstance) {
   instance.register(async server => {
     server.get(
       `${baseApiPath}/namespace/:namespace/scc-permission/:scc`,
-      getSchema({
-        tags,
-        params: {
-          type: 'object',
-          properties: {
-            namespace: { type: 'string' },
-            scc: { type: 'string' },
-          },
-          required: ['namespace', 'scc'],
-        },
-      }),
+      getSchema({ tags, params: namespacedSccSchema }),
       async function (request: FastifyRequest) {
         const { namespace, scc } = request.params as { namespace: string; scc: string };
         const token = getToken(request);
