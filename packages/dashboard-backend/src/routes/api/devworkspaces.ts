@@ -21,7 +21,7 @@ import {
   namespacedWorkspaceSchema,
 } from '@/constants/schemas';
 import { restParams } from '@/models';
-import { getDevWorkspaceClient, getKubeConfig } from '@/routes/api/helpers/getDevWorkspaceClient';
+import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
 import { getToken } from '@/routes/api/helpers/getToken';
 import { getSchema } from '@/services/helpers';
 import { PostStartInjector } from '@/services/PostStartInjector';
@@ -68,9 +68,7 @@ export function registerDevworkspacesRoutes(instance: FastifyInstance) {
         // PATCH /spec/started=true (restart), missing first-time creation.
         const workspaceName = devWorkspace.metadata?.name;
         if (devworkspace.spec?.started === true && workspaceName) {
-          const kc = getKubeConfig(token);
           PostStartInjector.watchAndInject(
-            kc,
             namespace,
             workspaceName,
             dwClient.kubeConfigApi,
@@ -111,9 +109,7 @@ export function registerDevworkspacesRoutes(instance: FastifyInstance) {
 
         const isStarting = patch.some(p => p.path === '/spec/started' && p.value === true);
         if (isStarting) {
-          const kc = getKubeConfig(token);
           PostStartInjector.watchAndInject(
-            kc,
             namespace,
             workspaceName,
             dwClient.kubeConfigApi,

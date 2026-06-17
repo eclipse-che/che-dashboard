@@ -11,7 +11,6 @@
  */
 
 import { V1alpha2DevWorkspace } from '@devfile/api';
-import * as k8s from '@kubernetes/client-node';
 
 import { IKubeConfigApi, IPodmanApi } from '@/devworkspaceClient/types';
 import { PostStartInjector } from '@/services/PostStartInjector';
@@ -45,6 +44,8 @@ jest.mock('@kubernetes/client-node', () => {
   };
 });
 
+jest.mock('@/services/kubeclient/kubeConfigProvider');
+
 jest.mock('@/utils/logger', () => ({
   logger: {
     info: jest.fn(),
@@ -56,7 +57,6 @@ jest.mock('@/utils/logger', () => ({
 describe('PostStartInjector', () => {
   const namespace = 'user-che';
   const workspaceName = 'my-workspace';
-  let kc: k8s.KubeConfig;
   let kubeConfigApi: IKubeConfigApi;
   let podmanApi: IPodmanApi;
 
@@ -66,7 +66,6 @@ describe('PostStartInjector', () => {
     // Reset static map between tests
     (PostStartInjector as any).activeWatches = new Map();
 
-    kc = new k8s.KubeConfig();
     kubeConfigApi = {
       injectKubeConfig: jest.fn().mockResolvedValue(undefined),
     } as unknown as IKubeConfigApi;
@@ -80,7 +79,7 @@ describe('PostStartInjector', () => {
   });
 
   test('should set up a watch and register in activeWatches', () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+    PostStartInjector.watchAndInject(namespace, workspaceName, kubeConfigApi, podmanApi);
 
     expect(mockWatch).toHaveBeenCalledTimes(1);
     expect((PostStartInjector as any).activeWatches.has(`${namespace}/${workspaceName}`)).toBe(
@@ -89,14 +88,14 @@ describe('PostStartInjector', () => {
   });
 
   test('should skip if watch already active for the same workspace', () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+    PostStartInjector.watchAndInject(namespace, workspaceName, kubeConfigApi, podmanApi);
+    PostStartInjector.watchAndInject(namespace, workspaceName, kubeConfigApi, podmanApi);
 
     expect(mockWatch).toHaveBeenCalledTimes(1);
   });
 
   test('should inject kubeconfig and podman on Running phase', async () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+    PostStartInjector.watchAndInject(namespace, workspaceName, kubeConfigApi, podmanApi);
 
     const dw: V1alpha2DevWorkspace = {
       status: { phase: 'Running', devworkspaceId: 'workspace123' },
@@ -113,7 +112,7 @@ describe('PostStartInjector', () => {
   test('should handle injectKubeConfig failure gracefully', async () => {
     (kubeConfigApi.injectKubeConfig as jest.Mock).mockRejectedValue(new Error('kubeconfig failed'));
 
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+    PostStartInjector.watchAndInject(namespace, workspaceName, kubeConfigApi, podmanApi);
 
     const dw: V1alpha2DevWorkspace = {
       status: { phase: 'Running', devworkspaceId: 'workspace123' },
@@ -127,7 +126,7 @@ describe('PostStartInjector', () => {
   test('should handle podmanLogin failure gracefully', async () => {
     (podmanApi.podmanLogin as jest.Mock).mockRejectedValue(new Error('podman failed'));
 
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+    PostStartInjector.watchAndInject(namespace, workspaceName, kubeConfigApi, podmanApi);
 
     const dw: V1alpha2DevWorkspace = {
       status: { phase: 'Running', devworkspaceId: 'workspace123' },
@@ -141,7 +140,7 @@ describe('PostStartInjector', () => {
   });
 
   test('should skip injection if Running but no devworkspaceId', async () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+    PostStartInjector.watchAndInject(namespace, workspaceName, kubeConfigApi, podmanApi);
 
     const dw = {
       status: { phase: 'Running' },
@@ -153,7 +152,7 @@ describe('PostStartInjector', () => {
   });
 
   test('should cleanup on Failed phase', async () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+    PostStartInjector.watchAndInject(namespace, workspaceName, kubeConfigApi, podmanApi);
 
     const dw = {
       status: { phase: 'Failed' },
@@ -167,7 +166,7 @@ describe('PostStartInjector', () => {
   });
 
   test('should cleanup on ERROR event phase', async () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+    PostStartInjector.watchAndInject(namespace, workspaceName, kubeConfigApi, podmanApi);
 
     const dw: V1alpha2DevWorkspace = {};
     await watchCallback('ERROR', dw);
@@ -179,7 +178,7 @@ describe('PostStartInjector', () => {
   });
 
   test('should ignore non-terminal phases (e.g. Starting)', async () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+    PostStartInjector.watchAndInject(namespace, workspaceName, kubeConfigApi, podmanApi);
 
     const dw: V1alpha2DevWorkspace = {
       status: { phase: 'Starting', devworkspaceId: 'workspace123' },
@@ -193,7 +192,7 @@ describe('PostStartInjector', () => {
   });
 
   test('should cleanup on watch connection lost (done callback)', () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+    PostStartInjector.watchAndInject(namespace, workspaceName, kubeConfigApi, podmanApi);
 
     doneCallback(new Error('connection lost'));
 
@@ -203,7 +202,7 @@ describe('PostStartInjector', () => {
   });
 
   test('should store real AbortController from .then()', async () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+    PostStartInjector.watchAndInject(namespace, workspaceName, kubeConfigApi, podmanApi);
 
     watchPromiseResolve(mockAbortController);
     await Promise.resolve();
@@ -213,7 +212,7 @@ describe('PostStartInjector', () => {
   });
 
   test('should abort if watch already cleaned up before .then() fires', async () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+    PostStartInjector.watchAndInject(namespace, workspaceName, kubeConfigApi, podmanApi);
 
     // Simulate cleanup before .then() resolves
     (PostStartInjector as any).activeWatches.delete(`${namespace}/${workspaceName}`);
@@ -225,7 +224,7 @@ describe('PostStartInjector', () => {
   });
 
   test('should cleanup on watch .catch()', async () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+    PostStartInjector.watchAndInject(namespace, workspaceName, kubeConfigApi, podmanApi);
 
     watchPromiseReject(new Error('watch failed'));
     // Wait for microtask
@@ -237,7 +236,7 @@ describe('PostStartInjector', () => {
   });
 
   test('should cleanup on timeout', () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+    PostStartInjector.watchAndInject(namespace, workspaceName, kubeConfigApi, podmanApi);
 
     jest.advanceTimersByTime(60_000);
 

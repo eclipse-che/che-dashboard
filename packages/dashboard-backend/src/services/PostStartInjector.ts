@@ -20,6 +20,7 @@ import * as k8s from '@kubernetes/client-node';
 import { V1Status } from '@kubernetes/client-node';
 
 import { IKubeConfigApi, IPodmanApi } from '@/devworkspaceClient/types';
+import { KubeConfigProvider } from '@/services/kubeclient/kubeConfigProvider';
 import { logger } from '@/utils/logger';
 
 const INJECTION_TIMEOUT_MS = 60_000;
@@ -36,7 +37,6 @@ export class PostStartInjector {
   private static activeWatches = new Map<string, AbortController>();
 
   static watchAndInject(
-    kc: k8s.KubeConfig,
     namespace: string,
     workspaceName: string,
     kubeConfigApi: IKubeConfigApi,
@@ -49,7 +49,10 @@ export class PostStartInjector {
       return;
     }
 
-    const watch = new k8s.Watch(kc);
+    // Use the dashboard SA kubeconfig for the watch so that RBAC restrictions on
+    // the user's OAuth token cannot prevent the watch from succeeding.
+    const saKc = new KubeConfigProvider().getSAKubeConfig();
+    const watch = new k8s.Watch(saKc);
     const path = `/apis/${devworkspaceGroup}/${devworkspaceLatestVersion}/watch/namespaces/${namespace}/${devworkspacePlural}`;
     const queryParams = {
       watch: true,
