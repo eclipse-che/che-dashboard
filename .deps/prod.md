@@ -241,4 +241,3 @@
 | `use-sync-external-store@1.2.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/use-sync-external-store/1.2.2) |
 | `value-equal@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/value-equal/1.0.1) |
 | `w3c-keyname@2.2.8` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/w3c-keyname/2.2.8) |
-| `ws@8.18.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ws/8.18.0) |
