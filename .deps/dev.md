@@ -304,7 +304,6 @@
 | `aws-sign2@0.7.0` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/aws-sign2/0.7.0) |
 | `aws4@1.13.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/aws4/1.13.2) |
 | `axios-mock-adapter@1.22.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios-mock-adapter/1.22.0) |
-| `axios@1.15.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios/1.15.2) |
 | `b4a@1.7.3` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/b4a/1.7.3) |
 | `babel-jest@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/babel-jest/30.2.0) |
 | `babel-plugin-istanbul@7.0.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/babel-plugin-istanbul/7.0.1) |
@@ -873,7 +872,6 @@
 | `proc-log@4.2.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/proc-log/4.2.0) |
 | `promise-retry@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/promise-retry/2.0.1) |
 | `prop-types@15.8.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/prop-types/15.8.1) |
-| `proxy-from-env@2.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/proxy-from-env/2.1.0) |
 | `psl@1.15.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/psl/1.15.0) |
 | `psl@1.9.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/psl/1.9.0) |
 | `pstree.remy@1.1.8` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pstree.remy/1.1.8) |
