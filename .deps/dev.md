@@ -591,7 +591,6 @@
 | `ini@1.3.8` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ini/1.3.8) |
 | `internal-slot@1.0.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/internal-slot/1.0.6) |
 | `interpret@3.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/interpret/3.1.1) |
-| `ip-address@9.0.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ip-address/9.0.5) |
 | `is-array-buffer@3.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/is-array-buffer/3.0.2) |
 | `is-arrayish@0.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/is-arrayish/0.2.1) |
 | `is-async-function@2.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/is-async-function/2.0.0) |
@@ -686,7 +685,6 @@
 | `js-tokens@4.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/js-tokens/4.0.0) |
 | `js-yaml@4.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/js-yaml/4.1.1) |
 | `jsbn@0.1.1` | MIT AND MIT-Wu | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsbn/0.1.1) |
-| `jsbn@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsbn/1.1.0) |
 | `jsdom@20.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsdom/20.0.3) |
 | `jsesc@2.5.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsesc/2.5.2) |
 | `jsesc@3.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsesc/3.1.0) |
@@ -719,7 +717,7 @@
 | `lodash.isplainobject@4.0.6` | CC0-1.0 AND MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lodash.isplainobject/4.0.6) |
 | `lodash.memoize@4.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lodash.memoize/4.1.2) |
 | `lodash.merge@4.6.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lodash.merge/4.6.2) |
-| `lodash.truncate@4.4.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lodash.truncate/4.4.2) |
+| `lodash.truncate@4.4.2` | CC0-1.0 AND MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lodash.truncate/4.4.2) |
 | `lodash.uniq@4.5.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lodash.uniq/4.5.0) |
 | `loglevel@1.9.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/loglevel/1.9.2) |
 | `loose-envify@1.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/loose-envify/1.4.0) |
@@ -958,7 +956,6 @@
 | `source-map@0.6.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/source-map/0.6.1) |
 | `source-map@0.7.4` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/source-map/0.7.4) |
 | `speed-measure-webpack-plugin@1.5.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/speed-measure-webpack-plugin/1.5.0) |
-| `sprintf-js@1.1.3` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sprintf-js/1.1.3) |
 | `sshpk@1.18.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sshpk/1.18.0) |
 | `ssri@10.0.5` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ssri/10.0.5) |
 | `stack-utils@2.0.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/stack-utils/2.0.6) |
