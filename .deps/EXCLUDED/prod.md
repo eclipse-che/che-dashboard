@@ -2,7 +2,6 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 
 | Packages | Resolved CQs |
 | --- | --- |
-| `@eclipse-che/che-devworkspace-generator@7.113.0-next-7b6a101` | ecd.che |
 | `@fastify/busboy@3.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/busboy/3.0.1) |
 | `@isaacs/brace-expansion@5.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@isaacs/brace-expansion/5.0.1) |
 | `any-signal@4.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/any-signal/4.2.0) |
@@ -10,4 +9,5 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `fast-uri@2.4.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-uri/2.4.0) |
 | `fastify-plugin@5.2.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/5.2.1) |
 | `jsep@1.3.9` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsep/1.3.9) |
+
 
