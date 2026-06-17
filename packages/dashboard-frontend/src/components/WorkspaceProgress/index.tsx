@@ -184,7 +184,7 @@ class Progress extends React.Component<Props, State> {
       [Step.CREATE]: 'Creating a workspace',
       [Step.FETCH]: 'Fetching a devfile',
       [Step.CONFLICT_CHECK]: 'Checking existing workspaces',
-      [Step.SCC_CHECK]: 'Waiting for namespace provisioning to complete',
+      [Step.SCC_CHECK]: 'Waiting for SCC permission',
       [Step.APPLY]: 'Applying a devfile',
       [Step.START]: 'Waiting for workspace to start',
       [Step.OPEN]: 'Open IDE',

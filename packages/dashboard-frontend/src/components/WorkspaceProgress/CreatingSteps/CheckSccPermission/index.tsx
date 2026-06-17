@@ -37,7 +37,7 @@ export type Props = MappedProps & ProgressStepProps;
 export type State = ProgressStepState;
 
 class CreatingStepCheckSccPermission extends ProgressStep<Props, State> {
-  protected readonly name = 'Waiting for namespace provisioning to complete';
+  protected readonly name = 'Waiting for SCC permission';
 
   constructor(props: Props) {
     super(props);
@@ -98,6 +98,9 @@ class CreatingStepCheckSccPermission extends ProgressStep<Props, State> {
     }
 
     const namespace = defaultNamespace.name;
+    this.setState({
+      name: `Waiting for permission to use the '${currentScc}' SCC`,
+    });
     const startTime = Date.now();
 
     while (Date.now() - startTime < SCC_POLL_TIMEOUT_MS) {
@@ -115,7 +118,7 @@ class CreatingStepCheckSccPermission extends ProgressStep<Props, State> {
     }
 
     throw new Error(
-      'Namespace provisioning did not complete in time. Please try again in a moment.',
+      `Timed out waiting for permission to use the '${currentScc}' SCC. Please try again in a moment.`,
     );
   }
 

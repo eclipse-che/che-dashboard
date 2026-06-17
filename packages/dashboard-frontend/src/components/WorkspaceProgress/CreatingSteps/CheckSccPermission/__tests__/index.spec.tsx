@@ -175,7 +175,7 @@ describe('Creating steps, checking SCC permission', () => {
 
     renderComponent(store);
 
-    expect(screen.getByText('Waiting for namespace provisioning to complete')).toBeInTheDocument();
+    expect(screen.getByText('Waiting for SCC permission')).toBeInTheDocument();
   });
 });
 
