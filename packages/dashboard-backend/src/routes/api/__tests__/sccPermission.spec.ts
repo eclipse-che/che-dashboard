@@ -13,6 +13,8 @@
 import { FastifyInstance } from 'fastify';
 
 import { baseApiPath } from '@/constants/config';
+import { DevWorkspaceClient } from '@/devworkspaceClient';
+import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
 import { setup, teardown } from '@/utils/appBuilder';
 
 jest.mock('../helpers/getToken.ts');
@@ -33,12 +35,45 @@ describe('SCC Permission Route', () => {
     jest.clearAllMocks();
   });
 
-  test(`GET ${baseApiPath}/namespace/:namespace/scc-permission/:scc`, async () => {
+  test(`GET ${baseApiPath}/namespace/:namespace/scc-permission/:scc - permitted`, async () => {
     const res = await app
       .inject()
       .get(`${baseApiPath}/namespace/${namespace}/scc-permission/${scc}`);
 
     expect(res.statusCode).toEqual(200);
     expect(res.json()).toEqual({ permitted: true });
+  });
+
+  test(`GET ${baseApiPath}/namespace/:namespace/scc-permission/:scc - denied`, async () => {
+    (getDevWorkspaceClient as jest.Mock).mockImplementationOnce(() => {
+      return {
+        sccPermissionApi: {
+          checkSccPermission: () => Promise.resolve(false),
+        },
+      } as unknown as DevWorkspaceClient;
+    });
+
+    const res = await app
+      .inject()
+      .get(`${baseApiPath}/namespace/${namespace}/scc-permission/${scc}`);
+
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toEqual({ permitted: false });
+  });
+
+  test(`GET ${baseApiPath}/namespace/:namespace/scc-permission/:scc - API error`, async () => {
+    (getDevWorkspaceClient as jest.Mock).mockImplementationOnce(() => {
+      return {
+        sccPermissionApi: {
+          checkSccPermission: () => Promise.reject(new Error('K8s API unreachable')),
+        },
+      } as unknown as DevWorkspaceClient;
+    });
+
+    const res = await app
+      .inject()
+      .get(`${baseApiPath}/namespace/${namespace}/scc-permission/${scc}`);
+
+    expect(res.statusCode).toEqual(500);
   });
 });
