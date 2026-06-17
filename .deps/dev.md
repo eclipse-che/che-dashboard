@@ -719,7 +719,7 @@
 | `lodash.isplainobject@4.0.6` | CC0-1.0 AND MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lodash.isplainobject/4.0.6) |
 | `lodash.memoize@4.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lodash.memoize/4.1.2) |
 | `lodash.merge@4.6.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lodash.merge/4.6.2) |
-| `lodash.truncate@4.4.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lodash.truncate/4.4.2) |
+| `lodash.truncate@4.4.2` | CC0-1.0 AND MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lodash.truncate/4.4.2) |
 | `lodash.uniq@4.5.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lodash.uniq/4.5.0) |
 | `loglevel@1.9.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/loglevel/1.9.2) |
 | `loose-envify@1.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/loose-envify/1.4.0) |
