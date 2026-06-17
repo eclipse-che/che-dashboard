@@ -12,7 +12,7 @@
 | `@codemirror/theme-one-dark@6.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/theme-one-dark/6.1.2) |
 | `@codemirror/view@6.37.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/view/6.37.1) |
 | `@devfile/api@2.3.0-1757407014` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@devfile/api/2.3.0-1757407014) |
-| `@eclipse-che/che-devworkspace-generator@7.113.0-next-7b6a101` | Apache-2.0 AND EPL-2.0 | ecd.che |
+| `@eclipse-che/che-devworkspace-generator@7.113.0-next-7b6a101` | Apache-2.0 AND EPL-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@eclipse-che/che-devworkspace-generator/7.113.0-next-7b6a101) |
 | `@fastify/accept-negotiator@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/accept-negotiator/2.0.1) |
 | `@fastify/ajv-compiler@4.0.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/ajv-compiler/4.0.5) |
 | `@fastify/cookie@11.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/cookie/11.0.2) |
@@ -74,7 +74,6 @@
 | `atomic-sleep@1.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/atomic-sleep/1.0.0) |
 | `attr-accept@2.2.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/attr-accept/2.2.5) |
 | `avvio@9.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/avvio/9.2.0) |
-| `axios@1.15.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios/1.15.2) |
 | `brorand@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/brorand/1.1.0) |
 | `browserify-aes@1.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/browserify-aes/1.2.0) |
 | `browserify-cipher@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/browserify-cipher/1.0.1) |
