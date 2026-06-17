@@ -8,3 +8,8 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 
 
 
+| `@babel/helper-compilation-targets@7.29.7` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-compilation-targets/7.29.7) |
+| `@babel/helper-module-transforms@7.29.7` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-module-transforms/7.29.7) |
+| `@babel/helper-validator-option@7.29.7` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-validator-option/7.29.7) |
+| `@babel/traverse@7.29.7` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/traverse/7.29.7) |
+
