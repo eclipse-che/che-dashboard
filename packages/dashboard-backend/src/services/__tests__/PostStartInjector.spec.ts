@@ -15,6 +15,16 @@ import { V1alpha2DevWorkspace } from '@devfile/api';
 import { IKubeConfigApi, IPodmanApi } from '@/devworkspaceClient/types';
 import { PostStartInjector } from '@/services/PostStartInjector';
 
+const mockGetByName = jest.fn();
+
+jest.mock('@/devworkspaceClient', () => ({
+  DevWorkspaceClient: jest.fn().mockImplementation(() => ({
+    devworkspaceApi: {
+      getByName: mockGetByName,
+    },
+  })),
+}));
+
 type WatchCallback = (phase: string, obj: V1alpha2DevWorkspace) => Promise<void>;
 type DoneCallback = (error: unknown) => void;
 
@@ -223,15 +233,18 @@ describe('PostStartInjector', () => {
     expect(mockAbortController.abort).toHaveBeenCalled();
   });
 
-  test('should cleanup on watch .catch()', async () => {
+  test('should start polling fallback on watch .catch()', async () => {
+    mockGetByName.mockResolvedValue({ status: { phase: 'Starting' } });
+
     PostStartInjector.watchAndInject(namespace, workspaceName, kubeConfigApi, podmanApi);
 
     watchPromiseReject(new Error('watch failed'));
-    // Wait for microtask
+    // Wait for microtask queue to flush
     await Promise.resolve().then(() => Promise.resolve());
 
+    // Key stays registered because polling fallback took over
     expect((PostStartInjector as any).activeWatches.has(`${namespace}/${workspaceName}`)).toBe(
-      false,
+      true,
     );
   });
 
@@ -243,5 +256,89 @@ describe('PostStartInjector', () => {
     expect((PostStartInjector as any).activeWatches.has(`${namespace}/${workspaceName}`)).toBe(
       false,
     );
+  });
+
+  describe('polling fallback', () => {
+    beforeEach(() => {
+      mockGetByName.mockReset();
+    });
+
+    function triggerWatchFailure(): Promise<void> {
+      PostStartInjector.watchAndInject(namespace, workspaceName, kubeConfigApi, podmanApi);
+      watchPromiseReject(new Error('watch failed'));
+      return Promise.resolve().then(() => Promise.resolve());
+    }
+
+    test('should start polling when watch fails', async () => {
+      mockGetByName.mockResolvedValue({ status: { phase: 'Starting' } });
+
+      await triggerWatchFailure();
+
+      expect((PostStartInjector as any).activeWatches.has(`${namespace}/${workspaceName}`)).toBe(
+        true,
+      );
+    });
+
+    test('should inject on Running phase during polling', async () => {
+      mockGetByName.mockResolvedValue({
+        status: { phase: 'Running', devworkspaceId: 'ws-poll-id' },
+      });
+
+      await triggerWatchFailure();
+      jest.advanceTimersByTime(10_000);
+      await Promise.resolve().then(() => Promise.resolve());
+
+      expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-poll-id');
+      expect(podmanApi.podmanLogin).toHaveBeenCalledWith(namespace, 'ws-poll-id');
+      expect((PostStartInjector as any).activeWatches.has(`${namespace}/${workspaceName}`)).toBe(
+        false,
+      );
+    });
+
+    test.each(['Failed', 'Failing', 'Stopped', 'Stopping', 'Terminating'])(
+      'should stop polling without injection on %s phase',
+      async phase => {
+        mockGetByName.mockResolvedValue({ status: { phase } });
+
+        await triggerWatchFailure();
+        jest.advanceTimersByTime(10_000);
+        await Promise.resolve().then(() => Promise.resolve());
+
+        expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
+        expect((PostStartInjector as any).activeWatches.has(`${namespace}/${workspaceName}`)).toBe(
+          false,
+        );
+      },
+    );
+
+    test('should stop polling after 300s timeout', async () => {
+      mockGetByName.mockResolvedValue({ status: { phase: 'Starting' } });
+
+      await triggerWatchFailure();
+      jest.advanceTimersByTime(300_000);
+
+      expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
+      expect((PostStartInjector as any).activeWatches.has(`${namespace}/${workspaceName}`)).toBe(
+        false,
+      );
+    });
+
+    test('should retry after a GET error during polling', async () => {
+      mockGetByName
+        .mockRejectedValueOnce(new Error('network error'))
+        .mockResolvedValue({ status: { phase: 'Running', devworkspaceId: 'ws-retry-id' } });
+
+      await triggerWatchFailure();
+
+      // First poll: GET fails, key stays registered
+      jest.advanceTimersByTime(10_000);
+      await Promise.resolve().then(() => Promise.resolve());
+      expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
+
+      // Second poll: GET succeeds with Running
+      jest.advanceTimersByTime(10_000);
+      await Promise.resolve().then(() => Promise.resolve());
+      expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-retry-id');
+    });
   });
 });

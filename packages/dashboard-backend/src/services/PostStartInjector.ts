@@ -19,11 +19,22 @@ import {
 import * as k8s from '@kubernetes/client-node';
 import { V1Status } from '@kubernetes/client-node';
 
+import { DevWorkspaceClient } from '@/devworkspaceClient';
 import { IKubeConfigApi, IPodmanApi } from '@/devworkspaceClient/types';
 import { KubeConfigProvider } from '@/services/kubeclient/kubeConfigProvider';
 import { logger } from '@/utils/logger';
 
 const INJECTION_TIMEOUT_MS = 60_000;
+const POLL_INTERVAL_MS = 10_000;
+const POLL_TIMEOUT_MS = 300_000;
+const POLL_STOP_PHASES = new Set([
+  'Running',
+  'Failed',
+  'Failing',
+  'Stopped',
+  'Stopping',
+  'Terminating',
+]);
 
 /**
  * Watches a specific DevWorkspace after it is started and injects
@@ -129,10 +140,79 @@ export class PostStartInjector {
         }
       })
       .catch((error: unknown) => {
-        logger.error(error, `PostStartInjector: failed to start watch for ${key}`);
+        logger.warn(error, `PostStartInjector: watch failed for ${key}, starting polling fallback`);
         cleanupWithTimeout();
+        PostStartInjector.startPollingFallback(namespace, workspaceName, kubeConfigApi, podmanApi);
       });
 
     PostStartInjector.activeWatches.set(key, new AbortController());
+  }
+
+  private static startPollingFallback(
+    namespace: string,
+    workspaceName: string,
+    kubeConfigApi: IKubeConfigApi,
+    podmanApi: IPodmanApi,
+  ): void {
+    const key = `${namespace}/${workspaceName}`;
+
+    logger.info(`PostStartInjector: polling fallback started for ${key}`);
+
+    const saKc = new KubeConfigProvider().getSAKubeConfig();
+    const dwClient = new DevWorkspaceClient(saKc);
+
+    // Re-register so duplicate watchAndInject calls are still blocked during polling.
+    const abortController = new AbortController();
+    PostStartInjector.activeWatches.set(key, abortController);
+
+    let elapsed = 0;
+
+    const intervalHandle = setInterval(() => {
+      if (abortController.signal.aborted) {
+        clearInterval(intervalHandle);
+        return;
+      }
+
+      elapsed += POLL_INTERVAL_MS;
+      if (elapsed >= POLL_TIMEOUT_MS) {
+        logger.warn(`PostStartInjector: polling timed out for ${key}`);
+        clearInterval(intervalHandle);
+        PostStartInjector.activeWatches.delete(key);
+        return;
+      }
+
+      dwClient.devworkspaceApi
+        .getByName(namespace, workspaceName)
+        .then(async dw => {
+          const phase = dw.status?.phase;
+          const devworkspaceId = dw.status?.devworkspaceId;
+
+          if (!phase || !POLL_STOP_PHASES.has(phase)) {
+            return;
+          }
+
+          clearInterval(intervalHandle);
+          PostStartInjector.activeWatches.delete(key);
+
+          if (phase === 'Running' && devworkspaceId) {
+            logger.info(`PostStartInjector: ${key} is Running (poll), injecting`);
+            try {
+              await kubeConfigApi.injectKubeConfig(namespace, devworkspaceId);
+            } catch (e) {
+              logger.error(e, `PostStartInjector: failed to inject kubeconfig for ${key}`);
+            }
+            try {
+              await podmanApi.podmanLogin(namespace, devworkspaceId);
+            } catch (e) {
+              logger.error(e, `PostStartInjector: failed podman login for ${key}`);
+            }
+          } else {
+            logger.info(`PostStartInjector: ${key} is in phase ${phase}, stopping poll`);
+          }
+        })
+        .catch((e: unknown) => {
+          logger.warn(e, `PostStartInjector: poll GET failed for ${key}, will retry`);
+        });
+    }, POLL_INTERVAL_MS);
   }
 }
