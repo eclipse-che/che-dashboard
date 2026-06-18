@@ -71,6 +71,7 @@ export function registerDevworkspacesRoutes(instance: FastifyInstance) {
           PostStartInjector.watchAndInject(
             namespace,
             workspaceName,
+            dwClient.devworkspaceApi,
             dwClient.kubeConfigApi,
             dwClient.podmanApi,
           );
@@ -112,6 +113,7 @@ export function registerDevworkspacesRoutes(instance: FastifyInstance) {
           PostStartInjector.watchAndInject(
             namespace,
             workspaceName,
+            dwClient.devworkspaceApi,
             dwClient.kubeConfigApi,
             dwClient.podmanApi,
           );

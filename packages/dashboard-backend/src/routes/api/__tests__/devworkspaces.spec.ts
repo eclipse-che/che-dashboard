@@ -82,6 +82,7 @@ describe('DevWorkspaces Routes', () => {
     expect(PostStartInjector.watchAndInject).toHaveBeenCalledWith(
       namespace,
       workspaceName,
+      expect.objectContaining({ watchInNamespace: expect.any(Function) }),
       expect.objectContaining({ injectKubeConfig: expect.any(Function) }),
       expect.objectContaining({ podmanLogin: expect.any(Function) }),
     );
@@ -133,6 +134,7 @@ describe('DevWorkspaces Routes', () => {
     expect(PostStartInjector.watchAndInject).toHaveBeenCalledWith(
       namespace,
       workspaceName,
+      expect.objectContaining({ watchInNamespace: expect.any(Function) }),
       expect.objectContaining({ injectKubeConfig: expect.any(Function) }),
       expect.objectContaining({ podmanLogin: expect.any(Function) }),
     );
