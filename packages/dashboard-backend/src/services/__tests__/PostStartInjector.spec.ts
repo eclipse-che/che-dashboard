@@ -198,7 +198,7 @@ describe('PostStartInjector', () => {
 
   test('cleans up on 60 s timeout', () => {
     invoke();
-    jest.advanceTimersByTime(60_000);
+    jest.advanceTimersByTime(60000);
 
     expect(devworkspaceApi.stopWatching).toHaveBeenCalled();
     expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
@@ -231,7 +231,7 @@ describe('PostStartInjector', () => {
       });
 
       await triggerErrorAndFlush();
-      jest.advanceTimersByTime(10_000);
+      jest.advanceTimersByTime(10000);
       await Promise.resolve().then(() => Promise.resolve());
 
       expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-poll-id');
@@ -245,7 +245,7 @@ describe('PostStartInjector', () => {
         (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({ status: { phase } });
 
         await triggerErrorAndFlush();
-        jest.advanceTimersByTime(10_000);
+        jest.advanceTimersByTime(10000);
         await Promise.resolve().then(() => Promise.resolve());
 
         expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
@@ -259,7 +259,7 @@ describe('PostStartInjector', () => {
       });
 
       await triggerErrorAndFlush();
-      jest.advanceTimersByTime(300_000);
+      jest.advanceTimersByTime(300000);
 
       expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
       expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
@@ -272,11 +272,11 @@ describe('PostStartInjector', () => {
 
       await triggerErrorAndFlush();
 
-      jest.advanceTimersByTime(10_000);
+      jest.advanceTimersByTime(10000);
       await Promise.resolve().then(() => Promise.resolve());
       expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
 
-      jest.advanceTimersByTime(10_000);
+      jest.advanceTimersByTime(10000);
       await Promise.resolve().then(() => Promise.resolve());
       expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-retry-id');
     });

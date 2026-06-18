@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { DevWorkspaceStatus } from '@eclipse-che/common';
 import { AlertVariant } from '@patternfly/react-core';
 import * as React from 'react';
 
@@ -90,8 +91,6 @@ export enum WorkspaceStatus {
   STARTING = 'STARTING',
   ERROR = 'ERROR',
 }
-
-import { DevWorkspaceStatus } from '@eclipse-che/common';
 
 export { DevWorkspaceStatus };
 

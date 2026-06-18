@@ -68,6 +68,10 @@ export function registerDevworkspacesRoutes(instance: FastifyInstance) {
         // PATCH /spec/started=true (restart), missing first-time creation.
         const workspaceName = devWorkspace.metadata?.name;
         if (devworkspace.spec?.started === true && workspaceName) {
+          // Pass a fresh devworkspaceApi instance (DevWorkspaceClient.devworkspaceApi is a
+          // getter — each access returns a new DevWorkspaceApiService). PostStartInjector
+          // calls stopWatching() on this instance when done; passing the same instance that
+          // the route already used for .create() would cancel the route's own watch.
           PostStartInjector.watchAndInject(
             namespace,
             workspaceName,
@@ -110,6 +114,7 @@ export function registerDevworkspacesRoutes(instance: FastifyInstance) {
 
         const isStarting = patch.some(p => p.path === '/spec/started' && p.value === true);
         if (isStarting) {
+          // See comment above — pass a fresh devworkspaceApi instance.
           PostStartInjector.watchAndInject(
             namespace,
             workspaceName,
