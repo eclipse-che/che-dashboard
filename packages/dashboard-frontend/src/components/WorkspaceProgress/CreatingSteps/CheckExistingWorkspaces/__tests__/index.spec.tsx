@@ -311,6 +311,85 @@ describe('Creating steps, checking existing workspaces', () => {
         );
       });
 
+      it('should open the existing workspace created from the same repo and branch embedded in /tree/ URL', async () => {
+        searchParams.delete(DEV_WORKSPACE_ATTR);
+        searchParams.set(EXISTING_WORKSPACE_NAME, 'project-1');
+        searchParams.set(
+          FACTORY_URL_ATTR,
+          'https://github.com/eclipse-che/che-dashboard/tree/my-feature-branch',
+        );
+
+        const resources: DevWorkspaceResources = [
+          {
+            metadata: {
+              name: workspaceName,
+            },
+          } as devfileApi.DevWorkspace,
+          {} as devfileApi.DevWorkspaceTemplate,
+        ];
+        store = new MockStoreBuilder()
+          .withDevWorkspaces({
+            workspaces: [
+              new DevWorkspaceBuilder()
+                .withMetadata({
+                  name: 'project-1',
+                  namespace: 'user-che',
+                  annotations: {
+                    [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                      factory: {
+                        params:
+                          'url=https://github.com/eclipse-che/che-dashboard/tree/my-feature-branch',
+                      },
+                    }),
+                  },
+                })
+                .withSpec({
+                  template: {
+                    projects: [
+                      {
+                        git: {
+                          remotes: {
+                            origin: 'https://github.com/eclipse-che/che-dashboard.git',
+                          },
+                          checkoutFrom: { revision: 'my-feature-branch' },
+                        },
+                        name: 'project-1',
+                      },
+                    ],
+                  },
+                })
+                .build(),
+            ],
+          })
+          .withDevfileRegistries({
+            devWorkspaceResources: {
+              [resourcesUrl]: {
+                resources,
+              },
+            },
+          })
+          .withFactoryResolver({
+            resolver: {
+              location: 'https://github.com/eclipse-che/che-dashboard/tree/my-feature-branch',
+              devfile: {
+                schemaVersion: '2.1.0',
+                metadata: {
+                  name: workspaceName,
+                },
+              } as devfileApi.Devfile,
+            },
+          })
+          .build();
+
+        renderComponent(store, searchParams);
+
+        await waitFor(() =>
+          expect(mockTabManagerReplace).toHaveBeenCalledWith(
+            expect.stringContaining(`/ide/user-che/project-1`),
+          ),
+        );
+      });
+
       it('should not open the existing workspace created from the same repo with revision in workspace', async () => {
         searchParams.delete(DEV_WORKSPACE_ATTR);
         searchParams.set(EXISTING_WORKSPACE_NAME, 'project-1');

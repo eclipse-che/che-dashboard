@@ -16,7 +16,9 @@ import {
   EDITOR_ATTR,
   EXISTING_WORKSPACE_NAME,
   FACTORY_ID_IGNORE_ATTRS,
+  FACTORY_URL_ATTR,
   POLICIES_CREATE_ATTR,
+  REVISION_ATTR,
   STORAGE_TYPE_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 
@@ -123,6 +125,38 @@ describe('buildFactoryParams', () => {
         'che-editor=che-incubator/che-code/latest&storageType=per-user',
       );
     });
+    describe('revision', () => {
+      it('should return undefined when neither ?revision= nor /tree/ is present', () => {
+        const searchParams = new URLSearchParams({
+          [FACTORY_URL_ATTR]: 'https://github.com/eclipse-che/che-dashboard',
+        });
+        expect(buildFactoryParams(searchParams).revision).toBeUndefined();
+      });
+
+      it('should return the ?revision= query param when present', () => {
+        const searchParams = new URLSearchParams({
+          [FACTORY_URL_ATTR]: 'https://github.com/eclipse-che/che-dashboard',
+          [REVISION_ATTR]: 'my-feature-branch',
+        });
+        expect(buildFactoryParams(searchParams).revision).toBe('my-feature-branch');
+      });
+
+      it('should extract the branch from a GitHub /tree/<branch> factory URL', () => {
+        const searchParams = new URLSearchParams({
+          [FACTORY_URL_ATTR]: 'https://github.com/eclipse-che/che-dashboard/tree/my-feature-branch',
+        });
+        expect(buildFactoryParams(searchParams).revision).toBe('my-feature-branch');
+      });
+
+      it('should prefer ?revision= over the /tree/ branch in the factory URL', () => {
+        const searchParams = new URLSearchParams({
+          [FACTORY_URL_ATTR]: 'https://github.com/eclipse-che/che-dashboard/tree/url-branch',
+          [REVISION_ATTR]: 'param-branch',
+        });
+        expect(buildFactoryParams(searchParams).revision).toBe('param-branch');
+      });
+    });
+
     it('should return factory identity without EXISTING_WORKSPACE_NAME attributes', () => {
       const searchParams = new URLSearchParams({
         [EDITOR_ATTR]: 'che-incubator/che-code/next',
