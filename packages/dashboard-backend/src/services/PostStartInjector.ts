@@ -20,9 +20,8 @@ const INJECTION_TIMEOUT_MS = 60000;
 const POLL_INTERVAL_MS = 10000;
 const POLL_TIMEOUT_MS = 300000;
 
-function isPollStopPhase(phase: string): boolean {
+function isTerminalPhase(phase: string): boolean {
   return (
-    phase === DevWorkspaceStatus.RUNNING ||
     phase === DevWorkspaceStatus.FAILED ||
     phase === DevWorkspaceStatus.FAILING ||
     phase === DevWorkspaceStatus.STOPPED ||
@@ -104,7 +103,7 @@ export class PostStartInjector {
       const phase = devWorkspace.status?.phase;
       const devworkspaceId = devWorkspace.status?.devworkspaceId;
 
-      if (phase && isPollStopPhase(phase) && phase !== DevWorkspaceStatus.RUNNING) {
+      if (phase && isTerminalPhase(phase)) {
         logger.info(`PostStartInjector: ${key} entered ${phase} phase, aborting`);
         cleanupWithTimeout();
         return;
@@ -182,7 +181,7 @@ export class PostStartInjector {
           const phase = dw.status?.phase;
           const devworkspaceId = dw.status?.devworkspaceId;
 
-          if (!phase || !isPollStopPhase(phase)) {
+          if (!phase || (phase !== DevWorkspaceStatus.RUNNING && !isTerminalPhase(phase))) {
             return;
           }
 
