@@ -91,15 +91,9 @@ export enum WorkspaceStatus {
   ERROR = 'ERROR',
 }
 
-export enum DevWorkspaceStatus {
-  FAILED = 'Failed',
-  FAILING = 'Failing',
-  STARTING = 'Starting',
-  TERMINATING = 'Terminating',
-  RUNNING = 'Running',
-  STOPPED = 'Stopped',
-  STOPPING = 'Stopping',
-}
+import { DevWorkspaceStatus } from '@eclipse-che/common';
+
+export { DevWorkspaceStatus };
 
 export function isDevWorkspaceStatus(status: unknown): status is DevWorkspaceStatus {
   return Object.values(DevWorkspaceStatus).includes(status as DevWorkspaceStatus);

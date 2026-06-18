@@ -17,6 +17,7 @@ export * from './dto/cluster-info';
 export * from './dto/cluster-config';
 export * from './types';
 export * from './constants';
+export { DevWorkspaceStatus } from './dto/api';
 
 export { helpers, api };
 

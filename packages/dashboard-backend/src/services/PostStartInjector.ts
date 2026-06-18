@@ -10,9 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api } from '@eclipse-che/common';
+import { api, DevWorkspaceStatus } from '@eclipse-che/common';
 
-import { DevWorkspaceStatus } from '@/devworkspaceClient/devWorkspaceStatus';
 import { IDevWorkspaceApi, IKubeConfigApi, IPodmanApi } from '@/devworkspaceClient/types';
 import { MessageListener } from '@/services/types/Observer';
 import { logger } from '@/utils/logger';
