@@ -20,6 +20,7 @@ import * as k8s from '@kubernetes/client-node';
 import { V1Status } from '@kubernetes/client-node';
 
 import { DevWorkspaceClient } from '@/devworkspaceClient';
+import { DevWorkspaceStatus } from '@/devworkspaceClient/devWorkspaceStatus';
 import { IKubeConfigApi, IPodmanApi } from '@/devworkspaceClient/types';
 import { KubeConfigProvider } from '@/services/kubeclient/kubeConfigProvider';
 import { logger } from '@/utils/logger';
@@ -27,13 +28,13 @@ import { logger } from '@/utils/logger';
 const INJECTION_TIMEOUT_MS = 60_000;
 const POLL_INTERVAL_MS = 10_000;
 const POLL_TIMEOUT_MS = 300_000;
-const POLL_STOP_PHASES = new Set([
-  'Running',
-  'Failed',
-  'Failing',
-  'Stopped',
-  'Stopping',
-  'Terminating',
+const POLL_STOP_PHASES = new Set<string>([
+  DevWorkspaceStatus.RUNNING,
+  DevWorkspaceStatus.FAILED,
+  DevWorkspaceStatus.FAILING,
+  DevWorkspaceStatus.STOPPED,
+  DevWorkspaceStatus.STOPPING,
+  DevWorkspaceStatus.TERMINATING,
 ]);
 
 /**
@@ -102,14 +103,14 @@ export class PostStartInjector {
           const phase = dw.status?.phase;
           const devworkspaceId = dw.status?.devworkspaceId;
 
-          if (phase === 'Failed') {
+          if (phase === DevWorkspaceStatus.FAILED) {
             logger.info(`PostStartInjector: ${key} entered Failed phase, aborting`);
             const ac = PostStartInjector.activeWatches.get(key);
             cleanupWithTimeout(ac);
             return;
           }
 
-          if (phase === 'Running' && devworkspaceId) {
+          if (phase === DevWorkspaceStatus.RUNNING && devworkspaceId) {
             logger.info(
               `PostStartInjector: ${key} is Running, injecting kubeconfig and podman login`,
             );
@@ -194,7 +195,7 @@ export class PostStartInjector {
           clearInterval(intervalHandle);
           PostStartInjector.activeWatches.delete(key);
 
-          if (phase === 'Running' && devworkspaceId) {
+          if (phase === DevWorkspaceStatus.RUNNING && devworkspaceId) {
             logger.info(`PostStartInjector: ${key} is Running (poll), injecting`);
             try {
               await kubeConfigApi.injectKubeConfig(namespace, devworkspaceId);
