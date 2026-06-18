@@ -155,6 +155,20 @@ describe('buildFactoryParams', () => {
         });
         expect(buildFactoryParams(searchParams).revision).toBe('param-branch');
       });
+
+      it('should extract branch names containing slashes from /tree/ path', () => {
+        const searchParams = new URLSearchParams({
+          [FACTORY_URL_ATTR]: 'https://github.com/eclipse-che/che-dashboard/tree/feature/CRW-10950',
+        });
+        expect(buildFactoryParams(searchParams).revision).toBe('feature/CRW-10950');
+      });
+
+      it('should return undefined for /tree/ with no branch name', () => {
+        const searchParams = new URLSearchParams({
+          [FACTORY_URL_ATTR]: 'https://github.com/eclipse-che/che-dashboard/tree/',
+        });
+        expect(buildFactoryParams(searchParams).revision).toBeUndefined();
+      });
     });
 
     it('should return factory identity without EXISTING_WORKSPACE_NAME attributes', () => {
