@@ -169,6 +169,17 @@ describe('buildFactoryParams', () => {
         });
         expect(buildFactoryParams(searchParams).revision).toBeUndefined();
       });
+
+      it('should return the full path after /tree/ for file-level URLs (branch+path are indistinguishable)', () => {
+        // Known limitation: split('/tree/') cannot tell apart a branch name containing
+        // slashes (feature/my-branch) from a branch + subdirectory path (main/src/file.ts).
+        // GitHub resolves this ambiguity server-side. Returning the full remainder is
+        // consistent with getProjectFromLocation.ts and acceptable for workspace deduplication.
+        const searchParams = new URLSearchParams({
+          [FACTORY_URL_ATTR]: 'https://github.com/eclipse-che/che-dashboard/tree/main/src/file.ts',
+        });
+        expect(buildFactoryParams(searchParams).revision).toBe('main/src/file.ts');
+      });
     });
 
     it('should return factory identity without EXISTING_WORKSPACE_NAME attributes', () => {
