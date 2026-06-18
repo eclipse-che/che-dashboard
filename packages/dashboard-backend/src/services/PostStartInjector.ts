@@ -16,17 +16,20 @@ import { IDevWorkspaceApi, IKubeConfigApi, IPodmanApi } from '@/devworkspaceClie
 import { MessageListener } from '@/services/types/Observer';
 import { logger } from '@/utils/logger';
 
-const INJECTION_TIMEOUT_MS = 60_000;
-const POLL_INTERVAL_MS = 10_000;
-const POLL_TIMEOUT_MS = 300_000;
-const POLL_STOP_PHASES = new Set<string>([
-  DevWorkspaceStatus.RUNNING,
-  DevWorkspaceStatus.FAILED,
-  DevWorkspaceStatus.FAILING,
-  DevWorkspaceStatus.STOPPED,
-  DevWorkspaceStatus.STOPPING,
-  DevWorkspaceStatus.TERMINATING,
-]);
+const INJECTION_TIMEOUT_MS = 60000;
+const POLL_INTERVAL_MS = 10000;
+const POLL_TIMEOUT_MS = 300000;
+
+function isPollStopPhase(phase: string): boolean {
+  return (
+    phase === DevWorkspaceStatus.RUNNING ||
+    phase === DevWorkspaceStatus.FAILED ||
+    phase === DevWorkspaceStatus.FAILING ||
+    phase === DevWorkspaceStatus.STOPPED ||
+    phase === DevWorkspaceStatus.STOPPING ||
+    phase === DevWorkspaceStatus.TERMINATING
+  );
+}
 
 /**
  * Watches a specific DevWorkspace after it is started and injects
@@ -101,7 +104,7 @@ export class PostStartInjector {
       const phase = devWorkspace.status?.phase;
       const devworkspaceId = devWorkspace.status?.devworkspaceId;
 
-      if (phase && POLL_STOP_PHASES.has(phase) && phase !== DevWorkspaceStatus.RUNNING) {
+      if (phase && isPollStopPhase(phase) && phase !== DevWorkspaceStatus.RUNNING) {
         logger.info(`PostStartInjector: ${key} entered ${phase} phase, aborting`);
         cleanupWithTimeout();
         return;
@@ -179,7 +182,7 @@ export class PostStartInjector {
           const phase = dw.status?.phase;
           const devworkspaceId = dw.status?.devworkspaceId;
 
-          if (!phase || !POLL_STOP_PHASES.has(phase)) {
+          if (!phase || !isPollStopPhase(phase)) {
             return;
           }
 
