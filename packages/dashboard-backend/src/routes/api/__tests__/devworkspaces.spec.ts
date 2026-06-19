@@ -80,9 +80,9 @@ describe('DevWorkspaces Routes', () => {
 
     const { PostStartInjector } = jest.requireMock('@/services/PostStartInjector');
     expect(PostStartInjector.watchAndInject).toHaveBeenCalledWith(
-      expect.any(Object),
       namespace,
       workspaceName,
+      expect.objectContaining({ watchInNamespace: expect.any(Function) }),
       expect.objectContaining({ injectKubeConfig: expect.any(Function) }),
       expect.objectContaining({ podmanLogin: expect.any(Function) }),
     );
@@ -132,9 +132,9 @@ describe('DevWorkspaces Routes', () => {
 
     const { PostStartInjector } = jest.requireMock('@/services/PostStartInjector');
     expect(PostStartInjector.watchAndInject).toHaveBeenCalledWith(
-      expect.any(Object),
       namespace,
       workspaceName,
+      expect.objectContaining({ watchInNamespace: expect.any(Function) }),
       expect.objectContaining({ injectKubeConfig: expect.any(Function) }),
       expect.objectContaining({ podmanLogin: expect.any(Function) }),
     );
