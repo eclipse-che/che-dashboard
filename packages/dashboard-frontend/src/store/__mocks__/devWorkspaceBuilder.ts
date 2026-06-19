@@ -19,7 +19,6 @@ import getRandomString from '@/services/helpers/random';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
 
 export class DevWorkspaceBuilder {
-  private name = 'dev-wksp-' + getRandomString(4);
   private workspace: any = {
     kind: 'DevWorkspace',
     apiVersion: 'workspace.devfile.io/v1alpha2',
