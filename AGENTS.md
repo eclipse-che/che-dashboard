@@ -114,4 +114,23 @@ yarn lint:fix
 
 ## Red Hat Compliance and Responsible AI Rules
 
-See `./redhat-compliance-and-responsible-ai.md` and the Cursor rules file under `./.cursor/rules/`.
+See `./redhat-compliance-and-responsible-ai.md`.
+
+## Project Rules (Claude Code)
+
+Project-specific rules live in `.claude/rules/`:
+
+- **`che-dashboard-dev.md`** — commits, CSS property ordering, dependency license regeneration, git workflow patterns, accessibility conventions
+
+## Project Skills (Claude Code)
+
+Project-specific skills live in `.claude/skills/`. Use `/skill-name` to invoke:
+
+- **`commit-message`** — write a human-style commit message: subject line, optional body, trailers
+- **`manage-resolutions`** — audit `resolutions` in `package.json`: find orphans and stale pins, safely remove them one at a time with `yarn install` diff verification
+- **`fix-cve-dep`** — upgrade a vulnerable npm dependency, check ClearlyDefined, regenerate `.deps/` files, commit and push
+- **`rebase-to-main`** — rebase branch onto latest main, resolve `.deps/` conflicts, regenerate licenses, force-push
+- **`fix-pr-feedback`** — fetch GitHub PR review comments, triage fixed vs open, apply fixes, push
+- **`check-coverage`** — run coverage for changed packages, identify uncovered code, write missing tests; run before `pr-description`
+- **`pr-test-section`** — write the "Is it tested? How?" section: choose the right template (deploy+verify, unit tests, dep upgrade, N/A) based on change type
+- **`pr-description`** — generate a PR description and save to `openspec/docs/` (always run `check-coverage` first)
