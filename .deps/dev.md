@@ -82,11 +82,11 @@
 | `@humanwhocodes/object-schema@2.0.3` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@humanwhocodes/object-schema/2.0.3) |
 | `@istanbuljs/load-nyc-config@1.1.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@istanbuljs/load-nyc-config/1.1.0) |
 | `@istanbuljs/schema@0.1.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@istanbuljs/schema/0.1.3) |
-| `@jest/console@30.2.0` |  |  |
+| `@jest/console@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/console/30.2.0) |
 | `@jest/core@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/core/30.2.0) |
 | `@jest/diff-sequences@30.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/diff-sequences/30.0.1) |
-| `@jest/environment@29.7.0` |  |  |
-| `@jest/environment@30.2.0` |  |  |
+| `@jest/environment@29.7.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/environment/29.7.0) |
+| `@jest/environment@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/environment/30.2.0) |
 | `@jest/expect-utils@29.7.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/expect-utils/29.7.0) |
 | `@jest/expect-utils@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/expect-utils/30.2.0) |
 | `@jest/expect@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/expect/30.2.0) |

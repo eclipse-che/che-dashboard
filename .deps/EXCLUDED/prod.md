@@ -9,5 +9,7 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `fast-uri@2.4.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-uri/2.4.0) |
 | `fastify-plugin@5.2.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/5.2.1) |
 | `jsep@1.3.9` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsep/1.3.9) |
+| `undici@7.28.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici/7.28.0) |
+| `@eclipse-che/che-devworkspace-generator@7.119.0` | ecd.che |
 
 
