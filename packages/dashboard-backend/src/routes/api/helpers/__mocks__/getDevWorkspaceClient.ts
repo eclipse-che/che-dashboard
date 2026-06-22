@@ -240,6 +240,8 @@ export const getDevWorkspaceClient = jest.fn(
         listInNamespace: _namespace => Promise.resolve(stubDevWorkspacesList),
         patch: (_namespace, _name, _patches) =>
           Promise.resolve({ devWorkspace: stubDevWorkspace, headers: stubHeaders }),
+        watchInNamespace: (_listener, _params) => Promise.resolve(),
+        stopWatching: () => undefined,
       } as IDevWorkspaceApi,
       dockerConfigApi: {
         read: _namespace => Promise.resolve(stubDockerConfig),

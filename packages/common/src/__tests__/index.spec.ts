@@ -10,11 +10,16 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import common from '../';
+import common, { DevWorkspaceStatus } from '../';
 
 describe('Common', () => {
   it('should export all shared code', () => {
     expect(common).toBeDefined();
     expect(common.helpers).toBeDefined();
+  });
+
+  it('should export DevWorkspaceStatus', () => {
+    expect(DevWorkspaceStatus).toBeDefined();
+    expect(DevWorkspaceStatus.RUNNING).toBe('Running');
   });
 });

@@ -173,7 +173,28 @@ function getRemotes(searchParams: URLSearchParams): string | undefined {
 }
 
 function getRevision(searchParams: URLSearchParams): string | undefined {
-  return searchParams.get(REVISION_ATTR) || undefined;
+  const revisionParam = searchParams.get(REVISION_ATTR) || undefined;
+  if (revisionParam) {
+    return revisionParam;
+  }
+  // Extract branch from a GitHub-style /tree/<branch> factory URL path so that
+  // getSameRepoWorkspaces() can match workspaces whose devfile projects were created
+  // with checkoutFrom.revision set to that branch name.
+  // Note: getProjectFromLocation.ts uses the same split('/tree/') pattern — if this
+  // ever changes (e.g. to support Bitbucket's /src/ paths), update both locations.
+  const factoryUrl = getFactoryUrl(searchParams);
+  if (factoryUrl) {
+    try {
+      const url = new URL(factoryUrl);
+      const parts = url.pathname.split('/tree/');
+      if (parts.length > 1 && parts[1]) {
+        return parts[1];
+      }
+    } catch {
+      // not a valid URL, ignore
+    }
+  }
+  return undefined;
 }
 
 function buildFactoryId(searchParams: URLSearchParams): string {

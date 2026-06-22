@@ -304,7 +304,6 @@
 | `aws-sign2@0.7.0` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/aws-sign2/0.7.0) |
 | `aws4@1.13.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/aws4/1.13.2) |
 | `axios-mock-adapter@1.22.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios-mock-adapter/1.22.0) |
-| `axios@1.15.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios/1.15.2) |
 | `b4a@1.7.3` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/b4a/1.7.3) |
 | `babel-jest@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/babel-jest/30.2.0) |
 | `babel-plugin-istanbul@7.0.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/babel-plugin-istanbul/7.0.1) |
@@ -591,7 +590,6 @@
 | `ini@1.3.8` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ini/1.3.8) |
 | `internal-slot@1.0.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/internal-slot/1.0.6) |
 | `interpret@3.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/interpret/3.1.1) |
-| `ip-address@9.0.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ip-address/9.0.5) |
 | `is-array-buffer@3.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/is-array-buffer/3.0.2) |
 | `is-arrayish@0.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/is-arrayish/0.2.1) |
 | `is-async-function@2.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/is-async-function/2.0.0) |
@@ -686,7 +684,6 @@
 | `js-tokens@4.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/js-tokens/4.0.0) |
 | `js-yaml@4.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/js-yaml/4.1.1) |
 | `jsbn@0.1.1` | MIT AND MIT-Wu | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsbn/0.1.1) |
-| `jsbn@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsbn/1.1.0) |
 | `jsdom@20.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsdom/20.0.3) |
 | `jsesc@2.5.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsesc/2.5.2) |
 | `jsesc@3.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsesc/3.1.0) |
@@ -875,7 +872,6 @@
 | `proc-log@4.2.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/proc-log/4.2.0) |
 | `promise-retry@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/promise-retry/2.0.1) |
 | `prop-types@15.8.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/prop-types/15.8.1) |
-| `proxy-from-env@2.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/proxy-from-env/2.1.0) |
 | `psl@1.15.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/psl/1.15.0) |
 | `psl@1.9.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/psl/1.9.0) |
 | `pstree.remy@1.1.8` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pstree.remy/1.1.8) |
@@ -958,7 +954,6 @@
 | `source-map@0.6.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/source-map/0.6.1) |
 | `source-map@0.7.4` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/source-map/0.7.4) |
 | `speed-measure-webpack-plugin@1.5.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/speed-measure-webpack-plugin/1.5.0) |
-| `sprintf-js@1.1.3` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sprintf-js/1.1.3) |
 | `sshpk@1.18.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sshpk/1.18.0) |
 | `ssri@10.0.5` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ssri/10.0.5) |
 | `stack-utils@2.0.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/stack-utils/2.0.6) |
