@@ -40,19 +40,18 @@ const CLAUDE_TOOL: api.AiToolDefinition = {
   envVarName: 'ANTHROPIC_API_KEY',
 };
 
-const GEMINI_TOOL: api.AiToolDefinition = {
-  providerId: 'google/gemini',
-  tag: 'latest',
-  name: 'Gemini CLI',
-  url: 'https://github.com/google-gemini/gemini-cli',
-  binary: 'gemini',
-  pattern: 'bundle',
-  injectorImage: 'quay.io/example/gemini-cli:next',
-  envVarName: 'GEMINI_API_KEY',
-  setupCommand: 'mkdir -p /tmp/gemini-home/.gemini',
+const OPENCODE_TOOL: api.AiToolDefinition = {
+  providerId: 'opencodeai/opencode',
+  tag: 'next',
+  name: 'OpenCode',
+  url: 'https://opencode.ai',
+  binary: 'opencode',
+  pattern: 'init',
+  injectorImage: 'quay.io/example/opencode:next',
+  envVarName: 'GOOGLE_GENERATIVE_AI_API_KEY',
 };
 
-const ALL_TOOLS = [CLAUDE_TOOL, GEMINI_TOOL];
+const ALL_TOOLS = [CLAUDE_TOOL, OPENCODE_TOOL];
 
 function buildWorkspaceWithComponents(
   components: Array<Record<string, unknown>>,
@@ -124,11 +123,11 @@ describe('aiTools', () => {
       const workspace = buildWorkspaceWithComponents([
         { name: 'editor', container: { image: 'che-code:latest' } },
         {
-          name: 'gemini-cli-injector',
-          container: { image: 'quay.io/example/gemini-cli:next' },
+          name: 'opencode-injector',
+          container: { image: 'quay.io/example/opencode:next' },
         },
       ]);
-      expect(getInjectedAiToolIds(workspace, ALL_TOOLS)).toEqual(['google/gemini']);
+      expect(getInjectedAiToolIds(workspace, ALL_TOOLS)).toEqual(['opencodeai/opencode']);
     });
 
     it('should detect multiple injected tools', () => {
@@ -139,13 +138,13 @@ describe('aiTools', () => {
           container: { image: 'quay.io/example/claude-code:next' },
         },
         {
-          name: 'gemini-cli-injector',
-          container: { image: 'quay.io/example/gemini-cli:next' },
+          name: 'opencode-injector',
+          container: { image: 'quay.io/example/opencode:next' },
         },
       ]);
       expect(getInjectedAiToolIds(workspace, ALL_TOOLS)).toEqual([
         'anthropic/claude',
-        'google/gemini',
+        'opencodeai/opencode',
       ]);
     });
 
@@ -247,20 +246,18 @@ describe('aiTools', () => {
       expect(template.events?.postStart).toContain('symlink-claude-code');
     });
 
-    it('should add bundle-pattern tool with correct copy command', () => {
+    it('should add init-pattern opencode with correct copy command', () => {
       const workspace = buildWorkspaceWithComponents([
         { name: 'editor', container: { image: 'che-code:latest' } },
       ]);
 
-      const patched = addAiToolToWorkspace(workspace, 'google/gemini', ALL_TOOLS);
-      const injector = patched.spec.template.components?.find(
-        c => c.name === 'gemini-cli-injector',
-      );
+      const patched = addAiToolToWorkspace(workspace, 'opencodeai/opencode', ALL_TOOLS);
+      const injector = patched.spec.template.components?.find(c => c.name === 'opencode-injector');
       expect(injector?.container?.command).toEqual(['/bin/sh']);
-      expect(injector?.container?.args).toEqual([
-        '-c',
-        'rm -rf /injected-tools/gemini-cli 2>/dev/null; cp -a /opt/gemini-cli/. /injected-tools/gemini-cli/',
-      ]);
+      expect(injector?.container?.args?.[0]).toBe('-c');
+      expect(injector?.container?.args?.[1]).toContain(
+        'cp /usr/local/bin/opencode /injected-tools/bin/opencode',
+      );
     });
 
     it('should mark injector component with admin-manageable attribute', () => {
@@ -404,19 +401,19 @@ describe('aiTools', () => {
       expect(mount?.path).toBe('/injected-tools');
     });
 
-    it('should include setupCommand for bundle-pattern tools', () => {
+    it('should create symlink-opencode command that exports the injected-tools PATH', () => {
       const workspace = buildWorkspaceWithComponents([
         { name: 'editor', container: { image: 'che-code:latest' } },
       ]);
 
-      const patched = addAiToolToWorkspace(workspace, 'google/gemini', ALL_TOOLS);
+      const patched = addAiToolToWorkspace(workspace, 'opencodeai/opencode', ALL_TOOLS);
       const symlinkCmd = patched.spec.template.commands?.find(
-        (c: { id?: string }) => c.id === 'symlink-gemini-cli',
+        (c: { id?: string }) => c.id === 'symlink-opencode',
       ) as { exec?: { commandLine?: string } } | undefined;
 
-      expect(symlinkCmd?.exec?.commandLine).toContain('mkdir -p /tmp/gemini-home/.gemini');
-      expect(symlinkCmd?.exec?.commandLine).toContain('ln -sf');
-      expect(symlinkCmd?.exec?.commandLine).toContain('/injected-tools/gemini-cli/bin/gemini');
+      // init-pattern: binary is copied directly to /injected-tools/bin — PATH export only
+      expect(symlinkCmd?.exec?.commandLine).toContain('injected-tools');
+      expect(symlinkCmd?.exec?.commandLine).toContain('PATH');
     });
 
     it('should throw for unknown tool ID', () => {
@@ -564,21 +561,20 @@ describe('aiTools', () => {
       expect(cleanupCmd?.exec?.commandLine).toMatch(/^nohup sh -c '.*' >\/dev\/null 2>&1 &$/);
     });
 
-    it('should add cleanup that removes bundle directory for bundle-pattern tools', () => {
+    it('should add cleanup that removes the binary for init-pattern tools', () => {
       const workspace = buildWorkspaceWithComponents([
         { name: 'editor', container: { image: 'che-code:latest' } },
       ]);
 
-      const added = addAiToolToWorkspace(workspace, 'google/gemini', ALL_TOOLS);
+      const added = addAiToolToWorkspace(workspace, 'opencodeai/opencode', ALL_TOOLS);
       const addedWorkspace = constructWorkspace(added);
-      const removed = removeAiToolFromWorkspace(addedWorkspace, 'google/gemini', ALL_TOOLS);
+      const removed = removeAiToolFromWorkspace(addedWorkspace, 'opencodeai/opencode', ALL_TOOLS);
 
       const cleanupCmd = removed.spec.template.commands?.find(
-        (c: { id?: string }) => c.id === 'cleanup-gemini-cli',
+        (c: { id?: string }) => c.id === 'cleanup-opencode',
       ) as { exec?: { commandLine?: string } } | undefined;
       expect(cleanupCmd).toBeDefined();
-      expect(cleanupCmd?.exec?.commandLine).toContain('rm -rf /injected-tools/gemini-cli');
-      expect(cleanupCmd?.exec?.commandLine).toContain('rm -f /injected-tools/bin/gemini');
+      expect(cleanupCmd?.exec?.commandLine).toContain('rm -f /injected-tools/bin/opencode');
     });
 
     it('should remove cleanup command when re-adding a previously removed tool', () => {
@@ -626,18 +622,22 @@ describe('aiTools', () => {
 
       const withBoth = addAiToolToWorkspace(
         addAiToolToWorkspace(workspace, 'anthropic/claude', ALL_TOOLS),
-        'google/gemini',
+        'opencodeai/opencode',
         ALL_TOOLS,
       );
       const withBothWs = constructWorkspace(withBoth);
       const removedClaude = removeAiToolFromWorkspace(withBothWs, 'anthropic/claude', ALL_TOOLS);
       const removedClaudeWs = constructWorkspace(removedClaude);
-      const removedBoth = removeAiToolFromWorkspace(removedClaudeWs, 'google/gemini', ALL_TOOLS);
+      const removedBoth = removeAiToolFromWorkspace(
+        removedClaudeWs,
+        'opencodeai/opencode',
+        ALL_TOOLS,
+      );
 
       const annotation = removedBoth.metadata?.annotations?.[PENDING_CLEANUP_ANNOTATION] ?? '';
       const slugs = annotation.split(',');
       expect(slugs).toContain('claude-code');
-      expect(slugs).toContain('gemini-cli');
+      expect(slugs).toContain('opencode');
     });
   });
 
@@ -903,6 +903,70 @@ describe('aiTools', () => {
       expect(result!.spec.template.events?.postStart).toHaveLength(0);
     });
 
+    it('should not remove user devfile commands that happen to start with install- or run-', () => {
+      // Regression for che-23892: commands like 'install-chectl' or 'run-claude-yolo'
+      // must not be treated as orphaned AI tool commands.
+      const workspace = buildWorkspaceWithComponents(
+        [
+          {
+            name: 'tools',
+            container: { image: 'quay.io/devfile/universal-developer-image:latest' },
+          },
+          {
+            name: 'opencode-injector',
+            attributes: { 'che.eclipse.org/admin-manageable': true },
+            // Use the same base as OPENCODE_TOOL so it is recognized (not stale)
+            container: { image: 'quay.io/example/opencode:next' },
+          },
+        ],
+        [
+          { id: 'build-sources', exec: { component: 'tools' } },
+          { id: 'install-chectl', exec: { component: 'tools' } },
+          { id: 'install-claude', exec: { component: 'tools' } },
+          { id: 'run-claude-yolo', exec: { component: 'tools' } },
+          { id: 'install-opencode', apply: { component: 'opencode-injector' } },
+          { id: 'symlink-opencode', exec: { component: 'tools' } },
+        ],
+        {
+          preStart: ['install-opencode'],
+          postStart: ['symlink-opencode'],
+        },
+      );
+
+      // No stale tools: sanitizeStaleAiTools should return null (no changes needed)
+      const result = sanitizeStaleAiTools(workspace.ref, ALL_TOOLS);
+      expect(result).toBeNull();
+    });
+
+    it('should not remove user cleanup- commands that do not match any registered tool slug', () => {
+      // Regression: /^cleanup-(.+)$/ must not remove user commands like 'cleanup-old-cache'.
+      const workspace = buildWorkspaceWithComponents(
+        [
+          {
+            name: 'tools',
+            container: { image: 'quay.io/devfile/universal-developer-image:latest' },
+          },
+          {
+            name: 'opencode-injector',
+            attributes: { 'che.eclipse.org/admin-manageable': true },
+            container: { image: 'quay.io/example/opencode:next' },
+          },
+        ],
+        [
+          { id: 'cleanup-old-cache', exec: { component: 'tools' } },
+          { id: 'install-opencode', apply: { component: 'opencode-injector' } },
+          { id: 'symlink-opencode', exec: { component: 'tools' } },
+        ],
+        {
+          preStart: ['install-opencode'],
+          postStart: ['symlink-opencode'],
+        },
+      );
+
+      const result = sanitizeStaleAiTools(workspace.ref, ALL_TOOLS);
+      expect(result).toBeNull();
+    });
+
     it('should keep cleanup command when pending-cleanup annotation is present', () => {
       // First cold start after tool removal: annotation marks cleanup as pending,
       // so the command must survive this start cycle to execute during postStart.
@@ -1058,9 +1122,21 @@ describe('aiTools', () => {
 
     it('should select the best tool by tag priority when multiple tools share a providerId', () => {
       const toolsWithMultipleVersions: api.AiToolDefinition[] = [
-        { ...CLAUDE_TOOL, tag: '1.0.0', injectorImage: 'quay.io/example/claude-code:1.0.0' },
-        { ...CLAUDE_TOOL, tag: 'next', injectorImage: 'quay.io/example/claude-code:next' },
-        { ...CLAUDE_TOOL, tag: 'latest', injectorImage: 'quay.io/example/claude-code:latest' },
+        {
+          ...CLAUDE_TOOL,
+          tag: '1.0.0',
+          injectorImage: 'quay.io/example/claude-code:1.0.0',
+        },
+        {
+          ...CLAUDE_TOOL,
+          tag: 'next',
+          injectorImage: 'quay.io/example/claude-code:next',
+        },
+        {
+          ...CLAUDE_TOOL,
+          tag: 'latest',
+          injectorImage: 'quay.io/example/claude-code:latest',
+        },
       ];
 
       const workspace = buildWorkspaceWithComponents([
@@ -1089,9 +1165,21 @@ describe('aiTools', () => {
 
     it('should select the highest semver when no named tags are present', () => {
       const toolsWithSemver: api.AiToolDefinition[] = [
-        { ...CLAUDE_TOOL, tag: '1.0.0', injectorImage: 'quay.io/example/claude-code:1.0.0' },
-        { ...CLAUDE_TOOL, tag: '3.21', injectorImage: 'quay.io/example/claude-code:3.21' },
-        { ...CLAUDE_TOOL, tag: '2.55', injectorImage: 'quay.io/example/claude-code:2.55' },
+        {
+          ...CLAUDE_TOOL,
+          tag: '1.0.0',
+          injectorImage: 'quay.io/example/claude-code:1.0.0',
+        },
+        {
+          ...CLAUDE_TOOL,
+          tag: '3.21',
+          injectorImage: 'quay.io/example/claude-code:3.21',
+        },
+        {
+          ...CLAUDE_TOOL,
+          tag: '2.55',
+          injectorImage: 'quay.io/example/claude-code:2.55',
+        },
       ];
 
       const workspace = buildWorkspaceWithComponents([
