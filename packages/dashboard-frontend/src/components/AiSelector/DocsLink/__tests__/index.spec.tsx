@@ -24,7 +24,7 @@ describe('AiSelectorDocsLink', () => {
     const link = screen.getByRole('link', { name: /learn more about ai providers/i });
     expect(link).toHaveAttribute(
       'href',
-      'https://eclipse.dev/che/docs/stable/end-user-guide/ai-provider/',
+      'https://eclipse.dev/che/docs/stable/end-user-guide/using-ai-assistants-in-workspaces/',
     );
   });
 
