@@ -111,7 +111,7 @@ exports[`AiSelector snapshot 1`] = `
                           data-ouia-component-type="PF6/Button"
                           data-ouia-safe={true}
                           disabled={null}
-                          href="https://eclipse.dev/che/docs/stable/end-user-guide/ai-provider/"
+                          href="https://eclipse.dev/che/docs/stable/end-user-guide/defining-a-common-ide/"
                           target="_blank"
                           type={null}
                         >
