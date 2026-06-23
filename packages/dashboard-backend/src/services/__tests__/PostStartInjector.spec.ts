@@ -10,40 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V1alpha2DevWorkspace } from '@devfile/api';
-import * as k8s from '@kubernetes/client-node';
+import { api } from '@eclipse-che/common';
 
-import { IKubeConfigApi, IPodmanApi } from '@/devworkspaceClient/types';
+import { IDevWorkspaceApi, IKubeConfigApi, IPodmanApi } from '@/devworkspaceClient/types';
 import { PostStartInjector } from '@/services/PostStartInjector';
-
-type WatchCallback = (phase: string, obj: V1alpha2DevWorkspace) => Promise<void>;
-type DoneCallback = (error: unknown) => void;
-
-let watchCallback: WatchCallback;
-let doneCallback: DoneCallback;
-let watchPromiseResolve: (ac: AbortController) => void;
-let watchPromiseReject: (error: unknown) => void;
-
-const mockAbortController = { abort: jest.fn() } as unknown as AbortController;
-
-const mockWatch = jest.fn().mockImplementation((_path, _params, cb, doneCb) => {
-  watchCallback = cb;
-  doneCallback = doneCb;
-  return new Promise<AbortController>((resolve, reject) => {
-    watchPromiseResolve = resolve;
-    watchPromiseReject = reject;
-  });
-});
-
-jest.mock('@kubernetes/client-node', () => {
-  const original = jest.requireActual('@kubernetes/client-node');
-  return {
-    ...original,
-    Watch: jest.fn().mockImplementation(() => ({
-      watch: mockWatch,
-    })),
-  };
-});
+import { MessageListener } from '@/services/types/Observer';
 
 jest.mock('@/utils/logger', () => ({
   logger: {
@@ -56,20 +27,31 @@ jest.mock('@/utils/logger', () => ({
 describe('PostStartInjector', () => {
   const namespace = 'user-che';
   const workspaceName = 'my-workspace';
-  let kc: k8s.KubeConfig;
+  const key = `${namespace}/${workspaceName}`;
+
+  let capturedListener: MessageListener;
+  let devworkspaceApi: IDevWorkspaceApi;
   let kubeConfigApi: IKubeConfigApi;
   let podmanApi: IPodmanApi;
 
   beforeEach(() => {
     jest.useFakeTimers();
     jest.clearAllMocks();
-    // Reset static map between tests
     (PostStartInjector as any).activeWatches = new Map();
 
-    kc = new k8s.KubeConfig();
+    devworkspaceApi = {
+      watchInNamespace: jest.fn().mockImplementation((listener: MessageListener) => {
+        capturedListener = listener;
+        return Promise.resolve();
+      }),
+      stopWatching: jest.fn(),
+      getByName: jest.fn(),
+    } as unknown as IDevWorkspaceApi;
+
     kubeConfigApi = {
       injectKubeConfig: jest.fn().mockResolvedValue(undefined),
     } as unknown as IKubeConfigApi;
+
     podmanApi = {
       podmanLogin: jest.fn().mockResolvedValue(undefined),
     } as unknown as IPodmanApi;
@@ -79,170 +61,224 @@ describe('PostStartInjector', () => {
     jest.useRealTimers();
   });
 
-  test('should set up a watch and register in activeWatches', () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+  // ── helpers ──────────────────────────────────────────────────────────────
 
-    expect(mockWatch).toHaveBeenCalledTimes(1);
-    expect((PostStartInjector as any).activeWatches.has(`${namespace}/${workspaceName}`)).toBe(
-      true,
-    );
-  });
-
-  test('should skip if watch already active for the same workspace', () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
-
-    expect(mockWatch).toHaveBeenCalledTimes(1);
-  });
-
-  test('should inject kubeconfig and podman on Running phase', async () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
-
-    const dw: V1alpha2DevWorkspace = {
-      status: { phase: 'Running', devworkspaceId: 'workspace123' },
+  function dwMessage(
+    phase: string,
+    devworkspaceId: string,
+    name = workspaceName,
+  ): api.webSocket.DevWorkspaceMessage {
+    return {
+      eventPhase: api.webSocket.EventPhase.MODIFIED,
+      devWorkspace: {
+        metadata: { name },
+        status: { phase, devworkspaceId },
+      },
     };
-    await watchCallback('MODIFIED', dw);
+  }
 
-    expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'workspace123');
-    expect(podmanApi.podmanLogin).toHaveBeenCalledWith(namespace, 'workspace123');
-    expect((PostStartInjector as any).activeWatches.has(`${namespace}/${workspaceName}`)).toBe(
-      false,
+  function dwMessageNoId(phase: string): api.webSocket.DevWorkspaceMessage {
+    return {
+      eventPhase: api.webSocket.EventPhase.MODIFIED,
+      devWorkspace: {
+        metadata: { name: workspaceName },
+        status: { phase },
+      },
+    } as api.webSocket.DevWorkspaceMessage;
+  }
+
+  function errorMessage(): api.webSocket.StatusMessage {
+    return {
+      eventPhase: api.webSocket.EventPhase.ERROR,
+      status: { kind: 'Status', apiVersion: 'v1', status: 'Failure' },
+      params: { namespace, resourceVersion: '0' },
+    };
+  }
+
+  function invoke() {
+    PostStartInjector.watchAndInject(
+      namespace,
+      workspaceName,
+      devworkspaceApi,
+      kubeConfigApi,
+      podmanApi,
     );
+  }
+
+  // ── watch setup ───────────────────────────────────────────────────────────
+
+  test('registers in activeWatches and calls watchInNamespace', () => {
+    invoke();
+
+    expect(devworkspaceApi.watchInNamespace).toHaveBeenCalledWith(expect.any(Function), {
+      namespace,
+      resourceVersion: '',
+    });
+    expect((PostStartInjector as any).activeWatches.has(key)).toBe(true);
   });
 
-  test('should handle injectKubeConfig failure gracefully', async () => {
-    (kubeConfigApi.injectKubeConfig as jest.Mock).mockRejectedValue(new Error('kubeconfig failed'));
+  test('skips if a watch is already active for the same workspace', () => {
+    invoke();
+    invoke();
 
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+    expect(devworkspaceApi.watchInNamespace).toHaveBeenCalledTimes(1);
+  });
 
-    const dw: V1alpha2DevWorkspace = {
-      status: { phase: 'Running', devworkspaceId: 'workspace123' },
-    };
-    await watchCallback('MODIFIED', dw);
+  // ── Running phase ─────────────────────────────────────────────────────────
+
+  test('injects and unsubscribes on Running phase', async () => {
+    invoke();
+    await capturedListener(dwMessage('Running', 'ws-123'));
+
+    expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-123');
+    expect(podmanApi.podmanLogin).toHaveBeenCalledWith(namespace, 'ws-123');
+    expect(devworkspaceApi.stopWatching).toHaveBeenCalled();
+    expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
+  });
+
+  test('skips injection when Running but devworkspaceId is missing', async () => {
+    invoke();
+    await capturedListener(dwMessageNoId('Running'));
+
+    expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
+  });
+
+  test('handles injectKubeConfig failure gracefully', async () => {
+    (kubeConfigApi.injectKubeConfig as jest.Mock).mockRejectedValue(new Error('kube error'));
+    invoke();
+    await capturedListener(dwMessage('Running', 'ws-123'));
+
+    expect(podmanApi.podmanLogin).toHaveBeenCalled();
+    expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
+  });
+
+  test('handles podmanLogin failure gracefully', async () => {
+    (podmanApi.podmanLogin as jest.Mock).mockRejectedValue(new Error('podman error'));
+    invoke();
+    await capturedListener(dwMessage('Running', 'ws-123'));
 
     expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalled();
-    expect(podmanApi.podmanLogin).toHaveBeenCalled();
+    expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
   });
 
-  test('should handle podmanLogin failure gracefully', async () => {
-    (podmanApi.podmanLogin as jest.Mock).mockRejectedValue(new Error('podman failed'));
+  // ── terminal phases ───────────────────────────────────────────────────────
 
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+  test.each(['Failed', 'Failing', 'Stopped', 'Stopping', 'Terminating'])(
+    'stops watching without injection on %s phase',
+    async phase => {
+      invoke();
+      await capturedListener(dwMessageNoId(phase));
 
-    const dw: V1alpha2DevWorkspace = {
-      status: { phase: 'Running', devworkspaceId: 'workspace123' },
-    };
-    await watchCallback('MODIFIED', dw);
+      expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
+      expect(devworkspaceApi.stopWatching).toHaveBeenCalled();
+      expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
+    },
+  );
 
-    expect(podmanApi.podmanLogin).toHaveBeenCalled();
-    expect((PostStartInjector as any).activeWatches.has(`${namespace}/${workspaceName}`)).toBe(
-      false,
-    );
-  });
-
-  test('should skip injection if Running but no devworkspaceId', async () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
-
-    const dw = {
-      status: { phase: 'Running' },
-    } as V1alpha2DevWorkspace;
-    await watchCallback('MODIFIED', dw);
+  test('ignores non-terminal phases (e.g. Starting)', async () => {
+    invoke();
+    await capturedListener(dwMessage('Starting', 'ws-123'));
 
     expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
-    expect(podmanApi.podmanLogin).not.toHaveBeenCalled();
+    expect(devworkspaceApi.stopWatching).not.toHaveBeenCalled();
+    expect((PostStartInjector as any).activeWatches.has(key)).toBe(true);
   });
 
-  test('should cleanup on Failed phase', async () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+  // ── filtering ─────────────────────────────────────────────────────────────
 
-    const dw = {
-      status: { phase: 'Failed' },
-    } as V1alpha2DevWorkspace;
-    await watchCallback('MODIFIED', dw);
+  test('ignores events for a different workspace name', async () => {
+    invoke();
+    await capturedListener(dwMessage('Running', 'ws-123', 'other-workspace')); // different name
 
     expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
-    expect((PostStartInjector as any).activeWatches.has(`${namespace}/${workspaceName}`)).toBe(
-      false,
+    expect((PostStartInjector as any).activeWatches.has(key)).toBe(true);
+  });
+
+  // ── timeout ───────────────────────────────────────────────────────────────
+
+  test('cleans up on 60 s timeout', () => {
+    invoke();
+    jest.advanceTimersByTime(60000);
+
+    expect(devworkspaceApi.stopWatching).toHaveBeenCalled();
+    expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
+  });
+
+  // ── polling fallback (triggered by ERROR event) ───────────────────────────
+
+  describe('polling fallback', () => {
+    async function triggerErrorAndFlush(): Promise<void> {
+      invoke();
+      await capturedListener(errorMessage());
+      await Promise.resolve().then(() => Promise.resolve());
+    }
+
+    test('starts polling when watch receives ERROR event', async () => {
+      (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({
+        status: { phase: 'Starting' },
+      });
+
+      await triggerErrorAndFlush();
+
+      // Watch stopped, but polling keeps the key registered
+      expect(devworkspaceApi.stopWatching).toHaveBeenCalled();
+      expect((PostStartInjector as any).activeWatches.has(key)).toBe(true);
+    });
+
+    test('injects on Running phase during polling', async () => {
+      (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({
+        status: { phase: 'Running', devworkspaceId: 'ws-poll-id' },
+      });
+
+      await triggerErrorAndFlush();
+      jest.advanceTimersByTime(10000);
+      await Promise.resolve().then(() => Promise.resolve());
+
+      expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-poll-id');
+      expect(podmanApi.podmanLogin).toHaveBeenCalledWith(namespace, 'ws-poll-id');
+      expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
+    });
+
+    test.each(['Failed', 'Failing', 'Stopped', 'Stopping', 'Terminating'])(
+      'stops polling without injection on %s phase',
+      async phase => {
+        (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({ status: { phase } });
+
+        await triggerErrorAndFlush();
+        jest.advanceTimersByTime(10000);
+        await Promise.resolve().then(() => Promise.resolve());
+
+        expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
+        expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
+      },
     );
-  });
 
-  test('should cleanup on ERROR event phase', async () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+    test('stops polling after 300 s timeout', async () => {
+      (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({
+        status: { phase: 'Starting' },
+      });
 
-    const dw: V1alpha2DevWorkspace = {};
-    await watchCallback('ERROR', dw);
+      await triggerErrorAndFlush();
+      jest.advanceTimersByTime(300000);
 
-    expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
-    expect((PostStartInjector as any).activeWatches.has(`${namespace}/${workspaceName}`)).toBe(
-      false,
-    );
-  });
+      expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
+      expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
+    });
 
-  test('should ignore non-terminal phases (e.g. Starting)', async () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
+    test('retries after a GET error during polling', async () => {
+      (devworkspaceApi.getByName as jest.Mock)
+        .mockRejectedValueOnce(new Error('network error'))
+        .mockResolvedValue({ status: { phase: 'Running', devworkspaceId: 'ws-retry-id' } });
 
-    const dw: V1alpha2DevWorkspace = {
-      status: { phase: 'Starting', devworkspaceId: 'workspace123' },
-    };
-    await watchCallback('MODIFIED', dw);
+      await triggerErrorAndFlush();
 
-    expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
-    expect((PostStartInjector as any).activeWatches.has(`${namespace}/${workspaceName}`)).toBe(
-      true,
-    );
-  });
+      jest.advanceTimersByTime(10000);
+      await Promise.resolve().then(() => Promise.resolve());
+      expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
 
-  test('should cleanup on watch connection lost (done callback)', () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
-
-    doneCallback(new Error('connection lost'));
-
-    expect((PostStartInjector as any).activeWatches.has(`${namespace}/${workspaceName}`)).toBe(
-      false,
-    );
-  });
-
-  test('should store real AbortController from .then()', async () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
-
-    watchPromiseResolve(mockAbortController);
-    await Promise.resolve();
-
-    const stored = (PostStartInjector as any).activeWatches.get(`${namespace}/${workspaceName}`);
-    expect(stored).toBe(mockAbortController);
-  });
-
-  test('should abort if watch already cleaned up before .then() fires', async () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
-
-    // Simulate cleanup before .then() resolves
-    (PostStartInjector as any).activeWatches.delete(`${namespace}/${workspaceName}`);
-
-    watchPromiseResolve(mockAbortController);
-    await Promise.resolve();
-
-    expect(mockAbortController.abort).toHaveBeenCalled();
-  });
-
-  test('should cleanup on watch .catch()', async () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
-
-    watchPromiseReject(new Error('watch failed'));
-    // Wait for microtask
-    await Promise.resolve().then(() => Promise.resolve());
-
-    expect((PostStartInjector as any).activeWatches.has(`${namespace}/${workspaceName}`)).toBe(
-      false,
-    );
-  });
-
-  test('should cleanup on timeout', () => {
-    PostStartInjector.watchAndInject(kc, namespace, workspaceName, kubeConfigApi, podmanApi);
-
-    jest.advanceTimersByTime(60_000);
-
-    expect((PostStartInjector as any).activeWatches.has(`${namespace}/${workspaceName}`)).toBe(
-      false,
-    );
+      jest.advanceTimersByTime(10000);
+      await Promise.resolve().then(() => Promise.resolve());
+      expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-retry-id');
+    });
   });
 });

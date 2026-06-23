@@ -222,6 +222,16 @@ export type IEditors = Array<V230Devfile>;
 export type IEventList = CoreV1EventList;
 export type IPodList = V1PodList;
 
+export enum DevWorkspaceStatus {
+  FAILED = 'Failed',
+  FAILING = 'Failing',
+  STARTING = 'Starting',
+  TERMINATING = 'Terminating',
+  RUNNING = 'Running',
+  STOPPED = 'Stopped',
+  STOPPING = 'Stopping',
+}
+
 export interface IDevWorkspaceList {
   apiVersion?: string;
   kind?: string;
