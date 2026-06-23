@@ -251,6 +251,10 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       this.state.shouldStart &&
       workspaceStatusIs(workspace, DevWorkspaceStatus.STOPPED, DevWorkspaceStatus.FAILED)
     ) {
+      // Flip shouldStart immediately so that any re-render triggered by an intermediate
+      // PATCH during startWorkspace() (e.g. managePvcStrategy, manageContainerSccAttribute)
+      // does not dispatch a second concurrent startWorkspace call.
+      this.setState({ shouldStart: false });
       await this.props.startWorkspace(workspace, getStartParams(this.props.location));
     }
 
