@@ -39,6 +39,7 @@ import {
   IPersonalAccessTokenApi,
   IPodApi,
   IPodmanApi,
+  ISccPermissionApi,
   IServerConfigApi,
   IShhKeysApi,
   IWorkspacePreferencesApi,
@@ -314,6 +315,9 @@ export const getDevWorkspaceClient = jest.fn(
       aiRegistryApi: {
         get: () => Promise.resolve(stubAiRegistry),
       } as IAiRegistryApi,
+      sccPermissionApi: {
+        checkSccPermission: (_namespace, _sccName) => Promise.resolve(true),
+      } as ISccPermissionApi,
     } as DevWorkspaceClient;
   },
 );

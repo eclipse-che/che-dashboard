@@ -28,6 +28,7 @@ import { LogsApiService } from '@/devworkspaceClient/services/logsApi';
 import { PersonalAccessTokenService } from '@/devworkspaceClient/services/personalAccessTokenApi';
 import { PodApiService } from '@/devworkspaceClient/services/podApi';
 import { PodmanApiService } from '@/devworkspaceClient/services/podmanApi';
+import { SccPermissionApiService } from '@/devworkspaceClient/services/sccPermissionApi';
 import { ServerConfigApiService } from '@/devworkspaceClient/services/serverConfigApi';
 import { SshKeysService } from '@/devworkspaceClient/services/sshKeysApi';
 import { WorkspacePreferencesApiService } from '@/devworkspaceClient/services/workspacePreferencesApi';
@@ -49,6 +50,7 @@ import {
   IPersonalAccessTokenApi,
   IPodApi,
   IPodmanApi,
+  ISccPermissionApi,
   IServerConfigApi,
   IShhKeysApi,
   IWorkspacePreferencesApi,
@@ -137,5 +139,9 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
 
   get aiRegistryApi(): IAiRegistryApi {
     return new AiRegistryApiService(this.kubeConfig);
+  }
+
+  get sccPermissionApi(): ISccPermissionApi {
+    return new SccPermissionApiService(this.kubeConfig);
   }
 }
