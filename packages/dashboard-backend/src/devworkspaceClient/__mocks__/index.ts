@@ -27,6 +27,7 @@ import {
   ILogsApi,
   IPersonalAccessTokenApi,
   IPodApi,
+  ISccPermissionApi,
   IServerConfigApi,
   IShhKeysApi,
   IWorkspacePreferencesApi,
@@ -89,6 +90,10 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
   }
 
   get aiRegistryApi(): IAiRegistryApi {
+    throw new Error('Method not implemented.');
+  }
+
+  get sccPermissionApi(): ISccPermissionApi {
     throw new Error('Method not implemented.');
   }
 }

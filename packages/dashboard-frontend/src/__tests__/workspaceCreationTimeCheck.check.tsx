@@ -120,6 +120,8 @@ describe('Workspace creation time', () => {
             { providers: [], tools: [], defaultAiProviders: [] },
             REQUEST_TIME_200,
           );
+        case '/dashboard/api/namespace/user-che/scc-permission/container-run':
+          return responseWithDelay({ permitted: true }, REQUEST_TIME_100);
         case 'http://localhost/dashboard/devfile-registry/devfiles/empty.yaml':
           return responseWithDelay('', REQUEST_TIME_200);
         default:

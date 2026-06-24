@@ -45,6 +45,7 @@ import { registerKubeConfigRoute } from '@/routes/api/kubeConfig';
 import { registerPersonalAccessTokenRoutes } from '@/routes/api/personalAccessToken';
 import { registerPodmanLoginRoute } from '@/routes/api/podmanLogin';
 import { registerPodsRoutes } from '@/routes/api/pods';
+import { registerSccPermissionRoute } from '@/routes/api/sccPermission';
 import { registerServerConfigRoute } from '@/routes/api/serverConfig';
 import { registerSShKeysRoutes } from '@/routes/api/sshKeys';
 import { registerWebsocket } from '@/routes/api/websocket';
@@ -142,6 +143,8 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
     registerAirGapSampleRoute(server),
 
     registerBackupRoutes(server),
+
+    registerSccPermissionRoute(server),
 
     registerAiConfigRoutes(server),
 
