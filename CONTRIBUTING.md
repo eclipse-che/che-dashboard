@@ -13,6 +13,7 @@
     - [Measuring Build Speed within Eclipse Che](#measuring-build-speed-within-eclipse-che)
     - [Running the Project Locally Against a Remote Eclipse Che Installation on a Seperate Cluster](#running-the-project-locally-against-a-remote-eclipse-che-installation-on-a-seperate-cluster)
     - [Debugging](#debugging)
+    - [Commit Message Format](#commit-message-format)
     - [Pushing to GitHub and Creating a Pull Request](#pushing-to-github-and-creating-a-pull-request)
     - [Building an Image](#building-an-image)
     - [Building a New Image and Applying it to the CheCluster in the Current Context](#building-a-new-image-and-applying-it-to-the-checluster-in-the-current-context)
@@ -74,7 +75,7 @@ For VS Code, execute tasks defined in the devfile with these steps:
 
 1. Open the command palette (Ctrl/Cmd + Shift + P).
 2. Execute the `Tasks: Run Task` command.
-3. Select the `devfile` folder  and select the `[UD] install dependencies` task to install project dependencies.
+3. Select the `devfile` folder and select the `[UD] install dependencies` task to install project dependencies.
 4. Follow steps 1 and 2 again, select the `[UD] build` task to build the project.
 
 ### Analyzing Bundles within Eclipse Che
@@ -101,11 +102,37 @@ To run the Dashboard against a remote Eclipse Che installation, provide your clu
 
 ### Debugging
 
-To start the Dashboard for debugging, run the `[UD] build` and `[UD] start` tasks by following the steps 1 and 2 from  [Running Devfile Tasks for Downloading Dependencies and Building the Project](#running-devfile-tasks-for-downloading-dependencies-and-building-the-project).
+To start the Dashboard for debugging, run the `[UD] build` and `[UD] start` tasks by following the steps 1 and 2 from [Running Devfile Tasks for Downloading Dependencies and Building the Project](#running-devfile-tasks-for-downloading-dependencies-and-building-the-project).
 
 Debugging the dashboard-frontend and dashboard-backend can be done with your browser developer tools. For Chrome DevTools, this can be done from the `Sources` tab. For debugging the backend, open the dedicated Chrome DevTools for Node.js.
 
 To debug the backend within the editor, after running the `[UD] build` and `[UD] start` tasks, run the `Attach to Remote` debug launch configuration defined in `.vscode/launch.json`.
+
+### Commit Message Format
+
+This project enforces [Conventional Commits](https://www.conventionalcommits.org/) via a `commit-msg` hook. Every commit must follow the format:
+
+```
+<type>(<scope>): <short description>
+```
+
+**Allowed types:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `revert`, `ci`, `build`
+
+**Rules enforced by commitlint:**
+
+- Scope must be lowercase (`fix(ui)` not `fix(UI)`)
+- Subject must not end with a period
+- Subject case is unconstrained
+
+**Examples:**
+
+```
+feat(backup): add restore-from-registry support
+fix(deps): upgrade axios to address prototype pollution CVE
+chore: regenerate license dependency files
+```
+
+The `pre-commit` hook also runs `lint-staged`, which checks formatting and linting on staged files before the commit is recorded. If either hook fails, fix the reported issues and retry.
 
 ### Pushing to GitHub and Creating a Pull Request
 
@@ -207,8 +234,8 @@ yarn start:cleanup
 The development server will run both the dashboard-frontend and dashboard-backend on [http://localhost:8080](http://localhost:8080).
 
 **Native Auth**:
-  With Native Auth, routes are secured with OpenShift OAuth which we can't deal with easily.
-  So, instead when you do `yarn start` we bypass OpenShift OAuth proxy while requesting Che Server by doing `kubectl port-forward`. So, no additional configuration is needed but note that your Dashboard will be authentication with the user from the current KUBECONFIG.
+With Native Auth, routes are secured with OpenShift OAuth which we can't deal with easily.
+So, instead when you do `yarn start` we bypass OpenShift OAuth proxy while requesting Che Server by doing `kubectl port-forward`. So, no additional configuration is needed but note that your Dashboard will be authentication with the user from the current KUBECONFIG.
 
 ### Building Changes Incrementally
 
