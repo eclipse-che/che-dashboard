@@ -510,6 +510,11 @@ export function sanitizeStaleAiTools(
       .map(c => c.name!.replace(/-injector$/, '')),
   );
 
+  // Slugs derived from all registered AI tools. Only commands whose slug appears here
+  // are candidates for orphan removal — this prevents user devfile commands like
+  // 'install-chectl' or 'run-claude-yolo' from being mistaken for orphaned AI tool commands.
+  const registeredToolSlugs = new Set(allTools.map(getToolSlug));
+
   // Find orphaned tool commands whose injector component no longer exists.
   const commands = (template.commands ?? []) as Array<{ id?: string }>;
   const toolCmdPattern = /^(install|symlink|run)-(.+)$/;
@@ -520,7 +525,7 @@ export function sanitizeStaleAiTools(
       continue;
     }
     const match = cmd.id.match(toolCmdPattern);
-    if (match && !remainingInjectorSlugs.has(match[2])) {
+    if (match && registeredToolSlugs.has(match[2]) && !remainingInjectorSlugs.has(match[2])) {
       orphanedCommandIds.add(cmd.id);
     }
   }
@@ -541,7 +546,7 @@ export function sanitizeStaleAiTools(
       continue;
     }
     const match = cmd.id.match(cleanupCmdPattern);
-    if (match && !remainingInjectorSlugs.has(match[1])) {
+    if (match && registeredToolSlugs.has(match[1]) && !remainingInjectorSlugs.has(match[1])) {
       const slug = match[1];
       if (pendingSlugs.has(slug)) {
         // Cleanup has not yet executed — keep the command, clear the annotation
