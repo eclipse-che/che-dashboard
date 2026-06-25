@@ -10,6 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+// "external" = tests that reach out to an external OCI registry via HTTPS
+// (mocked here) rather than the in-cluster backup store.
 import {
   BACKUP_IMAGE_DEFAULT_TAG,
   BackupStatus,
@@ -60,10 +62,6 @@ describe('RegistryApiService', () => {
     jest.clearAllMocks();
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   describe('listBackupImages — external registry (quay.io) path', () => {
     const quayRegistryPath = 'quay.io/my-org/backups';
 
@@ -103,6 +101,18 @@ describe('RegistryApiService', () => {
           return { on: jest.fn() };
         },
       );
+    }
+
+    function mockNetworkError(error: Error): void {
+      mockHttpsGet.mockImplementationOnce(() => {
+        const req: { on: jest.Mock } = {
+          on: jest.fn((event: string, handler: (...args: unknown[]) => void) => {
+            if (event === 'error') handler(error);
+            return req;
+          }),
+        };
+        return req;
+      });
     }
 
     beforeEach(() => {
@@ -194,6 +204,13 @@ describe('RegistryApiService', () => {
       expect(result[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]).toBe(
         BackupStatus.UNAVAILABLE,
       );
+    });
+
+    it('should throw when HTTPS request to external registry fails with a network error', async () => {
+      mockNetworkError(new Error('ECONNREFUSED'));
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({ items: [] });
+
+      await expect(service.listBackupImages(namespace)).rejects.toThrow();
     });
 
     it('should merge registry and annotation data for existing workspace', async () => {

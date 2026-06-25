@@ -37,3 +37,6 @@ Thumbs.db
 
 # Test coverage
 coverage/
+
+# npm cache
+.npm/
