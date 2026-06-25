@@ -3,7 +3,6 @@
     "jsx": "react",
     "strict": true,
     "noImplicitAny": true,
-    "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

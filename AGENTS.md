@@ -112,10 +112,10 @@ To check a single file without running the full suite:
 
 ```bash
 # Lint a single file
-npx eslint path/to/file.ts
+yarn eslint path/to/file.ts
 
 # Type-check a single file
-npx tsc --noEmit path/to/file.ts
+yarn tsc --noEmit path/to/file.ts
 ```
 
 ### Important Notes
