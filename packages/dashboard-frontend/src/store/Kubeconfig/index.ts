@@ -12,10 +12,4 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-export { actionCreators as kubeconfigActionCreators } from '@/store/Kubeconfig/actions';
-export {
-  reducer as kubeconfigReducer,
-  KubeconfigState,
-  unloadedState as kubeconfigUnloadedState,
-} from '@/store/Kubeconfig/reducer';
-export * from '@/store/Kubeconfig/selectors';
+export * from '@/store/Kubeconfig/actions';

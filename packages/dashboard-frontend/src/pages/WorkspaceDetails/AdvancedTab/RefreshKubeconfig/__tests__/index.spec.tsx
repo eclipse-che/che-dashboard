@@ -21,11 +21,13 @@ import { AppAlerts } from '@/services/alerts/appAlerts';
 import { AlertItem } from '@/services/helpers/types';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
+import { refreshKubeconfig } from '@/store/Kubeconfig';
 
 import { RefreshKubeconfig } from '..';
 
-const mockRefreshKubeconfig = jest.fn();
 const mockShowAlert = jest.fn();
+
+jest.mock('@/store/Kubeconfig');
 
 const { renderComponent } = getComponentRenderer(getComponent);
 
@@ -73,16 +75,28 @@ describe('RefreshKubeconfig', () => {
     expect(button).toHaveAttribute('aria-disabled', 'true');
   });
 
-  test('button is disabled and a spinner is shown while refreshing', () => {
-    renderComponent(runningWorkspace, { isRefreshing: true });
+  test('button is disabled and a spinner is shown while refreshing', async () => {
+    let resolveRefresh: (value: { podmanLoginWarning?: string }) => void = () => undefined;
+    (refreshKubeconfig as jest.Mock).mockReturnValueOnce(
+      new Promise(resolve => {
+        resolveRefresh = resolve;
+      }),
+    );
+
+    renderComponent(runningWorkspace);
 
     const button = screen.getByRole('button', { name: 'Refresh Kubeconfig' });
+    await userEvent.click(button);
+
     expect(button).toHaveAttribute('aria-disabled', 'true');
     expect(screen.getByLabelText('Refreshing kubeconfig')).toBeInTheDocument();
+
+    resolveRefresh({});
+    await waitFor(() => expect(mockShowAlert).toHaveBeenCalled());
   });
 
-  test('clicking the button when running dispatches refreshKubeconfig and shows a success toast', async () => {
-    mockRefreshKubeconfig.mockResolvedValueOnce(undefined);
+  test('clicking the button when running calls refreshKubeconfig and shows a success toast', async () => {
+    (refreshKubeconfig as jest.Mock).mockResolvedValueOnce({});
 
     renderComponent(runningWorkspace);
 
@@ -93,7 +107,7 @@ describe('RefreshKubeconfig', () => {
 
     await waitFor(() => expect(mockShowAlert).toHaveBeenCalled());
 
-    expect(mockRefreshKubeconfig).toHaveBeenCalledWith('user-namespace', 'workspace1234');
+    expect(refreshKubeconfig).toHaveBeenCalledWith(runningWorkspace);
     expect(mockShowAlert).toHaveBeenCalledWith(
       expect.objectContaining({
         variant: 'success',
@@ -103,8 +117,31 @@ describe('RefreshKubeconfig', () => {
     );
   });
 
+  test('a podman login warning shows a warning toast instead of failing the action', async () => {
+    (refreshKubeconfig as jest.Mock).mockResolvedValueOnce({
+      podmanLoginWarning: 'Failed to log in to the podman registry.',
+    });
+
+    renderComponent(runningWorkspace);
+
+    const button = screen.getByRole('button', { name: 'Refresh Kubeconfig' });
+    await userEvent.click(button);
+
+    await waitFor(() => expect(mockShowAlert).toHaveBeenCalled());
+
+    expect(mockShowAlert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        variant: 'warning',
+        title: 'Kubeconfig refreshed, but podman login failed',
+        children: 'Failed to log in to the podman registry.',
+      }),
+    );
+  });
+
   test('a failed refresh shows a danger toast with the error message', async () => {
-    mockRefreshKubeconfig.mockRejectedValueOnce(new Error('Failed to inject kubeconfig. boom'));
+    (refreshKubeconfig as jest.Mock).mockRejectedValueOnce(
+      new Error('Failed to inject kubeconfig. boom'),
+    );
 
     renderComponent(runningWorkspace);
 
@@ -122,12 +159,6 @@ describe('RefreshKubeconfig', () => {
   });
 });
 
-function getComponent(workspace: Workspace, options: { isRefreshing?: boolean } = {}) {
-  return (
-    <RefreshKubeconfig
-      workspace={workspace}
-      isRefreshing={options.isRefreshing || false}
-      refreshKubeconfig={mockRefreshKubeconfig}
-    />
-  );
+function getComponent(workspace: Workspace) {
+  return <RefreshKubeconfig workspace={workspace} />;
 }

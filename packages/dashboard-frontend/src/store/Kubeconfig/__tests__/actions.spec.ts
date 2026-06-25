@@ -15,57 +15,74 @@
 import { helpers } from '@eclipse-che/common';
 
 import { injectKubeConfig, podmanLogin } from '@/services/backend-client/devWorkspaceApi';
-import { createMockStore } from '@/store/__mocks__/mockActionsTestStore';
-import {
-  actionCreators,
-  kubeconfigRefreshErrorAction,
-  kubeconfigRefreshRequestAction,
-  kubeconfigRefreshSuccessAction,
-} from '@/store/Kubeconfig/actions';
+import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
+import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
+import { refreshKubeconfig } from '@/store/Kubeconfig/actions';
 
 jest.mock('@eclipse-che/common');
 jest.mock('@/services/backend-client/devWorkspaceApi');
 
 describe('Kubeconfig, actions', () => {
-  let store: ReturnType<typeof createMockStore>;
-
   beforeEach(() => {
-    store = createMockStore({
-      kubeconfig: { isLoading: false, error: undefined },
-    });
     jest.clearAllMocks();
   });
 
+  function buildWorkspace(phase: string): Workspace {
+    const devWorkspace = new DevWorkspaceBuilder()
+      .withNamespace('user-namespace')
+      .withId('workspace1234')
+      .withStatus({ phase })
+      .build();
+    return constructWorkspace(devWorkspace);
+  }
+
   describe('refreshKubeconfig', () => {
-    it('should dispatch request and success actions', async () => {
+    it('should inject the kubeconfig and log in to podman when the workspace is running', async () => {
+      const workspace = buildWorkspace('RUNNING');
+
       (injectKubeConfig as jest.Mock).mockResolvedValue(undefined);
       (podmanLogin as jest.Mock).mockResolvedValue(undefined);
 
-      await store.dispatch(actionCreators.refreshKubeconfig('user-namespace', 'workspace1234'));
+      const result = await refreshKubeconfig(workspace);
 
       expect(injectKubeConfig).toHaveBeenCalledWith('user-namespace', 'workspace1234');
       expect(podmanLogin).toHaveBeenCalledWith('user-namespace', 'workspace1234');
-
-      const actions = store.getActions();
-      expect(actions[0]).toEqual(kubeconfigRefreshRequestAction());
-      expect(actions[1]).toEqual(kubeconfigRefreshSuccessAction());
+      expect(result).toEqual({});
     });
 
-    it('should dispatch request and error actions on failure', async () => {
+    it('should throw without calling the backend when the workspace is not running', async () => {
+      const workspace = buildWorkspace('STOPPED');
+
+      await expect(refreshKubeconfig(workspace)).rejects.toThrow(
+        'Workspace must be running to refresh the kubeconfig.',
+      );
+
+      expect(injectKubeConfig).not.toHaveBeenCalled();
+      expect(podmanLogin).not.toHaveBeenCalled();
+    });
+
+    it('should reject and skip podman login when injectKubeConfig fails', async () => {
+      const workspace = buildWorkspace('RUNNING');
       const errorMessage = 'Failed to inject kubeconfig.';
 
       (injectKubeConfig as jest.Mock).mockRejectedValue(new Error(errorMessage));
-      (helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
 
-      await expect(
-        store.dispatch(actionCreators.refreshKubeconfig('user-namespace', 'workspace1234')),
-      ).rejects.toThrow(errorMessage);
+      await expect(refreshKubeconfig(workspace)).rejects.toThrow(errorMessage);
 
       expect(podmanLogin).not.toHaveBeenCalled();
+    });
 
-      const actions = store.getActions();
-      expect(actions[0]).toEqual(kubeconfigRefreshRequestAction());
-      expect(actions[1]).toEqual(kubeconfigRefreshErrorAction(errorMessage));
+    it('should resolve with a podmanLoginWarning instead of rejecting when podman login fails', async () => {
+      const workspace = buildWorkspace('RUNNING');
+      const errorMessage = 'Failed to log in to the podman registry.';
+
+      (injectKubeConfig as jest.Mock).mockResolvedValue(undefined);
+      (podmanLogin as jest.Mock).mockRejectedValue(new Error(errorMessage));
+      (helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
+
+      const result = await refreshKubeconfig(workspace);
+
+      expect(result).toEqual({ podmanLoginWarning: errorMessage });
     });
   });
 });

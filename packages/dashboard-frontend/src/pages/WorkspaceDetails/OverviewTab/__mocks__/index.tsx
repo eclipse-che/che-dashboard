@@ -20,7 +20,7 @@ export class OverviewTab extends React.PureComponent<Props> {
     return (
       <div>
         Mock Overview Tab
-        <button onClick={() => onSave(workspace)}>Update workspace</button>
+        <button onClick={() => onSave(workspace).catch(() => undefined)}>Update workspace</button>
       </div>
     );
   }

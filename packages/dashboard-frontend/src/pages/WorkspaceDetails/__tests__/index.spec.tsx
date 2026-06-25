@@ -22,7 +22,7 @@ import { mockShowAlert } from '@/pages/WorkspaceDetails/__mocks__';
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import devfileApi from '@/services/devfileApi';
 import { AlertItem, WorkspaceDetailsTab } from '@/services/helpers/types';
-import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
+import { constructWorkspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
@@ -214,26 +214,19 @@ describe('Workspace Details page', () => {
     it('should re-throw the error when saving fails while the Devfile tab is active', async () => {
       const workspace = constructWorkspace(devWorkspaceBuilder.build());
       mockOnSave.mockRejectedValueOnce(new Error('Failed to save the workspace'));
-      const ref = React.createRef<WorkspaceDetails>();
-      renderComponent({ workspace }, `?tab=${WorkspaceDetailsTab.DEVFILE}`, undefined, ref);
+      renderComponent({ workspace }, `?tab=${WorkspaceDetailsTab.DEVFILE}`);
 
-      const instance = ref.current as unknown as {
-        handleOnSave: (workspace: Workspace) => Promise<void>;
-      };
+      const saveButton = screen.getByRole('button', { name: 'Update workspace', hidden: true });
+      await userEvent.click(saveButton);
 
-      await expect(instance.handleOnSave(workspace)).rejects.toBe('Failed to save the workspace');
+      await waitFor(() => expect(mockOnSave).toHaveBeenCalledTimes(1));
 
       expect(mockShowAlert).not.toHaveBeenCalled();
     });
   });
 });
 
-function renderComponent(
-  props?: Partial<Props>,
-  search?: string,
-  pathname?: string,
-  ref?: React.RefObject<WorkspaceDetails>,
-): void {
+function renderComponent(props?: Partial<Props>, search?: string, pathname?: string): void {
   const workspaces = props?.workspace ? [props.workspace.ref as devfileApi.DevWorkspace] : [];
   const store = new MockStoreBuilder().withDevWorkspaces({ workspaces }).build();
   const location = {
@@ -245,7 +238,6 @@ function renderComponent(
     <MemoryRouter>
       <Provider store={store}>
         <WorkspaceDetails
-          ref={ref}
           location={location}
           navigate={mockNavigate}
           isLoading={props?.isLoading || false}

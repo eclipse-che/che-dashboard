@@ -15,7 +15,6 @@
 import common from '@eclipse-che/common';
 import { AlertVariant, Button, ButtonVariant, Spinner, Tooltip } from '@patternfly/react-core';
 import React from 'react';
-import { connect, ConnectedProps } from 'react-redux';
 
 import { lazyInject } from '@/inversify.config';
 import styles from '@/pages/WorkspaceDetails/AdvancedTab/RefreshKubeconfig/index.module.css';
@@ -23,19 +22,23 @@ import { AdvancedTabSection } from '@/pages/WorkspaceDetails/AdvancedTab/Section
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import getRandomString from '@/services/helpers/random';
 import { Workspace } from '@/services/workspace-adapter';
-import { AppDispatch, RootState } from '@/store';
-import { kubeconfigActionCreators } from '@/store/Kubeconfig';
-import { selectIsRefreshingKubeconfig } from '@/store/Kubeconfig/selectors';
+import { refreshKubeconfig } from '@/store/Kubeconfig';
 
-export type OwnProps = {
+export type Props = {
   workspace: Workspace;
 };
 
-export type Props = OwnProps & MappedProps;
+export type State = {
+  isRefreshing: boolean;
+};
 
-export class RefreshKubeconfig extends React.PureComponent<Props> {
+export class RefreshKubeconfig extends React.PureComponent<Props, State> {
   @lazyInject(AppAlerts)
   private readonly appAlerts: AppAlerts;
+
+  public state: State = {
+    isRefreshing: false,
+  };
 
   private showAlert(variant: AlertVariant, title: string, children?: React.ReactNode): void {
     this.appAlerts.showAlert({
@@ -49,20 +52,32 @@ export class RefreshKubeconfig extends React.PureComponent<Props> {
   private async handleRefreshKubeconfig(): Promise<void> {
     const { workspace } = this.props;
 
+    this.setState({ isRefreshing: true });
     try {
-      await this.props.refreshKubeconfig(workspace.namespace, workspace.id);
-      this.showAlert(
-        AlertVariant.success,
-        'Kubeconfig refreshed',
-        'Reload the workspace IDE tab (or restart it) so any extensions relying on the kubeconfig pick up the new credentials.',
-      );
+      const result = await refreshKubeconfig(workspace);
+      if (result.podmanLoginWarning) {
+        this.showAlert(
+          AlertVariant.warning,
+          'Kubeconfig refreshed, but podman login failed',
+          result.podmanLoginWarning,
+        );
+      } else {
+        this.showAlert(
+          AlertVariant.success,
+          'Kubeconfig refreshed',
+          'Reload the workspace IDE tab (or restart it) so any extensions relying on the kubeconfig pick up the new credentials.',
+        );
+      }
     } catch (e) {
       this.showAlert(AlertVariant.danger, common.helpers.errors.getMessage(e));
+    } finally {
+      this.setState({ isRefreshing: false });
     }
   }
 
   public render(): React.ReactElement {
-    const { workspace, isRefreshing } = this.props;
+    const { workspace } = this.props;
+    const { isRefreshing } = this.state;
 
     const isDisabled = !workspace.isRunning || isRefreshing;
     const button = (
@@ -90,24 +105,14 @@ export class RefreshKubeconfig extends React.PureComponent<Props> {
           </Tooltip>
         )}
 
-        {isRefreshing && (
-          <Spinner size="md" className={styles.spinner} aria-label="Refreshing kubeconfig" />
-        )}
+        <span aria-live="polite" aria-atomic="true">
+          {isRefreshing && (
+            <Spinner size="md" className={styles.spinner} aria-label="Refreshing kubeconfig" />
+          )}
+        </span>
       </AdvancedTabSection>
     );
   }
 }
 
-const mapStateToProps = (state: RootState) => ({
-  isRefreshing: selectIsRefreshingKubeconfig(state),
-});
-
-const mapDispatchToProps = (dispatch: AppDispatch) => ({
-  refreshKubeconfig: (namespace: string, devworkspaceId: string) =>
-    dispatch(kubeconfigActionCreators.refreshKubeconfig(namespace, devworkspaceId)),
-});
-
-const connector = connect(mapStateToProps, mapDispatchToProps);
-
-type MappedProps = ConnectedProps<typeof connector>;
-export default connector(RefreshKubeconfig);
+export default RefreshKubeconfig;
