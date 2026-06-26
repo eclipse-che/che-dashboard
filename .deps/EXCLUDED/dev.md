@@ -35,3 +35,7 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 | `pidtree@0.6.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pidtree/0.6.1) |
 | `semver@7.8.3` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/semver/7.8.3) |
 | `tinyexec@1.2.4` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/tinyexec/1.2.4) |
+| `cssnano-preset-default@6.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cssnano-preset-default/6.0.1) |
+| `eslint-config-prettier@9.0.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/eslint-config-prettier/9.0.0) |
+| `eslint-plugin-no-relative-import-paths@1.5.3` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/eslint-plugin-no-relative-import-paths/1.5.3) |
+
