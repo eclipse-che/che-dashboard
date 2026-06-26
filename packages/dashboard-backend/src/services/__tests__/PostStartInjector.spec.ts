@@ -196,13 +196,13 @@ describe('PostStartInjector', () => {
 
   // ── timeout ───────────────────────────────────────────────────────────────
 
-  test('stops watch and starts polling fallback on 60 s timeout', () => {
+  test('stops watch and starts polling fallback on 120 s timeout', () => {
     (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({
       status: { phase: 'Starting' },
     });
 
     invoke();
-    jest.advanceTimersByTime(60000);
+    jest.advanceTimersByTime(120000);
 
     // Watch stopped
     expect(devworkspaceApi.stopWatching).toHaveBeenCalled();
@@ -216,7 +216,7 @@ describe('PostStartInjector', () => {
     });
 
     invoke();
-    jest.advanceTimersByTime(60000);
+    jest.advanceTimersByTime(120000);
 
     // Advance polling interval so getByName is called
     jest.advanceTimersByTime(10000);
