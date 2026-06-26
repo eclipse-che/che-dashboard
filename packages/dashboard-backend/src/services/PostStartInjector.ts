@@ -16,7 +16,7 @@ import { IDevWorkspaceApi, IKubeConfigApi, IPodmanApi } from '@/devworkspaceClie
 import { MessageListener } from '@/services/types/Observer';
 import { logger } from '@/utils/logger';
 
-const INJECTION_TIMEOUT_MS = 60000;
+const INJECTION_TIMEOUT_MS = 300000;
 const POLL_INTERVAL_MS = 10000;
 const POLL_TIMEOUT_MS = 300000;
 
@@ -68,8 +68,15 @@ export class PostStartInjector {
     PostStartInjector.activeWatches.set(key, cleanup);
 
     const timeoutHandle = setTimeout(() => {
-      logger.warn(`PostStartInjector: timed out waiting for ${key} to reach Running`);
+      logger.warn(`PostStartInjector: watch timed out for ${key}, starting polling fallback`);
       cleanup();
+      PostStartInjector.startPollingFallback(
+        namespace,
+        workspaceName,
+        devworkspaceApi,
+        kubeConfigApi,
+        podmanApi,
+      );
     }, INJECTION_TIMEOUT_MS);
 
     const cleanupWithTimeout = () => {
@@ -157,6 +164,9 @@ export class PostStartInjector {
     };
 
     // Re-register so duplicate watchAndInject calls are still blocked during polling.
+    // Note: the same devworkspaceApi instance is reused here. stopWatching() was already
+    // called before startPollingFallback(), but getByName() is a standalone REST call
+    // with no dependency on watch state, so the instance is safe to reuse.
     PostStartInjector.activeWatches.set(key, cleanup);
 
     let elapsed = 0;
@@ -195,6 +205,7 @@ export class PostStartInjector {
               kubeConfigApi,
               podmanApi,
               key,
+              elapsed,
             );
           } else {
             logger.info(`PostStartInjector: ${key} is in phase ${phase}, stopping poll`);
@@ -212,8 +223,13 @@ export class PostStartInjector {
     kubeConfigApi: IKubeConfigApi,
     podmanApi: IPodmanApi,
     key: string,
+    elapsedMs?: number,
   ): Promise<void> {
-    logger.info(`PostStartInjector: ${key} is Running, injecting kubeconfig and podman login`);
+    const elapsed =
+      elapsedMs !== undefined ? ` (workspace ready after ${Math.round(elapsedMs / 1000)}s)` : '';
+    logger.info(
+      `PostStartInjector: ${key} is Running, injecting kubeconfig and podman login${elapsed}`,
+    );
     try {
       await kubeConfigApi.injectKubeConfig(namespace, devworkspaceId);
     } catch (e) {
