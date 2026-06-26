@@ -27,18 +27,21 @@ describe('Kubeconfig, actions', () => {
     jest.clearAllMocks();
   });
 
-  function buildWorkspace(phase: string): Workspace {
-    const devWorkspace = new DevWorkspaceBuilder()
-      .withNamespace('user-namespace')
-      .withId('workspace1234')
-      .withStatus({ phase })
-      .build();
-    return constructWorkspace(devWorkspace);
+  function buildWorkspace(phase: string, devworkspaceId?: string): Workspace {
+    const builder = new DevWorkspaceBuilder().withNamespace('user-namespace').withStatus({ phase });
+    if (devworkspaceId !== undefined) {
+      builder.withId(devworkspaceId);
+    }
+    const dw = builder.build();
+    if (devworkspaceId === undefined && dw.status) {
+      dw.status = { phase: dw.status.phase } as unknown as typeof dw.status;
+    }
+    return constructWorkspace(dw);
   }
 
   describe('refreshKubeconfig', () => {
     it('should inject the kubeconfig and log in to podman when the workspace is running', async () => {
-      const workspace = buildWorkspace('RUNNING');
+      const workspace = buildWorkspace('RUNNING', 'workspace1234');
 
       (injectKubeConfig as jest.Mock).mockResolvedValue(undefined);
       (podmanLogin as jest.Mock).mockResolvedValue(undefined);
@@ -62,7 +65,7 @@ describe('Kubeconfig, actions', () => {
     });
 
     it('should reject and skip podman login when injectKubeConfig fails', async () => {
-      const workspace = buildWorkspace('RUNNING');
+      const workspace = buildWorkspace('RUNNING', 'workspace1234');
       const errorMessage = 'Failed to inject kubeconfig.';
 
       (injectKubeConfig as jest.Mock).mockRejectedValue(new Error(errorMessage));
@@ -72,8 +75,19 @@ describe('Kubeconfig, actions', () => {
       expect(podmanLogin).not.toHaveBeenCalled();
     });
 
-    it('should resolve with a podmanLoginWarning instead of rejecting when podman login fails', async () => {
+    it('should throw when the workspace is running but devworkspaceId is not yet populated', async () => {
       const workspace = buildWorkspace('RUNNING');
+
+      await expect(refreshKubeconfig(workspace)).rejects.toThrow(
+        'Workspace ID is not available yet. Try again in a moment.',
+      );
+
+      expect(injectKubeConfig).not.toHaveBeenCalled();
+      expect(podmanLogin).not.toHaveBeenCalled();
+    });
+
+    it('should resolve with a podmanLoginWarning instead of rejecting when podman login fails', async () => {
+      const workspace = buildWorkspace('RUNNING', 'workspace1234');
       const errorMessage = 'Failed to log in to the podman registry.';
 
       (injectKubeConfig as jest.Mock).mockResolvedValue(undefined);

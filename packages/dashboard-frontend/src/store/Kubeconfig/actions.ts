@@ -26,10 +26,15 @@ export async function refreshKubeconfig(workspace: Workspace): Promise<RefreshKu
     throw new Error('Workspace must be running to refresh the kubeconfig.');
   }
 
-  await injectKubeConfig(workspace.namespace, workspace.id);
+  const devworkspaceId = workspace.ref.status?.devworkspaceId;
+  if (!devworkspaceId) {
+    throw new Error('Workspace ID is not available yet. Try again in a moment.');
+  }
+
+  await injectKubeConfig(workspace.namespace, devworkspaceId);
 
   try {
-    await podmanLogin(workspace.namespace, workspace.id);
+    await podmanLogin(workspace.namespace, devworkspaceId);
   } catch (e) {
     return { podmanLoginWarning: helpers.errors.getMessage(e) };
   }
