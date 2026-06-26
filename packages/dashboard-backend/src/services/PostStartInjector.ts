@@ -16,7 +16,7 @@ import { IDevWorkspaceApi, IKubeConfigApi, IPodmanApi } from '@/devworkspaceClie
 import { MessageListener } from '@/services/types/Observer';
 import { logger } from '@/utils/logger';
 
-const INJECTION_TIMEOUT_MS = 120000;
+const INJECTION_TIMEOUT_MS = 300000;
 const POLL_INTERVAL_MS = 10000;
 const POLL_TIMEOUT_MS = 300000;
 
