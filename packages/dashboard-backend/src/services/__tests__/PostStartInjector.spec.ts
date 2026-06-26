@@ -196,12 +196,34 @@ describe('PostStartInjector', () => {
 
   // ── timeout ───────────────────────────────────────────────────────────────
 
-  test('cleans up on 60 s timeout', () => {
+  test('stops watch and starts polling fallback on 60 s timeout', () => {
+    (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({
+      status: { phase: 'Starting' },
+    });
+
     invoke();
     jest.advanceTimersByTime(60000);
 
+    // Watch stopped
     expect(devworkspaceApi.stopWatching).toHaveBeenCalled();
-    expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
+    // Polling fallback re-registers the key so injection can still complete
+    expect((PostStartInjector as any).activeWatches.has(key)).toBe(true);
+  });
+
+  test('injects credentials via polling fallback after 60 s watch timeout', async () => {
+    (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({
+      status: { phase: 'Running', devworkspaceId: 'ws-timeout-id' },
+    });
+
+    invoke();
+    jest.advanceTimersByTime(60000);
+
+    // Advance polling interval so getByName is called
+    jest.advanceTimersByTime(10000);
+    await Promise.resolve().then(() => Promise.resolve());
+
+    expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-timeout-id');
+    expect(podmanApi.podmanLogin).toHaveBeenCalledWith(namespace, 'ws-timeout-id');
   });
 
   // ── polling fallback (triggered by ERROR event) ───────────────────────────

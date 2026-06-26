@@ -68,8 +68,15 @@ export class PostStartInjector {
     PostStartInjector.activeWatches.set(key, cleanup);
 
     const timeoutHandle = setTimeout(() => {
-      logger.warn(`PostStartInjector: timed out waiting for ${key} to reach Running`);
+      logger.warn(`PostStartInjector: watch timed out for ${key}, starting polling fallback`);
       cleanup();
+      PostStartInjector.startPollingFallback(
+        namespace,
+        workspaceName,
+        devworkspaceApi,
+        kubeConfigApi,
+        podmanApi,
+      );
     }, INJECTION_TIMEOUT_MS);
 
     const cleanupWithTimeout = () => {
