@@ -285,6 +285,7 @@ class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
               data-testid="edit-workspace-name-button"
               variant="plain"
               onClick={() => this.handleEditToggle(true)}
+              aria-label="Edit Workspace Name"
               title="Edit Workspace Name"
             >
               <PencilAltIcon />

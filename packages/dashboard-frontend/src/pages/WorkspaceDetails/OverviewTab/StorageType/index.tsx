@@ -299,6 +299,7 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
               data-testid="overview-storage-edit-toggle"
               variant="plain"
               onClick={() => this.handleEditToggle(true)}
+              aria-label="Change Storage Type"
               title="Change Storage Type"
             >
               <PencilAltIcon />

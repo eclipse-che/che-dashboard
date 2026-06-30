@@ -63,7 +63,7 @@ exports[`StorageTypeFormGroup editable storage type screenshot 1`] = `
     >
       per-workspace
       <button
-        aria-label={null}
+        aria-label="Change Storage Type"
         className="pf-v6-c-button pf-m-plain"
         data-ouia-component-id="OUIA-Generated-Button-plain-3"
         data-ouia-component-type="PF6/Button"
