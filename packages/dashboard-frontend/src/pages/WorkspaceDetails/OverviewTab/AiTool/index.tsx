@@ -136,6 +136,7 @@ class AiToolFormGroup extends React.PureComponent<Props, State> {
               data-testid="overview-ai-tool-edit-toggle"
               variant="plain"
               onClick={() => this.setState({ isSelectorOpen: true })}
+              aria-label="Change AI Tool"
               title="Change AI Tool"
             >
               <PencilAltIcon />

@@ -142,7 +142,7 @@ class GitRepoFormGroup extends React.PureComponent<Props, State> {
             <Button
               variant="link"
               icon={<CopyIcon />}
-              name="Copy to Clipboard"
+              aria-label="Copy to Clipboard"
               data-testid="copy-to-clipboard"
             />
           </CopyToClipboard>

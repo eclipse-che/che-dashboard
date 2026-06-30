@@ -27,7 +27,7 @@ exports[`WorkspaceNameFormGroup snapshots editable 1`] = `
     >
       my-project
       <button
-        aria-label={null}
+        aria-label="Edit Workspace Name"
         className="pf-v6-c-button pf-m-plain"
         data-ouia-component-id="OUIA-Generated-Button-plain-1"
         data-ouia-component-type="PF6/Button"
