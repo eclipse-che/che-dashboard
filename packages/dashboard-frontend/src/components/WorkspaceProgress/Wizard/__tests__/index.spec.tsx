@@ -13,7 +13,7 @@
 import React from 'react';
 
 import { Step, StepId } from '@/components/WorkspaceProgress';
-import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
+import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 
 import WorkspaceProgressWizard, { WorkspaceProgressWizardStep } from '..';
 
@@ -79,24 +79,27 @@ describe('WorkspaceProgressWizard', () => {
 
     const { reRenderComponent } = renderComponent(activeStepId, steps, ref);
 
-    const buttonInitialize = screen.getByRole('button', { name: Step.INITIALIZE });
-    const buttonLimitCheck = screen.getByRole('button', { name: Step.LIMIT_CHECK });
+    const navLinks = document.querySelectorAll('.pf-v6-c-wizard__nav-link');
+    const spanInitialize = navLinks[0];
+    const spanLimitCheck = navLinks[1];
 
-    expect(buttonInitialize.className.split(' ')).toEqual(expect.arrayContaining(['pf-m-current']));
-    expect(buttonLimitCheck.className.split(' ')).not.toEqual(
+    expect(spanInitialize.tagName.toLowerCase()).toBe('span');
+    expect(spanInitialize.className.split(' ')).toEqual(expect.arrayContaining(['pf-m-current']));
+    expect(spanLimitCheck.className.split(' ')).not.toEqual(
       expect.arrayContaining(['pf-m-current']),
     );
 
     const nextActiveStepId = Step.LIMIT_CHECK;
     reRenderComponent(nextActiveStepId, steps, ref);
 
-    const nextButtonInitialize = screen.getByRole('button', { name: Step.INITIALIZE });
-    const nextButtonLimitCheck = screen.getByRole('button', { name: Step.LIMIT_CHECK });
+    const nextNavLinks = document.querySelectorAll('.pf-v6-c-wizard__nav-link');
+    const nextSpanInitialize = nextNavLinks[0];
+    const nextSpanLimitCheck = nextNavLinks[1];
 
-    expect(nextButtonInitialize.className.split(' ')).not.toEqual(
+    expect(nextSpanInitialize.className.split(' ')).not.toEqual(
       expect.arrayContaining(['pf-m-current']),
     );
-    expect(nextButtonLimitCheck.className.split(' ')).toEqual(
+    expect(nextSpanLimitCheck.className.split(' ')).toEqual(
       expect.arrayContaining(['pf-m-current']),
     );
   });

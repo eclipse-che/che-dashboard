@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { WizardNav, WizardNavItem } from '@patternfly/react-core';
+import { WizardNav } from '@patternfly/react-core';
 import wizardStyles from '@patternfly/react-styles/css/components/Wizard/wizard';
 import React from 'react';
 
@@ -34,11 +34,6 @@ export type Props = {
 };
 
 class WorkspaceProgressWizard extends React.Component<Props> {
-  private handleGoToStepById() {
-    console.warn('Not implemented: handleGoToStepById');
-    return false;
-  }
-
   public goToNext(): void {
     const flattenedSteps = this.flattenSteps(this.props.steps);
     // find the index of the next after the current active step
@@ -91,53 +86,62 @@ class WorkspaceProgressWizard extends React.Component<Props> {
     return flattenedSteps.findIndex(step => step.id === stepId) + 1;
   }
 
+  private navLinkClassName(isCurrent: boolean, isDisabled: boolean): string {
+    return [
+      wizardStyles.wizardNavLink,
+      isCurrent ? wizardStyles.modifiers.current : '',
+      isDisabled ? wizardStyles.modifiers.disabled : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+  }
+
   private buildWizardNav(
     activeStepId: StepId,
     steps: WorkspaceProgressWizardStep[],
   ): React.ReactElement {
     const stepsWithDefaults = this.setDefaultValues(steps);
-    const flattenedSteps = this.flattenSteps(stepsWithDefaults);
 
     return (
       <WizardNav aria-label="Workspace Progress Steps">
         {stepsWithDefaults.map(step => {
           const { canJumpTo, name, steps = [], id } = step;
-          const flattenedStepNumber = this.getFlattenedStepsNumber(flattenedSteps, id);
 
           const hasChildren = steps.length !== 0;
           const allChildrenFinished = steps.every(subStep => subStep.isFinishedStep);
           const showChildren = hasChildren && allChildrenFinished === false;
 
           const hasActiveChild = steps.some(subStep => subStep.id === activeStepId);
+          const isCurrent = activeStepId === id || hasActiveChild;
 
           return (
-            <WizardNavItem
-              key={id}
-              content={name}
-              stepIndex={flattenedStepNumber}
-              isCurrent={activeStepId === id || hasActiveChild}
-              isDisabled={!canJumpTo}
-              onClick={() => this.handleGoToStepById()}
-            >
+            <li key={id} className={wizardStyles.wizardNavItem}>
+              <span
+                className={this.navLinkClassName(isCurrent, !canJumpTo)}
+                aria-current={isCurrent ? 'step' : undefined}
+              >
+                <span className={wizardStyles.wizardNavLinkMain}>{name}</span>
+              </span>
               {showChildren && (
                 <WizardNav isInnerList>
                   {steps.map(subStep => {
                     const { canJumpTo, name, id } = subStep;
-                    const flattenedStepNumber = this.getFlattenedStepsNumber(flattenedSteps, id);
+                    const isSubCurrent = activeStepId === id;
+
                     return (
-                      <WizardNavItem
-                        key={id}
-                        content={name}
-                        stepIndex={flattenedStepNumber}
-                        isCurrent={activeStepId === id}
-                        isDisabled={!canJumpTo}
-                        onClick={() => this.handleGoToStepById()}
-                      />
+                      <li key={id} className={wizardStyles.wizardNavItem}>
+                        <span
+                          className={this.navLinkClassName(isSubCurrent, !canJumpTo)}
+                          aria-current={isSubCurrent ? 'step' : undefined}
+                        >
+                          <span className={wizardStyles.wizardNavLinkMain}>{name}</span>
+                        </span>
+                      </li>
                     );
                   })}
                 </WizardNav>
               )}
-            </WizardNavItem>
+            </li>
           );
         })}
       </WizardNav>
