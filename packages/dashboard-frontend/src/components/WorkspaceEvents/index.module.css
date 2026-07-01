@@ -23,3 +23,44 @@
     opacity: 1;
   }
 }
+
+/* Vertical timeline that runs through the event list */
+
+.eventsTimeline {
+  position: relative;
+
+  margin-left: 17px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+
+  border-left: var(--pf-t--global--border--width--extra-strong) solid var(--che-events-border);
+}
+
+@media (width < 75rem) {
+  .eventsTimeline {
+    margin-left: 0;
+    border-left: none;
+  }
+}
+
+.footer {
+  padding-top: 15px;
+}
+
+.pauseButton {
+  align-items: center;
+
+  width: 37px;
+  height: 37px;
+  margin-right: 15px;
+  padding: 0;
+
+  background-color: var(--pf-t--global--background--color--primary--default);
+  border: var(--pf-t--global--border--width--extra-strong) solid
+    var(--pf-t--global--border--color--default);
+  border-radius: 50%;
+}
+
+.pauseButton.active {
+  border-color: var(--pf-t--global--border--color--status--success--default);
+}

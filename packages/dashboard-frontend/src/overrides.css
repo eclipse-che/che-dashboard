@@ -89,6 +89,26 @@ html.pf-v6-theme-dark .pf-v6-c-page__main-section {
   background-color: #414141;
 }
 
+/* Workspace Events: prevent the outer log stack from inheriting any gutter gap.
+   Selector specificity (0,3,0) beats .pf-v6-l-stack.pf-m-gutter (0,2,0),
+   so this works even when a cached JS bundle still renders hasGutter. */
+[role='log'][aria-label='Workspace events'] > .pf-v6-l-stack {
+  gap: 0;
+}
+
+/* Workspace Events timeline theme tokens.
+   --che-events-icon-bg   : icon background matches the page section surface.
+   --che-events-border    : timeline/icon/connector line color. */
+:root {
+  --che-events-icon-bg: #f9f9f9;
+  --che-events-border: var(--pf-t--global--color--nonstatus--gray--default);
+}
+
+html.pf-v6-theme-dark {
+  --che-events-icon-bg: #414141; /* same as dark page section */
+  --che-events-border: var(--pf-t--color--gray--40); /* #a3a3a3 */
+}
+
 /* Dark theme danger button contrast override for WCAG 2.2 Level AA compliance - Overrides PF v6 variables */
 html.pf-v6-theme-dark .pf-v6-c-button.pf-m-danger {
   --pf-v6-c-button--m-danger--BackgroundColor: #e57373;

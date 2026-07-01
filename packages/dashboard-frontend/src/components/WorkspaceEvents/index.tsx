@@ -12,6 +12,7 @@
 
 import { CoreV1Event } from '@kubernetes/client-node';
 import {
+  Button,
   Content,
   ContentVariants,
   EmptyState,
@@ -23,7 +24,7 @@ import {
   Stack,
   StackItem,
 } from '@patternfly/react-core';
-import { FileIcon } from '@patternfly/react-icons';
+import { FileIcon, PauseIcon, PlayIcon } from '@patternfly/react-icons';
 import React from 'react';
 import Pluralize from 'react-pluralize';
 import { connect, ConnectedProps } from 'react-redux';
@@ -49,9 +50,19 @@ export type Props = {
   isActive?: boolean;
 } & MappedProps;
 
-class WorkspaceEvents extends React.PureComponent<Props> {
+type State = {
+  isPaused: boolean;
+  frozenEvents: CoreV1Event[];
+};
+
+class WorkspaceEvents extends React.PureComponent<Props, State> {
   // Tracks UIDs of events already announced so we never repeat them.
   private readonly announcedUIDs = new Set<string>();
+
+  readonly state: State = {
+    isPaused: false,
+    frozenEvents: [],
+  };
 
   public componentDidMount(): void {
     // Pre-seed announced UIDs with all events that already exist at mount time
@@ -118,6 +129,15 @@ class WorkspaceEvents extends React.PureComponent<Props> {
     return allWorkspaces.find(workspace => workspace.uid === workspaceUID);
   }
 
+  private handleTogglePause(liveEvents: CoreV1Event[]): void {
+    const { isPaused } = this.state;
+    if (!isPaused) {
+      this.setState({ isPaused: true, frozenEvents: liveEvents });
+    } else {
+      this.setState({ isPaused: false, frozenEvents: [] });
+    }
+  }
+
   private getEventItems(events: CoreV1Event[]): React.ReactNodeArray {
     return events
       .filter(event => event.message)
@@ -135,6 +155,7 @@ class WorkspaceEvents extends React.PureComponent<Props> {
 
   render() {
     const { workspaceUID, allWorkspaces, startedWorkspaces, hideWhenStopped = true } = this.props;
+    const { isPaused, frozenEvents } = this.state;
 
     const workspace = this.findWorkspace(workspaceUID, allWorkspaces);
 
@@ -151,15 +172,40 @@ class WorkspaceEvents extends React.PureComponent<Props> {
     }
 
     const startResourceVersion = startedWorkspaces[workspaceUID] || '0';
+    const liveEvents = this.props.eventsFromResourceVersionFn(startResourceVersion);
+    const visibleEvents = isPaused ? frozenEvents : liveEvents;
 
-    const events = this.props.eventsFromResourceVersionFn(startResourceVersion);
-    const eventItems = this.getEventItems(events);
+    const pendingCount = isPaused
+      ? Math.max(
+          0,
+          liveEvents.filter(e => e.message).length - frozenEvents.filter(e => e.message).length,
+        )
+      : 0;
+
+    const eventItems = this.getEventItems(visibleEvents);
 
     const tailStackItem = (
       <StackItem>
-        <Flex>
+        <Flex alignItems={{ default: 'alignItemsCenter' }}>
           <FlexItem>
-            <Content component={ContentVariants.small}>Streaming events...</Content>
+            <Button
+              variant="plain"
+              className={`${styles.pauseButton}${isPaused ? '' : ` ${styles.active}`}`}
+              aria-label={isPaused ? 'Resume event streaming' : 'Pause event streaming'}
+              aria-pressed={isPaused}
+              onClick={() => this.handleTogglePause(liveEvents)}
+            >
+              <span className="pf-v6-c-button__icon">
+                {isPaused ? <PlayIcon /> : <PauseIcon />}
+              </span>
+            </Button>
+          </FlexItem>
+          <FlexItem>
+            <Content component={ContentVariants.small}>
+              {isPaused
+                ? `Event stream is paused.${pendingCount > 0 ? ` ${pendingCount} new event${pendingCount === 1 ? '' : 's'} waiting.` : ''}`
+                : 'Streaming events...'}
+            </Content>
           </FlexItem>
           <FlexItem align={{ default: 'alignRight' }}>
             <Content component={ContentVariants.small}>
@@ -171,16 +217,24 @@ class WorkspaceEvents extends React.PureComponent<Props> {
     );
     const headStackItem = (
       <StackItem>
-        <Content component={ContentVariants.small}>Older events are not stored.</Content>
+        <Content component={ContentVariants.small} className={styles.footer}>
+          Older events are not stored.
+        </Content>
       </StackItem>
     );
 
     return (
       <PageSection variant={PageSectionVariants.default}>
-        <div role="log" aria-label="Workspace events">
-          <Stack hasGutter>
+        <div role="log" aria-label="Workspace events" aria-live={isPaused ? 'off' : 'polite'}>
+          <Stack>
             {tailStackItem}
-            {eventItems}
+            {eventItems.length > 0 && (
+              <StackItem>
+                <div className={styles.eventsTimeline}>
+                  <Stack hasGutter>{eventItems}</Stack>
+                </div>
+              </StackItem>
+            )}
             {headStackItem}
           </Stack>
         </div>
