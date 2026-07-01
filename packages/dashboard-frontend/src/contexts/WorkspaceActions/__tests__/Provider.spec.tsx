@@ -326,6 +326,28 @@ describe('WorkspaceActionsProvider', () => {
       );
     });
 
+    test('restart debug and open logs', async () => {
+      mockRestartWorkspace.mockResolvedValueOnce(undefined);
+
+      renderComponent(store, WorkspaceAction.RESTART_DEBUG_AND_OPEN_LOGS, wantDelete[1]);
+
+      const handleActionBtn = screen.getByTestId('test-component-handle-action');
+
+      await user.click(handleActionBtn);
+
+      await jest.advanceTimersByTimeAsync(1000);
+
+      expect(mockRestartWorkspace).toHaveBeenCalledTimes(1);
+      expect(mockRestartWorkspace).toHaveBeenCalledWith(
+        expect.objectContaining({ uid: wantDelete[1] }),
+        { 'debug-workspace-start': true },
+      );
+
+      expect(mockTabManagerOpen).toHaveBeenCalledWith(
+        'http://localhost/#/ide/user-che/wksp-5678?tab=Logs',
+      );
+    });
+
     describe('SCC mismatch warning', () => {
       let storeWithScc: Store;
 
@@ -407,6 +429,27 @@ describe('WorkspaceActionsProvider', () => {
         // Should still start the workspace
         expect(mockStartWorkspace).toHaveBeenCalledTimes(1);
         expect(mockStartWorkspace).toHaveBeenCalledWith(
+          expect.objectContaining({ uid: wantDelete[0] }),
+          { 'debug-workspace-start': true },
+        );
+      });
+
+      test('restart debug and open logs with SCC mismatch logs warning', async () => {
+        console.warn = jest.fn();
+        mockRestartWorkspace.mockResolvedValueOnce(undefined);
+
+        renderComponent(storeWithScc, WorkspaceAction.RESTART_DEBUG_AND_OPEN_LOGS, wantDelete[0]);
+
+        const handleActionBtn = screen.getByTestId('test-component-handle-action');
+
+        await user.click(handleActionBtn);
+
+        await jest.advanceTimersByTimeAsync(1000);
+
+        expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('SCC mismatch'));
+
+        expect(mockRestartWorkspace).toHaveBeenCalledTimes(1);
+        expect(mockRestartWorkspace).toHaveBeenCalledWith(
           expect.objectContaining({ uid: wantDelete[0] }),
           { 'debug-workspace-start': true },
         );

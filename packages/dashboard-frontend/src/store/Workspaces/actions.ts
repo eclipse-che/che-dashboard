@@ -53,9 +53,10 @@ export const actionCreators = {
     },
 
   restartWorkspace:
-    (workspace: Workspace): AppThunk =>
+    (workspace: Workspace, params?: ResourceQueryParams): AppThunk =>
     async dispatch => {
-      await dispatch(devWorkspacesActionCreators.restartWorkspace(workspace.ref));
+      const debugWorkspace = params && params['debug-workspace-start'];
+      await dispatch(devWorkspacesActionCreators.restartWorkspace(workspace.ref, debugWorkspace));
     },
 
   stopWorkspace:

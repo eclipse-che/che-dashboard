@@ -66,7 +66,21 @@ describe('devWorkspaces, actions', () => {
 
       store.dispatch(restartWorkspace(mockStoppedWorkspace));
 
-      expect(actionCreators.startWorkspace).toHaveBeenCalled();
+      expect(actionCreators.startWorkspace).toHaveBeenCalledWith(mockStoppedWorkspace, false);
+      expect(actionCreators.stopWorkspace).not.toHaveBeenCalled();
+    });
+
+    it('should call startWorkspace with debugWorkspace=true if the workspace is stopped', async () => {
+      const mockStoppedWorkspace = {
+        ...mockWorkspace,
+        status: {
+          phase: DevWorkspaceStatus.STOPPED,
+        },
+      } as devfileApi.DevWorkspace;
+
+      store.dispatch(restartWorkspace(mockStoppedWorkspace, true));
+
+      expect(actionCreators.startWorkspace).toHaveBeenCalledWith(mockStoppedWorkspace, true);
       expect(actionCreators.stopWorkspace).not.toHaveBeenCalled();
     });
 
@@ -84,7 +98,21 @@ describe('devWorkspaces, actions', () => {
       const handler = onStatusChangeCallbacks.get(WorkspaceAdapter.getUID(mockWorkspace))!;
       handler(DevWorkspaceStatus.STOPPED as string);
 
-      expect(actionCreators.startWorkspace).toHaveBeenCalled();
+      expect(actionCreators.startWorkspace).toHaveBeenCalledWith(mockWorkspace, false);
+    });
+
+    it('should pass debugWorkspace=true through status change callback', async () => {
+      store.dispatch(restartWorkspace(mockWorkspace, true));
+
+      expect(actionCreators.stopWorkspace).toHaveBeenCalled();
+      expect(actionCreators.startWorkspace).not.toHaveBeenCalled();
+
+      expect(onStatusChangeCallbacks.size).toBe(1);
+
+      const handler = onStatusChangeCallbacks.get(WorkspaceAdapter.getUID(mockWorkspace))!;
+      handler(DevWorkspaceStatus.STOPPED as string);
+
+      expect(actionCreators.startWorkspace).toHaveBeenCalledWith(mockWorkspace, true);
     });
 
     it('should handle errors when stopping the workspace', async () => {
