@@ -196,16 +196,16 @@ describe('Workspace creation time', () => {
     );
 
     // step 1: Initializing
-    const stepInitializing = screen.getByRole('button', { name: 'Initializing' });
+    const stepInitializing = screen.getByText('Initializing').closest('.pf-v6-c-wizard__nav-link');
     expect(stepInitializing).toBeInTheDocument();
     await waitFor(() => expect(stepInitializing).toHaveAttribute('aria-current', 'step'), {
       timeout: 5000,
     });
 
     // step 2: Checking for the limit of running workspaces
-    const stepCheckingForLimit = screen.getByRole('button', {
-      name: 'Checking for the limit of running workspaces',
-    });
+    const stepCheckingForLimit = screen
+      .getByText('Checking for the limit of running workspaces')
+      .closest('.pf-v6-c-wizard__nav-link');
     expect(stepCheckingForLimit).toBeInTheDocument();
     await waitFor(() => expect(stepCheckingForLimit).toHaveAttribute('aria-current', 'step'), {
       timeout: 5000,
@@ -215,18 +215,16 @@ describe('Workspace creation time', () => {
     // skipping because it is never activated, but it's substeps are
 
     // step 4: Waiting for workspace to start
-    const stepStartingWorkspace = screen.getByRole('button', {
-      name: 'Waiting for workspace to start',
-    });
+    const stepStartingWorkspace = screen
+      .getByText('Waiting for workspace to start')
+      .closest('.pf-v6-c-wizard__nav-link');
     expect(stepStartingWorkspace).toBeInTheDocument();
     await waitFor(() => expect(stepStartingWorkspace).toHaveAttribute('aria-current', 'step'), {
       timeout: 5000,
     });
 
     // step 5: Open IDE
-    const stepOpenIde = screen.getByRole('button', {
-      name: 'Open IDE',
-    });
+    const stepOpenIde = screen.getByText('Open IDE').closest('.pf-v6-c-wizard__nav-link');
     expect(stepOpenIde).toBeInTheDocument();
     await waitFor(() => expect(stepOpenIde).toHaveAttribute('aria-current', 'step'), {
       timeout: 5000,
