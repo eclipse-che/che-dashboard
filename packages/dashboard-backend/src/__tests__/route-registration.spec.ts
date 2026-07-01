@@ -112,7 +112,7 @@ describe('Route Registration Integration Tests', () => {
 
   describe('Swagger Documentation', () => {
     it('should include backup routes in swagger spec', async () => {
-      const res = await app.inject().get('/dashboard/api/swagger/json');
+      const res = await app.inject().get('/dashboard/swagger/json');
 
       expect(res.statusCode).toEqual(200);
       const swagger = res.json();
@@ -123,7 +123,7 @@ describe('Route Registration Integration Tests', () => {
     });
 
     it('should tag backup routes with "Backup" tag', async () => {
-      const res = await app.inject().get('/dashboard/api/swagger/json');
+      const res = await app.inject().get('/dashboard/swagger/json');
 
       expect(res.statusCode).toEqual(200);
       const swagger = res.json();

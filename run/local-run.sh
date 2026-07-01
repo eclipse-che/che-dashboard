@@ -108,19 +108,58 @@ if [ ! -d $DASHBOARD_FRONTEND/lib/public/dashboard/devfile-registry ]; then
   fi
 fi
 
-export CLUSTER_ACCESS_TOKEN=$(oc whoami -t)
-if [[ -z "$CLUSTER_ACCESS_TOKEN" ]]; then
-  echo '[INFO] Cluster access token not found.'
-  export DEX_INGRESS=$(kubectl get ingress dex -n dex -o jsonpath='{.spec.rules[0].host}')
-  if [[ -n "$DEX_INGRESS" ]]; then
-    echo '[INFO] Evaluated Dex ingress. Looking for staticClientID and  staticClientSecret...'
-    export CLIENT_ID=$(kubectl get -n dex configMaps/dex -o jsonpath="{.data['config\.yaml']}" | yq ${YQ_FLAGS} ".staticClients[0].id" -)
-    export CLIENT_SECRET=$(kubectl get -n dex configMaps/dex -o jsonpath="{.data['config\.yaml']}" | yq ${YQ_FLAGS} ".staticClients[0].secret" -)
-    echo '[INFO] Done. $CLIENT_ID and $CLIENT_SECRET are set.'
+GATEWAY_CHECK=$(kubectl get deployments.apps -n $CHE_NAMESPACE che-gateway --ignore-not-found -o=json | jq -e '.spec.template.spec.containers|any(.name == "oauth-proxy")')
+if [[ "$GATEWAY_CHECK" == "true" ]] && [[ -n "$(oc whoami -t 2>/dev/null)" ]] && [[ "$CHE_IN_CHE" == "false" ]]; then
+  # OpenShift native auth: use browser-based OAuth instead of oc whoami -t token
+  # (skipped in che-in-che mode where the user token is injected directly)
+  echo '[INFO] Detected OpenShift native auth mode. Setting up browser OAuth flow.'
+
+  # Read CLIENT_ID from the oauth-proxy ConfigMap (config is file-based, not CLI args)
+  export CLIENT_ID=$(kubectl get configmap che-gateway-config-oauth-proxy -n "$CHE_NAMESPACE" \
+    -o jsonpath='{.data.oauth-proxy\.cfg}' 2>/dev/null | \
+    awk -F'"' '/client_id/{print $2}')
+  if [[ -z "$CLIENT_ID" ]]; then
+    echo '[ERROR] Could not find client_id in che-gateway-config-oauth-proxy ConfigMap.'
+    exit 1
+  fi
+
+  export CLIENT_SECRET=$(oc get oauthclient "$CLIENT_ID" -o jsonpath='{.secret}' 2>/dev/null)
+  if [[ -z "$CLIENT_SECRET" ]]; then
+    echo '[ERROR] Could not retrieve secret for OAuthClient '"$CLIENT_ID"'.'
+    exit 1
+  fi
+
+  # Resolve OpenShift OAuth server URL
+  OAUTH_ROUTE=$(oc get route oauth-openshift -n openshift-authentication -o jsonpath='{.spec.host}' 2>/dev/null)
+  if [[ -z "$OAUTH_ROUTE" ]]; then
+    # Derive from API server: https://api.crc.testing:6443 → oauth-openshift.apps-crc.testing
+    API_HOST=$(oc whoami --show-server | sed 's|https://||' | sed 's|:.*||')
+    OAUTH_ROUTE="oauth-openshift.${API_HOST/api./apps.}"
+  fi
+  export OPENSHIFT_OAUTH_URL="https://$OAUTH_ROUTE"
+  echo "[INFO] OpenShift OAuth URL: $OPENSHIFT_OAUTH_URL (client: $CLIENT_ID)"
+
+  # The backend's token exchange POSTs to the OpenShift OAuth server over HTTPS.
+  # Node.js uses its own bundled CA store and won't trust the CRC self-signed cert.
+  # run/public-certs/ca.crt (copied from the dashboard pod by start:prepare) is the
+  # cluster CA that signs both the Che routes and the oauth-openshift route.
+  export NODE_EXTRA_CA_CERTS="${CHE_SELF_SIGNED_MOUNT_PATH}/ca.crt"
+  echo "[INFO] NODE_EXTRA_CA_CERTS: $NODE_EXTRA_CA_CERTS"
+else
+  export CLUSTER_ACCESS_TOKEN=$(oc whoami -t 2>/dev/null)
+  if [[ -z "$CLUSTER_ACCESS_TOKEN" ]]; then
+    echo '[INFO] Cluster access token not found.'
+    export DEX_INGRESS=$(kubectl get ingress dex -n dex -o jsonpath='{.spec.rules[0].host}' 2>/dev/null)
+    if [[ -n "$DEX_INGRESS" ]]; then
+      echo '[INFO] Evaluated Dex ingress. Looking for staticClientID and staticClientSecret...'
+      export CLIENT_ID=$(kubectl get -n dex configMaps/dex -o jsonpath="{.data['config\.yaml']}" | yq ${YQ_FLAGS} ".staticClients[0].id" -)
+      export CLIENT_SECRET=$(kubectl get -n dex configMaps/dex -o jsonpath="{.data['config\.yaml']}" | yq ${YQ_FLAGS} ".staticClients[0].secret" -)
+      echo '[INFO] Done. $CLIENT_ID and $CLIENT_SECRET are set.'
+    fi
   fi
 fi
 
-DASHBOARD_POD_NAME=$(kubectl get pods -n "$CHE_NAMESPACE" -o=custom-columns=:metadata.name | grep dashboard)
+DASHBOARD_POD_NAME=$(kubectl get pods -n "$CHE_NAMESPACE" --field-selector=status.phase=Running -o=custom-columns=:metadata.name | grep dashboard | head -1)
 
 if [ "$CHE_IN_CHE" == "true" ]; then
   export SERVICE_ACCOUNT_TOKEN=$(cat /run/secrets/kubernetes.io/serviceaccount/token)
@@ -161,12 +200,11 @@ export CHE_HOST_ORIGIN=$(kubectl get checluster -n $CHE_NAMESPACE $CHECLUSTER_CR
 # do nothing
 PRERUN_COMMAND="echo"
 
-GATEWAY=$(kubectl get deployments.apps -n $CHE_NAMESPACE che-gateway --ignore-not-found -o=json | jq -e '.spec.template.spec.containers|any(.name == "oauth-proxy")')
-if [ "$GATEWAY" == "true" ]; then
+if [[ "$GATEWAY_CHECK" == "true" ]]; then
   echo "[INFO] Detected gateway and oauth-proxy inside. Running in native auth mode."
   export NATIVE_AUTH="true"
   if [ "$CHE_IN_CHE" == "false" ]; then
-      # when native auth we go though port forward to avoid dealing with OpenShift OAuth Cookies
+      # when native auth we go through port forward to avoid dealing with OpenShift OAuth Cookies
       CHE_FORWARDED_PORT=8081
       export CHE_API_PROXY_UPSTREAM="http://localhost:${CHE_FORWARDED_PORT}"
       PRERUN_COMMAND="kubectl port-forward service/che-host ${CHE_FORWARDED_PORT}:8080 -n $CHE_NAMESPACE"

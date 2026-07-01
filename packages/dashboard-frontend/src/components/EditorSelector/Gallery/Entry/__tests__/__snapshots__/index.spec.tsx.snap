@@ -57,7 +57,6 @@ exports[`Editor Selector Entry snapshot 1`] = `
         >
           <input
             aria-invalid={false}
-            aria-labelledby="editor-selector-card-che-incubator/che-code/insiders"
             checked={false}
             className="pf-v6-c-radio__input pf-v6-screen-reader"
             data-ouia-component-id="OUIA-Generated-Radio-1"

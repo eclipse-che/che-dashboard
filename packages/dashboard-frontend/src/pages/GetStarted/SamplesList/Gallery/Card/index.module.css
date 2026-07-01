@@ -36,3 +36,10 @@ html.pf-v6-theme-dark .sampleCardIcon {
   background-color: var(--pf-t--color--gray--10);
   border-radius: calc(var(--pf-v6-c-card--BorderRadius) / 4);
 }
+
+.sampleCardTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pf-t--global--spacer--xs);
+  margin-bottom: var(--pf-t--global--spacer--xs);
+}

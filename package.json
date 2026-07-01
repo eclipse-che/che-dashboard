@@ -36,6 +36,8 @@
     "lint:check": "yarn workspaces foreach -A run lint:check",
     "lint:fix": "yarn workspaces foreach -A run lint:fix",
     "deploy:patch": "$PWD/run/patch.sh",
+    "local:patch": "$PWD/run/local-patch.sh",
+    "resolutions:check": "node scripts/check-resolutions.js",
     "prepare": "husky"
   },
   "devDependencies": {
