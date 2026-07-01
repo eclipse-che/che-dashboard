@@ -20,3 +20,54 @@
 
   display: block;
 }
+
+/* Timeline row layout */
+
+.eventRow {
+  display: flex;
+}
+
+.iconBox {
+  position: relative;
+  flex: 0 0 50px;
+}
+
+.eventIcon {
+  position: absolute;
+  z-index: 10;
+  top: 50%;
+  left: -10px;
+  transform: translateY(-50%);
+
+  display: inline-block;
+
+  width: 18px;
+  height: 18px;
+
+  background-color: var(--pf-t--global--background--color--secondary--default);
+  border: var(--pf-t--global--border--width--extra-strong) solid
+    var(--pf-t--global--color--nonstatus--gray--default);
+  border-radius: var(--pf-t--global--border--radius--400);
+}
+
+@media (width < 75rem) {
+  .iconBox {
+    display: none;
+  }
+}
+
+.iconLine {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+
+  height: 3px;
+
+  background-color: var(--pf-t--global--color--nonstatus--gray--default);
+}
+
+.eventBox {
+  flex: 1 1 auto;
+  min-width: 0;
+}

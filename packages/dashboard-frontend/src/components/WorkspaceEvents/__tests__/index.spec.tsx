@@ -12,6 +12,7 @@
 
 import { CoreV1Event } from '@kubernetes/client-node';
 import { screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
@@ -140,6 +141,88 @@ describe('The WorkspaceEvents component', () => {
     const eventItems = screen.getAllByTestId('event-item');
     expect(within(eventItems[0]).getByText('message 2')).toBeTruthy();
     expect(within(eventItems[1]).getByText('message 1')).toBeTruthy();
+  });
+
+  describe('pause / resume streaming', () => {
+    it('should render the pause button when streaming', () => {
+      const devWorkspace = devWorkspaceBuilder.withStatus({ phase: 'STARTING' }).build();
+      const store = new MockStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [devWorkspace],
+          startedWorkspaces: { [WorkspaceAdapter.getUID(devWorkspace)]: '1' },
+        })
+        .withEvents({ events: [event1] })
+        .build();
+      renderComponent(store, devWorkspace);
+
+      expect(screen.getByRole('button', { name: 'Pause event streaming' })).toBeInTheDocument();
+      expect(screen.getByText('Streaming events...')).toBeInTheDocument();
+    });
+
+    it('should freeze the event list when paused', async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+
+      const devWorkspace = devWorkspaceBuilder.withStatus({ phase: 'STARTING' }).build();
+      const store = new MockStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [devWorkspace],
+          startedWorkspaces: { [WorkspaceAdapter.getUID(devWorkspace)]: '1' },
+        })
+        .withEvents({ events: [event1] })
+        .build();
+      const { reRenderComponent } = renderComponent(store, devWorkspace);
+
+      expect(screen.getByText('1 event')).toBeTruthy();
+
+      await user.click(screen.getByRole('button', { name: 'Pause event streaming' }));
+
+      expect(screen.getByRole('button', { name: 'Resume event streaming' })).toBeInTheDocument();
+      expect(screen.getByText(/Event stream is paused\./)).toBeInTheDocument();
+
+      // new event arrives in Redux while paused
+      const nextStore = new MockStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [devWorkspace],
+          startedWorkspaces: { [WorkspaceAdapter.getUID(devWorkspace)]: '1' },
+        })
+        .withEvents({ events: [event1, event2] })
+        .build();
+      reRenderComponent(nextStore, devWorkspace);
+
+      // still shows 1 event (frozen) and indicates 1 new waiting
+      expect(screen.getByText('1 event')).toBeTruthy();
+      expect(screen.getByText(/1 new event waiting/)).toBeInTheDocument();
+    });
+
+    it('should resume streaming and show accumulated events', async () => {
+      const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+
+      const devWorkspace = devWorkspaceBuilder.withStatus({ phase: 'STARTING' }).build();
+      const store = new MockStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [devWorkspace],
+          startedWorkspaces: { [WorkspaceAdapter.getUID(devWorkspace)]: '1' },
+        })
+        .withEvents({ events: [event1] })
+        .build();
+      const { reRenderComponent } = renderComponent(store, devWorkspace);
+
+      await user.click(screen.getByRole('button', { name: 'Pause event streaming' }));
+
+      const nextStore = new MockStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [devWorkspace],
+          startedWorkspaces: { [WorkspaceAdapter.getUID(devWorkspace)]: '1' },
+        })
+        .withEvents({ events: [event1, event2] })
+        .build();
+      reRenderComponent(nextStore, devWorkspace);
+
+      await user.click(screen.getByRole('button', { name: 'Resume event streaming' }));
+
+      expect(screen.getByText('Streaming events...')).toBeInTheDocument();
+      expect(screen.getByText('2 events')).toBeTruthy();
+    });
   });
 
   it('should not sort', () => {

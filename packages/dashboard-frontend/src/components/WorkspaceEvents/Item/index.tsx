@@ -80,26 +80,34 @@ export class WorkspaceEventsItem extends React.PureComponent<Props> {
     const { event } = this.props;
 
     return (
-      <Content>
-        <Card isCompact>
-          <CardHeader className={styles.header}>
-            <Flex>
-              <FlexItem>
-                <Content component={ContentVariants.small}>
-                  {this.getInvolvedObj(event)}
-                  {this.getSource(event)}
-                </Content>
-              </FlexItem>
-              <FlexItem align={{ default: 'alignRight' }}>
-                <Content component={ContentVariants.small}>{this.getTime(event)}</Content>
-              </FlexItem>
-            </Flex>
-          </CardHeader>
-          <CardBody>
-            <Content component="p">{event.message}</Content>
-          </CardBody>
-        </Card>
-      </Content>
+      <div className={styles.eventRow}>
+        <div className={styles.iconBox}>
+          <i className={styles.eventIcon} title={event.reason} />
+          <div className={styles.iconLine} />
+        </div>
+        <div className={styles.eventBox}>
+          <Content>
+            <Card isCompact>
+              <CardHeader className={styles.header}>
+                <Flex>
+                  <FlexItem>
+                    <Content component={ContentVariants.small}>
+                      {this.getInvolvedObj(event)}
+                      {this.getSource(event)}
+                    </Content>
+                  </FlexItem>
+                  <FlexItem align={{ default: 'alignRight' }}>
+                    <Content component={ContentVariants.small}>{this.getTime(event)}</Content>
+                  </FlexItem>
+                </Flex>
+              </CardHeader>
+              <CardBody>
+                <Content component="p">{event.message}</Content>
+              </CardBody>
+            </Card>
+          </Content>
+        </div>
+      </div>
     );
   }
 }

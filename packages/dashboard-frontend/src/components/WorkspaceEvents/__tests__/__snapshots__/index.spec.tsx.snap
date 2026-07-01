@@ -56,17 +56,61 @@ exports[`The WorkspaceEvents component snapshot - no events 1`] = `
   >
     <div
       aria-label="Workspace events"
+      aria-live="polite"
       role="log"
     >
       <div
         className="pf-v6-l-stack pf-m-gutter"
+        style={
+          {
+            "gap": "unset",
+          }
+        }
       >
         <div
           className="pf-v6-l-stack__item"
         >
           <div
-            className="pf-v6-l-flex"
+            className="pf-v6-l-flex pf-m-align-items-center"
           >
+            <div
+              className=""
+            >
+              <button
+                aria-label="Pause event streaming"
+                aria-pressed={false}
+                className="pf-v6-c-button pf-m-plain pauseButton active"
+                data-ouia-component-id="OUIA-Generated-Button-plain-1"
+                data-ouia-component-type="PF6/Button"
+                data-ouia-safe={true}
+                disabled={false}
+                onClick={[Function]}
+                type="button"
+              >
+                <span
+                  className="pf-v6-c-button__text"
+                >
+                  <span
+                    className="pf-v6-c-button__icon"
+                  >
+                    <svg
+                      aria-hidden={true}
+                      aria-labelledby={null}
+                      className="pf-v6-svg"
+                      fill="currentColor"
+                      height="1em"
+                      role="img"
+                      viewBox="0 0 448 512"
+                      width="1em"
+                    >
+                      <path
+                        d="M144 479H48c-26.5 0-48-21.5-48-48V79c0-26.5 21.5-48 48-48h96c26.5 0 48 21.5 48 48v352c0 26.5-21.5 48-48 48zm304-48V79c0-26.5-21.5-48-48-48h-96c-26.5 0-48 21.5-48 48v352c0 26.5 21.5 48 48 48h96c26.5 0 48-21.5 48-48z"
+                      />
+                    </svg>
+                  </span>
+                </span>
+              </button>
+            </div>
             <div
               className=""
             >
@@ -129,17 +173,61 @@ exports[`The WorkspaceEvents component snapshot - with events 1`] = `
   >
     <div
       aria-label="Workspace events"
+      aria-live="polite"
       role="log"
     >
       <div
         className="pf-v6-l-stack pf-m-gutter"
+        style={
+          {
+            "gap": "unset",
+          }
+        }
       >
         <div
           className="pf-v6-l-stack__item"
         >
           <div
-            className="pf-v6-l-flex"
+            className="pf-v6-l-flex pf-m-align-items-center"
           >
+            <div
+              className=""
+            >
+              <button
+                aria-label="Pause event streaming"
+                aria-pressed={false}
+                className="pf-v6-c-button pf-m-plain pauseButton active"
+                data-ouia-component-id="OUIA-Generated-Button-plain-2"
+                data-ouia-component-type="PF6/Button"
+                data-ouia-safe={true}
+                disabled={false}
+                onClick={[Function]}
+                type="button"
+              >
+                <span
+                  className="pf-v6-c-button__text"
+                >
+                  <span
+                    className="pf-v6-c-button__icon"
+                  >
+                    <svg
+                      aria-hidden={true}
+                      aria-labelledby={null}
+                      className="pf-v6-svg"
+                      fill="currentColor"
+                      height="1em"
+                      role="img"
+                      viewBox="0 0 448 512"
+                      width="1em"
+                    >
+                      <path
+                        d="M144 479H48c-26.5 0-48-21.5-48-48V79c0-26.5 21.5-48 48-48h96c26.5 0 48 21.5 48 48v352c0 26.5-21.5 48-48 48zm304-48V79c0-26.5-21.5-48-48-48h-96c-26.5 0-48 21.5-48 48v352c0 26.5 21.5 48 48 48h96c26.5 0 48-21.5 48-48z"
+                      />
+                    </svg>
+                  </span>
+                </span>
+              </button>
+            </div>
             <div
               className=""
             >
@@ -178,67 +266,79 @@ exports[`The WorkspaceEvents component snapshot - with events 1`] = `
           className="pf-v6-l-stack__item"
         >
           <div
-            className="fadeIn"
+            className="eventsTimeline"
           >
             <div
-              data-testid="event-item"
+              className="pf-v6-l-stack pf-m-gutter"
             >
-              <span
-                data-testid="event-message"
+              <div
+                className="pf-v6-l-stack__item"
               >
-                message 2
-              </span>
-              <span
-                data-testid="event-time"
+                <div
+                  className="fadeIn"
+                >
+                  <div
+                    data-testid="event-item"
+                  >
+                    <span
+                      data-testid="event-message"
+                    >
+                      message 2
+                    </span>
+                    <span
+                      data-testid="event-time"
+                    >
+                      2021-03-31T14:01:00.000Z
+                    </span>
+                    <span
+                      data-testid="event-source"
+                    >
+                       on 
+                    </span>
+                    <span
+                      data-testid="event-involved-object"
+                    >
+                      Pod
+                       
+                      devWorkspace-pod
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div
+                className="pf-v6-l-stack__item"
               >
-                2021-03-31T14:01:00.000Z
-              </span>
-              <span
-                data-testid="event-source"
-              >
-                 on 
-              </span>
-              <span
-                data-testid="event-involved-object"
-              >
-                Pod
-                 
-                devWorkspace-pod
-              </span>
-            </div>
-          </div>
-        </div>
-        <div
-          className="pf-v6-l-stack__item"
-        >
-          <div
-            className="fadeIn"
-          >
-            <div
-              data-testid="event-item"
-            >
-              <span
-                data-testid="event-message"
-              >
-                message 1
-              </span>
-              <span
-                data-testid="event-time"
-              >
-                2021-03-31T14:00:00.000Z
-              </span>
-              <span
-                data-testid="event-source"
-              >
-                 on 
-              </span>
-              <span
-                data-testid="event-involved-object"
-              >
-                Pod
-                 
-                devWorkspace-pod
-              </span>
+                <div
+                  className="fadeIn"
+                >
+                  <div
+                    data-testid="event-item"
+                  >
+                    <span
+                      data-testid="event-message"
+                    >
+                      message 1
+                    </span>
+                    <span
+                      data-testid="event-time"
+                    >
+                      2021-03-31T14:00:00.000Z
+                    </span>
+                    <span
+                      data-testid="event-source"
+                    >
+                       on 
+                    </span>
+                    <span
+                      data-testid="event-involved-object"
+                    >
+                      Pod
+                       
+                      devWorkspace-pod
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
