@@ -27,6 +27,7 @@ import ProgressIndicator from '@/components/Progress';
 import WorkspaceEvents from '@/components/WorkspaceEvents';
 import WorkspaceLogs from '@/components/WorkspaceLogs';
 import { lazyInject } from '@/inversify.config';
+import AdvancedTab from '@/pages/WorkspaceDetails/AdvancedTab';
 import BackupTab from '@/pages/WorkspaceDetails/BackupTab';
 import DevfileEditorTab from '@/pages/WorkspaceDetails/DevfileEditorTab';
 import Header from '@/pages/WorkspaceDetails/Header';
@@ -97,7 +98,8 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
           tab === WorkspaceDetailsTab.DEVFILE ||
           tab === WorkspaceDetailsTab.BACKUP ||
           tab === WorkspaceDetailsTab.EVENTS ||
-          tab === WorkspaceDetailsTab.LOGS)
+          tab === WorkspaceDetailsTab.LOGS ||
+          tab === WorkspaceDetailsTab.ADVANCED)
       ) {
         return tab as WorkspaceDetailsTab;
       }
@@ -186,6 +188,9 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
                 workspaceUID={workspace.uid}
                 isActive={this.state.activeTabKey === WorkspaceDetailsTab.EVENTS}
               />
+            </Tab>
+            <Tab eventKey={WorkspaceDetailsTab.ADVANCED} title={WorkspaceDetailsTab.ADVANCED}>
+              <AdvancedTab workspace={workspace} />
             </Tab>
           </Tabs>
         </PageSection>
