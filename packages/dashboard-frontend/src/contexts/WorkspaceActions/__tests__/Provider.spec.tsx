@@ -434,6 +434,26 @@ describe('WorkspaceActionsProvider', () => {
         );
       });
 
+      test('restart workspace with SCC mismatch logs warning', async () => {
+        console.warn = jest.fn();
+        mockRestartWorkspace.mockResolvedValueOnce(undefined);
+
+        renderComponent(storeWithScc, WorkspaceAction.RESTART_WORKSPACE, wantDelete[0]);
+
+        const handleActionBtn = screen.getByTestId('test-component-handle-action');
+
+        await user.click(handleActionBtn);
+
+        await jest.advanceTimersByTimeAsync(1000);
+
+        expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('SCC mismatch'));
+
+        expect(mockRestartWorkspace).toHaveBeenCalledTimes(1);
+        expect(mockRestartWorkspace).toHaveBeenCalledWith(
+          expect.objectContaining({ uid: wantDelete[0] }),
+        );
+      });
+
       test('restart debug and open logs with SCC mismatch logs warning', async () => {
         console.warn = jest.fn();
         mockRestartWorkspace.mockResolvedValueOnce(undefined);
