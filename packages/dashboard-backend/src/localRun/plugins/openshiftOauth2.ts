@@ -19,7 +19,7 @@ declare module 'fastify' {
   }
 }
 
-const CHE_HOST = 'http://localhost:8080';
+const CHE_HOST = process.env.CHE_HOST || 'http://localhost:8080';
 
 export function registerOpenShiftOauth2Plugin(server: FastifyInstance) {
   const clientId = process.env.CLIENT_ID;

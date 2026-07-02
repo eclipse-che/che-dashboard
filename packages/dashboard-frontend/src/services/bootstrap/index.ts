@@ -364,15 +364,13 @@ export default class Bootstrap {
         undefined,
       );
 
-      if (devfileRegistry?.disableInternalRegistry !== true) {
-        const airGapedSampleURL = new URL('/dashboard/api/airgap-sample', window.location.origin)
-          .href;
-        await requestRegistriesMetadata(airGapedSampleURL, false)(
-          this.store.dispatch,
-          this.store.getState,
-          undefined,
-        );
-      }
+      const airGapedSampleURL = new URL('/dashboard/api/airgap-sample', window.location.origin)
+        .href;
+      await requestRegistriesMetadata(airGapedSampleURL, false)(
+        this.store.dispatch,
+        this.store.getState,
+        undefined,
+      );
     }
 
     const externalRegistries = (devfileRegistry?.externalDevfileRegistries ?? []).map(
