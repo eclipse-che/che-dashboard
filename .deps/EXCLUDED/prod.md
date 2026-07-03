@@ -10,5 +10,5 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `undici@7.28.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici/7.28.0) |
 | `@hapi/wreck@18.1.2` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/wreck/18.1.2) |
 | `joi@17.13.4` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/joi/17.13.4) |
-| `date-fns@3.6.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/date-fns/3.6.0) |
+
 
