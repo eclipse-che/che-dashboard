@@ -174,6 +174,11 @@ class WorkspaceActionsProvider extends React.Component<Props, State> {
         break;
       case WorkspaceAction.RESTART_WORKSPACE:
         {
+          if (this.checkSccMismatch(workspace)) {
+            console.warn(
+              `Workspace "${workspace.name}" has SCC mismatch. The workspace was created with a different container SCC than what is currently configured.`,
+            );
+          }
           await this.props.restartWorkspace(workspace);
         }
         break;
