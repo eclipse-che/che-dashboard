@@ -17,7 +17,9 @@ import { MessageListener } from '@/services/types/Observer';
 import { logger } from '@/utils/logger';
 
 const INJECTION_TIMEOUT_MS = 300000;
-const POLL_INTERVAL_MS = 10000;
+// 2 s gives ~6 poll attempts within the ~12 s window that the UDI entrypoint.sh
+// waits for ~/.kube/config before giving up and falling back to the pod SA token.
+const POLL_INTERVAL_MS = 2000;
 const POLL_TIMEOUT_MS = 300000;
 
 function isTerminalPhase(phase: string): boolean {
@@ -143,6 +145,38 @@ export class PostStartInjector {
           kubeConfigApi,
           podmanApi,
         );
+      });
+
+    // Immediate initial check: if the workspace reached RUNNING before the watch
+    // stream opened (narrow LIST→STREAM race window), the watch will never fire for
+    // the transition.  A single GET right after registering the watch catches this.
+    devworkspaceApi
+      .getByName(namespace, workspaceName)
+      .then(async dw => {
+        // Guard: if the watch listener already handled RUNNING (and called
+        // cleanupWithTimeout), the key is gone — avoid double injection.
+        if (!PostStartInjector.activeWatches.has(key)) {
+          return;
+        }
+        const phase = dw.status?.phase;
+        const devworkspaceId = dw.status?.devworkspaceId;
+        if (phase === DevWorkspaceStatus.RUNNING && devworkspaceId) {
+          logger.info(
+            `PostStartInjector: ${key} already Running at watch start — injecting immediately`,
+          );
+          cleanupWithTimeout();
+          await PostStartInjector.injectCredentials(
+            namespace,
+            devworkspaceId,
+            kubeConfigApi,
+            podmanApi,
+            key,
+          );
+        }
+      })
+      .catch((e: unknown) => {
+        // Non-fatal: the watch or polling fallback will still handle the RUNNING event.
+        logger.warn(e, `PostStartInjector: initial getByName failed for ${key}`);
       });
   }
 

@@ -45,7 +45,9 @@ describe('PostStartInjector', () => {
         return Promise.resolve();
       }),
       stopWatching: jest.fn(),
-      getByName: jest.fn(),
+      // Default: return 'Starting' so the initial check does not trigger injection
+      // in tests that do not explicitly override getByName.
+      getByName: jest.fn().mockResolvedValue({ status: { phase: 'Starting' } }),
     } as unknown as IDevWorkspaceApi;
 
     kubeConfigApi = {
@@ -194,9 +196,45 @@ describe('PostStartInjector', () => {
     expect((PostStartInjector as any).activeWatches.has(key)).toBe(true);
   });
 
+  // ── initial immediate check (Race 1 fix) ─────────────────────────────────
+
+  test('injects immediately when workspace is already Running at watch startup', async () => {
+    // Simulates the race: workspace reached RUNNING before watch stream opened.
+    (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({
+      status: { phase: 'Running', devworkspaceId: 'ws-already-running' },
+    });
+
+    invoke();
+    // Flush the initial getByName() promise chain
+    await Promise.resolve().then(() => Promise.resolve());
+
+    expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-already-running');
+    expect(podmanApi.podmanLogin).toHaveBeenCalledWith(namespace, 'ws-already-running');
+    expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
+  });
+
+  test('does not double-inject when watch listener fires before initial check resolves', async () => {
+    // Both the watch listener and the initial getByName see Running.
+    // The listener fires first (synchronously via capturedListener), removes the key,
+    // then the initial check resolves and must be a no-op.
+    (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({
+      status: { phase: 'Running', devworkspaceId: 'ws-race-id' },
+    });
+
+    invoke();
+
+    // Simulate watch listener firing first
+    await capturedListener(dwMessage('Running', 'ws-race-id'));
+    // Now flush the initial check promise — key is already gone
+    await Promise.resolve().then(() => Promise.resolve());
+
+    expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledTimes(1);
+  });
+
   // ── timeout ───────────────────────────────────────────────────────────────
 
   test('stops watch and starts polling fallback on 300 s timeout', () => {
+    // Return 'Starting' so the initial check does not trigger injection.
     (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({
       status: { phase: 'Starting' },
     });
@@ -210,16 +248,18 @@ describe('PostStartInjector', () => {
     expect((PostStartInjector as any).activeWatches.has(key)).toBe(true);
   });
 
-  test('injects credentials via polling fallback after 60 s watch timeout', async () => {
-    (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({
-      status: { phase: 'Running', devworkspaceId: 'ws-timeout-id' },
-    });
+  test('injects credentials via polling fallback after watch timeout', async () => {
+    // First call = initial check → Starting (no injection).
+    // Subsequent calls (polling) → Running.
+    (devworkspaceApi.getByName as jest.Mock)
+      .mockResolvedValueOnce({ status: { phase: 'Starting' } })
+      .mockResolvedValue({ status: { phase: 'Running', devworkspaceId: 'ws-timeout-id' } });
 
     invoke();
     jest.advanceTimersByTime(300000);
 
-    // Advance polling interval so getByName is called
-    jest.advanceTimersByTime(10000);
+    // Advance one polling interval (2 s) so getByName is called
+    jest.advanceTimersByTime(2000);
     await Promise.resolve().then(() => Promise.resolve());
 
     expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-timeout-id');
@@ -248,12 +288,13 @@ describe('PostStartInjector', () => {
     });
 
     test('injects on Running phase during polling', async () => {
-      (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({
-        status: { phase: 'Running', devworkspaceId: 'ws-poll-id' },
-      });
+      // First call = initial check → Starting. Subsequent calls (poll) → Running.
+      (devworkspaceApi.getByName as jest.Mock)
+        .mockResolvedValueOnce({ status: { phase: 'Starting' } })
+        .mockResolvedValue({ status: { phase: 'Running', devworkspaceId: 'ws-poll-id' } });
 
       await triggerErrorAndFlush();
-      jest.advanceTimersByTime(10000);
+      jest.advanceTimersByTime(2000);
       await Promise.resolve().then(() => Promise.resolve());
 
       expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-poll-id');
@@ -264,10 +305,11 @@ describe('PostStartInjector', () => {
     test.each(['Failed', 'Failing', 'Stopped', 'Stopping', 'Terminating'])(
       'stops polling without injection on %s phase',
       async phase => {
+        // Initial check + poll both return the terminal phase (no injection either way).
         (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({ status: { phase } });
 
         await triggerErrorAndFlush();
-        jest.advanceTimersByTime(10000);
+        jest.advanceTimersByTime(2000);
         await Promise.resolve().then(() => Promise.resolve());
 
         expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
@@ -287,18 +329,38 @@ describe('PostStartInjector', () => {
       expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
     });
 
-    test('retries after a GET error during polling', async () => {
+    test('poll interval is 2 s (catches RUNNING before entrypoint.sh gives up)', async () => {
+      // The UDI entrypoint.sh waits ~12 s; 2 s poll gives ~6 attempts in that window.
+      // First call = initial check → Starting. Poll at T+2 s → Running.
       (devworkspaceApi.getByName as jest.Mock)
-        .mockRejectedValueOnce(new Error('network error'))
+        .mockResolvedValueOnce({ status: { phase: 'Starting' } })
+        .mockResolvedValue({ status: { phase: 'Running', devworkspaceId: 'ws-fast-id' } });
+
+      await triggerErrorAndFlush();
+
+      // One 2 s poll — should inject without needing 10 s
+      jest.advanceTimersByTime(2000);
+      await Promise.resolve().then(() => Promise.resolve());
+
+      expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-fast-id');
+    });
+
+    test('retries after a GET error during polling', async () => {
+      // Call #1 (initial check) → rejection.
+      // Call #2 (poll #1) → rejection.
+      // Call #3 (poll #2) → Running.
+      (devworkspaceApi.getByName as jest.Mock)
+        .mockRejectedValueOnce(new Error('network error')) // initial check
+        .mockRejectedValueOnce(new Error('network error')) // poll #1
         .mockResolvedValue({ status: { phase: 'Running', devworkspaceId: 'ws-retry-id' } });
 
       await triggerErrorAndFlush();
 
-      jest.advanceTimersByTime(10000);
+      jest.advanceTimersByTime(2000);
       await Promise.resolve().then(() => Promise.resolve());
       expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
 
-      jest.advanceTimersByTime(10000);
+      jest.advanceTimersByTime(2000);
       await Promise.resolve().then(() => Promise.resolve());
       expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-retry-id');
     });
