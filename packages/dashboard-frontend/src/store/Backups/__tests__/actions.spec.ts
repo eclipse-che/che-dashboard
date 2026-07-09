@@ -227,7 +227,7 @@ describe('Backup Actions', () => {
       await store.dispatch(fetchWorkspaceBackupStatus({ namespace, workspaceUID, workspaceName }));
 
       const state = store.getState().backups;
-      expect(state.error).toBe('API error');
+      expect(state.statusError).toBe('API error');
     });
   });
 

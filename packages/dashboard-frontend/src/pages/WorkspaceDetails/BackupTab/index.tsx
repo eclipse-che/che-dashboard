@@ -31,7 +31,7 @@ import { Workspace } from '@/services/workspace-adapter';
 import { AppDispatch, RootState } from '@/store';
 import { fetchWorkspaceBackupStatus } from '@/store/Backups/actions';
 import {
-  selectBackupsError,
+  selectBackupsStatusError,
   selectIsLoadingBackups,
   selectWorkspaceBackupInfo,
 } from '@/store/Backups/selectors';
@@ -115,7 +115,7 @@ export class BackupTab extends React.PureComponent<Props> {
 const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
   backupInfo: selectWorkspaceBackupInfo(state, ownProps.workspace.uid) as BackupInfo | undefined,
   isLoading: selectIsLoadingBackups(state),
-  error: selectBackupsError(state),
+  error: selectBackupsStatusError(state),
 });
 
 const mapDispatchToProps = (dispatch: AppDispatch) => ({

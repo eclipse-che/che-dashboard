@@ -151,9 +151,12 @@ describe('RegistryApiService', () => {
         },
       };
 
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [mockImageStream, mockImageStream2] }) // imagestreams
-        .mockResolvedValueOnce({ items: [] }); // devworkspaces
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [mockImageStream, mockImageStream2],
+      }); // imagestreams
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [],
+      }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
@@ -177,9 +180,12 @@ describe('RegistryApiService', () => {
         },
       };
 
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [mockImageStream, mockImageStreamOther] }) // imagestreams
-        .mockResolvedValueOnce({ items: [] }); // devworkspaces
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [mockImageStream, mockImageStreamOther],
+      }); // imagestreams
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [],
+      }); // devworkspaces
 
       const result = await service.listBackupImages(namespace, workspaceName);
 
@@ -188,11 +194,12 @@ describe('RegistryApiService', () => {
     });
 
     it('should enrich results with workspaceExists field', async () => {
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
-        .mockResolvedValueOnce({
-          items: [{ metadata: { name: 'my-workspace', annotations: {} } }],
-        }); // devworkspaces
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [mockImageStream],
+      }); // imagestreams
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [{ metadata: { name: 'my-workspace', annotations: {} } }],
+      }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
@@ -200,9 +207,12 @@ describe('RegistryApiService', () => {
     });
 
     it('should detect when workspace does not exist', async () => {
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
-        .mockResolvedValueOnce({ items: [] }); // devworkspaces — workspace absent from Set
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [mockImageStream],
+      }); // imagestreams
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [],
+      }); // devworkspaces — workspace absent from Set
 
       const result = await service.listBackupImages(namespace);
 
@@ -212,19 +222,20 @@ describe('RegistryApiService', () => {
     it('should default LAST_BACKUP_SUCCESSFUL to true when ImageStream exists but DevWorkspace has no backup annotations', async () => {
       // Post-restore scenario: workspace was restored from backup, new DevWorkspace
       // exists but has no backup annotations yet. ImageStream still exists.
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
-        .mockResolvedValueOnce({
-          items: [
-            {
-              metadata: {
-                name: workspaceName,
-                namespace,
-                annotations: {},
-              },
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [mockImageStream],
+      }); // imagestreams
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [
+          {
+            metadata: {
+              name: workspaceName,
+              namespace,
+              annotations: {},
             },
-          ],
-        }); // devworkspaces — DW WITHOUT LAST_BACKUP_FINISHED_AT
+          },
+        ],
+      }); // devworkspaces — DW WITHOUT LAST_BACKUP_FINISHED_AT
 
       const result = await service.listBackupImages(namespace);
 
@@ -248,24 +259,25 @@ describe('RegistryApiService', () => {
         },
       };
 
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [failedWorkspaceIS] }) // imagestreams
-        .mockResolvedValueOnce({
-          items: [
-            {
-              metadata: {
-                name: 'failed-backup-workspace',
-                namespace,
-                annotations: {
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
-                    '2026-02-10T12:00:00.000Z',
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'false',
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]: 'OOMKilled',
-                },
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [failedWorkspaceIS],
+      }); // imagestreams
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [
+          {
+            metadata: {
+              name: 'failed-backup-workspace',
+              namespace,
+              annotations: {
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
+                  '2026-02-10T12:00:00.000Z',
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'false',
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]: 'OOMKilled',
               },
             },
-          ],
-        }); // devworkspaces
+          },
+        ],
+      }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
@@ -278,9 +290,12 @@ describe('RegistryApiService', () => {
 
     it('should default LAST_BACKUP_SUCCESSFUL to true when workspace is deleted', async () => {
       // Deleted workspace: ImageStream exists but DevWorkspace was deleted.
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
-        .mockResolvedValueOnce({ items: [] }); // devworkspaces — no DWs at all
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [mockImageStream],
+      }); // imagestreams
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [],
+      }); // devworkspaces — no DWs at all
 
       const result = await service.listBackupImages(namespace);
 
@@ -302,9 +317,12 @@ describe('RegistryApiService', () => {
         },
       };
 
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [taglessImageStream] }) // imagestreams
-        .mockResolvedValueOnce({ items: [] }); // devworkspaces
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [taglessImageStream],
+      }); // imagestreams
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [],
+      }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
@@ -325,22 +343,23 @@ describe('RegistryApiService', () => {
         },
       };
 
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [unavailableIS] }) // imagestreams — no :latest
-        .mockResolvedValueOnce({
-          items: [
-            {
-              metadata: {
-                name: 'che-dashboard-1111',
-                namespace,
-                annotations: {
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: actualBackupTime,
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
-                },
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [unavailableIS],
+      }); // imagestreams — no :latest
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [
+          {
+            metadata: {
+              name: 'che-dashboard-1111',
+              namespace,
+              annotations: {
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: actualBackupTime,
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
               },
             },
-          ],
-        }); // devworkspaces
+          },
+        ],
+      }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
@@ -355,24 +374,25 @@ describe('RegistryApiService', () => {
       // No ImageStreams at all — both calls return empty items by default
       // but devworkspaces has one entry with backup annotations
 
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [] }) // imagestreams — none
-        .mockResolvedValueOnce({
-          items: [
-            {
-              metadata: {
-                name: 'my-workspace',
-                namespace,
-                annotations: {
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
-                    '2026-02-10T12:00:00.000Z',
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'false',
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]: 'OOMKilled',
-                },
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [],
+      }); // imagestreams — none
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [
+          {
+            metadata: {
+              name: 'my-workspace',
+              namespace,
+              annotations: {
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
+                  '2026-02-10T12:00:00.000Z',
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'false',
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]: 'OOMKilled',
               },
             },
-          ],
-        }); // devworkspaces
+          },
+        ],
+      }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
@@ -388,23 +408,24 @@ describe('RegistryApiService', () => {
     });
 
     it('should prefer ImageStream backup over annotation-only when workspace has both', async () => {
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
-        .mockResolvedValueOnce({
-          items: [
-            {
-              metadata: {
-                name: 'my-workspace',
-                namespace,
-                annotations: {
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
-                    '2026-02-10T12:00:00.000Z',
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
-                },
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [mockImageStream],
+      }); // imagestreams
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [
+          {
+            metadata: {
+              name: 'my-workspace',
+              namespace,
+              annotations: {
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
+                  '2026-02-10T12:00:00.000Z',
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
               },
             },
-          ],
-        }); // devworkspaces
+          },
+        ],
+      }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
@@ -427,33 +448,34 @@ describe('RegistryApiService', () => {
         },
       };
 
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [internalIS] }) // imagestreams
-        .mockResolvedValueOnce({
-          items: [
-            {
-              metadata: {
-                name: 'internal-workspace',
-                namespace,
-                annotations: {
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
-                    '2026-02-10T12:00:00.000Z',
-                },
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [internalIS],
+      }); // imagestreams
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [
+          {
+            metadata: {
+              name: 'internal-workspace',
+              namespace,
+              annotations: {
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
+                  '2026-02-10T12:00:00.000Z',
               },
             },
-            {
-              metadata: {
-                name: 'external-workspace',
-                namespace,
-                annotations: {
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
-                    '2026-02-10T14:00:00.000Z',
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
-                },
+          },
+          {
+            metadata: {
+              name: 'external-workspace',
+              namespace,
+              annotations: {
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
+                  '2026-02-10T14:00:00.000Z',
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
               },
             },
-          ],
-        }); // devworkspaces
+          },
+        ],
+      }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
@@ -478,10 +500,26 @@ describe('RegistryApiService', () => {
       expect(mockCustomObjectsApi.listNamespacedCustomObject).not.toHaveBeenCalled();
     });
 
+    it('should propagate error when ImageStream listing fails', async () => {
+      mockCustomObjectsApi.listNamespacedCustomObject.mockRejectedValueOnce(
+        new Error('Forbidden: User cannot list imagestreams'),
+      ); // imagestreams fails
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [],
+      }); // devworkspaces succeeds
+
+      await expect(service.listBackupImages(namespace)).rejects.toMatchObject({
+        name: BACKUP_ERROR_CODES.REGISTRY_API_ERROR,
+      });
+    });
+
     it('should propagate error when DevWorkspace list fetch fails', async () => {
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams succeeds
-        .mockRejectedValueOnce(new Error('k8s API unavailable')); // devworkspaces fails
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [mockImageStream],
+      }); // imagestreams succeeds
+      mockCustomObjectsApi.listNamespacedCustomObject.mockRejectedValueOnce(
+        new Error('k8s API unavailable'),
+      ); // devworkspaces fails
 
       await expect(service.listBackupImages(namespace)).rejects.toMatchObject({
         name: BACKUP_ERROR_CODES.REGISTRY_API_ERROR,
@@ -516,9 +554,12 @@ describe('RegistryApiService', () => {
         config: { workspace: { backupCronJob: { registry: { path: dwocRegistryPath } } } },
       });
 
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
-        .mockResolvedValueOnce({ items: [] }); // devworkspaces
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [mockImageStream],
+      }); // imagestreams
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [],
+      }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
@@ -543,32 +584,33 @@ describe('RegistryApiService', () => {
         status: { tags: [{ tag: 'v1.0.0', items: [{ created: '2026-02-01T11:00:00Z' }] }] },
       };
 
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [taglessA, taglessB] }) // imagestreams
-        .mockResolvedValueOnce({
-          items: [
-            {
-              metadata: {
-                name: 'workspace-a',
-                namespace,
-                annotations: {
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: '2026-02-01T10:00:00Z',
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
-                },
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [taglessA, taglessB],
+      }); // imagestreams
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [
+          {
+            metadata: {
+              name: 'workspace-a',
+              namespace,
+              annotations: {
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: '2026-02-01T10:00:00Z',
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
               },
             },
-            {
-              metadata: {
-                name: 'workspace-b',
-                namespace,
-                annotations: {
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: '2026-02-01T11:00:00Z',
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
-                },
+          },
+          {
+            metadata: {
+              name: 'workspace-b',
+              namespace,
+              annotations: {
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: '2026-02-01T11:00:00Z',
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
               },
             },
-          ],
-        }); // devworkspaces
+          },
+        ],
+      }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
@@ -600,13 +642,16 @@ describe('RegistryApiService', () => {
         },
       };
 
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [mockImageStream, mockImageStream2] }) // imagestreams
-        .mockResolvedValueOnce({ items: [] }); // devworkspaces
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [mockImageStream, mockImageStream2],
+      }); // imagestreams
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [],
+      }); // devworkspaces
 
       await service.listBackupImages(namespace);
 
-      // Exactly two listNamespacedCustomObject calls (imagestreams + devworkspaces)
+      // ImageStreams + DevWorkspaces — two calls total
       expect(mockCustomObjectsApi.listNamespacedCustomObject).toHaveBeenCalledTimes(2);
       // getNamespacedCustomObject called exactly once — for DWOC, NOT once per image
       expect(mockSaCustomObjectsApi.getNamespacedCustomObject).toHaveBeenCalledTimes(1);
@@ -866,11 +911,12 @@ describe('RegistryApiService', () => {
 
   describe('Data Validation', () => {
     it('should handle workspace existence via Set lookup (workspaceExists true)', async () => {
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
-        .mockResolvedValueOnce({
-          items: [{ metadata: { name: 'my-workspace', annotations: {} } }],
-        }); // devworkspaces
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [mockImageStream],
+      }); // imagestreams
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValueOnce({
+        items: [{ metadata: { name: 'my-workspace', annotations: {} } }],
+      }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 

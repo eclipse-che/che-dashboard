@@ -360,7 +360,7 @@ export class RegistryApiService {
       const [registryResults, allDevWorkspaces] = (await Promise.race([
         Promise.all([
           registryType === 'openshift-internal'
-            ? this.listImageStreams(namespace).catch((): IBackupImage[] => [])
+            ? this.listImageStreams(namespace)
             : registryClient!.listWorkspaceBackups(namespace),
           this.listAllDevWorkspaces(namespace),
         ]),
