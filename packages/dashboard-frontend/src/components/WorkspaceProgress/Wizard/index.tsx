@@ -119,6 +119,7 @@ class WorkspaceProgressWizard extends React.Component<Props> {
               <span
                 className={this.navLinkClassName(isCurrent, !canJumpTo)}
                 aria-current={isCurrent ? 'step' : undefined}
+                tabIndex={0}
               >
                 <span className={wizardStyles.wizardNavLinkMain}>{name}</span>
               </span>
@@ -133,6 +134,7 @@ class WorkspaceProgressWizard extends React.Component<Props> {
                         <span
                           className={this.navLinkClassName(isSubCurrent, !canJumpTo)}
                           aria-current={isSubCurrent ? 'step' : undefined}
+                          tabIndex={0}
                         >
                           <span className={wizardStyles.wizardNavLinkMain}>{name}</span>
                         </span>
