@@ -81,7 +81,7 @@ export class BackupsView extends React.PureComponent<Props> {
   }
 
   public render(): React.ReactElement {
-    const { isLoading, hasEverFetched, error, backups, namespace, navigate } = this.props;
+    const { isLoading, hasEverFetched, backups, namespace, navigate } = this.props;
 
     if (isLoading || !hasEverFetched) {
       return this.renderLoading();
