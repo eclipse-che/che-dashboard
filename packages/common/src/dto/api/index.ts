@@ -120,6 +120,9 @@ export interface AiToolDefinition {
   envVarName?: string;
   /** One-time setup command run in the editor container at postStart */
   setupCommand?: string;
+  description?: string;
+  docsUrl?: string;
+  icon?: string;
 }
 
 export interface AiProviderDefinition {
@@ -264,36 +267,6 @@ export interface IAirGapSample extends IGettingStartedSample {
 export interface IStreamedFile {
   stream: ReadStream;
   size: number;
-}
-
-export interface AiToolDefinition {
-  providerId: string;
-  name: string;
-  tag: string;
-  binary: string;
-  pattern?: string;
-  envVarName: string;
-  description?: string;
-  url?: string;
-  docsUrl?: string;
-  icon?: string;
-  injectorImage: string;
-  setupCommand: string;
-}
-
-export interface AiProviderDefinition {
-  id: string;
-  name: string;
-  publisher: string;
-  description?: string;
-  docsUrl?: string;
-  icon?: string;
-}
-
-export interface IAiRegistry {
-  providers: AiProviderDefinition[];
-  tools: AiToolDefinition[];
-  defaultAiProviders: string[];
 }
 
 export interface AiAgentEnvVar {
