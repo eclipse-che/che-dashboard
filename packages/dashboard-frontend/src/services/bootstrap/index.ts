@@ -468,29 +468,6 @@ export default class Bootstrap {
     await requestSshKeys()(this.store.dispatch, this.store.getState, undefined);
   }
 
-  private async fetchAiRegistry(): Promise<void> {
-    const { requestAiRegistry } = aiConfigActionCreators;
-    try {
-      await requestAiRegistry()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
-      console.warn('Unable to fetch AI registry.', e);
-    }
-  }
-
-  private async fetchAiProviderKeyStatus(): Promise<void> {
-    const state = this.store.getState();
-    const enabled = selectAiConfigEnabled(state);
-    if (!enabled) {
-      return;
-    }
-    const { requestAiProviderKeyStatus } = aiConfigActionCreators;
-    try {
-      await requestAiProviderKeyStatus()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
-      console.warn('Unable to fetch AI provider key status.', e);
-    }
-  }
-
   private async fetchWorkspacePreferences(): Promise<void> {
     await workspacePreferencesActionCreators.requestPreferences()(
       this.store.dispatch,

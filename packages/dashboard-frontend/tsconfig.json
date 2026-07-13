@@ -50,5 +50,10 @@
   "exclude": [
     "node_modules",
     "lib",
+    "src/plugins/**/__tests__",
+    "src/plugins/**/*.spec.ts",
+    "src/plugins/**/*.spec.tsx",
+    "src/plugins/**/*.test.ts",
+    "src/plugins/**/*.test.tsx",
   ],
 }
