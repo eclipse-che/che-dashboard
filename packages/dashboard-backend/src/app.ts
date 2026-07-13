@@ -28,8 +28,6 @@ import { registerDevfileSchemaRoute } from '@/plugins/dashboard-ai-agent/routes/
 import { registerStaticServer } from '@/plugins/staticServer';
 import { registerSwagger } from '@/plugins/swagger';
 import { registerWebSocket } from '@/plugins/webSocket';
-import { registerAiConfigRoutes } from '@/routes/api/aiConfig';
-import { registerAiRegistryRoute } from '@/routes/api/aiRegistry';
 import { registerAirGapSampleRoute } from '@/routes/api/airGapSample';
 import { registerBackupRoutes } from '@/routes/api/backup';
 import { registerClusterConfigRoute } from '@/routes/api/clusterConfig';
