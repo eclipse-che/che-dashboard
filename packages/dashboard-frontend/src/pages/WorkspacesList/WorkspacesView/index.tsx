@@ -20,7 +20,6 @@ import NothingFoundEmptyState from '@/pages/WorkspacesList/EmptyState/NothingFou
 import NoWorkspacesEmptyState from '@/pages/WorkspacesList/EmptyState/NoWorkspaces';
 import { buildRows, getSortParams, RowData, SortDirection } from '@/pages/WorkspacesList/Rows';
 import WorkspacesListToolbar from '@/pages/WorkspacesList/WorkspacesView/Toolbar';
-import { WorkspacesTable } from '@/pages/WorkspacesList/WorkspacesView/WorkspacesTable';
 import { getRegisteredFrontendPlugins } from '@/plugin-registry';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import devfileApi from '@/services/devfileApi';
