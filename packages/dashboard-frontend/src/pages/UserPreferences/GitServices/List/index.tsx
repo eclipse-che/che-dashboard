@@ -11,23 +11,22 @@
  */
 
 import { api } from '@eclipse-che/common';
+import { Button, ButtonVariant, PageSection } from '@patternfly/react-core';
 import {
-  Button,
-  ButtonVariant,
-  DataList,
-  DataListAction,
-  DataListCell,
-  DataListCheck,
-  DataListControl,
-  DataListItem,
-  DataListItemCells,
-  DataListItemRow,
-} from '@patternfly/react-core';
+  ActionsColumn,
+  IAction,
+  Table,
+  TableVariant,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@patternfly/react-table';
 import cloneDeep from 'lodash/cloneDeep';
 import React from 'react';
 
 import { GIT_OAUTH_PROVIDERS } from '@/pages/UserPreferences/const';
-import styles from '@/pages/UserPreferences/GitServices/List/index.module.css';
 import { GitServiceStatusIcon } from '@/pages/UserPreferences/GitServices/List/StatusIcon';
 import { GitServiceTooltip } from '@/pages/UserPreferences/GitServices/List/Tooltip';
 import { GitServicesToolbar } from '@/pages/UserPreferences/GitServices/Toolbar';
@@ -39,6 +38,12 @@ export const CAN_REVOKE_FROM_DASHBOARD: ReadonlyArray<api.GitOauthProvider> = [
   'gitlab',
   'gitlab_2',
 ];
+
+const COLUMN_NAMES = {
+  provider: 'Provider',
+  endpoint: 'Endpoint',
+  status: 'Status',
+};
 
 export type Props = {
   isDisabled: boolean;
@@ -71,11 +76,29 @@ export class GitServicesList extends React.PureComponent<Props, State> {
     );
   }
 
-  private handleSelectItem(isSelected: boolean, service: IGitOauth): void {
-    this.setState((prevState: State) => ({
+  private handleSelectAll(
+    _event: React.FormEvent<HTMLInputElement>,
+    isSelected: boolean,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ...rest: unknown[]
+  ): void {
+    const { sortedGitOauth } = this.state;
+    const selectableServices = sortedGitOauth.filter(s => this.isCheckEnabled(s));
+    this.setState({ selectedItems: isSelected ? selectableServices : [] });
+  }
+
+  private handleSelectItem(
+    _event: React.FormEvent<HTMLInputElement>,
+    isSelected: boolean,
+    rowIndex: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ...rest: unknown[]
+  ): void {
+    const service = this.state.sortedGitOauth[rowIndex];
+    this.setState(prev => ({
       selectedItems: isSelected
-        ? [...prevState.selectedItems, service]
-        : prevState.selectedItems.filter(item => item !== service),
+        ? [...prev.selectedItems, service]
+        : prev.selectedItems.filter(item => item !== service),
     }));
   }
 
@@ -97,6 +120,11 @@ export class GitServicesList extends React.PureComponent<Props, State> {
     return this.props.providersWithToken.includes(providerName);
   }
 
+  private isCheckEnabled(service: IGitOauth): boolean {
+    const { isDisabled } = this.props;
+    return !isDisabled && this.isRevokeEnabled(service.name) && this.hasOauthToken(service.name);
+  }
+
   private handleRevokeService(service: IGitOauth): void {
     this.props.onRevokeServices([service]);
     this.deselectServices([service]);
@@ -116,100 +144,120 @@ export class GitServicesList extends React.PureComponent<Props, State> {
     this.deselectServices(selectedItems);
   }
 
-  private buildItem(service: IGitOauth, rowIndex: number): React.ReactElement {
-    const { isDisabled, providersWithToken, skipOauthProviders } = this.props;
-    const { selectedItems } = this.state;
+  private buildHeadRow(): React.ReactElement {
+    const { isDisabled } = this.props;
+    const { selectedItems, sortedGitOauth } = this.state;
 
-    const hasWarningMessage =
-      !this.isRevokeEnabled(service.name) && this.hasOauthToken(service.name);
+    const selectableServices = sortedGitOauth.filter(s => this.isCheckEnabled(s));
+    const areAllSelected =
+      selectableServices.length > 0 && selectedItems.length === selectableServices.length;
+
+    return (
+      <Tr>
+        <Th
+          select={{
+            onSelect: (...args) => this.handleSelectAll(...args),
+            isSelected: areAllSelected,
+            isDisabled: isDisabled || selectableServices.length === 0,
+          }}
+        />
+        <Th style={{ minWidth: '8rem' }}>{COLUMN_NAMES.provider}</Th>
+        <Th>{COLUMN_NAMES.endpoint}</Th>
+        <Th>{COLUMN_NAMES.status}</Th>
+        <Td />
+      </Tr>
+    );
+  }
+
+  private buildRowAction(service: IGitOauth): IAction[] {
     const canRevoke = this.isRevokeEnabled(service.name);
     const canClear = this.hasSkipOauth(service.name);
     const hasToken = this.hasOauthToken(service.name);
-    const checkDisabled = isDisabled || !canRevoke || !hasToken;
+    const { isDisabled } = this.props;
     const actionDisabled = (isDisabled || !canRevoke || !hasToken) && !canClear;
     const actionLabel = canClear ? 'Clear' : 'Revoke';
     const handleAction = canClear
       ? () => this.handleClearService(service)
       : () => this.handleRevokeService(service);
 
-    const nameId = `git-service-name-${service.name}`;
-    const actionId = `git-service-action-${service.name}`;
+    return [{ title: actionLabel, onClick: handleAction, isDisabled: actionDisabled }];
+  }
 
-    return (
-      <DataListItem key={service.name} aria-labelledby={nameId} data-testid={service.name}>
-        <DataListItemRow>
-          <DataListControl>
-            <DataListCheck
-              aria-labelledby={nameId}
-              name={`checkrow${rowIndex}`}
-              isChecked={selectedItems.includes(service)}
-              isDisabled={checkDisabled}
-              onChange={(_event, checked) => this.handleSelectItem(checked, service)}
-            />
-          </DataListControl>
-          <DataListItemCells
-            dataListCells={[
-              <DataListCell key="name" className={styles.nameCell}>
-                <span id={nameId} className={styles.serviceName}>
-                  {GIT_OAUTH_PROVIDERS[service.name]}
-                </span>
-                <GitServiceTooltip isVisible={hasWarningMessage} serverURI={service.endpointUrl} />
-              </DataListCell>,
-              <DataListCell key="server" className={styles.serverCell}>
-                <Button
-                  component="a"
-                  variant={ButtonVariant.link}
-                  href={service.endpointUrl}
-                  isInline
-                  target="_blank"
-                  rel="noreferer"
-                >
-                  {service.endpointUrl}
-                </Button>
-              </DataListCell>,
-              <DataListCell key="auth" className={styles.authCell}>
-                <GitServiceStatusIcon
-                  gitProvider={service.name}
-                  providersWithToken={providersWithToken}
-                  skipOauthProviders={skipOauthProviders}
-                />
-              </DataListCell>,
-            ]}
+  private buildBodyRows(): React.ReactElement[] {
+    const { isDisabled, providersWithToken, skipOauthProviders } = this.props;
+    const { selectedItems, sortedGitOauth } = this.state;
+
+    return sortedGitOauth.map((service, rowIndex) => {
+      const hasWarningMessage =
+        !this.isRevokeEnabled(service.name) && this.hasOauthToken(service.name);
+      const canRevoke = this.isRevokeEnabled(service.name);
+      const canClear = this.hasSkipOauth(service.name);
+      const hasToken = this.hasOauthToken(service.name);
+      const checkDisabled = isDisabled || !canRevoke || !hasToken;
+
+      return (
+        <Tr key={service.name} data-testid={service.name}>
+          <Td
+            select={{
+              rowIndex,
+              onSelect: (...args) => this.handleSelectItem(...args),
+              isSelected: selectedItems.includes(service),
+              isDisabled: checkDisabled,
+            }}
           />
-          <DataListAction
-            id={actionId}
-            aria-labelledby={`${nameId} ${actionId}`}
-            aria-label="Actions"
+          <Td dataLabel={COLUMN_NAMES.provider}>
+            <strong>{GIT_OAUTH_PROVIDERS[service.name]}</strong>
+            <GitServiceTooltip isVisible={hasWarningMessage} serverURI={service.endpointUrl} />
+          </Td>
+          <Td
+            dataLabel={COLUMN_NAMES.endpoint}
+            style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
           >
             <Button
-              variant={ButtonVariant.secondary}
-              isDisabled={actionDisabled}
-              onClick={handleAction}
-              size="sm"
+              component="a"
+              variant={ButtonVariant.link}
+              href={service.endpointUrl}
+              isInline
+              target="_blank"
+              rel="noreferer"
             >
-              {actionLabel}
+              {service.endpointUrl}
             </Button>
-          </DataListAction>
-        </DataListItemRow>
-      </DataListItem>
-    );
+          </Td>
+          <Td dataLabel={COLUMN_NAMES.status}>
+            <GitServiceStatusIcon
+              gitProvider={service.name}
+              providersWithToken={providersWithToken}
+              skipOauthProviders={skipOauthProviders}
+            />
+          </Td>
+          <Td isActionCell>
+            <ActionsColumn
+              isDisabled={(isDisabled || !canRevoke || !hasToken) && !canClear}
+              items={this.buildRowAction(service)}
+            />
+          </Td>
+        </Tr>
+      );
+    });
   }
 
   render(): React.ReactNode {
     const { isDisabled } = this.props;
-    const { selectedItems, sortedGitOauth } = this.state;
+    const { selectedItems } = this.state;
 
     return (
-      <React.Fragment>
+      <PageSection>
         <GitServicesToolbar
           isDisabled={isDisabled}
           selectedItems={selectedItems}
           onRevokeButton={async () => await this.handleRevokeSelectedServices()}
         />
-        <DataList aria-label="Git Services">
-          {sortedGitOauth.map((service, rowIndex) => this.buildItem(service, rowIndex))}
-        </DataList>
-      </React.Fragment>
+        <Table aria-label="Git Services" variant={TableVariant.compact}>
+          <Thead>{this.buildHeadRow()}</Thead>
+          <Tbody>{this.buildBodyRows()}</Tbody>
+        </Table>
+      </PageSection>
     );
   }
 }

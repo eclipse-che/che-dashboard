@@ -52,7 +52,6 @@ describe('GitServicesList', () => {
   test('initial state', () => {
     renderComponent(props);
 
-    // rows are DataListItems — query by data-testid
     const bitbucketRow = screen.getByTestId('bitbucket');
     const githubRow = screen.getByTestId('github');
     const gitlabRow = screen.getByTestId('gitlab');
@@ -61,17 +60,17 @@ describe('GitServicesList', () => {
     expect(githubRow).toHaveTextContent('https://github.com');
     expect(gitlabRow).toHaveTextContent('https://gitlab.com');
 
-    // Bitbucket: no token + not in CAN_REVOKE → checkbox disabled, Revoke disabled
+    // Bitbucket: no token + not in CAN_REVOKE → checkbox disabled, kebab disabled
     expect(within(bitbucketRow).getByRole('checkbox')).toBeDisabled();
-    expect(within(bitbucketRow).getByRole('button', { name: 'Revoke' })).toBeDisabled();
+    expect(within(bitbucketRow).getByRole('button', { name: 'Kebab toggle' })).toBeDisabled();
 
-    // GitHub: has token + in CAN_REVOKE → checkbox enabled, Revoke enabled
+    // GitHub: has token + in CAN_REVOKE → checkbox enabled, kebab enabled
     expect(within(githubRow).getByRole('checkbox')).toBeEnabled();
-    expect(within(githubRow).getByRole('button', { name: 'Revoke' })).toBeEnabled();
+    expect(within(githubRow).getByRole('button', { name: 'Kebab toggle' })).toBeEnabled();
 
-    // GitLab: has token + in CAN_REVOKE → checkbox enabled, Revoke enabled
+    // GitLab: has token + in CAN_REVOKE → checkbox enabled, kebab enabled
     expect(within(gitlabRow).getByRole('checkbox')).toBeEnabled();
-    expect(within(gitlabRow).getByRole('button', { name: 'Revoke' })).toBeEnabled();
+    expect(within(gitlabRow).getByRole('button', { name: 'Kebab toggle' })).toBeEnabled();
   });
 
   test('service revocable (gitlab)', () => {
@@ -79,7 +78,7 @@ describe('GitServicesList', () => {
 
     const gitlabRow = screen.getByTestId('gitlab');
     expect(within(gitlabRow).getByRole('checkbox')).toBeEnabled();
-    expect(within(gitlabRow).getByRole('button', { name: 'Revoke' })).toBeEnabled();
+    expect(within(gitlabRow).getByRole('button', { name: 'Kebab toggle' })).toBeEnabled();
   });
 
   test('service revocable (github)', async () => {
@@ -87,7 +86,7 @@ describe('GitServicesList', () => {
 
     const githubRow = screen.getByTestId('github');
     const githubCheckbox = within(githubRow).getByRole('checkbox');
-    const githubRevokeBtn = within(githubRow).getByRole('button', { name: 'Revoke' });
+    const githubKebab = within(githubRow).getByRole('button', { name: 'Kebab toggle' });
 
     expect(githubCheckbox).toBeEnabled();
     expect(githubCheckbox).not.toBeChecked();
@@ -98,8 +97,11 @@ describe('GitServicesList', () => {
     await userEvent.click(githubCheckbox);
     expect(githubCheckbox).not.toBeChecked();
 
-    expect(githubRevokeBtn).toBeEnabled();
-    await userEvent.click(githubRevokeBtn);
+    expect(githubKebab).toBeEnabled();
+    await userEvent.click(githubKebab);
+
+    const revokeItem = screen.getByRole('menuitem', { name: 'Revoke' });
+    await userEvent.click(revokeItem);
 
     expect(props.onRevokeServices).toHaveBeenCalledTimes(1);
     expect(props.onRevokeServices).toHaveBeenCalledWith([
@@ -120,12 +122,14 @@ describe('GitServicesList', () => {
 
     const githubRow = screen.getByTestId('github');
     const githubCheckbox = within(githubRow).getByRole('checkbox');
-    const githubClearBtn = within(githubRow).getByRole('button', { name: 'Clear' });
+    const githubKebab = within(githubRow).getByRole('button', { name: 'Kebab toggle' });
 
     expect(githubCheckbox).toBeDisabled();
-    expect(githubClearBtn).toBeEnabled();
+    expect(githubKebab).toBeEnabled();
 
-    await userEvent.click(githubClearBtn);
+    await userEvent.click(githubKebab);
+    const clearItem = screen.getByRole('menuitem', { name: 'Clear' });
+    await userEvent.click(clearItem);
 
     expect(props.onClearService).toHaveBeenCalledTimes(1);
     expect(props.onClearService).toHaveBeenCalledWith('github');
@@ -158,10 +162,10 @@ describe('GitServicesList', () => {
 
     const githubRow = screen.getByTestId('github');
     const githubCheckbox = within(githubRow).getByRole('checkbox');
-    const githubRevokeBtn = within(githubRow).getByRole('button', { name: 'Revoke' });
+    const githubKebab = within(githubRow).getByRole('button', { name: 'Kebab toggle' });
 
     expect(githubCheckbox).toBeEnabled();
-    expect(githubRevokeBtn).toBeEnabled();
+    expect(githubKebab).toBeEnabled();
 
     const revokeButtonDisabled = screen.getByTestId('revoke-is-disabled');
     expect(revokeButtonDisabled).toHaveTextContent('false');
@@ -169,7 +173,7 @@ describe('GitServicesList', () => {
     reRenderComponent({ ...props, isDisabled: true });
 
     expect(githubCheckbox).toBeDisabled();
-    expect(githubRevokeBtn).toBeDisabled();
+    expect(githubKebab).toBeDisabled();
     expect(revokeButtonDisabled).toHaveTextContent('true');
   });
 });

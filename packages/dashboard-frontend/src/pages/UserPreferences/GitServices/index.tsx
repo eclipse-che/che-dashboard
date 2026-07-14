@@ -11,7 +11,7 @@
  */
 
 import { api, helpers } from '@eclipse-che/common';
-import { AlertVariant, PageSection } from '@patternfly/react-core';
+import { AlertVariant } from '@patternfly/react-core';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
@@ -139,27 +139,24 @@ export class GitServices extends React.PureComponent<Props, State> {
     return (
       <React.Fragment>
         <ProgressIndicator isLoading={isLoading} />
-        <PageSection>
-          <GitServicesRevokeModal
-            isOpen={isModalOpen}
-            selectedItems={selectedServices}
-            onCancel={() => this.handleModalClose()}
-            onRevoke={() => this.handleModalRevoke()}
+        <GitServicesRevokeModal
+          isOpen={isModalOpen}
+          selectedItems={selectedServices}
+          onCancel={() => this.handleModalClose()}
+          onRevoke={() => this.handleModalRevoke()}
+        />
+        {gitOauth.length === 0 ? (
+          <GitServicesEmptyState text="No Git Services" />
+        ) : (
+          <GitServicesList
+            gitOauth={gitOauth}
+            isDisabled={isLoading}
+            providersWithToken={providersWithToken}
+            skipOauthProviders={skipOauthProviders}
+            onRevokeServices={services => this.handleRevokeServices(services)}
+            onClearService={service => this.handleClearServices(service)}
           />
-
-          {gitOauth.length === 0 ? (
-            <GitServicesEmptyState text="No Git Services" />
-          ) : (
-            <GitServicesList
-              gitOauth={gitOauth}
-              isDisabled={isLoading}
-              providersWithToken={providersWithToken}
-              skipOauthProviders={skipOauthProviders}
-              onRevokeServices={services => this.handleRevokeServices(services)}
-              onClearService={service => this.handleClearServices(service)}
-            />
-          )}
-        </PageSection>
+        )}
       </React.Fragment>
     );
   }
