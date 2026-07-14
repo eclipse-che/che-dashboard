@@ -103,15 +103,8 @@
 | `des.js@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/des.js/1.1.0) |
 | `detect-browser@5.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/detect-browser/5.3.0) |
 | `diffie-hellman@5.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/diffie-hellman/5.0.3) |
-<<<<<<< Updated upstream
-| `domutils@3.2.2` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/domutils/3.2.2) |
 | `dunder-proto@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/dunder-proto/1.0.1) |
 | `duplexify@4.1.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/duplexify/4.1.3) |
-| `entities@7.0.1` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/entities/7.0.1) |
-=======
-| `dunder-proto@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/dunder-proto/1.0.1) |
-| `duplexify@4.1.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/duplexify/4.1.3) |
->>>>>>> Stashed changes
 | `es-define-property@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/es-define-property/1.0.1) |
 | `es-errors@1.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/es-errors/1.3.0) |
 | `es-object-atoms@1.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/es-object-atoms/1.1.1) |
@@ -143,10 +136,6 @@
 | `hasown@2.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/hasown/2.0.2) |
 | `help-me@4.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/help-me/4.2.0) |
 | `history@4.10.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/history/4.10.1) |
-<<<<<<< Updated upstream
-| `htmlparser2@10.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/htmlparser2/10.1.0) |
-=======
->>>>>>> Stashed changes
 | `http-errors@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/http-errors/2.0.1) |
 | `https@1.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/https/1.0.0) |
 | `immer@10.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/immer/10.1.1) |
@@ -158,7 +147,6 @@
 | `ipaddr.js@2.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ipaddr.js/2.3.0) |
 | `joi@17.12.3` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/joi/17.12.3) |
 | `joycon@3.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/joycon/3.1.1) |
-| `js-yaml@4.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/js-yaml/4.1.1) |
 | `json-schema-ref-resolver@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-schema-ref-resolver/3.0.0) |
 | `json-schema-resolver@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-schema-resolver/3.0.0) |
 | `jsonc-parser@3.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsonc-parser/3.2.0) |
@@ -221,10 +209,6 @@
 | `rfdc@1.4.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/rfdc/1.4.1) |
 | `ripemd160@2.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ripemd160/2.0.2) |
 | `safe-stable-stringify@2.4.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safe-stable-stringify/2.4.3) |
-<<<<<<< Updated upstream
-| `sanitize-html@2.17.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sanitize-html/2.17.5) |
-=======
->>>>>>> Stashed changes
 | `secure-json-parse@2.7.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/secure-json-parse/2.7.0) |
 | `secure-json-parse@4.1.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/secure-json-parse/4.1.0) |
 | `semver@7.7.4` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/semver/7.7.4) |

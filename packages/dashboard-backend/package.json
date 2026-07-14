@@ -45,7 +45,7 @@
     "fastify": "^5.8.3",
     "fs-extra": "^11.1.1",
     "https": "^1.0.0",
-    "js-yaml": "^4.1.1",
+    "js-yaml": "^4.3.0",
     "multi-ini": "^2.3.2",
     "pino": "^8.15.1",
     "pino-pretty": "^10.2.0",
