@@ -20,6 +20,12 @@ module.exports = {
   moduleNameMapper: {
     '\\.(css|less|sass|scss|styl)$': 'identity-obj-proxy',
     '\\.(gif|ttf|eot|svg)$': '<rootDir>/__mocks__/fileMock.js',
+    // sanitize-html ships as ESM in newer versions; use a CJS stub in tests
+    '^sanitize-html$': '<rootDir>/__mocks__/sanitize-html.js',
+    // Plugin modules are only available via symlinks created by prepare-plugins.sh.
+    // Map them to a stub so tests that jest.mock() a plugin module can resolve it locally.
+    // Must appear before the @/ mapper so it takes precedence.
+    '^@/plugins/(.*)$': '<rootDir>/__mocks__/pluginStub.tsx',
     // mapping for absolute imports (see tsconfig.json)
     '^@/(.*)$': '<rootDir>/src/$1',
   },
@@ -31,7 +37,11 @@ module.exports = {
     '^.*\\.tsx?$': [
       'ts-jest',
       {
-        diagnostics: true,
+        diagnostics: {
+          // Ignore TS2307 "Cannot find module" for plugin paths that are
+          // only available via symlinks created by prepare-plugins.sh at build time.
+          ignoreCodes: [2307],
+        },
       },
     ],
   },
