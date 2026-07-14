@@ -2,11 +2,11 @@
 
 | Packages | License | Resolved CQs |
 | --- | --- | --- |
-| `@aashutoshrathi/word-wrap@1.2.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@aashutoshrathi/word-wrap/1.2.6) |
+| `@aashutoshrathi/word-wrap@1.2.6` |  |  |
 | `@ampproject/remapping@2.2.1` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@ampproject/remapping/2.2.1) |
 | `@babel/code-frame@7.26.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/code-frame/7.26.2) |
-| `@babel/code-frame@7.27.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/code-frame/7.27.1) |
-| `@babel/compat-data@7.23.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/compat-data/7.23.2) |
+| `@babel/code-frame@7.27.1` |  |  |
+| `@babel/compat-data@7.23.2` |  |  |
 | `@babel/compat-data@7.28.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/compat-data/7.28.5) |
 | `@babel/core@7.23.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/core/7.23.2) |
 | `@babel/core@7.28.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/core/7.28.5) |
@@ -89,12 +89,12 @@
 | `@emnapi/core@1.7.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@emnapi/core/1.7.1) |
 | `@emnapi/runtime@1.7.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@emnapi/runtime/1.7.1) |
 | `@emnapi/wasi-threads@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@emnapi/wasi-threads/1.1.0) |
-| `@eslint-community/eslint-utils@4.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@eslint-community/eslint-utils/4.4.0) |
-| `@eslint-community/eslint-utils@4.9.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@eslint-community/eslint-utils/4.9.1) |
+| `@eslint-community/eslint-utils@4.4.0` |  |  |
+| `@eslint-community/eslint-utils@4.9.1` |  |  |
 | `@eslint-community/regexpp@4.10.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@eslint-community/regexpp/4.10.0) |
 | `@eslint-community/regexpp@4.12.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@eslint-community/regexpp/4.12.2) |
-| `@eslint/eslintrc@2.1.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@eslint/eslintrc/2.1.4) |
-| `@eslint/eslintrc@3.3.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@eslint/eslintrc/3.3.4) |
+| `@eslint/eslintrc@2.1.4` |  |  |
+| `@eslint/eslintrc@3.3.4` |  |  |
 | `@eslint/js@8.57.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@eslint/js/8.57.1) |
 | `@humanwhocodes/config-array@0.13.0` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@humanwhocodes/config-array/0.13.0) |
 | `@humanwhocodes/module-importer@1.0.1` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@humanwhocodes/module-importer/1.0.1) |
@@ -124,7 +124,7 @@
 | `@jest/transform@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/transform/30.2.0) |
 | `@jest/types@29.6.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/types/29.6.3) |
 | `@jest/types@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/types/30.2.0) |
-| `@jridgewell/gen-mapping@0.3.13` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jridgewell/gen-mapping/0.3.13) |
+| `@jridgewell/gen-mapping@0.3.13` |  |  |
 | `@jridgewell/gen-mapping@0.3.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jridgewell/gen-mapping/0.3.3) |
 | `@jridgewell/remapping@2.3.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jridgewell/remapping/2.3.5) |
 | `@jridgewell/resolve-uri@3.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jridgewell/resolve-uri/3.1.1) |

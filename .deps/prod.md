@@ -19,10 +19,10 @@
 | `@fastify/cors@11.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/cors/11.2.0) |
 | `@fastify/error@4.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/error/4.2.0) |
 | `@fastify/fast-json-stringify-compiler@5.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/fast-json-stringify-compiler/5.0.3) |
-| `@fastify/forwarded@3.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/forwarded/3.0.1) |
+| `@fastify/forwarded@3.0.1` |  |  |
 | `@fastify/http-proxy@11.4.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/http-proxy/11.4.4) |
 | `@fastify/merge-json-schemas@0.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/merge-json-schemas/0.2.1) |
-| `@fastify/oauth2@8.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/oauth2/8.2.0) |
+| `@fastify/oauth2@8.2.0` |  |  |
 | `@fastify/proxy-addr@5.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/proxy-addr/5.1.0) |
 | `@fastify/rate-limit@10.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/rate-limit/10.3.0) |
 | `@fastify/reply-from@12.6.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/reply-from/12.6.2) |
@@ -45,7 +45,7 @@
 | `@lezer/highlight@1.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lezer/highlight/1.2.1) |
 | `@lezer/lr@1.4.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lezer/lr/1.4.2) |
 | `@lezer/yaml@1.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lezer/yaml/1.0.3) |
-| `@lukeed/ms@2.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lukeed/ms/2.0.2) |
+| `@lukeed/ms@2.0.2` |  |  |
 | `@marijn/find-cluster-break@1.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@marijn/find-cluster-break/1.0.2) |
 | `@patternfly/react-core@6.4.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-core/6.4.2) |
 | `@patternfly/react-icons@6.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-icons/6.4.0) |
