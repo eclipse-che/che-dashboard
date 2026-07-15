@@ -62,7 +62,7 @@ exports[`WorkspaceProgressWizard component snapshot 1`] = `
             className="pf-v6-c-wizard__nav-item"
           >
             <span
-              className="pf-v6-c-wizard__nav-link pf-m-disabled"
+              className="pf-v6-c-wizard__nav-link"
               tabIndex={0}
             >
               <span
@@ -76,7 +76,7 @@ exports[`WorkspaceProgressWizard component snapshot 1`] = `
             className="pf-v6-c-wizard__nav-item"
           >
             <span
-              className="pf-v6-c-wizard__nav-link pf-m-disabled"
+              className="pf-v6-c-wizard__nav-link"
               tabIndex={0}
             >
               <span
@@ -90,7 +90,7 @@ exports[`WorkspaceProgressWizard component snapshot 1`] = `
             className="pf-v6-c-wizard__nav-item"
           >
             <span
-              className="pf-v6-c-wizard__nav-link pf-m-disabled"
+              className="pf-v6-c-wizard__nav-link"
               tabIndex={0}
             >
               <span
