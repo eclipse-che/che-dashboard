@@ -19,7 +19,10 @@ import { Sidebar } from '@/Layout/Sidebar';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 
 jest.mock('@/Layout/Navigation');
-jest.mock('@/plugins/dashboard-ai-agent/navigation/AgentList');
+jest.mock('@/plugins/dashboard-ai-agent/navigation/AgentList', () => ({
+  __esModule: true,
+  default: () => null,
+}));
 
 const { createSnapshot } = getComponentRenderer(getComponent);
 

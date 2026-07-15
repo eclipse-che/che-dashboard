@@ -30,7 +30,21 @@ export class MockStoreBuilder {
   private state: Partial<RootState>;
 
   constructor(state: Partial<RootState> = {}) {
-    this.state = { ...state };
+    // Provide sensible defaults for plugin-sourced reducers that the stub returns as {}.
+    // Without this, selectors like selectAiTools would return undefined when the
+    // ai-selector plugin is not symlinked (local development without prepare-plugins.sh).
+    this.state = {
+      aiConfig: {
+        providers: [],
+        tools: [],
+        defaultAiProviders: [],
+        providerKeyExists: {},
+        isLoading: false,
+        error: undefined,
+      },
+      aiAgentRegistry: { agents: [], isLoading: false, error: undefined } as unknown as RootState['aiAgentRegistry'],
+      ...state,
+    };
   }
 
   public withDwServerConfig(config: Partial<api.IServerConfig>): MockStoreBuilder {
