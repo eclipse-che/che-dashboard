@@ -15,7 +15,6 @@ import { Store } from 'redux';
 
 import { lazyInject } from '@/inversify.config';
 import { bootstrapPlugins } from '@/plugin-registry';
-import { aiAgentRegistryActionCreators } from '@/plugins/dashboard-ai-agent/store/AiAgentRegistry';
 import { actionCreators as localDevfilesActionCreators } from '@/plugins/dashboard-ai-agent/store/LocalDevfiles';
 import { updateFavicon } from '@/preload/brandingLoader';
 import { provisionKubernetesNamespace } from '@/services/backend-client/kubernetesNamespaceApi';
@@ -132,11 +131,6 @@ export default class Bootstrap {
       this.fetchSshKeys(),
       this.fetchWorkspacePreferences(),
       bootstrapPlugins(this.store),
-      this.dispatch(
-        aiAgentRegistryActionCreators.requestAiAgentRegistry() as AppThunk<Promise<void>>,
-      ).catch((e: unknown) => {
-        console.warn('Unable to fetch AI agent registry.', e);
-      }),
     ]);
 
     const errors = results
