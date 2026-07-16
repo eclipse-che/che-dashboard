@@ -42,7 +42,11 @@ export class MockStoreBuilder {
         isLoading: false,
         error: undefined,
       },
-      aiAgentRegistry: { agents: [], isLoading: false, error: undefined } as unknown as RootState['aiAgentRegistry'],
+      aiAgentRegistry: {
+        agents: [],
+        isLoading: false,
+        error: undefined,
+      } as unknown as RootState['aiAgentRegistry'],
       ...state,
     };
   }
