@@ -132,8 +132,8 @@ export default class Bootstrap {
       this.fetchSshKeys(),
       this.fetchWorkspacePreferences(),
       bootstrapPlugins(this.store),
-      Promise.resolve(
-        this.store.dispatch(aiAgentRegistryActionCreators.requestAiAgentRegistry()),
+      this.dispatch(
+        aiAgentRegistryActionCreators.requestAiAgentRegistry() as AppThunk<Promise<void>>,
       ).catch((e: unknown) => {
         console.warn('Unable to fetch AI agent registry.', e);
       }),
