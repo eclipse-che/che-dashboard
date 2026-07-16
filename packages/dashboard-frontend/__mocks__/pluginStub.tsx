@@ -67,10 +67,7 @@ const moduleProxy = new Proxy(moduleStore, {
     if (prop === 'reducer' || (typeof prop === 'string' && /Reducer$/.test(prop))) {
       return stubReducer;
     }
-    if (
-      prop === 'actionCreators' ||
-      (typeof prop === 'string' && /ActionCreators$/.test(prop))
-    ) {
+    if (prop === 'actionCreators' || (typeof prop === 'string' && /ActionCreators$/.test(prop))) {
       const obj = makeSpyableProxy(stubThunk);
       target[prop] = obj;
       return obj;
