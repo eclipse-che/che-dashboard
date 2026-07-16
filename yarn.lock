@@ -1257,6 +1257,7 @@ __metadata:
     "@eclipse-che/license-tool": "npm:^2.0.0"
     husky: "npm:^9.1.7"
     lint-staged: "npm:^15.5.2"
+    semver: "npm:^7.5.4"
   languageName: unknown
   linkType: soft
 

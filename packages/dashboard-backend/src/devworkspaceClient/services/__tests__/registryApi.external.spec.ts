@@ -52,6 +52,8 @@ describe('RegistryApiService', () => {
   const namespace = 'user-che';
 
   beforeEach(() => {
+    jest.clearAllMocks();
+
     const { KubeConfig } = mockClient;
 
     const kubeConfig = new KubeConfig();
@@ -65,7 +67,6 @@ describe('RegistryApiService', () => {
       .mockImplementation(() => mockSaCustomObjectsApi as unknown as CustomObjectsApi);
 
     service = new RegistryApiService(kubeConfig, saKubeConfig);
-    jest.clearAllMocks();
   });
 
   describe('listBackupImages — external registry (quay.io) path', () => {

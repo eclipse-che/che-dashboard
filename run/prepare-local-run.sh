@@ -40,6 +40,11 @@ CHE_SELF_SIGNED_MOUNT_PATH="${CHE_SELF_SIGNED_MOUNT_PATH:-$(pwd)/run/public-cert
 
 DASHBOARD_POD_NAME=$(kubectl get pods -n "$CHE_NAMESPACE" --field-selector=status.phase=Running -o=custom-columns=:metadata.name | grep dashboard | head -1)
 
+if [[ -z "$DASHBOARD_POD_NAME" ]]; then
+  echo "[ERROR] No running dashboard pod found in namespace $CHE_NAMESPACE"
+  exit 1
+fi
+
 kubectl describe pod "$DASHBOARD_POD_NAME" -n "$CHE_NAMESPACE" > run/.che-dashboard-pod
 
 CHECLUSTER_CR_NAME=$(grep -o 'CHECLUSTER_CR_NAME:.*' run/.che-dashboard-pod | grep -o '\S*$')

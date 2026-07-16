@@ -161,6 +161,11 @@ fi
 
 DASHBOARD_POD_NAME=$(kubectl get pods -n "$CHE_NAMESPACE" --field-selector=status.phase=Running -o=custom-columns=:metadata.name | grep dashboard | head -1)
 
+if [[ -z "$DASHBOARD_POD_NAME" ]]; then
+  echo "[ERROR] No running dashboard pod found in namespace $CHE_NAMESPACE"
+  exit 1
+fi
+
 if [ "$CHE_IN_CHE" == "true" ]; then
   export SERVICE_ACCOUNT_TOKEN=$(cat /run/secrets/kubernetes.io/serviceaccount/token)
 else

@@ -44,6 +44,7 @@ DEFAULT_PLATFORM="linux/$(uname -m | sed 's/x86_64/amd64/' | sed 's/aarch64/arm6
 BUILD_PLATFORM="${BUILD_PLATFORM:-$DEFAULT_PLATFORM}"
 CRC_SSH_PORT="${CRC_SSH_PORT:-2222}"
 TAR_PATH="/tmp/che-dashboard.tar"
+trap 'rm -f "${TAR_PATH}"' EXIT
 
 CRC_SSH_OPTS="-o StrictHostKeyChecking=no -o LogLevel=ERROR"
 
@@ -134,11 +135,11 @@ fi
 CHECLUSTER_CR_NAME=$(kubectl get checluster -n "$CHE_NAMESPACE" -o jsonpath='{.items[0].metadata.name}')
 PREVIOUS_IMAGE=$(kubectl get checluster -n "$CHE_NAMESPACE" "$CHECLUSTER_CR_NAME" -o=json | jq -r '.spec.components.dashboard.deployment.containers[0].image')
 
-PATCH_VALUE="{\"deployment\": {\"containers\": [{\"image\": \"${CHE_DASHBOARD_IMAGE}\", \"name\": \"che-dashboard\", \"imagePullPolicy\": \"IfNotPresent\"}]}}"
+MERGE_PATCH="{\"spec\":{\"components\":{\"dashboard\":{\"deployment\":{\"containers\":[{\"name\":\"che-dashboard\",\"image\":\"${CHE_DASHBOARD_IMAGE}\",\"imagePullPolicy\":\"IfNotPresent\"}]}}}}}"
 
 if [ "$PREVIOUS_IMAGE" == "null" ]; then
-  kubectl patch -n "$CHE_NAMESPACE" "checluster/$CHECLUSTER_CR_NAME" --type=json \
-    -p="[{\"op\": \"replace\", \"path\": \"/spec/components/dashboard\", \"value\": ${PATCH_VALUE}}]"
+  kubectl patch -n "$CHE_NAMESPACE" "checluster/$CHECLUSTER_CR_NAME" --type=merge \
+    -p="${MERGE_PATCH}"
 else
   kubectl patch -n "$CHE_NAMESPACE" "checluster/$CHECLUSTER_CR_NAME" --type=json \
     -p="[{\"op\": \"replace\", \"path\": \"/spec/components/dashboard/deployment/containers/0/image\", \"value\": \"${CHE_DASHBOARD_IMAGE}\"}, {\"op\": \"replace\", \"path\": \"/spec/components/dashboard/deployment/containers/0/imagePullPolicy\", \"value\": \"IfNotPresent\"}]"

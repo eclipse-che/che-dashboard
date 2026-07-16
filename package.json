@@ -45,7 +45,8 @@
     "@commitlint/config-conventional": "^21.0.2",
     "@eclipse-che/license-tool": "^2.0.0",
     "husky": "^9.1.7",
-    "lint-staged": "^15.5.2"
+    "lint-staged": "^15.5.2",
+    "semver": "^7.5.4"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

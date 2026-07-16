@@ -57,6 +57,19 @@ describe('getServiceAccountToken', () => {
     expect(result).toBe('local-sa-token');
   });
 
+  it('should log fatal and exit when running locally and neither token is set', () => {
+    mockIsLocalRun.mockReturnValue(true);
+    process.env = { ...originalEnv };
+    delete process.env.CLUSTER_ACCESS_TOKEN;
+    delete process.env.SERVICE_ACCOUNT_TOKEN;
+
+    expect(() => getServiceAccountToken()).toThrow('process.exit called');
+    expect(logger.fatal).toHaveBeenCalledWith(
+      'Neither CLUSTER_ACCESS_TOKEN nor SERVICE_ACCOUNT_TOKEN is set for local run',
+    );
+    expect(mockExit).toHaveBeenCalledWith(1);
+  });
+
   it('should return token from file when not running locally and file exists', () => {
     mockIsLocalRun.mockReturnValue(false);
     jest.spyOn(fs, 'existsSync').mockReturnValue(true);
