@@ -132,11 +132,11 @@ export default class Bootstrap {
       this.fetchSshKeys(),
       this.fetchWorkspacePreferences(),
       bootstrapPlugins(this.store),
-      aiAgentRegistryActionCreators
-        .requestAiAgentRegistry()(this.store.dispatch, this.store.getState, undefined)
-        .catch((e: unknown) => {
-          console.warn('Unable to fetch AI agent registry.', e);
-        }),
+      Promise.resolve(
+        this.store.dispatch(aiAgentRegistryActionCreators.requestAiAgentRegistry()),
+      ).catch((e: unknown) => {
+        console.warn('Unable to fetch AI agent registry.', e);
+      }),
     ]);
 
     const errors = results
