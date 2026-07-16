@@ -32,7 +32,7 @@ export class PureSubCondition extends React.PureComponent<Props> {
     return (
       <ol className="pf-c-wizard__nav-list">
         <li className="pf-c-wizard__nav-item">
-          <div className="pf-c-wizard__nav-link">
+          <div className="pf-c-wizard__nav-link" tabIndex={0}>
             <ProgressStepTitle distance={distance} parentStepName={parentStepName}>
               {title}
             </ProgressStepTitle>

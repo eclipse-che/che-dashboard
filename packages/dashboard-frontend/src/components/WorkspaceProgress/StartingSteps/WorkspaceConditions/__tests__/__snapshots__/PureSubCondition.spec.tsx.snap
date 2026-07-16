@@ -9,6 +9,7 @@ exports[`Starting sub-steps, checking rendering snapshot with a title 1`] = `
   >
     <div
       className="pf-c-wizard__nav-link"
+      tabIndex={0}
     >
       <div>
         <div

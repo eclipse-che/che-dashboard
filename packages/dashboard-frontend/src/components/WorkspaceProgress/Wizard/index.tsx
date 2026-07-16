@@ -59,11 +59,11 @@ class WorkspaceProgressWizard extends React.Component<Props> {
       Object.assign({ canJumpTo: true }, step);
 
     return steps.map(step => {
-      const subSteps = step.steps;
-      if (subSteps !== undefined) {
-        subSteps.map(subStep => withDefaults(subStep));
+      const defaultStep = withDefaults(step);
+      if (defaultStep.steps !== undefined) {
+        defaultStep.steps = defaultStep.steps.map(subStep => withDefaults(subStep));
       }
-      return withDefaults(step);
+      return defaultStep;
     });
   }
 
@@ -119,6 +119,8 @@ class WorkspaceProgressWizard extends React.Component<Props> {
               <span
                 className={this.navLinkClassName(isCurrent, !canJumpTo)}
                 aria-current={isCurrent ? 'step' : undefined}
+                aria-disabled={!canJumpTo ? true : undefined}
+                tabIndex={canJumpTo ? 0 : -1}
               >
                 <span className={wizardStyles.wizardNavLinkMain}>{name}</span>
               </span>
@@ -133,6 +135,8 @@ class WorkspaceProgressWizard extends React.Component<Props> {
                         <span
                           className={this.navLinkClassName(isSubCurrent, !canJumpTo)}
                           aria-current={isSubCurrent ? 'step' : undefined}
+                          aria-disabled={!canJumpTo ? true : undefined}
+                          tabIndex={canJumpTo ? 0 : -1}
                         >
                           <span className={wizardStyles.wizardNavLinkMain}>{name}</span>
                         </span>

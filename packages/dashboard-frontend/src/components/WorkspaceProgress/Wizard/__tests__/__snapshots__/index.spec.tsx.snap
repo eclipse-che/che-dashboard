@@ -17,6 +17,7 @@ exports[`WorkspaceProgressWizard component snapshot 1`] = `
       >
         <span
           className="pf-v6-c-wizard__nav-link"
+          tabIndex={0}
         >
           <span
             className="pf-v6-c-wizard__nav-link-main"
@@ -31,6 +32,7 @@ exports[`WorkspaceProgressWizard component snapshot 1`] = `
         <span
           aria-current="step"
           className="pf-v6-c-wizard__nav-link pf-m-current"
+          tabIndex={0}
         >
           <span
             className="pf-v6-c-wizard__nav-link-main"
@@ -44,6 +46,7 @@ exports[`WorkspaceProgressWizard component snapshot 1`] = `
       >
         <span
           className="pf-v6-c-wizard__nav-link"
+          tabIndex={0}
         >
           <span
             className="pf-v6-c-wizard__nav-link-main"
@@ -59,7 +62,8 @@ exports[`WorkspaceProgressWizard component snapshot 1`] = `
             className="pf-v6-c-wizard__nav-item"
           >
             <span
-              className="pf-v6-c-wizard__nav-link pf-m-disabled"
+              className="pf-v6-c-wizard__nav-link"
+              tabIndex={0}
             >
               <span
                 className="pf-v6-c-wizard__nav-link-main"
@@ -72,7 +76,8 @@ exports[`WorkspaceProgressWizard component snapshot 1`] = `
             className="pf-v6-c-wizard__nav-item"
           >
             <span
-              className="pf-v6-c-wizard__nav-link pf-m-disabled"
+              className="pf-v6-c-wizard__nav-link"
+              tabIndex={0}
             >
               <span
                 className="pf-v6-c-wizard__nav-link-main"
@@ -85,7 +90,8 @@ exports[`WorkspaceProgressWizard component snapshot 1`] = `
             className="pf-v6-c-wizard__nav-item"
           >
             <span
-              className="pf-v6-c-wizard__nav-link pf-m-disabled"
+              className="pf-v6-c-wizard__nav-link"
+              tabIndex={0}
             >
               <span
                 className="pf-v6-c-wizard__nav-link-main"
