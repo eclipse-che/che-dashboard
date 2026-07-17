@@ -2,22 +2,16 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 
 | Packages | Resolved CQs |
 | --- | --- |
-| `@codemirror/autocomplete@6.20.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/autocomplete/6.20.1) |
+| `@codemirror/autocomplete@6.20.3` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/autocomplete/6.20.3) |
 | `@codemirror/commands@6.10.3` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/commands/6.10.3) |
 | `@codemirror/lang-yaml@6.1.3` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/lang-yaml/6.1.3) |
-| `@codemirror/language@6.12.3` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/language/6.12.3) |
+| `@codemirror/language@6.12.4` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/language/6.12.4) |
 | `@codemirror/lint@6.9.5` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/lint/6.9.5) |
-| `@codemirror/state@6.6.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/state/6.6.0) |
-| `@codemirror/view@6.41.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/view/6.41.0) |
-| `@eclipse-che/che-devworkspace-generator@7.113.0-next-7b6a101` | ecd.che |
+| `@codemirror/state@6.7.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/state/6.7.1) |
+| `@codemirror/view@6.43.6` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/view/6.43.6) |
 | `@fastify/busboy@3.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/busboy/3.0.1) |
-| `@fastify/cors@11.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/cors/11.2.0) |
-| `@fastify/http-proxy@11.4.4` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/http-proxy/11.4.4) |
-| `@fastify/reply-from@12.6.2` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/reply-from/12.6.2) |
-| `@fastify/static@9.1.3` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/static/9.1.3) |
 | `@isaacs/brace-expansion@5.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@isaacs/brace-expansion/5.0.1) |
 | `axios@1.15.2` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios/1.15.2) |
-| `@lezer/common@1.5.2` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lezer/common/1.5.2) |
 | `@lezer/lr@1.4.8` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lezer/lr/1.4.8) |
 | `@lezer/yaml@1.0.4` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lezer/yaml/1.0.4) |
 | `@uiw/codemirror-theme-github@4.25.8` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/codemirror-theme-github/4.25.8) |
@@ -34,5 +28,6 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `launder@1.7.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/launder/1.7.1) |
 | `brace-expansion@5.0.7` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/brace-expansion/5.0.7) |
 | `js-yaml@4.3.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/js-yaml/4.3.0) |
+
 
 

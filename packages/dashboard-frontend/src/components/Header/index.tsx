@@ -38,7 +38,6 @@ type Props = {
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   containerScc: string | undefined;
   title: string;
-  actions?: React.ReactNode;
 };
 
 class Header extends React.PureComponent<Props> {

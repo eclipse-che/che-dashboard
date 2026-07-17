@@ -32,7 +32,6 @@ import {
   ISccPermissionApi,
   IServerConfigApi,
   IShhKeysApi,
-  IUserProfileApi,
   IWatcherService,
   IWorkspacePreferencesApi,
 } from '@/devworkspaceClient/types';
