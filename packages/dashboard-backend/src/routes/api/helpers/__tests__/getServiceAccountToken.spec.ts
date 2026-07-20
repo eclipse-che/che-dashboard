@@ -35,13 +35,39 @@ describe('getServiceAccountToken', () => {
     process.env = originalEnv;
   });
 
-  it('should return SERVICE_ACCOUNT_TOKEN env variable when running locally', () => {
+  it('should return CLUSTER_ACCESS_TOKEN when running locally on OpenShift (oc whoami -t token)', () => {
     mockIsLocalRun.mockReturnValue(true);
-    process.env = { ...originalEnv, SERVICE_ACCOUNT_TOKEN: 'local-token' };
+    process.env = {
+      ...originalEnv,
+      CLUSTER_ACCESS_TOKEN: 'openshift-user-token',
+      SERVICE_ACCOUNT_TOKEN: 'sa-token',
+    };
 
     const result = getServiceAccountToken();
 
-    expect(result).toBe('local-token');
+    expect(result).toBe('openshift-user-token');
+  });
+
+  it('should return SERVICE_ACCOUNT_TOKEN when running locally without CLUSTER_ACCESS_TOKEN', () => {
+    mockIsLocalRun.mockReturnValue(true);
+    process.env = { ...originalEnv, SERVICE_ACCOUNT_TOKEN: 'local-sa-token' };
+
+    const result = getServiceAccountToken();
+
+    expect(result).toBe('local-sa-token');
+  });
+
+  it('should log fatal and exit when running locally and neither token is set', () => {
+    mockIsLocalRun.mockReturnValue(true);
+    process.env = { ...originalEnv };
+    delete process.env.CLUSTER_ACCESS_TOKEN;
+    delete process.env.SERVICE_ACCOUNT_TOKEN;
+
+    expect(() => getServiceAccountToken()).toThrow('process.exit called');
+    expect(logger.fatal).toHaveBeenCalledWith(
+      'Neither CLUSTER_ACCESS_TOKEN nor SERVICE_ACCOUNT_TOKEN is set for local run',
+    );
+    expect(mockExit).toHaveBeenCalledWith(1);
   });
 
   it('should return token from file when not running locally and file exists', () => {

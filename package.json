@@ -36,6 +36,8 @@
     "lint:check": "yarn workspaces foreach -A run lint:check",
     "lint:fix": "yarn workspaces foreach -A run lint:fix",
     "deploy:patch": "$PWD/run/patch.sh",
+    "local:patch": "$PWD/run/local-patch.sh",
+    "resolutions:check": "node scripts/check-resolutions.js",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -43,7 +45,8 @@
     "@commitlint/config-conventional": "^21.0.2",
     "@eclipse-che/license-tool": "^2.0.0",
     "husky": "^9.1.7",
-    "lint-staged": "^15.5.2"
+    "lint-staged": "^15.5.2",
+    "semver": "^7.5.4"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

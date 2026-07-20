@@ -17,6 +17,8 @@ import {
   BackupStatus,
   DEVWORKSPACE_BACKUP_ANNOTATIONS,
 } from '@eclipse-che/common';
+import * as mockClient from '@kubernetes/client-node';
+import { CustomObjectsApi } from '@kubernetes/client-node';
 
 jest.mock('https');
 
@@ -44,22 +46,27 @@ jest.mock('@/devworkspaceClient/services/helpers/prepareCoreV1API', () => ({
   prepareCoreV1API: jest.fn(() => mockCoreV1Api),
 }));
 
-const mockKubeConfig = {
-  makeApiClient: jest.fn(() => mockCustomObjectsApi),
-};
-
-const mockSaKubeConfig = {
-  makeApiClient: jest.fn(() => mockSaCustomObjectsApi),
-};
-
 describe('RegistryApiService', () => {
   let service: RegistryApiService;
 
   const namespace = 'user-che';
 
   beforeEach(() => {
-    service = new RegistryApiService(mockKubeConfig as any, mockSaKubeConfig as any);
     jest.clearAllMocks();
+
+    const { KubeConfig } = mockClient;
+
+    const kubeConfig = new KubeConfig();
+    kubeConfig.makeApiClient = jest
+      .fn()
+      .mockImplementation(() => mockCustomObjectsApi as unknown as CustomObjectsApi);
+
+    const saKubeConfig = new KubeConfig();
+    saKubeConfig.makeApiClient = jest
+      .fn()
+      .mockImplementation(() => mockSaCustomObjectsApi as unknown as CustomObjectsApi);
+
+    service = new RegistryApiService(kubeConfig, saKubeConfig);
   });
 
   describe('listBackupImages — external registry (quay.io) path', () => {

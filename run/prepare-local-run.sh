@@ -38,7 +38,12 @@ fi
 CHE_NAMESPACE="${CHE_NAMESPACE:-eclipse-che}"
 CHE_SELF_SIGNED_MOUNT_PATH="${CHE_SELF_SIGNED_MOUNT_PATH:-$(pwd)/run/public-certs}"
 
-DASHBOARD_POD_NAME=$(kubectl get pods -n "$CHE_NAMESPACE" -o=custom-columns=:metadata.name | grep dashboard)
+DASHBOARD_POD_NAME=$(kubectl get pods -n "$CHE_NAMESPACE" --field-selector=status.phase=Running -o=custom-columns=:metadata.name | grep dashboard | head -1)
+
+if [[ -z "$DASHBOARD_POD_NAME" ]]; then
+  echo "[ERROR] No running dashboard pod found in namespace $CHE_NAMESPACE"
+  exit 1
+fi
 
 kubectl describe pod "$DASHBOARD_POD_NAME" -n "$CHE_NAMESPACE" > run/.che-dashboard-pod
 
@@ -52,31 +57,58 @@ mkdir -p "$CHE_SELF_SIGNED_MOUNT_PATH"
 # copy certificate from the dashboard pod
 kubectl cp $CHE_NAMESPACE/$DASHBOARD_POD_NAME:/public-certs/che-self-signed/..data/ca.crt "$CHE_SELF_SIGNED_MOUNT_PATH/ca.crt"
 
-if [[ -n "$(oc whoami -t)" ]]; then
-  echo 'Cluster access token found. Nothing needs to be patched.'
+CHE_HOST=http://localhost:8080
+LOCALHOST_CALLBACK="$CHE_HOST/oauth/callback"
+
+GATEWAY=$(kubectl get deployments.apps -n "$CHE_NAMESPACE" che-gateway --ignore-not-found -o=json | jq -e '.spec.template.spec.containers|any(.name == "oauth-proxy")')
+
+if [[ -n "$(oc whoami -t 2>/dev/null)" ]] && [ "$GATEWAY" == "true" ]; then
+  # OpenShift native auth — patch OAuthClient to allow localhost redirect URI
+  echo 'Detected OpenShift native auth mode. Patching OAuthClient...'
+
+  # Read client_id from the oauth-proxy ConfigMap (config is file-based, not CLI args)
+  OAUTH_CLIENT=$(kubectl get configmap che-gateway-config-oauth-proxy -n "$CHE_NAMESPACE" \
+    -o jsonpath='{.data.oauth-proxy\.cfg}' 2>/dev/null | \
+    awk -F'"' '/client_id/{print $2}')
+
+  if [[ -z "$OAUTH_CLIENT" ]]; then
+    echo '[ERROR] Could not find client_id in che-gateway-config-oauth-proxy ConfigMap.'
+    exit 1
+  fi
+  echo "OAuthClient: $OAUTH_CLIENT"
+
+  # Idempotent: only add redirect URI if not already present
+  EXISTING=$(oc get oauthclient "$OAUTH_CLIENT" -o json | jq -r '.redirectURIs[]' 2>/dev/null | grep -F "$LOCALHOST_CALLBACK" || true)
+  if [[ -n "$EXISTING" ]]; then
+    echo "localhost redirect URI already present in OAuthClient '$OAUTH_CLIENT'. Skipping patch."
+  else
+    echo "Patching OAuthClient '$OAUTH_CLIENT': adding $LOCALHOST_CALLBACK"
+    oc patch oauthclient "$OAUTH_CLIENT" --type=json \
+      -p="[{\"op\":\"add\",\"path\":\"/redirectURIs/-\",\"value\":\"$LOCALHOST_CALLBACK\"}]"
+  fi
+
+  # Switch grantMethod to 'auto' so the OAuth flow completes without a manual
+  # "Grant access?" confirmation screen after login.
+  CURRENT_GRANT=$(oc get oauthclient "$OAUTH_CLIENT" -o jsonpath='{.grantMethod}' 2>/dev/null)
+  if [[ "$CURRENT_GRANT" != "auto" ]]; then
+    echo "Patching OAuthClient '$OAUTH_CLIENT': grantMethod → auto"
+    oc patch oauthclient "$OAUTH_CLIENT" --type=merge -p '{"grantMethod":"auto"}'
+  fi
   echo 'Done.'
   exit 0
 fi
 
-CHE_HOST=http://localhost:8080
-CHE_HOST_ORIGIN=$(kubectl get checluster -n "$CHE_NAMESPACE" eclipse-che -o=json | jq -r '.status.cheURL')
-
-if [[ -z "$CHE_HOST_ORIGIN" ]]; then
-  echo '[ERROR] Cannot find cheURL.'
-  exit 1
-fi
-
-GATEWAY=$(kubectl get deployments.apps -n "$CHE_NAMESPACE" che-gateway --ignore-not-found -o=json | jq -e '.spec.template.spec.containers|any(.name == "oauth-proxy")')
 if [ "$GATEWAY" == "true" ]; then
-  echo 'Detected gateway and oauth-proxy inside. Running in native auth mode.'
-
-  echo 'Cluster access token not found.'
+  # Dex-based native auth (Minikube) — patch dex configMap
+  echo 'Detected gateway with oauth-proxy. Running in native auth mode.'
   echo 'Looking for staticClient for local start'
-  if kubectl get -n dex configMaps/dex -o jsonpath="{.data['config\.yaml']}" | yq ${YQ_FLAGS} ".staticClients[0].redirectURIs" - | grep $CHE_HOST/oauth/callback; then
+  if kubectl get -n dex configMaps/dex -o jsonpath="{.data['config\.yaml']}" | yq ${YQ_FLAGS} ".staticClients[0].redirectURIs" - | grep $LOCALHOST_CALLBACK; then
     echo 'Found the staticClient for localStart'
   else
     echo 'Patching dex config map...'
-    UPDATED_CONFIG_YAML=$(kubectl get -n dex configMaps/dex -o jsonpath="{.data['config\.yaml']}" | yq ${YQ_FLAGS} ".staticClients[0].redirectURIs[0] = \"$CHE_HOST/oauth/callback\"" -)
+    # Append the localhost callback URL — keeps the existing cluster redirect URIs intact
+    # so the che-operator does not detect a breaking change and reconcile immediately.
+    UPDATED_CONFIG_YAML=$(kubectl get -n dex configMaps/dex -o jsonpath="{.data['config\.yaml']}" | yq ${YQ_FLAGS} ".staticClients[0].redirectURIs += [\"$LOCALHOST_CALLBACK\"]" -)
     dq_mid=\\\"
     yaml_esc="${UPDATED_CONFIG_YAML//\"/$dq_mid}"
     kubectl get configMaps/dex -n dex -o json | jq ".data[\"config.yaml\"] |= \"${yaml_esc}\"" | kubectl replace -f -
@@ -87,28 +119,6 @@ if [ "$GATEWAY" == "true" ]; then
     echo 'Waiting 5 seconds to dex shut down...'
     sleep 5
     kubectl patch deployment/dex --patch "{\"spec\":{\"replicas\":1}}" -n dex
-    echo 'Done.'
-  fi
-
-  echo 'Looking for redirect_url for local start'
-  if kubectl get configMaps che-gateway-config-oauth-proxy -o jsonpath="{.data}" -n "$CHE_NAMESPACE" | yq ${YQ_FLAGS} ".[\"oauth-proxy.cfg\"]" - | grep $CHE_HOST/oauth/callback; then
-    echo 'Found the redirect_url for localStart'
-  else
-    if kubectl get deployment/che-operator -n "$CHE_NAMESPACE" -o jsonpath="{.spec.replicas}" | grep 1; then
-      echo 'Turn off Che-operator deployment...'
-      kubectl patch deployment/che-operator --patch "{\"spec\":{\"replicas\":0}}" -n "$CHE_NAMESPACE"
-      echo 'Waiting 10 seconds to operator shut down...'
-      sleep 10
-      echo 'Done.'
-    fi
-
-    echo 'Patching che-gateway-config-oauth-proxy config map...'
-    CONFIG_YAML=$(kubectl get configMaps che-gateway-config-oauth-proxy -o jsonpath="{.data}" -n "$CHE_NAMESPACE" | yq ${YQ_FLAGS} ".[\"oauth-proxy.cfg\"]" - | sed "s/${CHE_HOST_ORIGIN//\//\\/}\/oauth\/callback/${CHE_HOST//\//\\/}\/oauth\/callback/g")
-    kubectl get configMaps che-gateway-config-oauth-proxy -n "$CHE_NAMESPACE" -o json | jq ".data[\"oauth-proxy.cfg\"] |= \"${CONFIG_YAML//\"/\\\"}\"" | kubectl replace -f -
-    # rollout che-server deployment
-    echo 'Rolling out che-gateway deployment...'
-    kubectl patch deployment/che-gateway --patch "{\"spec\":{\"replicas\":0}}" -n "$CHE_NAMESPACE"
-    kubectl patch deployment/che-gateway --patch "{\"spec\":{\"replicas\":1}}" -n "$CHE_NAMESPACE"
     echo 'Done.'
   fi
 fi
