@@ -14,6 +14,7 @@ import {
   IAiProviderKeyApi,
   IAiRegistryApi,
   IAirGapSampleApi,
+  IDeviceAuthTokenApi,
   IDevWorkspaceApi,
   IDevWorkspaceClusterApi,
   IDevWorkspaceSingletonClient,
@@ -90,6 +91,10 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
   }
 
   get aiRegistryApi(): IAiRegistryApi {
+    throw new Error('Method not implemented.');
+  }
+
+  get deviceAuthTokenApi(): IDeviceAuthTokenApi {
     throw new Error('Method not implemented.');
   }
 

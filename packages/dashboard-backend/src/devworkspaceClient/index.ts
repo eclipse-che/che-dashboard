@@ -15,6 +15,7 @@ import * as k8s from '@kubernetes/client-node';
 import { AiProviderKeyApiService } from '@/devworkspaceClient/services/aiProviderKeyApi';
 import { AiRegistryApiService } from '@/devworkspaceClient/services/aiRegistryApi';
 import { AirGapSampleApiService } from '@/devworkspaceClient/services/airGapSampleApi';
+import { DeviceAuthTokenApiService } from '@/devworkspaceClient/services/deviceAuthTokenApi';
 import { DevWorkspaceApiService } from '@/devworkspaceClient/services/devWorkspaceApi';
 import { DevWorkspaceClusterApiService } from '@/devworkspaceClient/services/devWorkspaceClusterApiService';
 import { DevWorkspaceTemplateApiService } from '@/devworkspaceClient/services/devWorkspaceTemplateApi';
@@ -36,6 +37,7 @@ import {
   IAiProviderKeyApi,
   IAiRegistryApi,
   IAirGapSampleApi,
+  IDeviceAuthTokenApi,
   IDevWorkspaceApi,
   IDevWorkspaceClient,
   IDevWorkspaceClusterApi,
@@ -139,6 +141,10 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
 
   get aiRegistryApi(): IAiRegistryApi {
     return new AiRegistryApiService(this.kubeConfig);
+  }
+
+  get deviceAuthTokenApi(): IDeviceAuthTokenApi {
+    return new DeviceAuthTokenApiService(this.kubeConfig);
   }
 
   get sccPermissionApi(): ISccPermissionApi {
