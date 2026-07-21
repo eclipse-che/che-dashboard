@@ -27,12 +27,16 @@ const token2: api.DeviceAuthToken = {
 
 const mockOnDeleteTokens = jest.fn();
 
+const mockOnConnect = jest.fn();
+
 const { renderComponent } = getComponentRenderer(
   ({ tokens, isDisabled }: { tokens: api.DeviceAuthToken[]; isDisabled?: boolean }) => (
     <DeviceAuthTokensList
       tokens={tokens}
       isDisabled={isDisabled ?? false}
+      isConnectEnabled={true}
       onDeleteTokens={mockOnDeleteTokens}
+      onConnect={mockOnConnect}
     />
   ),
 );
@@ -40,6 +44,11 @@ const { renderComponent } = getComponentRenderer(
 describe('DeviceAuthTokensList', () => {
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  it('should render Reconnect action toggle', () => {
+    renderComponent({ tokens: [token1] });
+    expect(screen.getByTestId('token-actions-toggle')).not.toBeNull();
   });
 
   it('should render token cards', () => {

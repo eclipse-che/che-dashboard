@@ -33,7 +33,9 @@ import { getFormattedDate } from '@/services/helpers/dates';
 export type Props = {
   tokens: api.DeviceAuthToken[];
   isDisabled: boolean;
+  isConnectEnabled: boolean;
   onDeleteTokens: (tokens: api.DeviceAuthToken[]) => void;
+  onConnect: () => void;
 };
 
 type State = {
@@ -47,7 +49,7 @@ export class DeviceAuthTokensList extends React.PureComponent<Props, State> {
   }
 
   render(): React.ReactElement {
-    const { tokens, isDisabled, onDeleteTokens } = this.props;
+    const { tokens, isDisabled, isConnectEnabled, onDeleteTokens } = this.props;
     const { openDropdown } = this.state;
 
     const cards = tokens.map(token => {
@@ -85,6 +87,19 @@ export class DeviceAuthTokensList extends React.PureComponent<Props, State> {
                   popperProps={{ position: 'right' }}
                 >
                   <DropdownList>
+                    {isConnectEnabled && (
+                      <DropdownItem
+                        key="reconnect"
+                        isDisabled={isDisabled}
+                        onClick={() => {
+                          this.setState({ openDropdown: undefined });
+                          this.props.onConnect();
+                        }}
+                        data-testid="reconnect-token-action"
+                      >
+                        Reconnect
+                      </DropdownItem>
+                    )}
                     <DropdownItem
                       key="delete"
                       isDanger

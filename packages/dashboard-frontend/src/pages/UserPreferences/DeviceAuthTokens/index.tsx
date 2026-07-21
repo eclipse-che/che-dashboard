@@ -169,7 +169,9 @@ class DeviceAuthTokens extends React.PureComponent<Props, State> {
             <DeviceAuthTokensList
               tokens={tokens}
               isDisabled={isLoading}
+              isConnectEnabled={this.props.githubDeviceAuthEnabled}
               onDeleteTokens={selectedTokens => this.handleShowDeleteModal(selectedTokens)}
+              onConnect={() => this.handleOpenConnectModal()}
             />
           )}
         </PageSection>
