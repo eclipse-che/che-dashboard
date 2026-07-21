@@ -17,6 +17,7 @@ import { brandingReducer } from '@/store/Branding';
 import { clusterConfigReducer } from '@/store/ClusterConfig';
 import { clusterInfoReducer } from '@/store/ClusterInfo';
 import { devfileRegistriesReducer } from '@/store/DevfileRegistries';
+import { deviceAuthTokenReducer } from '@/store/DeviceAuthToken';
 import { devWorkspacesClusterReducer } from '@/store/DevWorkspacesCluster';
 import { dockerConfigReducer } from '@/store/DockerConfig';
 import { eventsReducer } from '@/store/Events';
@@ -46,6 +47,7 @@ export const rootReducer = {
   clusterConfig: clusterConfigReducer,
   clusterInfo: clusterInfoReducer,
   devfileRegistries: devfileRegistriesReducer,
+  deviceAuthToken: deviceAuthTokenReducer,
   devWorkspaces: devWorkspacesReducer,
   devWorkspacesCluster: devWorkspacesClusterReducer,
   dockerConfig: dockerConfigReducer,
