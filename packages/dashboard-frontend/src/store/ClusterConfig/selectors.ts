@@ -42,3 +42,8 @@ export const selectCurrentArchitecture = createSelector(
   selectState,
   state => state.clusterConfig.currentArchitecture as Architecture,
 );
+
+export const selectGithubDeviceAuthEnabled = createSelector(
+  selectState,
+  state => state.clusterConfig.githubDeviceAuthEnabled === true,
+);
