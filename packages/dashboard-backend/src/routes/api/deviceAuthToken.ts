@@ -77,15 +77,7 @@ export function registerDeviceAuthTokenRoutes(instance: FastifyInstance) {
      */
     server.post(
       `${baseApiPath}/namespace/:namespace/device-auth-token/initiate`,
-      {
-        ...getSchema({ tags, params: namespacedSchema }),
-        config: {
-          rateLimit: {
-            max: 100,
-            timeWindow: '1 minute',
-          },
-        },
-      },
+      Object.assign({}, rateLimitConfig, getSchema({ tags, params: namespacedSchema })),
       async function (request: FastifyRequest) {
         const token = getToken(request);
         const { deviceAuthTokenApi } = getDevWorkspaceClient(token);
@@ -100,14 +92,11 @@ export function registerDeviceAuthTokenRoutes(instance: FastifyInstance) {
      */
     server.post(
       `${baseApiPath}/namespace/:namespace/device-auth-token/poll`,
-      {
-        ...rateLimitConfig,
-        ...getSchema({ tags, params: namespacedSchema, body: deviceAuthPollBodySchema }),
-        preHandler: server.rateLimit({
-          max: 100,
-          timeWindow: '1 minute',
-        }),
-      },
+      Object.assign(
+        {},
+        rateLimitConfig,
+        getSchema({ tags, params: namespacedSchema, body: deviceAuthPollBodySchema }),
+      ),
       async function (request: FastifyRequest) {
         const { namespace } = request.params as restParams.INamespacedParams;
         const { deviceCode } = request.body as { deviceCode: string };

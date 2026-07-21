@@ -16,7 +16,7 @@ import { Props } from '..';
 
 export class DeviceAuthTokensList extends React.PureComponent<Props> {
   render() {
-    const { tokens, onDeleteTokens } = this.props;
+    const { tokens, onDeleteTokens, onConnect, isConnectEnabled } = this.props;
 
     const entries = tokens.map(token => (
       <div key={token.name} data-testid="device-auth-token-entry">
@@ -27,6 +27,15 @@ export class DeviceAuthTokensList extends React.PureComponent<Props> {
       </div>
     ));
 
-    return <div>{entries}</div>;
+    return (
+      <div>
+        {entries}
+        {isConnectEnabled && (
+          <button data-testid="reconnect-token-action" onClick={() => onConnect()}>
+            Reconnect
+          </button>
+        )}
+      </div>
+    );
   }
 }
