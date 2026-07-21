@@ -215,21 +215,20 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
                 </Content>
                 <Content component="li">Return here — the page will update automatically</Content>
               </Content>
-              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
-                <Spinner size="sm" aria-label="Waiting for authorization" />
-              </div>
             </Content>
           )}
         </ModalBody>
         <ModalFooter>
           {deviceCode && !error && (
             <Button
-              variant={ButtonVariant.link}
-              component="a"
-              href={deviceCode.verificationUri}
-              target="_blank"
+              variant={ButtonVariant.primary}
+              onClick={() => {
+                navigator.clipboard?.writeText(deviceCode.userCode ?? '');
+                window.open(deviceCode.verificationUri, '_blank');
+              }}
+              data-testid="copy-continue-button"
             >
-              Open GitHub
+              Copy &amp; Continue to Browser
             </Button>
           )}
           <Button

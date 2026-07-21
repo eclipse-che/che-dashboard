@@ -76,6 +76,8 @@ export type DeviceAuthToken = {
   provider?: string;
   /** ISO 8601 timestamp string as returned by Kubernetes and serialized by Fastify */
   creationTimestamp?: string;
+  /** Whether the token is still accepted by GitHub. Set by a separate validate call. */
+  valid?: boolean;
 };
 
 export type DeviceCodeResponse = {

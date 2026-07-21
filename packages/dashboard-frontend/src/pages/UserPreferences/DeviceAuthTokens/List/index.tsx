@@ -25,9 +25,10 @@ import {
   MenuToggleElement,
   PageSection,
 } from '@patternfly/react-core';
-import { EllipsisVIcon } from '@patternfly/react-icons';
+import { CheckCircleIcon, EllipsisVIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
+import { CheTooltip } from '@/components/CheTooltip';
 import { getFormattedDate } from '@/services/helpers/dates';
 
 export type Props = {
@@ -117,7 +118,25 @@ export class DeviceAuthTokensList extends React.PureComponent<Props, State> {
               ),
             }}
           >
-            <CardTitle data-testid="token-provider">{token.provider ?? 'GitHub'}</CardTitle>
+            <CardTitle data-testid="token-provider">
+              {token.provider ?? 'GitHub'}
+              {token.valid === true && (
+                <CheTooltip content={<span>Token is valid</span>}>
+                  <CheckCircleIcon
+                    color="var(--pf-t--global--color--status--success--default)"
+                    style={{ marginLeft: '0.5rem', verticalAlign: 'middle' }}
+                  />
+                </CheTooltip>
+              )}
+              {token.valid === false && (
+                <CheTooltip content={<span>Token has been revoked or expired</span>}>
+                  <ExclamationCircleIcon
+                    color="var(--pf-t--global--color--status--danger--default)"
+                    style={{ marginLeft: '0.5rem', verticalAlign: 'middle' }}
+                  />
+                </CheTooltip>
+              )}
+            </CardTitle>
           </CardHeader>
           <CardFooter>
             <Content>

@@ -105,5 +105,23 @@ export function registerDeviceAuthTokenRoutes(instance: FastifyInstance) {
         return deviceAuthTokenApi.pollDeviceAuth(namespace, deviceCode);
       },
     );
+    /**
+     * GET /dashboard/api/namespace/:namespace/device-auth-token/:tokenName/validate
+     * Checks whether the stored GitHub token is still valid.
+     * Returns { valid: boolean | null } — null means check could not be performed.
+     * Uses user bearer token.
+     */
+    server.get(
+      `${baseApiPath}/namespace/:namespace/device-auth-token/:tokenName/validate`,
+      Object.assign({}, rateLimitConfig, getSchema({ tags, params: deviceAuthTokenParamsSchema })),
+      async function (request: FastifyRequest) {
+        const { namespace, tokenName } =
+          request.params as restParams.DeviceAuthTokenNamespacedParams;
+        const token = getToken(request);
+        const { deviceAuthTokenApi } = getDevWorkspaceClient(token);
+        const valid = await deviceAuthTokenApi.validateToken(namespace, tokenName);
+        return { valid: valid ?? null };
+      },
+    );
   });
 }
