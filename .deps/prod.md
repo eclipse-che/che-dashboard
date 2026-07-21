@@ -147,7 +147,6 @@
 | `ipaddr.js@2.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ipaddr.js/2.3.0) |
 | `joi@17.12.3` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/joi/17.12.3) |
 | `joycon@3.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/joycon/3.1.1) |
-| `js-yaml@4.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/js-yaml/4.1.1) |
 | `json-schema-ref-resolver@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-schema-ref-resolver/3.0.0) |
 | `json-schema-resolver@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-schema-resolver/3.0.0) |
 | `jsonc-parser@3.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsonc-parser/3.2.0) |
@@ -168,7 +167,6 @@
 | `on-exit-leak-free@2.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/on-exit-leak-free/2.1.2) |
 | `openapi-types@12.1.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/openapi-types/12.1.3) |
 | `parse-asn1@5.1.6` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/parse-asn1/5.1.6) |
-| `parse-srcset@1.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/parse-srcset/1.0.2) |
 | `pino-abstract-transport@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pino-abstract-transport/1.1.0) |
 | `pino-abstract-transport@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pino-abstract-transport/3.0.0) |
 | `pino-pretty@10.2.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pino-pretty/10.2.3) |
@@ -211,7 +209,6 @@
 | `rfdc@1.4.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/rfdc/1.4.1) |
 | `ripemd160@2.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ripemd160/2.0.2) |
 | `safe-stable-stringify@2.4.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safe-stable-stringify/2.4.3) |
-| `sanitize-html@2.17.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sanitize-html/2.17.0) |
 | `secure-json-parse@2.7.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/secure-json-parse/2.7.0) |
 | `secure-json-parse@4.1.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/secure-json-parse/4.1.0) |
 | `semver@7.7.4` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/semver/7.7.4) |
