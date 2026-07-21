@@ -22,6 +22,7 @@ import { DeviceAuthTokensDeleteModal } from '@/pages/UserPreferences/DeviceAuthT
 import { DeviceAuthTokensEmptyState } from '@/pages/UserPreferences/DeviceAuthTokens/EmptyState';
 import { DeviceAuthTokensList } from '@/pages/UserPreferences/DeviceAuthTokens/List';
 import { AppAlerts } from '@/services/alerts/appAlerts';
+import { validateDeviceAuthToken } from '@/services/backend-client/deviceAuthTokenApi';
 import { RootState } from '@/store';
 import { selectGithubDeviceAuthEnabled } from '@/store/ClusterConfig/selectors';
 import {
@@ -38,11 +39,14 @@ export type State = {
   isDeleteOpen: boolean;
   deletingTokens: api.DeviceAuthToken[];
   isConnectOpen: boolean;
+  validatedTokens: Record<string, boolean | undefined>;
 };
 
 class DeviceAuthTokens extends React.PureComponent<Props, State> {
   @lazyInject(AppAlerts)
   private readonly appAlerts: AppAlerts;
+
+  private _isMounted = false;
 
   constructor(props: Props) {
     super(props);
@@ -50,15 +54,26 @@ class DeviceAuthTokens extends React.PureComponent<Props, State> {
       isDeleteOpen: false,
       deletingTokens: [],
       isConnectOpen: false,
+      validatedTokens: {},
     };
   }
 
-  public async componentDidMount(): Promise<void> {
+  public componentDidMount(): void {
+    this._isMounted = true;
+    void this._fetchTokens();
+  }
+
+  public componentWillUnmount(): void {
+    this._isMounted = false;
+  }
+
+  private async _fetchTokens(): Promise<void> {
     if (this.props.isLoading) {
       return;
     }
     try {
       await this.props.requestDeviceAuthTokens();
+      this.validateTokensInBackground();
     } catch (e) {
       this.appAlerts.showAlert({
         key: 'request-device-auth-tokens-failed',
@@ -77,6 +92,25 @@ class DeviceAuthTokens extends React.PureComponent<Props, State> {
         variant: AlertVariant.danger,
       });
     }
+  }
+
+  private validateTokensInBackground(): void {
+    const { tokens, namespace } = this.props;
+    this.setState({ validatedTokens: {} });
+    tokens.forEach(token => {
+      validateDeviceAuthToken(namespace, token.name)
+        .then(valid => {
+          if (!this._isMounted) {
+            return;
+          }
+          this.setState(prev => ({
+            validatedTokens: { ...prev.validatedTokens, [token.name]: valid },
+          }));
+        })
+        .catch(() => {
+          /* ignore */
+        });
+    });
   }
 
   private handleShowDeleteModal(tokens: api.DeviceAuthToken[]): void {
@@ -138,7 +172,7 @@ class DeviceAuthTokens extends React.PureComponent<Props, State> {
 
   public render(): React.ReactElement {
     const { tokens, isLoading, namespace } = this.props;
-    const { isDeleteOpen, deletingTokens, isConnectOpen } = this.state;
+    const { isDeleteOpen, deletingTokens, isConnectOpen, validatedTokens = {} } = this.state;
 
     const showEmptyState = tokens.length === 0 && !isLoading;
     const showList = tokens.length > 0;
@@ -167,7 +201,7 @@ class DeviceAuthTokens extends React.PureComponent<Props, State> {
           )}
           {showList && (
             <DeviceAuthTokensList
-              tokens={tokens}
+              tokens={tokens.map(t => ({ ...t, valid: validatedTokens[t.name] }))}
               isDisabled={isLoading}
               isConnectEnabled={this.props.githubDeviceAuthEnabled}
               onDeleteTokens={selectedTokens => this.handleShowDeleteModal(selectedTokens)}

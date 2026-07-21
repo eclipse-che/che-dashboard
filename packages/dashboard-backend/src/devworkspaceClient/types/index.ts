@@ -649,6 +649,7 @@ export interface IDeviceAuthTokenApi {
    * On success, stores the token as a Kubernetes secret.
    */
   pollDeviceAuth(namespace: string, deviceCode: string): Promise<DeviceAuthPollResult>;
+  validateToken(namespace: string, tokenName: string): Promise<boolean | undefined>;
 }
 
 export interface ISccPermissionApi {

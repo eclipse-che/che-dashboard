@@ -76,8 +76,12 @@ async function githubPostDeviceCode(
     // GitHub returns structured JSON even on 4xx (e.g. device_flow_disabled).
     // Parse the body regardless of HTTP status so the caller can surface
     // specific error codes rather than a generic "HTTP 400".
-    const data: unknown = await response.json();
-    return data as GitHubDeviceCodeResponse;
+    try {
+      const data: unknown = await response.json();
+      return data as GitHubDeviceCodeResponse;
+    } catch {
+      throw new Error(`GitHub API returned HTTP ${response.status} with non-JSON body`);
+    }
   } finally {
     clearTimeout(timer);
   }
@@ -95,8 +99,12 @@ async function githubPostToken(params: Record<string, string>): Promise<GitHubTo
       signal: controller.signal,
     });
     // GitHub returns structured JSON even for error states (authorization_pending, etc.)
-    const data: unknown = await response.json();
-    return data as GitHubTokenResponse;
+    try {
+      const data: unknown = await response.json();
+      return data as GitHubTokenResponse;
+    } catch {
+      throw new Error(`GitHub API returned HTTP ${response.status} with non-JSON body`);
+    }
   } finally {
     clearTimeout(timer);
   }
@@ -238,6 +246,35 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
 
     const token = await this.createDeviceAuthSecret(namespace, data.access_token);
     return { status: 'authorized', token };
+  }
+
+  async validateToken(namespace: string, tokenName: string): Promise<boolean | undefined> {
+    let secret: k8s.V1Secret;
+    try {
+      secret = await this.coreV1API.readNamespacedSecret({ name: tokenName, namespace });
+    } catch {
+      return undefined;
+    }
+    if (secret.metadata?.labels?.[DEVICE_AUTH_LABEL] !== 'true') {
+      return undefined;
+    }
+    const rawToken = Buffer.from(secret.data?.['token'] ?? '', 'base64').toString('utf-8');
+    if (!rawToken) {
+      return undefined;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5_000);
+    try {
+      const response = await fetch('https://api.github.com/user', {
+        headers: { Authorization: `token ${rawToken}`, Accept: 'application/vnd.github+json' },
+        signal: controller.signal,
+      });
+      return response.ok;
+    } catch {
+      return undefined;
+    } finally {
+      clearTimeout(timer);
+    }
   }
 
   private async createDeviceAuthSecret(
