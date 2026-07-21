@@ -78,13 +78,8 @@ export function registerDeviceAuthTokenRoutes(instance: FastifyInstance) {
     server.post(
       `${baseApiPath}/namespace/:namespace/device-auth-token/initiate`,
       {
+        ...rateLimitConfig,
         ...getSchema({ tags, params: namespacedSchema }),
-        config: {
-          rateLimit: {
-            max: 100,
-            timeWindow: '1 minute',
-          },
-        },
       },
       async function (request: FastifyRequest) {
         const token = getToken(request);

@@ -76,8 +76,6 @@ export type DeviceAuthToken = {
   provider?: string;
   /** ISO 8601 timestamp string as returned by Kubernetes and serialized by Fastify */
   creationTimestamp?: string;
-  /** Whether the stored token is still accepted by GitHub. Undefined means the check was not performed or timed out. */
-  valid?: boolean;
 };
 
 export type DeviceCodeResponse = {

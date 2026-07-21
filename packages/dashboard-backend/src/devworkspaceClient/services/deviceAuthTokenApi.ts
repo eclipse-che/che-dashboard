@@ -117,44 +117,16 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
         namespace,
         labelSelector: DEVICE_AUTH_LABEL_SELECTOR,
       });
-      const tokens = resp.items.filter(secret => !!secret.metadata?.name);
-      return Promise.all(
-        tokens.map(async secret => {
-          const rawToken = Buffer.from(secret.data?.['token'] ?? '', 'base64').toString('utf-8');
-          let valid: boolean | undefined;
-          if (rawToken) {
-            valid = await this.checkTokenValidity(rawToken);
-          }
-          return {
-            name: secret.metadata?.name ?? '',
-            provider: secret.metadata?.labels?.[DEVICE_AUTH_PROVIDER_LABEL],
-            creationTimestamp: secret.metadata?.creationTimestamp?.toISOString(),
-            valid,
-          };
-        }),
-      );
+      return resp.items
+        .filter(secret => !!secret.metadata?.name)
+        .map(secret => ({
+          name: secret.metadata?.name ?? '',
+          provider: secret.metadata?.labels?.[DEVICE_AUTH_PROVIDER_LABEL],
+          creationTimestamp: secret.metadata?.creationTimestamp?.toISOString(),
+        }));
     } catch (error) {
       const additionalMessage = `Unable to list Device Authentication tokens in the namespace "${namespace}"`;
       throw createError(error, API_ERROR_LABEL, additionalMessage);
-    }
-  }
-
-  private async checkTokenValidity(token: string): Promise<boolean | undefined> {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 5_000);
-    try {
-      const response = await fetch('https://api.github.com/user', {
-        headers: {
-          Authorization: `token ${token}`,
-          Accept: 'application/vnd.github+json',
-        },
-        signal: controller.signal,
-      });
-      return response.ok;
-    } catch {
-      return undefined;
-    } finally {
-      clearTimeout(timer);
     }
   }
 

@@ -58,14 +58,4 @@ describe('DeviceAuthTokensList', () => {
     renderComponent({ tokens: [token1] });
     expect(screen.getByTestId('token-actions-toggle')).not.toBeNull();
   });
-
-  it('should show valid indicator when token.valid is true', () => {
-    renderComponent({ tokens: [{ ...token1, valid: true }] });
-    expect(screen.getByTitle('Token is valid')).not.toBeNull();
-  });
-
-  it('should show invalid indicator when token.valid is false', () => {
-    renderComponent({ tokens: [{ ...token1, valid: false }] });
-    expect(screen.getByTitle('Token has been revoked or expired')).not.toBeNull();
-  });
 });
