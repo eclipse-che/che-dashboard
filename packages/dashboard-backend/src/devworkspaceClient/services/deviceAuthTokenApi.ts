@@ -240,6 +240,35 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
     return { status: 'authorized', token };
   }
 
+  async validateToken(namespace: string, tokenName: string): Promise<boolean | undefined> {
+    let secret: k8s.V1Secret;
+    try {
+      secret = await this.coreV1API.readNamespacedSecret({ name: tokenName, namespace });
+    } catch {
+      return undefined;
+    }
+    if (secret.metadata?.labels?.[DEVICE_AUTH_LABEL] !== 'true') {
+      return undefined;
+    }
+    const rawToken = Buffer.from(secret.data?.['token'] ?? '', 'base64').toString('utf-8');
+    if (!rawToken) {
+      return undefined;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5_000);
+    try {
+      const response = await fetch('https://api.github.com/user', {
+        headers: { Authorization: `token ${rawToken}`, Accept: 'application/vnd.github+json' },
+        signal: controller.signal,
+      });
+      return response.ok;
+    } catch {
+      return undefined;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
   private async createDeviceAuthSecret(
     namespace: string,
     accessToken: string,

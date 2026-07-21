@@ -68,3 +68,18 @@ export async function pollDeviceAuth(
     throw new Error(`Failed to poll Device Authentication. ${helpers.errors.getMessage(e)}`);
   }
 }
+
+export async function validateDeviceAuthToken(
+  namespace: string,
+  tokenName: string,
+): Promise<boolean | undefined> {
+  try {
+    const response = await AxiosWrapper.createToRetryMissedBearerTokenError().get(
+      `${dashboardBackendPrefix}/namespace/${namespace}/device-auth-token/${encodeURIComponent(tokenName)}/validate`,
+    );
+    const { valid } = response.data as { valid: boolean | null };
+    return valid ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
