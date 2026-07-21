@@ -523,6 +523,7 @@ export interface IDevWorkspaceClient {
   editorsApi: IEditorsApi;
   aiProviderKeyApi: IAiProviderKeyApi;
   aiRegistryApi: IAiRegistryApi;
+  deviceAuthTokenApi: IDeviceAuthTokenApi;
   sccPermissionApi: ISccPermissionApi;
 }
 
@@ -618,6 +619,33 @@ export interface IAiProviderKeyApi {
    * Deletes the API key Secret for the given provider from the given namespace.
    */
   delete(namespace: string, providerId: string): Promise<void>;
+}
+
+export type DeviceCodeResponse = api.DeviceCodeResponse;
+export type DeviceAuthPollResult = api.DeviceAuthPollResult;
+
+export interface IDeviceAuthTokenApi {
+  /**
+   * Lists Device Authentication token secrets in the namespace
+   * (identified by the che.eclipse.org/device-authentication=true label).
+   */
+  listTokens(namespace: string): Promise<api.DeviceAuthToken[]>;
+
+  /**
+   * Deletes the Device Authentication token secret by name.
+   */
+  deleteToken(namespace: string, tokenName: string): Promise<void>;
+
+  /**
+   * Initiates a GitHub Device Authorization flow and returns the device code and user code.
+   */
+  initiateDeviceAuth(): Promise<DeviceCodeResponse>;
+
+  /**
+   * Polls GitHub for the access token using the device code.
+   * On success, stores the token as a Kubernetes secret.
+   */
+  pollDeviceAuth(namespace: string, deviceCode: string): Promise<DeviceAuthPollResult>;
 }
 
 export interface ISccPermissionApi {

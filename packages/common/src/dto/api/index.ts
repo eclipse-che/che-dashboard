@@ -71,6 +71,29 @@ export type NewSshKey = Omit<SshKey, 'creationTimestamp'> & {
   key: string;
 };
 
+export type DeviceAuthToken = {
+  name: string;
+  provider?: string;
+  /** ISO 8601 timestamp string as returned by Kubernetes and serialized by Fastify */
+  creationTimestamp?: string;
+  /** Whether the stored token is still accepted by GitHub. Undefined means the check was not performed or timed out. */
+  valid?: boolean;
+};
+
+export type DeviceCodeResponse = {
+  deviceCode: string;
+  userCode: string;
+  verificationUri: string;
+  interval: number;
+};
+
+export type DeviceAuthPollResult =
+  | { status: 'pending' }
+  | { status: 'slow_down' }
+  | { status: 'authorized'; token: DeviceAuthToken }
+  | { status: 'expired' }
+  | { status: 'error'; message: string };
+
 export interface IPatch {
   op: string;
   path: string;
