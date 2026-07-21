@@ -103,10 +103,6 @@ export function registerDeviceAuthTokenRoutes(instance: FastifyInstance) {
       {
         ...rateLimitConfig,
         ...getSchema({ tags, params: namespacedSchema, body: deviceAuthPollBodySchema }),
-        preHandler: server.rateLimit({
-          max: 100,
-          timeWindow: '1 minute',
-        }),
       },
       async function (request: FastifyRequest) {
         const { namespace } = request.params as restParams.INamespacedParams;

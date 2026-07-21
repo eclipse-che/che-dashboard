@@ -31,7 +31,7 @@ const DEVICE_AUTH_LABEL = 'che.eclipse.org/device-authentication';
 const DEVICE_AUTH_LABEL_SELECTOR = `${DEVICE_AUTH_LABEL}=true`;
 const DEVICE_AUTH_PROVIDER_LABEL = 'che.eclipse.org/device-authentication-provider';
 
-const GITHUB_SCOPES = 'repo user:email workflow';
+const GITHUB_SCOPES = 'read:user repo user:email workflow';
 const GITHUB_API_TIMEOUT_MS = 30_000;
 
 interface GitHubDeviceCodeResponse {
@@ -63,37 +63,45 @@ function getGitHubClientId(): string {
 async function githubPostDeviceCode(
   params: Record<string, string>,
 ): Promise<GitHubDeviceCodeResponse> {
-  const query = new URLSearchParams(params).toString();
-  const url = `https://github.com/login/device/code?${query}`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { Accept: 'application/json' },
-  });
-  if (
-    !response.ok &&
-    response.headers.get('content-type')?.includes('application/json') === false
-  ) {
-    throw new Error(`GitHub API returned HTTP ${response.status}`);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), GITHUB_API_TIMEOUT_MS);
+  try {
+    const query = new URLSearchParams(params).toString();
+    const url = `https://github.com/login/device/code?${query}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { Accept: 'application/json' },
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      throw new Error(`GitHub API returned HTTP ${response.status}`);
+    }
+    const data: unknown = await response.json();
+    return data as GitHubDeviceCodeResponse;
+  } finally {
+    clearTimeout(timer);
   }
-  const data: unknown = await response.json();
-  return data as GitHubDeviceCodeResponse;
 }
 
 async function githubPostToken(params: Record<string, string>): Promise<GitHubTokenResponse> {
-  const query = new URLSearchParams(params).toString();
-  const url = `https://github.com/login/oauth/access_token?${query}`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { Accept: 'application/json' },
-  });
-  if (
-    !response.ok &&
-    response.headers.get('content-type')?.includes('application/json') === false
-  ) {
-    throw new Error(`GitHub API returned HTTP ${response.status}`);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), GITHUB_API_TIMEOUT_MS);
+  try {
+    const query = new URLSearchParams(params).toString();
+    const url = `https://github.com/login/oauth/access_token?${query}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { Accept: 'application/json' },
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      throw new Error(`GitHub API returned HTTP ${response.status}`);
+    }
+    const data: unknown = await response.json();
+    return data as GitHubTokenResponse;
+  } finally {
+    clearTimeout(timer);
   }
-  const data: unknown = await response.json();
-  return data as GitHubTokenResponse;
 }
 
 export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
@@ -266,21 +274,52 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
     namespace: string,
     accessToken: string,
   ): Promise<api.DeviceAuthToken> {
-    const name = `device-authentication-secret-${randomBytes(6).toString('hex')}`;
-    const secret: k8s.V1Secret = {
-      metadata: {
-        name,
+    const tokenData = Buffer.from(accessToken).toString('base64');
+
+    // Match che-code's single-active-token approach: replace existing secret if present
+    const existing = await this.coreV1API.listNamespacedSecret({
+      namespace,
+      labelSelector: DEVICE_AUTH_LABEL_SELECTOR,
+    });
+    if (existing.items.length > 0 && existing.items[0].metadata?.name) {
+      const existingName = existing.items[0].metadata.name;
+      const updated = await this.coreV1API.replaceNamespacedSecret({
+        name: existingName,
         namespace,
-        labels: {
-          [DEVICE_AUTH_LABEL]: 'true',
-          [DEVICE_AUTH_PROVIDER_LABEL]: 'github',
+        body: {
+          metadata: {
+            name: existingName,
+            namespace,
+            labels: {
+              [DEVICE_AUTH_LABEL]: 'true',
+              [DEVICE_AUTH_PROVIDER_LABEL]: 'github',
+            },
+          },
+          data: { token: tokenData },
         },
+      });
+      return {
+        name: existingName,
+        provider: 'github',
+        creationTimestamp: updated.metadata?.creationTimestamp?.toISOString(),
+      };
+    }
+
+    const name = `device-authentication-secret-${randomBytes(6).toString('hex')}`;
+    const created = await this.coreV1API.createNamespacedSecret({
+      namespace,
+      body: {
+        metadata: {
+          name,
+          namespace,
+          labels: {
+            [DEVICE_AUTH_LABEL]: 'true',
+            [DEVICE_AUTH_PROVIDER_LABEL]: 'github',
+          },
+        },
+        data: { token: tokenData },
       },
-      data: {
-        token: Buffer.from(accessToken).toString('base64'),
-      },
-    };
-    const created = await this.coreV1API.createNamespacedSecret({ namespace, body: secret });
+    });
     return {
       name,
       provider: 'github',
