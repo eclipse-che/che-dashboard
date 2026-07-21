@@ -30,6 +30,11 @@ export const selectBackupsStatusError = createSelector(
   state => state.statusError,
 );
 
+export const selectBackupsConfigError = createSelector(
+  selectBackupsState,
+  state => state.configError,
+);
+
 export const selectWorkspaceBackupInfo = createSelector(
   [selectBackupsState, (_state: RootState, workspaceUID: string) => workspaceUID],
   (backups, workspaceUID) => backups.byWorkspace[workspaceUID],

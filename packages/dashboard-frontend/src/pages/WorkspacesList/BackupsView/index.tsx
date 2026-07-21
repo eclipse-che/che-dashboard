@@ -24,7 +24,6 @@ import {
   buildGettingStartedLocation,
   buildRestoreFromBackupLocation,
 } from '@/services/helpers/location';
-import getRandomString from '@/services/helpers/random';
 import { RootState } from '@/store';
 import { fetchBackupConfig, fetchBackupList } from '@/store/Backups/actions';
 import {
@@ -61,7 +60,7 @@ export class BackupsView extends React.PureComponent<Props> {
     }
     if (error && error !== prevProps.error) {
       this.appAlerts.showAlert({
-        key: 'backups-list-error-' + getRandomString(4),
+        key: 'backups-list-error',
         title: error,
         variant: AlertVariant.danger,
       });
