@@ -25,7 +25,7 @@ import {
   MenuToggleElement,
   PageSection,
 } from '@patternfly/react-core';
-import { CheckCircleIcon, EllipsisVIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
+import { EllipsisVIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 import { getFormattedDate } from '@/services/helpers/dates';
@@ -33,7 +33,9 @@ import { getFormattedDate } from '@/services/helpers/dates';
 export type Props = {
   tokens: api.DeviceAuthToken[];
   isDisabled: boolean;
+  isConnectEnabled: boolean;
   onDeleteTokens: (tokens: api.DeviceAuthToken[]) => void;
+  onConnect: () => void;
 };
 
 type State = {
@@ -47,7 +49,7 @@ export class DeviceAuthTokensList extends React.PureComponent<Props, State> {
   }
 
   render(): React.ReactElement {
-    const { tokens, isDisabled, onDeleteTokens } = this.props;
+    const { tokens, isDisabled, isConnectEnabled, onDeleteTokens } = this.props;
     const { openDropdown } = this.state;
 
     const cards = tokens.map(token => {
@@ -85,6 +87,19 @@ export class DeviceAuthTokensList extends React.PureComponent<Props, State> {
                   popperProps={{ position: 'right' }}
                 >
                   <DropdownList>
+                    {isConnectEnabled && (
+                      <DropdownItem
+                        key="reconnect"
+                        isDisabled={isDisabled}
+                        onClick={() => {
+                          this.setState({ openDropdown: undefined });
+                          this.props.onConnect();
+                        }}
+                        data-testid="reconnect-token-action"
+                      >
+                        Reconnect
+                      </DropdownItem>
+                    )}
                     <DropdownItem
                       key="delete"
                       isDanger
@@ -102,23 +117,7 @@ export class DeviceAuthTokensList extends React.PureComponent<Props, State> {
               ),
             }}
           >
-            <CardTitle data-testid="token-provider">
-              {token.provider ?? 'GitHub'}
-              {token.valid === true && (
-                <CheckCircleIcon
-                  color="var(--pf-t--global--color--status--success--default)"
-                  title="Token is valid"
-                  style={{ marginLeft: '0.5rem' }}
-                />
-              )}
-              {token.valid === false && (
-                <ExclamationCircleIcon
-                  color="var(--pf-t--global--color--status--danger--default)"
-                  title="Token has been revoked or expired"
-                  style={{ marginLeft: '0.5rem' }}
-                />
-              )}
-            </CardTitle>
+            <CardTitle data-testid="token-provider">{token.provider ?? 'GitHub'}</CardTitle>
           </CardHeader>
           <CardFooter>
             <Content>
