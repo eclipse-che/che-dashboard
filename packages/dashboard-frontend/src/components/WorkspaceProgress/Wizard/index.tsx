@@ -21,6 +21,7 @@ import { StepId } from '..';
 export interface WorkspaceProgressWizardStep {
   id: StepId;
   name: React.ReactNode;
+  ariaLabel?: string;
   canJumpTo?: boolean;
   isFinishedStep?: boolean;
   component?: React.ReactNode;
@@ -105,7 +106,7 @@ class WorkspaceProgressWizard extends React.Component<Props> {
     return (
       <WizardNav aria-label="Workspace Progress Steps">
         {stepsWithDefaults.map(step => {
-          const { canJumpTo, name, steps = [], id } = step;
+          const { ariaLabel, canJumpTo, name, steps = [], id } = step;
 
           const hasChildren = steps.length !== 0;
           const allChildrenFinished = steps.every(subStep => subStep.isFinishedStep);
@@ -120,6 +121,7 @@ class WorkspaceProgressWizard extends React.Component<Props> {
                 className={this.navLinkClassName(isCurrent, !canJumpTo)}
                 aria-current={isCurrent ? 'step' : undefined}
                 aria-disabled={!canJumpTo ? true : undefined}
+                aria-label={ariaLabel}
                 tabIndex={canJumpTo ? 0 : -1}
               >
                 <span className={wizardStyles.wizardNavLinkMain}>{name}</span>
@@ -127,7 +129,7 @@ class WorkspaceProgressWizard extends React.Component<Props> {
               {showChildren && (
                 <WizardNav isInnerList>
                   {steps.map(subStep => {
-                    const { canJumpTo, name, id } = subStep;
+                    const { ariaLabel, canJumpTo, name, id } = subStep;
                     const isSubCurrent = activeStepId === id;
 
                     return (
@@ -136,6 +138,7 @@ class WorkspaceProgressWizard extends React.Component<Props> {
                           className={this.navLinkClassName(isSubCurrent, !canJumpTo)}
                           aria-current={isSubCurrent ? 'step' : undefined}
                           aria-disabled={!canJumpTo ? true : undefined}
+                          aria-label={ariaLabel}
                           tabIndex={canJumpTo ? 0 : -1}
                         >
                           <span className={wizardStyles.wizardNavLinkMain}>{name}</span>
