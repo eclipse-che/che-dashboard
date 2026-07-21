@@ -127,6 +127,7 @@ export enum WorkspaceAction {
 export enum UserPreferencesTab {
   AI_PROVIDER_KEYS = 'AiProviderKeys',
   CONTAINER_REGISTRIES = 'ContainerRegistries',
+  DEVICE_AUTH_TOKENS = 'DeviceAuthTokens',
   GIT_SERVICES = 'GitServices',
   GITCONFIG = 'Gitconfig',
   PERSONAL_ACCESS_TOKENS = 'PersonalAccessTokens',
