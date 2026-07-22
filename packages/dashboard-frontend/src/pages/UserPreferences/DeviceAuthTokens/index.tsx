@@ -39,7 +39,7 @@ export type State = {
   isDeleteOpen: boolean;
   deletingTokens: api.DeviceAuthToken[];
   isConnectOpen: boolean;
-  validatedTokens: Record<string, boolean | undefined>;
+  validatedTokens: Record<string, 'valid' | 'invalid' | 'unknown'>;
 };
 
 class DeviceAuthTokens extends React.PureComponent<Props, State> {
@@ -73,7 +73,9 @@ class DeviceAuthTokens extends React.PureComponent<Props, State> {
     }
     try {
       await this.props.requestDeviceAuthTokens();
-      this.validateTokensInBackground();
+      // Validation is triggered from componentDidUpdate once the updated tokens
+      // prop arrives — reading this.props.tokens here would be stale due to
+      // React 18 automatic batching deferring the re-render past this point.
     } catch (e) {
       this.appAlerts.showAlert({
         key: 'request-device-auth-tokens-failed',
@@ -84,13 +86,16 @@ class DeviceAuthTokens extends React.PureComponent<Props, State> {
   }
 
   public componentDidUpdate(prevProps: Props): void {
-    const { error } = this.props;
+    const { error, tokens } = this.props;
     if (error && error !== prevProps.error) {
       this.appAlerts.showAlert({
         key: 'device-auth-token-error',
         title: helpers.errors.getMessage(error),
         variant: AlertVariant.danger,
       });
+    }
+    if (prevProps.tokens.length === 0 && tokens.length > 0) {
+      this.validateTokensInBackground();
     }
   }
 
@@ -156,17 +161,35 @@ class DeviceAuthTokens extends React.PureComponent<Props, State> {
     this.setState({ isConnectOpen: false });
   }
 
-  private async handleConnectSuccess(): Promise<void> {
+  private async handleConnectSuccess(token: api.DeviceAuthToken): Promise<void> {
     this.setState({ isConnectOpen: false });
     this.appAlerts.showAlert({
       key: 'device-auth-token-connected',
       title: 'GitHub account connected successfully.',
       variant: AlertVariant.success,
     });
+    // Kick off background validation for the new token immediately,
+    // so the status icon appears without waiting for the list re-fetch.
+    const { namespace } = this.props;
+    validateDeviceAuthToken(namespace, token.name)
+      .then(valid => {
+        if (this._isMounted) {
+          this.setState(prev => ({
+            validatedTokens: { ...prev.validatedTokens, [token.name]: valid },
+          }));
+        }
+      })
+      .catch(() => {
+        /* ignore */
+      });
     try {
       await this.props.requestDeviceAuthTokens();
-    } catch {
-      // ignore refresh errors
+    } catch (e) {
+      this.appAlerts.showAlert({
+        key: 'device-auth-token-refresh-failed',
+        title: 'Token added but the list could not be refreshed. Try navigating away and back.',
+        variant: AlertVariant.warning,
+      });
     }
   }
 
@@ -190,7 +213,7 @@ class DeviceAuthTokens extends React.PureComponent<Props, State> {
           isOpen={isConnectOpen}
           namespace={namespace}
           onCloseModal={() => this.handleCloseConnectModal()}
-          onSuccess={() => this.handleConnectSuccess()}
+          onSuccess={token => this.handleConnectSuccess(token)}
         />
         <PageSection>
           {showEmptyState && (
@@ -201,7 +224,12 @@ class DeviceAuthTokens extends React.PureComponent<Props, State> {
           )}
           {showList && (
             <DeviceAuthTokensList
-              tokens={tokens.map(t => ({ ...t, valid: validatedTokens[t.name] }))}
+              tokens={tokens.map(t => ({
+                ...t,
+                ...(validatedTokens[t.name] !== undefined
+                  ? { valid: validatedTokens[t.name] }
+                  : {}),
+              }))}
               isDisabled={isLoading}
               isConnectEnabled={this.props.githubDeviceAuthEnabled}
               onDeleteTokens={selectedTokens => this.handleShowDeleteModal(selectedTokens)}

@@ -35,6 +35,8 @@ import {
 } from '@/services/backend-client/deviceAuthTokenApi';
 import { deviceAuthTokenActionCreators } from '@/store/DeviceAuthToken';
 
+const MAX_POLL_ERRORS = 15;
+
 const connector = connect(null, {
   initiateDeviceAuth: deviceAuthTokenActionCreators.initiateDeviceAuth,
 });
@@ -55,10 +57,12 @@ export type State = {
   error: string | undefined;
   isLoading: boolean;
   copyTimerId: number | undefined;
+  pollErrorCount: number;
 };
 
 class ConnectModalClass extends React.PureComponent<Props, State> {
   private pollTimer: ReturnType<typeof setTimeout> | undefined;
+  private _isMounted = false;
 
   constructor(props: Props) {
     super(props);
@@ -67,18 +71,20 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
       error: undefined,
       isLoading: false,
       copyTimerId: undefined,
+      pollErrorCount: 0,
     };
   }
 
   componentDidMount(): void {
+    this._isMounted = true;
     if (this.props.isOpen) {
       this.initiateAuth();
     }
   }
 
-  async componentDidUpdate(prevProps: Props): Promise<void> {
+  componentDidUpdate(prevProps: Props): void {
     if (this.props.isOpen && !prevProps.isOpen) {
-      await this.initiateAuth();
+      void this.initiateAuth();
     }
     if (!this.props.isOpen && prevProps.isOpen) {
       this.stopPolling();
@@ -86,11 +92,15 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
   }
 
   componentWillUnmount(): void {
+    this._isMounted = false;
     this.stopPolling();
   }
 
   private async initiateAuth(): Promise<void> {
-    this.setState({ deviceCode: undefined, error: undefined, isLoading: true });
+    if (this.state.isLoading) {
+      return;
+    }
+    this.setState({ deviceCode: undefined, error: undefined, isLoading: true, pollErrorCount: 0 });
     try {
       const result = await this.props.initiateDeviceAuth();
       this.setState({ deviceCode: result, isLoading: false });
@@ -119,9 +129,24 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
     const { namespace } = this.props;
     let result: DeviceAuthPollResult;
     try {
+      // pollDeviceAuth is called directly (not through a Redux thunk) to avoid
+      // storing high-frequency polling results in Redux state. Network/session
+      // errors are caught below and retried via the next scheduled poll.
       result = await pollDeviceAuth(namespace, response.deviceCode);
     } catch {
+      if (!this._isMounted) {
+        return;
+      }
+      const nextCount = this.state.pollErrorCount + 1;
+      this.setState({ pollErrorCount: nextCount });
+      if (nextCount >= MAX_POLL_ERRORS) {
+        this.setState({ error: 'Unable to reach the server. Please close and try again.' });
+        return;
+      }
       this.schedulePoll(response);
+      return;
+    }
+    if (!this._isMounted) {
       return;
     }
     if (result.status === 'pending') {
@@ -130,6 +155,7 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
       // RFC 8628 §3.5: increase interval by 5s on slow_down
       this.schedulePoll({ ...response, interval: response.interval + 5 });
     } else if (result.status === 'authorized') {
+      this.setState({ pollErrorCount: 0 });
       this.props.onSuccess(result.token);
     } else if (result.status === 'expired') {
       this.setState({ error: 'The code has expired. Please try again.' });
@@ -171,6 +197,16 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
               style={{ color: 'var(--pf-t--global--color--status--danger--default)' }}
             >
               {error}
+            </Content>
+          )}
+          {this.state.pollErrorCount >= 3 && !error && (
+            <Content
+              style={{
+                color: 'var(--pf-t--global--color--status--warning--default)',
+                marginBottom: '0.5rem',
+              }}
+            >
+              Having trouble reaching the server. Still trying&hellip;
             </Content>
           )}
           {deviceCode && !error && (
@@ -220,16 +256,14 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
         </ModalBody>
         <ModalFooter>
           {deviceCode && !error && (
-            <Button
-              variant={ButtonVariant.primary}
-              onClick={() => {
-                navigator.clipboard?.writeText(deviceCode.userCode ?? '');
-                window.open(deviceCode.verificationUri, '_blank');
-              }}
-              data-testid="copy-continue-button"
+            <CopyToClipboard
+              text={deviceCode.userCode}
+              onCopy={() => window.open(deviceCode.verificationUri, '_blank')}
             >
-              Copy &amp; Continue to Browser
-            </Button>
+              <Button variant={ButtonVariant.primary} data-testid="copy-continue-button">
+                Copy &amp; Continue to Browser
+              </Button>
+            </CopyToClipboard>
           )}
           <Button
             variant={ButtonVariant.link}

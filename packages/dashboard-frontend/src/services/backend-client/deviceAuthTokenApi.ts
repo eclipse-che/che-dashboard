@@ -72,14 +72,14 @@ export async function pollDeviceAuth(
 export async function validateDeviceAuthToken(
   namespace: string,
   tokenName: string,
-): Promise<boolean | undefined> {
+): Promise<'valid' | 'invalid' | 'unknown'> {
   try {
     const response = await AxiosWrapper.createToRetryMissedBearerTokenError().get(
       `${dashboardBackendPrefix}/namespace/${namespace}/device-auth-token/${encodeURIComponent(tokenName)}/validate`,
     );
-    const { valid } = response.data as { valid: boolean | null };
-    return valid ?? undefined;
+    const { valid } = response.data as { valid: 'valid' | 'invalid' | 'unknown' };
+    return valid;
   } catch {
-    return undefined;
+    return 'unknown';
   }
 }

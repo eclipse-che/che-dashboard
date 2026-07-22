@@ -12,7 +12,6 @@
 
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
-import { randomBytes } from 'crypto';
 
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import {
@@ -31,8 +30,15 @@ const DEVICE_AUTH_LABEL = 'che.eclipse.org/device-authentication';
 const DEVICE_AUTH_LABEL_SELECTOR = `${DEVICE_AUTH_LABEL}=true`;
 const DEVICE_AUTH_PROVIDER_LABEL = 'che.eclipse.org/device-authentication-provider';
 
+const DEVICE_AUTH_SECRET_NAME = 'device-authentication-github';
+
 const GITHUB_SCOPES = 'read:user repo user:email workflow';
 const GITHUB_API_TIMEOUT_MS = 30_000;
+
+// Binds an in-flight device code to the namespace that initiated the flow.
+// Prevents a different authenticated user from polling with another user's device code.
+// TTL matches GitHub's device code expiry (~15 min); cleared on successful auth.
+const activeDeviceCodes = new Map<string, { code: string; expiresAt: number }>();
 
 interface GitHubDeviceCodeResponse {
   device_code?: string;
@@ -110,7 +116,8 @@ async function githubPostToken(params: Record<string, string>): Promise<GitHubTo
   }
 }
 
-export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
+// GitHub-specific implementation. Only GitHub OAuth App device flow is supported.
+export class GitHubDeviceAuthTokenApiService implements IDeviceAuthTokenApi {
   private readonly coreV1API: CoreV1API;
 
   constructor(kc: k8s.KubeConfig) {
@@ -153,7 +160,8 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
     }
 
     // Best-effort GitHub token revocation via POST /credentials/revoke.
-    // This endpoint requires NO app credentials — works for any gho_/ghp_ token.
+    // Authorization: Bearer <token> is required — the endpoint authenticates via
+    // the token being revoked rather than an OAuth app client secret.
     // The token owner receives a GitHub notification email upon revocation.
     // See: https://docs.github.com/en/rest/credentials/revoke
     const rawToken = Buffer.from(secret.data?.['token'] ?? '', 'base64').toString('utf-8');
@@ -167,6 +175,7 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
             headers: {
               'Content-Type': 'application/json',
               'X-GitHub-Api-Version': '2022-11-28',
+              Authorization: `Bearer ${rawToken}`,
             },
             body: JSON.stringify({ credentials: [rawToken] }),
             signal: controller.signal,
@@ -180,7 +189,9 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
           clearTimeout(timer);
         }
       } catch (e) {
-        console.warn(`[device-auth] GitHub token revocation error: ${e}`);
+        console.warn(
+          `[device-auth] GitHub token revocation error: ${e instanceof Error ? e.message : String(e)}`,
+        );
       }
     }
 
@@ -195,7 +206,7 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
     }
   }
 
-  async initiateDeviceAuth(): Promise<DeviceCodeResponse> {
+  async initiateDeviceAuth(namespace: string): Promise<DeviceCodeResponse> {
     const clientId = getGitHubClientId();
     const data = await githubPostDeviceCode({
       client_id: clientId,
@@ -212,6 +223,8 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
         `Failed to initiate device auth: ${data.error_description ?? JSON.stringify(data)}`,
       );
     }
+    const expiresAt = Date.now() + (data.expires_in ?? 900) * 1_000;
+    activeDeviceCodes.set(namespace, { code: data.device_code, expiresAt });
     return {
       deviceCode: data.device_code,
       userCode: data.user_code,
@@ -221,6 +234,13 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
   }
 
   async pollDeviceAuth(namespace: string, deviceCode: string): Promise<DeviceAuthPollResult> {
+    const stored = activeDeviceCodes.get(namespace);
+    if (!stored || stored.code !== deviceCode || Date.now() > stored.expiresAt) {
+      return {
+        status: 'error',
+        message: 'Device code is not valid for this session. Please initiate a new connection.',
+      };
+    }
     const clientId = getGitHubClientId();
     const data = await githubPostToken({
       client_id: clientId,
@@ -244,23 +264,27 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
       return { status: 'error', message: 'No access_token in response' };
     }
 
+    activeDeviceCodes.delete(namespace);
     const token = await this.createDeviceAuthSecret(namespace, data.access_token);
     return { status: 'authorized', token };
   }
 
-  async validateToken(namespace: string, tokenName: string): Promise<boolean | undefined> {
+  async validateToken(
+    namespace: string,
+    tokenName: string,
+  ): Promise<'valid' | 'invalid' | 'unknown'> {
     let secret: k8s.V1Secret;
     try {
       secret = await this.coreV1API.readNamespacedSecret({ name: tokenName, namespace });
     } catch {
-      return undefined;
+      return 'unknown'; // secret not found or K8s API error
     }
     if (secret.metadata?.labels?.[DEVICE_AUTH_LABEL] !== 'true') {
-      return undefined;
+      return 'unknown'; // not a device-auth secret
     }
     const rawToken = Buffer.from(secret.data?.['token'] ?? '', 'base64').toString('utf-8');
     if (!rawToken) {
-      return undefined;
+      return 'unknown'; // empty token field
     }
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 5_000);
@@ -269,9 +293,9 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
         headers: { Authorization: `token ${rawToken}`, Accept: 'application/vnd.github+json' },
         signal: controller.signal,
       });
-      return response.ok;
+      return response.ok ? 'valid' : 'invalid';
     } catch {
-      return undefined;
+      return 'unknown'; // network error or timeout
     } finally {
       clearTimeout(timer);
     }
@@ -290,29 +314,36 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
     });
     if (existing.items.length > 0 && existing.items[0].metadata?.name) {
       const existingName = existing.items[0].metadata.name;
-      const updated = await this.coreV1API.replaceNamespacedSecret({
-        name: existingName,
-        namespace,
-        body: {
-          metadata: {
-            name: existingName,
-            namespace,
-            labels: {
-              [DEVICE_AUTH_LABEL]: 'true',
-              [DEVICE_AUTH_PROVIDER_LABEL]: 'github',
+      try {
+        const updated = await this.coreV1API.replaceNamespacedSecret({
+          name: existingName,
+          namespace,
+          body: {
+            metadata: {
+              name: existingName,
+              namespace,
+              labels: {
+                [DEVICE_AUTH_LABEL]: 'true',
+                [DEVICE_AUTH_PROVIDER_LABEL]: 'github',
+              },
             },
+            data: { token: tokenData },
           },
-          data: { token: tokenData },
-        },
-      });
-      return {
-        name: existingName,
-        provider: 'github',
-        creationTimestamp: updated.metadata?.creationTimestamp?.toISOString(),
-      };
+        });
+        return {
+          name: existingName,
+          provider: 'github',
+          creationTimestamp: updated.metadata?.creationTimestamp?.toISOString(),
+        };
+      } catch {
+        // Secret was deleted between list and replace (TOCTOU) — fall through to create
+      }
     }
 
-    const name = `device-authentication-secret-${randomBytes(6).toString('hex')}`;
+    // Use a deterministic name so concurrent poll completions (e.g. two browser
+    // tabs) fail with a 409 Conflict on the second create rather than silently
+    // producing two separate secrets.
+    const name = DEVICE_AUTH_SECRET_NAME;
     const created = await this.coreV1API.createNamespacedSecret({
       namespace,
       body: {

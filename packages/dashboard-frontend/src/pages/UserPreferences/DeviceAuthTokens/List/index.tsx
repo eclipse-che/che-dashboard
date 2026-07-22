@@ -25,7 +25,12 @@ import {
   MenuToggleElement,
   PageSection,
 } from '@patternfly/react-core';
-import { CheckCircleIcon, EllipsisVIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
+import {
+  CheckCircleIcon,
+  EllipsisVIcon,
+  ExclamationCircleIcon,
+  QuestionCircleIcon,
+} from '@patternfly/react-icons';
 import React from 'react';
 
 import { CheTooltip } from '@/components/CheTooltip';
@@ -120,7 +125,7 @@ export class DeviceAuthTokensList extends React.PureComponent<Props, State> {
           >
             <CardTitle data-testid="token-provider">
               {token.provider ?? 'GitHub'}
-              {token.valid === true && (
+              {token.valid === 'valid' && (
                 <CheTooltip content={<span>Token is valid</span>}>
                   <CheckCircleIcon
                     color="var(--pf-t--global--color--status--success--default)"
@@ -128,10 +133,18 @@ export class DeviceAuthTokensList extends React.PureComponent<Props, State> {
                   />
                 </CheTooltip>
               )}
-              {token.valid === false && (
+              {token.valid === 'invalid' && (
                 <CheTooltip content={<span>Token has been revoked or expired</span>}>
                   <ExclamationCircleIcon
                     color="var(--pf-t--global--color--status--danger--default)"
+                    style={{ marginLeft: '0.5rem', verticalAlign: 'middle' }}
+                  />
+                </CheTooltip>
+              )}
+              {token.valid === 'unknown' && (
+                <CheTooltip content={<span>Token validity could not be determined</span>}>
+                  <QuestionCircleIcon
+                    color="var(--pf-t--global--color--nonstatus--gray--default)"
                     style={{ marginLeft: '0.5rem', verticalAlign: 'middle' }}
                   />
                 </CheTooltip>
