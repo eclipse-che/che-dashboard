@@ -46,6 +46,8 @@ class DeviceAuthTokens extends React.PureComponent<Props, State> {
   @lazyInject(AppAlerts)
   private readonly appAlerts: AppAlerts;
 
+  private _isMounted = false;
+
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -56,7 +58,16 @@ class DeviceAuthTokens extends React.PureComponent<Props, State> {
     };
   }
 
-  public async componentDidMount(): Promise<void> {
+  public componentDidMount(): void {
+    this._isMounted = true;
+    void this._fetchTokens();
+  }
+
+  public componentWillUnmount(): void {
+    this._isMounted = false;
+  }
+
+  private async _fetchTokens(): Promise<void> {
     if (this.props.isLoading) {
       return;
     }
@@ -89,6 +100,9 @@ class DeviceAuthTokens extends React.PureComponent<Props, State> {
     tokens.forEach(token => {
       validateDeviceAuthToken(namespace, token.name)
         .then(valid => {
+          if (!this._isMounted) {
+            return;
+          }
           this.setState(prev => ({
             validatedTokens: { ...prev.validatedTokens, [token.name]: valid },
           }));

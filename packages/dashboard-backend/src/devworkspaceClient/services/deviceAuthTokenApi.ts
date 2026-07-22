@@ -76,8 +76,12 @@ async function githubPostDeviceCode(
     // GitHub returns structured JSON even on 4xx (e.g. device_flow_disabled).
     // Parse the body regardless of HTTP status so the caller can surface
     // specific error codes rather than a generic "HTTP 400".
-    const data: unknown = await response.json();
-    return data as GitHubDeviceCodeResponse;
+    try {
+      const data: unknown = await response.json();
+      return data as GitHubDeviceCodeResponse;
+    } catch {
+      throw new Error(`GitHub API returned HTTP ${response.status} with non-JSON body`);
+    }
   } finally {
     clearTimeout(timer);
   }
@@ -95,8 +99,12 @@ async function githubPostToken(params: Record<string, string>): Promise<GitHubTo
       signal: controller.signal,
     });
     // GitHub returns structured JSON even for error states (authorization_pending, etc.)
-    const data: unknown = await response.json();
-    return data as GitHubTokenResponse;
+    try {
+      const data: unknown = await response.json();
+      return data as GitHubTokenResponse;
+    } catch {
+      throw new Error(`GitHub API returned HTTP ${response.status} with non-JSON body`);
+    }
   } finally {
     clearTimeout(timer);
   }
