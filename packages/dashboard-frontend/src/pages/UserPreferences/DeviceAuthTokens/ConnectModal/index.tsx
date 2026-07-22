@@ -76,9 +76,9 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
     }
   }
 
-  async componentDidUpdate(prevProps: Props): Promise<void> {
+  componentDidUpdate(prevProps: Props): void {
     if (this.props.isOpen && !prevProps.isOpen) {
-      await this.initiateAuth();
+      void this.initiateAuth();
     }
     if (!this.props.isOpen && prevProps.isOpen) {
       this.stopPolling();
@@ -90,6 +90,9 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
   }
 
   private async initiateAuth(): Promise<void> {
+    if (this.state.isLoading) {
+      return;
+    }
     this.setState({ deviceCode: undefined, error: undefined, isLoading: true });
     try {
       const result = await this.props.initiateDeviceAuth();
@@ -220,16 +223,14 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
         </ModalBody>
         <ModalFooter>
           {deviceCode && !error && (
-            <Button
-              variant={ButtonVariant.primary}
-              onClick={() => {
-                navigator.clipboard?.writeText(deviceCode.userCode ?? '');
-                window.open(deviceCode.verificationUri, '_blank');
-              }}
-              data-testid="copy-continue-button"
+            <CopyToClipboard
+              text={deviceCode.userCode}
+              onCopy={() => window.open(deviceCode.verificationUri, '_blank')}
             >
-              Copy &amp; Continue to Browser
-            </Button>
+              <Button variant={ButtonVariant.primary} data-testid="copy-continue-button">
+                Copy &amp; Continue to Browser
+              </Button>
+            </CopyToClipboard>
           )}
           <Button
             variant={ButtonVariant.link}
