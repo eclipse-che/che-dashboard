@@ -342,18 +342,21 @@ export default class Bootstrap {
     const { requestRegistriesMetadata } = devfileRegistriesActionCreators;
     const serverConfig = this.store.getState().dwServerConfig.config;
     const devfileRegistry = serverConfig.devfileRegistry;
+    // The dashboard always serves its own embedded registry (which includes the Empty Workspace
+    // entry). Fetch it unconditionally so the Empty Workspace option is always available,
+    // even when disableInternalRegistry is true and the external devfile-registry pod is gone.
+    const defaultRegistry = DEFAULT_REGISTRY.startsWith('http')
+      ? DEFAULT_REGISTRY
+      : new URL(DEFAULT_REGISTRY, window.location.origin).href;
+    await requestRegistriesMetadata(defaultRegistry, false)(
+      this.store.dispatch,
+      this.store.getState,
+      undefined,
+    );
+
     const isInternalRegistryDisabled = devfileRegistry?.disableInternalRegistry === true;
 
     if (!isInternalRegistryDisabled) {
-      const defaultRegistry = DEFAULT_REGISTRY.startsWith('http')
-        ? DEFAULT_REGISTRY
-        : new URL(DEFAULT_REGISTRY, window.location.origin).href;
-      await requestRegistriesMetadata(defaultRegistry, false)(
-        this.store.dispatch,
-        this.store.getState,
-        undefined,
-      );
-
       const gettingStartedSampleURL = new URL(
         '/dashboard/api/getting-started-sample',
         window.location.origin,

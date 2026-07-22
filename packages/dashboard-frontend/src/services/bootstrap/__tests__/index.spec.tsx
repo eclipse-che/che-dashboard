@@ -14,7 +14,9 @@ import { container } from '@/inversify.config';
 import { provisionKubernetesNamespace } from '@/services/backend-client/kubernetesNamespaceApi';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import Bootstrap from '@/services/bootstrap';
+import { WorkspaceStoppedDetector } from '@/services/bootstrap/workspaceStoppedDetector';
 import { ResourceFetcherService } from '@/services/resource-fetcher';
+import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { bannerAlertActionCreators } from '@/store/BannerAlert';
 import { brandingActionCreators } from '@/store/Branding';
@@ -183,5 +185,64 @@ describe('Dashboard bootstrap', () => {
     expect(mockWebsocketClient.subscribeToChannel).toHaveBeenNthCalledWith(3, 'pod', 'test-che', {
       getResourceVersion: expect.any(Function),
     });
+  });
+
+  test('calls getWorkspaceTimeout when a stopped workspace with timeout issue is detected', async () => {
+    const devWorkspace = new DevWorkspaceBuilder()
+      .withId('wksp-inactive')
+      .withName('wksp-inactive')
+      .withNamespace('user-dev')
+      .withStatus({ phase: 'Stopped' })
+      .build();
+
+    const mockDetector = {
+      checkWorkspaceStopped: jest.fn().mockReturnValue({
+        id: 'wksp-inactive',
+        ideUrl: undefined,
+      }),
+      getWorkspaceStoppedIssueType: jest.fn().mockReturnValue('workspaceInactive'),
+      getWorkspaceStoppedError: jest.fn().mockReturnValue(new Error('workspace inactive')),
+    };
+    container
+      .rebind(WorkspaceStoppedDetector)
+      .toConstantValue(mockDetector as unknown as WorkspaceStoppedDetector);
+
+    const store = new MockStoreBuilder()
+      .withDevWorkspaces({ workspaces: [devWorkspace] })
+      .withDwServerConfig({
+        timeouts: {
+          inactivityTimeout: 1800,
+          runTimeout: 3600,
+          startTimeout: 300,
+          axiosRequestTimeout: 30000,
+          sessionTimeout: 86400,
+        },
+      })
+      .build();
+    const bootstrap = new Bootstrap(store);
+
+    await expect(bootstrap.init()).resolves.toBeUndefined();
+
+    expect(mockDetector.checkWorkspaceStopped).toHaveBeenCalled();
+    expect(mockDetector.getWorkspaceStoppedIssueType).toHaveBeenCalled();
+    expect(mockDetector.getWorkspaceStoppedError).toHaveBeenCalled();
+  });
+
+  test('fetches embedded registry when disableInternalRegistry is true', async () => {
+    const store = new MockStoreBuilder()
+      .withDwServerConfig({
+        devfileRegistry: {
+          disableInternalRegistry: true,
+          externalDevfileRegistries: [{ url: 'https://registry.devfile.io' }],
+        },
+      })
+      .build();
+    const bootstrap = new Bootstrap(store);
+
+    await expect(bootstrap.init()).resolves.toBeUndefined();
+
+    // DEFAULT_REGISTRY (embedded, always available) + external registry = 2 calls.
+    // getting-started-sample and airgap-sample are skipped when internal registry is disabled.
+    expect(devfileRegistriesActionCreators.requestRegistriesMetadata).toHaveBeenCalledTimes(2);
   });
 });
