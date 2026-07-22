@@ -197,7 +197,7 @@ describe('UserPreferences', () => {
       const location = buildUserPreferencesLocation(UserPreferencesTab.DEVICE_AUTH_TOKENS);
       renderComponent(location);
 
-      const tab = screen.getByRole('tab', { name: 'Device Auth Token' });
+      const tab = screen.getByRole('tab', { name: 'Device Auth Tokens' });
       fireEvent.keyDown(tab, { key: 'ArrowRight' });
 
       expect(mockNavigate).toHaveBeenCalledWith(

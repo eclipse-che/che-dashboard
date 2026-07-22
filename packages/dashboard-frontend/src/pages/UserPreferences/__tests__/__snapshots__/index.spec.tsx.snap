@@ -137,7 +137,7 @@ exports[`UserPreferences snapshot 1`] = `
                 tabindex="-1"
                 type="button"
               >
-                Device Auth Token
+                Device Auth Tokens
               </button>
             </li>
           </ul>

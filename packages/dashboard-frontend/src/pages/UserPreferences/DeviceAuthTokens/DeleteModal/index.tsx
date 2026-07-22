@@ -68,8 +68,8 @@ export class DeviceAuthTokensDeleteModal extends React.PureComponent<Props, Stat
       count === 1 ? (
         <Content component="p">
           Are you sure you want to delete the token <strong>{tokens[0]?.name}</strong>? This removes
-          the token from Che. The GitHub authorization will remain active — to fully revoke access,
-          also visit{' '}
+          the token from Che and attempts to revoke the GitHub authorization. If revocation fails,
+          you can also manually revoke at{' '}
           <a href="https://github.com/settings/applications" target="_blank" rel="noreferrer">
             github.com/settings/applications
           </a>
