@@ -16,7 +16,8 @@ import { configureStore } from '@reduxjs/toolkit';
 
 import {
   selectAllBackupsByWorkspace,
-  selectBackupsError,
+  selectBackupsListError,
+  selectBackupsStatusError,
   selectNamespaceBackups,
   selectWorkspaceBackupInfo,
 } from '@/store/Backups/selectors';
@@ -45,7 +46,9 @@ describe('Backup Store Integration', () => {
       expect(state.backups).toHaveProperty('byWorkspace');
       expect(state.backups).toHaveProperty('byNamespace');
       expect(state.backups).toHaveProperty('loading');
-      expect(state.backups).toHaveProperty('error');
+      expect(state.backups).toHaveProperty('listError');
+      expect(state.backups).toHaveProperty('statusError');
+      expect(state.backups).toHaveProperty('configError');
     });
 
     it('should initialize backups slice with unloaded state', () => {
@@ -62,7 +65,9 @@ describe('Backup Store Integration', () => {
         updatingCount: 0,
         configLoadingCount: 0,
       });
-      expect(state.backups.error).toBeUndefined();
+      expect(state.backups.listError).toBeUndefined();
+      expect(state.backups.statusError).toBeUndefined();
+      expect(state.backups.configError).toBeUndefined();
     });
   });
 
@@ -79,15 +84,15 @@ describe('Backup Store Integration', () => {
       expect(byWorkspace).toEqual({});
     });
 
-    it('should select error using selectors', () => {
+    it('should select errors using selectors', () => {
       const store = configureStore({
         reducer: rootReducer,
       });
 
       const state = store.getState();
-      const error = selectBackupsError(state);
 
-      expect(error).toBeUndefined();
+      expect(selectBackupsListError(state)).toBeUndefined();
+      expect(selectBackupsStatusError(state)).toBeUndefined();
     });
 
     it('should select workspace backup info using selectors', () => {
@@ -128,12 +133,16 @@ describe('Backup Store Integration', () => {
       const byWorkspace = backupsState.byWorkspace;
       const byNamespace = backupsState.byNamespace;
       const loading = backupsState.loading;
-      const error = backupsState.error;
+      const listError = backupsState.listError;
+      const statusError = backupsState.statusError;
+      const configError = backupsState.configError;
 
       expect(byWorkspace).toBeDefined();
       expect(byNamespace).toBeDefined();
       expect(loading).toBeDefined();
-      expect(error).toBeUndefined();
+      expect(listError).toBeUndefined();
+      expect(statusError).toBeUndefined();
+      expect(configError).toBeUndefined();
     });
   });
 

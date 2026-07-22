@@ -23,7 +23,17 @@ export const selectAllBackupsByWorkspace = createSelector(
   state => state.byWorkspace,
 );
 
-export const selectBackupsError = createSelector(selectBackupsState, state => state.error);
+export const selectBackupsListError = createSelector(selectBackupsState, state => state.listError);
+
+export const selectBackupsStatusError = createSelector(
+  selectBackupsState,
+  state => state.statusError,
+);
+
+export const selectBackupsConfigError = createSelector(
+  selectBackupsState,
+  state => state.configError,
+);
 
 export const selectWorkspaceBackupInfo = createSelector(
   [selectBackupsState, (_state: RootState, workspaceUID: string) => workspaceUID],

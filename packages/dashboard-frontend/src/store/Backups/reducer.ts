@@ -44,8 +44,12 @@ export interface State {
   backupConfig?: BackupConfig;
   /** Loading states for different operations */
   loading: LoadingState;
-  /** Error message if any operation failed */
-  error: string | undefined;
+  /** Error from fetchBackupList */
+  listError: string | undefined;
+  /** Error from fetchWorkspaceBackupStatus */
+  statusError: string | undefined;
+  /** Error from fetchBackupConfig */
+  configError: string | undefined;
   /** Whether fetchBackupList has ever completed (fulfilled or rejected) */
   hasEverFetchedList: boolean;
   /** Timestamp (ms) when fetchBackupList last succeeded — used for TTL-based caching */
@@ -66,7 +70,9 @@ export const unloadedState: State = {
     updatingCount: 0,
     configLoadingCount: 0,
   },
-  error: undefined,
+  listError: undefined,
+  statusError: undefined,
+  configError: undefined,
   hasEverFetchedList: false,
   lastFetchedListAt: 0,
   lastFetchedConfigAt: 0,
@@ -85,6 +91,7 @@ export const reducer = createReducer(unloadedState, builder =>
     // fetchBackupConfig handlers
     .addCase(fetchBackupConfig.pending, state => {
       state.loading.configLoadingCount += 1;
+      state.configError = undefined;
     })
     .addCase(fetchBackupConfig.fulfilled, (state, action) => {
       state.backupConfig = action.payload;
@@ -93,13 +100,13 @@ export const reducer = createReducer(unloadedState, builder =>
     })
     .addCase(fetchBackupConfig.rejected, (state, action) => {
       state.loading.configLoadingCount = Math.max(0, state.loading.configLoadingCount - 1);
-      state.error = action.payload;
+      state.configError = action.payload;
     })
 
     // fetchWorkspaceBackupStatus handlers
     .addCase(fetchWorkspaceBackupStatus.pending, state => {
       state.loading.loadingCount += 1;
-      state.error = undefined;
+      state.statusError = undefined;
     })
     .addCase(fetchWorkspaceBackupStatus.fulfilled, (state, action) => {
       const { workspaceUID } = action.meta.arg;
@@ -108,13 +115,13 @@ export const reducer = createReducer(unloadedState, builder =>
     })
     .addCase(fetchWorkspaceBackupStatus.rejected, (state, action) => {
       state.loading.loadingCount = Math.max(0, state.loading.loadingCount - 1);
-      state.error = action.payload;
+      state.statusError = action.payload;
     })
 
     // fetchBackupList handlers
     .addCase(fetchBackupList.pending, state => {
       state.loading.updatingCount += 1;
-      state.error = undefined;
+      state.listError = undefined;
     })
     .addCase(fetchBackupList.fulfilled, (state, action) => {
       const { namespace } = action.meta.arg;
@@ -127,7 +134,7 @@ export const reducer = createReducer(unloadedState, builder =>
     .addCase(fetchBackupList.rejected, (state, action) => {
       state.loading.updatingCount = Math.max(0, state.loading.updatingCount - 1);
       state.hasEverFetchedList = true;
-      state.error = action.payload;
+      state.listError = action.payload;
     })
 
     .addDefaultCase(state => state),

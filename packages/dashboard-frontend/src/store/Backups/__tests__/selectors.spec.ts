@@ -20,7 +20,8 @@ import {
   selectAllBackupsByWorkspace,
   selectBackupConfig,
   selectBackupSchedule,
-  selectBackupsError,
+  selectBackupsListError,
+  selectBackupsStatusError,
   selectIsLoadingBackups,
   selectIsUpdatingBackups,
   selectNamespaceBackups,
@@ -78,25 +79,37 @@ describe('Backups selectors', () => {
       });
     });
 
-    it('should select error message', () => {
+    it('should select listError message', () => {
       const mockState = {
         backups: {
           ...unloadedState,
-          error: 'Test error message',
+          listError: 'Test list error',
         },
       } as Partial<RootState> as RootState;
 
-      const result = selectBackupsError(mockState);
-      expect(result).toBe('Test error message');
+      const result = selectBackupsListError(mockState);
+      expect(result).toBe('Test list error');
     });
 
-    it('should return undefined when no error', () => {
+    it('should select statusError message', () => {
+      const mockState = {
+        backups: {
+          ...unloadedState,
+          statusError: 'Test status error',
+        },
+      } as Partial<RootState> as RootState;
+
+      const result = selectBackupsStatusError(mockState);
+      expect(result).toBe('Test status error');
+    });
+
+    it('should return undefined when no errors', () => {
       const mockState = {
         backups: unloadedState,
       } as Partial<RootState> as RootState;
 
-      const result = selectBackupsError(mockState);
-      expect(result).toBeUndefined();
+      expect(selectBackupsListError(mockState)).toBeUndefined();
+      expect(selectBackupsStatusError(mockState)).toBeUndefined();
     });
   });
 

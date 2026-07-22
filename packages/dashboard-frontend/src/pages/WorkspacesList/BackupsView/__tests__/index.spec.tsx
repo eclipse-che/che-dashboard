@@ -15,7 +15,10 @@ import { render, screen } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 
+import { container } from '@/inversify.config';
 import { BackupsView } from '@/pages/WorkspacesList/BackupsView';
+import { AppAlerts } from '@/services/alerts/appAlerts';
+import { AlertItem } from '@/services/helpers/types';
 
 jest.mock('@/pages/WorkspacesList/BackupsView/BackupsTableView', () => ({
   BackupsTableView: () => <div data-testid="backups-table-view" />,
@@ -112,17 +115,52 @@ describe('BackupsView', () => {
   });
 
   describe('error handling', () => {
-    test('should display error message when error exists', () => {
-      renderComponent({ backups: mockBackups, error: 'Failed to fetch backups' });
+    const mockShowAlert = jest.fn();
 
-      const errorEl = screen.getByTestId('backups-error');
-      expect(errorEl).toHaveTextContent('Failed to fetch backups');
+    beforeEach(() => {
+      class MockAppAlerts extends AppAlerts {
+        showAlert(alert: AlertItem): void {
+          mockShowAlert(alert);
+        }
+      }
+      container.snapshot();
+      container.rebind(AppAlerts).to(MockAppAlerts).inSingletonScope();
     });
 
-    test('should not display error when no error', () => {
+    afterEach(() => {
+      container.restore();
+    });
+
+    test('should show toast alert when error appears', () => {
+      const { rerender } = render(
+        <MemoryRouter>
+          <BackupsView {...({ ...getDefaultProps() } as ReturnType<typeof getDefaultProps>)} />
+        </MemoryRouter>,
+      );
+
+      rerender(
+        <MemoryRouter>
+          <BackupsView
+            {...({
+              ...getDefaultProps(),
+              error: 'ImageStream forbidden',
+            } as ReturnType<typeof getDefaultProps>)}
+          />
+        </MemoryRouter>,
+      );
+
+      expect(mockShowAlert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'ImageStream forbidden',
+          variant: 'danger',
+        }),
+      );
+    });
+
+    test('should not show toast when there is no error', () => {
       renderComponent({ backups: mockBackups });
 
-      expect(screen.queryByTestId('backups-error')).toBeNull();
+      expect(mockShowAlert).not.toHaveBeenCalled();
     });
   });
 
