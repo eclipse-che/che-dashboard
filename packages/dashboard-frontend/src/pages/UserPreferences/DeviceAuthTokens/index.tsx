@@ -73,7 +73,9 @@ class DeviceAuthTokens extends React.PureComponent<Props, State> {
     }
     try {
       await this.props.requestDeviceAuthTokens();
-      this.validateTokensInBackground();
+      // Validation is triggered from componentDidUpdate once the updated tokens
+      // prop arrives — reading this.props.tokens here would be stale due to
+      // React 18 automatic batching deferring the re-render past this point.
     } catch (e) {
       this.appAlerts.showAlert({
         key: 'request-device-auth-tokens-failed',
@@ -84,13 +86,16 @@ class DeviceAuthTokens extends React.PureComponent<Props, State> {
   }
 
   public componentDidUpdate(prevProps: Props): void {
-    const { error } = this.props;
+    const { error, tokens } = this.props;
     if (error && error !== prevProps.error) {
       this.appAlerts.showAlert({
         key: 'device-auth-token-error',
         title: helpers.errors.getMessage(error),
         variant: AlertVariant.danger,
       });
+    }
+    if (prevProps.tokens.length === 0 && tokens.length > 0) {
+      this.validateTokensInBackground();
     }
   }
 

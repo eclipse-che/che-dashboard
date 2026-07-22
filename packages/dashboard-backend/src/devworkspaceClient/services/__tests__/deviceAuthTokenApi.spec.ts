@@ -254,7 +254,13 @@ describe('DeviceAuthToken API Service', () => {
       process.env.CHE_GITHUB_OAUTH_CLIENT_ID = 'test-client-id';
       stubCoreV1Api.createNamespacedSecret = jest.fn().mockResolvedValue({
         metadata: {
-          name: 'device-authentication-secret-abc12',
+          name: 'device-authentication-github',
+          creationTimestamp: new Date('2024-01-01'),
+        },
+      });
+      stubCoreV1Api.replaceNamespacedSecret = jest.fn().mockResolvedValue({
+        metadata: {
+          name: 'device-authentication-github',
           creationTimestamp: new Date('2024-01-01'),
         },
       });
@@ -302,6 +308,31 @@ describe('DeviceAuthToken API Service', () => {
       expect((result as { status: 'authorized'; token: api.DeviceAuthToken }).token.provider).toBe(
         'github',
       );
+      expect(stubCoreV1Api.createNamespacedSecret).toHaveBeenCalled();
+      expect(stubCoreV1Api.replaceNamespacedSecret).not.toHaveBeenCalled();
+    });
+
+    it('should replace existing K8s secret when reconnecting', async () => {
+      const existingName = 'device-authentication-github';
+      spyListNamespacedSecret.mockResolvedValueOnce({
+        items: [{ metadata: { name: existingName } }],
+      } as V1SecretList);
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({ access_token: 'ghp_new_token', token_type: 'bearer', scope: 'repo' }),
+      });
+
+      const result = await service.pollDeviceAuth(namespace, 'dev-code-456');
+
+      expect(result.status).toBe('authorized');
+      expect((result as { status: 'authorized'; token: api.DeviceAuthToken }).token.name).toBe(
+        existingName,
+      );
+      expect(stubCoreV1Api.replaceNamespacedSecret).toHaveBeenCalledWith(
+        expect.objectContaining({ name: existingName, namespace }),
+      );
+      expect(stubCoreV1Api.createNamespacedSecret).not.toHaveBeenCalled();
     });
 
     it('should return error when GitHub returns unknown error', async () => {

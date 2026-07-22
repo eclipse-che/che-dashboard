@@ -12,7 +12,6 @@
 
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
-import { randomBytes } from 'crypto';
 
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import {
@@ -30,6 +29,8 @@ const API_ERROR_LABEL = 'CORE_V1_API_ERROR';
 const DEVICE_AUTH_LABEL = 'che.eclipse.org/device-authentication';
 const DEVICE_AUTH_LABEL_SELECTOR = `${DEVICE_AUTH_LABEL}=true`;
 const DEVICE_AUTH_PROVIDER_LABEL = 'che.eclipse.org/device-authentication-provider';
+
+const DEVICE_AUTH_SECRET_NAME = 'device-authentication-github';
 
 const GITHUB_SCOPES = 'read:user repo user:email workflow';
 const GITHUB_API_TIMEOUT_MS = 30_000;
@@ -153,7 +154,8 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
     }
 
     // Best-effort GitHub token revocation via POST /credentials/revoke.
-    // This endpoint requires NO app credentials — works for any gho_/ghp_ token.
+    // Authorization: Bearer <token> is required — the endpoint authenticates via
+    // the token being revoked rather than an OAuth app client secret.
     // The token owner receives a GitHub notification email upon revocation.
     // See: https://docs.github.com/en/rest/credentials/revoke
     const rawToken = Buffer.from(secret.data?.['token'] ?? '', 'base64').toString('utf-8');
@@ -167,6 +169,7 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
             headers: {
               'Content-Type': 'application/json',
               'X-GitHub-Api-Version': '2022-11-28',
+              Authorization: `Bearer ${rawToken}`,
             },
             body: JSON.stringify({ credentials: [rawToken] }),
             signal: controller.signal,
@@ -312,7 +315,10 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
       };
     }
 
-    const name = `device-authentication-secret-${randomBytes(6).toString('hex')}`;
+    // Use a deterministic name so concurrent poll completions (e.g. two browser
+    // tabs) fail with a 409 Conflict on the second create rather than silently
+    // producing two separate secrets.
+    const name = DEVICE_AUTH_SECRET_NAME;
     const created = await this.coreV1API.createNamespacedSecret({
       namespace,
       body: {

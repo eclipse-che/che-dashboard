@@ -59,6 +59,7 @@ export type State = {
 
 class ConnectModalClass extends React.PureComponent<Props, State> {
   private pollTimer: ReturnType<typeof setTimeout> | undefined;
+  private _isMounted = false;
 
   constructor(props: Props) {
     super(props);
@@ -71,6 +72,7 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
   }
 
   componentDidMount(): void {
+    this._isMounted = true;
     if (this.props.isOpen) {
       this.initiateAuth();
     }
@@ -86,6 +88,7 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
   }
 
   componentWillUnmount(): void {
+    this._isMounted = false;
     this.stopPolling();
   }
 
@@ -122,9 +125,18 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
     const { namespace } = this.props;
     let result: DeviceAuthPollResult;
     try {
+      // pollDeviceAuth is called directly (not through a Redux thunk) to avoid
+      // storing high-frequency polling results in Redux state. Network/session
+      // errors are caught below and retried via the next scheduled poll.
       result = await pollDeviceAuth(namespace, response.deviceCode);
     } catch {
+      if (!this._isMounted) {
+        return;
+      }
       this.schedulePoll(response);
+      return;
+    }
+    if (!this._isMounted) {
       return;
     }
     if (result.status === 'pending') {
