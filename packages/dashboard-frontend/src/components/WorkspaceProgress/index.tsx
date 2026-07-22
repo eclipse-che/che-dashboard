@@ -402,6 +402,7 @@ class Progress extends React.Component<Props, State> {
 
     return {
       id: Step.INITIALIZE,
+      ariaLabel: 'Initializing',
       name: (
         <CreatingStepInitialize
           distance={this.getDistance(Step.INITIALIZE)}
@@ -428,6 +429,7 @@ class Progress extends React.Component<Props, State> {
 
     return {
       id: Step.INITIALIZE,
+      ariaLabel: 'Initializing',
       name: (
         <StartingStepInitialize
           distance={this.getDistance(Step.INITIALIZE)}
@@ -455,6 +457,7 @@ class Progress extends React.Component<Props, State> {
     return [
       {
         id: Step.LIMIT_CHECK,
+        ariaLabel: 'Checking for the limit of running workspaces',
         name: (
           <CommonStepCheckRunningWorkspacesLimit
             distance={this.getDistance(Step.LIMIT_CHECK)}
@@ -492,6 +495,7 @@ class Progress extends React.Component<Props, State> {
     return [
       {
         id: Step.CREATE,
+        ariaLabel: 'Creating a workspace',
         name: (
           <CreatingStepCreateWorkspace
             distance={distance}
@@ -518,6 +522,7 @@ class Progress extends React.Component<Props, State> {
 
     return {
       id: Step.CONFLICT_CHECK,
+      ariaLabel: 'Checking existing workspaces',
       isFinishedStep: distance === 1,
       name: (
         <CreatingStepCheckExistingWorkspaces
@@ -543,6 +548,7 @@ class Progress extends React.Component<Props, State> {
 
     return {
       id: Step.SCC_CHECK,
+      ariaLabel: 'Waiting for SCC permission',
       isFinishedStep: distance === 1,
       name: (
         <CreatingStepCheckSccPermission
@@ -567,6 +573,7 @@ class Progress extends React.Component<Props, State> {
 
     return {
       id: Step.FETCH,
+      ariaLabel: 'Fetching pre-built resources',
       isFinishedStep: distance === 1,
       name: (
         <CreatingStepFetchResources
@@ -592,6 +599,7 @@ class Progress extends React.Component<Props, State> {
 
     return {
       id: Step.APPLY,
+      ariaLabel: 'Applying resources',
       isFinishedStep: distance === 1,
       name: (
         <CreatingStepApplyResources
@@ -617,6 +625,7 @@ class Progress extends React.Component<Props, State> {
 
     return {
       id: Step.FETCH,
+      ariaLabel: 'Fetching a devfile',
       isFinishedStep: distance === 1,
       name: (
         <CreatingStepFetchDevfile
@@ -642,6 +651,7 @@ class Progress extends React.Component<Props, State> {
 
     return {
       id: Step.APPLY,
+      ariaLabel: 'Applying a devfile',
       isFinishedStep: distance === 1,
       name: (
         <CreatingStepApplyDevfile
@@ -679,6 +689,7 @@ class Progress extends React.Component<Props, State> {
     return [
       {
         id: Step.START,
+        ariaLabel: 'Waiting for workspace to start',
         name: (
           <StartingStepStartWorkspace
             distance={this.getDistance(Step.START)}
@@ -697,6 +708,7 @@ class Progress extends React.Component<Props, State> {
       },
       {
         id: Step.OPEN,
+        ariaLabel: 'Open IDE',
         name: (
           <StartingStepOpenWorkspace
             distance={this.getDistance(Step.OPEN)}

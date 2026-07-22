@@ -17,6 +17,7 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
       >
         <span
           aria-current="step"
+          aria-label="Initializing"
           className="pf-v6-c-wizard__nav-link pf-m-current"
           tabIndex={0}
         >
@@ -72,6 +73,7 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
         className="pf-v6-c-wizard__nav-item"
       >
         <span
+          aria-label="Checking for the limit of running workspaces"
           className="pf-v6-c-wizard__nav-link"
           tabIndex={0}
         >
@@ -127,6 +129,7 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
         className="pf-v6-c-wizard__nav-item"
       >
         <span
+          aria-label="Creating a workspace"
           className="pf-v6-c-wizard__nav-link"
           tabIndex={0}
         >
@@ -185,6 +188,7 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
             className="pf-v6-c-wizard__nav-item"
           >
             <span
+              aria-label="Fetching a devfile"
               className="pf-v6-c-wizard__nav-link"
               tabIndex={0}
             >
@@ -240,6 +244,7 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
             className="pf-v6-c-wizard__nav-item"
           >
             <span
+              aria-label="Checking existing workspaces"
               className="pf-v6-c-wizard__nav-link"
               tabIndex={0}
             >
@@ -295,6 +300,7 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
             className="pf-v6-c-wizard__nav-item"
           >
             <span
+              aria-label="Waiting for SCC permission"
               className="pf-v6-c-wizard__nav-link"
               tabIndex={0}
             >
@@ -350,6 +356,7 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
             className="pf-v6-c-wizard__nav-item"
           >
             <span
+              aria-label="Applying a devfile"
               className="pf-v6-c-wizard__nav-link"
               tabIndex={0}
             >
@@ -407,6 +414,7 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
         className="pf-v6-c-wizard__nav-item"
       >
         <span
+          aria-label="Waiting for workspace to start"
           className="pf-v6-c-wizard__nav-link"
           tabIndex={0}
         >
@@ -462,6 +470,7 @@ exports[`LoaderProgress workspace creation flow snapshot 1`] = `
         className="pf-v6-c-wizard__nav-item"
       >
         <span
+          aria-label="Open IDE"
           className="pf-v6-c-wizard__nav-link"
           tabIndex={0}
         >
@@ -535,6 +544,7 @@ exports[`LoaderProgress workspace starting flow snapshot 1`] = `
       >
         <span
           aria-current="step"
+          aria-label="Initializing"
           className="pf-v6-c-wizard__nav-link pf-m-current"
           tabIndex={0}
         >
@@ -590,6 +600,7 @@ exports[`LoaderProgress workspace starting flow snapshot 1`] = `
         className="pf-v6-c-wizard__nav-item"
       >
         <span
+          aria-label="Checking for the limit of running workspaces"
           className="pf-v6-c-wizard__nav-link"
           tabIndex={0}
         >
@@ -645,6 +656,7 @@ exports[`LoaderProgress workspace starting flow snapshot 1`] = `
         className="pf-v6-c-wizard__nav-item"
       >
         <span
+          aria-label="Waiting for workspace to start"
           className="pf-v6-c-wizard__nav-link"
           tabIndex={0}
         >
@@ -700,6 +712,7 @@ exports[`LoaderProgress workspace starting flow snapshot 1`] = `
         className="pf-v6-c-wizard__nav-item"
       >
         <span
+          aria-label="Open IDE"
           className="pf-v6-c-wizard__nav-link"
           tabIndex={0}
         >
