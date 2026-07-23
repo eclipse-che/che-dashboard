@@ -298,6 +298,51 @@ export const aiProviderKeyParamsSchema: JSONSchema7 = {
   required: ['namespace', 'toolId'],
 };
 
+export const deviceAuthTokenParamsSchema: JSONSchema7 = {
+  type: 'object',
+  properties: {
+    namespace: {
+      type: 'string',
+    },
+    tokenName: {
+      type: 'string',
+      pattern: '^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$',
+      maxLength: 253,
+    },
+  },
+  required: ['namespace', 'tokenName'],
+};
+
+export const deviceAuthPollBodySchema: JSONSchema7 = {
+  type: 'object',
+  required: ['deviceCode'],
+  properties: {
+    deviceCode: { type: 'string', minLength: 1, maxLength: 100, pattern: '^[a-zA-Z0-9_-]+$' },
+  },
+};
+
+export const deviceAuthTokenResponseSchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      name: { type: 'string' },
+      provider: { type: 'string' },
+      creationTimestamp: { type: 'string' },
+      valid: { type: 'string', enum: ['valid', 'invalid', 'unknown'] },
+    },
+    required: ['name'],
+  },
+};
+
+export const deviceAuthValidateResponseSchema = {
+  type: 'object',
+  properties: {
+    valid: { type: 'string', enum: ['valid', 'invalid', 'unknown'] },
+  },
+  required: ['valid'],
+};
+
 // namespaced schemas
 
 export const namespacedSchema: JSONSchema7 = {

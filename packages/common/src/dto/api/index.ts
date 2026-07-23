@@ -71,6 +71,29 @@ export type NewSshKey = Omit<SshKey, 'creationTimestamp'> & {
   key: string;
 };
 
+export type DeviceAuthToken = {
+  name: string;
+  provider?: string;
+  /** ISO 8601 timestamp string as returned by Kubernetes and serialized by Fastify */
+  creationTimestamp?: string;
+  /** Token validity from a separate validate call. 'unknown' means check could not complete. */
+  valid?: 'valid' | 'invalid' | 'unknown';
+};
+
+export type DeviceCodeResponse = {
+  deviceCode: string;
+  userCode: string;
+  verificationUri: string;
+  interval: number;
+};
+
+export type DeviceAuthPollResult =
+  | { status: 'pending' }
+  | { status: 'slow_down' }
+  | { status: 'authorized'; token: DeviceAuthToken }
+  | { status: 'expired' }
+  | { status: 'error'; message: string };
+
 export interface IPatch {
   op: string;
   path: string;

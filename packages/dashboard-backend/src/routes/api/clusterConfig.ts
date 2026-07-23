@@ -45,5 +45,6 @@ async function buildClusterConfig(): Promise<ClusterConfig> {
     allWorkspacesLimit,
     runningWorkspacesLimit,
     currentArchitecture,
+    githubDeviceAuthEnabled: !!process.env.CHE_GITHUB_OAUTH_CLIENT_ID,
   };
 }

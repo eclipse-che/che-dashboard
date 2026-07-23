@@ -23,6 +23,7 @@ import { UserPreferencesTab } from '@/services/helpers/types';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 jest.mock('../ContainerRegistriesTab');
+jest.mock('../DeviceAuthTokens');
 jest.mock('../GitConfig');
 jest.mock('../GitServices');
 jest.mock('../PersonalAccessTokens');
@@ -193,10 +194,10 @@ describe('UserPreferences', () => {
     });
 
     it('should wrap around to the first tab on ArrowRight from the last tab', () => {
-      const location = buildUserPreferencesLocation(UserPreferencesTab.SSH_KEYS);
+      const location = buildUserPreferencesLocation(UserPreferencesTab.DEVICE_AUTH_TOKENS);
       renderComponent(location);
 
-      const tab = screen.getByRole('tab', { name: 'SSH Keys' });
+      const tab = screen.getByRole('tab', { name: 'Device Auth Tokens' });
       fireEvent.keyDown(tab, { key: 'ArrowRight' });
 
       expect(mockNavigate).toHaveBeenCalledWith(
@@ -212,7 +213,7 @@ describe('UserPreferences', () => {
       fireEvent.keyDown(tab, { key: 'ArrowLeft' });
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        expect.stringContaining(`tab=${UserPreferencesTab.SSH_KEYS}`),
+        expect.stringContaining(`tab=${UserPreferencesTab.DEVICE_AUTH_TOKENS}`),
       );
     });
 
@@ -236,7 +237,7 @@ describe('UserPreferences', () => {
       fireEvent.keyDown(tab, { key: 'End' });
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        expect.stringContaining(`tab=${UserPreferencesTab.SSH_KEYS}`),
+        expect.stringContaining(`tab=${UserPreferencesTab.DEVICE_AUTH_TOKENS}`),
       );
     });
 

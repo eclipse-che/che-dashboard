@@ -111,6 +111,10 @@ export class MockStoreBuilder {
           dashboardWarning:
             clusterConfig.dashboardWarning ??
             this.state.clusterConfig?.clusterConfig.dashboardWarning,
+          githubDeviceAuthEnabled:
+            clusterConfig.githubDeviceAuthEnabled ??
+            this.state.clusterConfig?.clusterConfig.githubDeviceAuthEnabled ??
+            false,
         },
         isLoading,
         error,
@@ -457,6 +461,24 @@ export class MockStoreBuilder {
       ...this.state,
       sshKeys: {
         keys: options.keys || [],
+        error: options.error,
+        isLoading,
+      },
+    };
+    return this;
+  }
+
+  public withDeviceAuthTokens(
+    options: {
+      tokens?: api.DeviceAuthToken[];
+      error?: string;
+    },
+    isLoading = false,
+  ) {
+    this.state = {
+      ...this.state,
+      deviceAuthToken: {
+        tokens: options.tokens || [],
         error: options.error,
         isLoading,
       },

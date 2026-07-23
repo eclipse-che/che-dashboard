@@ -47,6 +47,7 @@ describe('Cluster Config Route', () => {
       runningWorkspacesLimit: stubRunningWorkspacesLimit,
       allWorkspacesLimit: stubAllWorkspacesLimit,
       currentArchitecture: stubCurrentArchitecture,
+      githubDeviceAuthEnabled: false,
     });
   });
 });

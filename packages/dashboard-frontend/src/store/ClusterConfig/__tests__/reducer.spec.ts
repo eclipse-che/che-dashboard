@@ -32,6 +32,7 @@ describe('ClusterConfig, reducer', () => {
       clusterConfig: {
         allWorkspacesLimit: -1,
         runningWorkspacesLimit: 1,
+        githubDeviceAuthEnabled: false,
       },
       isLoading: true,
       error: undefined,
@@ -46,6 +47,7 @@ describe('ClusterConfig, reducer', () => {
       allWorkspacesLimit: -1,
       runningWorkspacesLimit: 1,
       currentArchitecture: 'x86_64',
+      githubDeviceAuthEnabled: true,
     };
 
     const action = clusterConfigReceiveAction(clusterConfig);
@@ -65,6 +67,7 @@ describe('ClusterConfig, reducer', () => {
       clusterConfig: {
         allWorkspacesLimit: -1,
         runningWorkspacesLimit: 1,
+        githubDeviceAuthEnabled: false,
       },
       isLoading: false,
       error: 'Error message',
@@ -79,6 +82,7 @@ describe('ClusterConfig, reducer', () => {
       clusterConfig: {
         allWorkspacesLimit: -1,
         runningWorkspacesLimit: 1,
+        githubDeviceAuthEnabled: false,
       },
       isLoading: false,
       error: undefined,
