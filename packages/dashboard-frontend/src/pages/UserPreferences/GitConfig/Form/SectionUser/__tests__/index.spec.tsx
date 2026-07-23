@@ -63,7 +63,7 @@ describe('GitConfigSectionUser', () => {
           email: 'user@che',
         },
       },
-      false,
+      true,
     );
   });
 
@@ -88,7 +88,7 @@ describe('GitConfigSectionUser', () => {
           email: 'new-user@che',
         },
       },
-      false,
+      true,
     );
   });
 

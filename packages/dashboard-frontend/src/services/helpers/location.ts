@@ -51,7 +51,7 @@ export function buildWorkspaceDetailsLocation(workspace: Workspace): Location {
   return _buildLocationObject(path);
 }
 
-export function buildUserPreferencesLocation(tab?: UserPreferencesTab): Location {
+export function buildUserPreferencesLocation(tab?: UserPreferencesTab | string): Location {
   let pathAndQuery: string;
   if (!tab) {
     pathAndQuery = ROUTE.USER_PREFERENCES;

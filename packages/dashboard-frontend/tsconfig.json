@@ -18,9 +18,21 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@/plugins/*": [
+        "./src/plugins/*"
+      ],
+      "@/components/*": [
+        "./src/components/*",
+        "./src/plugins/dashboard-ai-agent/components/*"
+      ],
+      "@/pages/*": [
+        "./src/pages/*",
+        "./src/plugins/dashboard-ai-agent/pages/*"
       ]
     },
     "preserveConstEnums": true,
+    "preserveSymlinks": true,
     "removeComments": true,
     "resolveJsonModule": true,
     "rootDir": "src",
@@ -38,5 +50,10 @@
   "exclude": [
     "node_modules",
     "lib",
+    "src/plugins/**/__tests__",
+    "src/plugins/**/*.spec.ts",
+    "src/plugins/**/*.spec.tsx",
+    "src/plugins/**/*.test.ts",
+    "src/plugins/**/*.test.tsx",
   ],
 }

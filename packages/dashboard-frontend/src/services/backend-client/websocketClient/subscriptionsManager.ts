@@ -20,7 +20,8 @@ export type SubscriptionArgs =
       channel:
         | api.webSocket.Channel.DEV_WORKSPACE
         | api.webSocket.Channel.EVENT
-        | api.webSocket.Channel.POD,
+        | api.webSocket.Channel.POD
+        | api.webSocket.Channel.CONFIGMAP,
       namespace: string,
       options: { getResourceVersion: ReturnResourceVersion },
     ]

@@ -14,6 +14,8 @@ import common, { api } from '@eclipse-che/common';
 import { Store } from 'redux';
 
 import { lazyInject } from '@/inversify.config';
+import { bootstrapPlugins } from '@/plugin-registry';
+import { actionCreators as localDevfilesActionCreators } from '@/plugins/dashboard-ai-agent/store/LocalDevfiles';
 import { updateFavicon } from '@/preload/brandingLoader';
 import { provisionKubernetesNamespace } from '@/services/backend-client/kubernetesNamespaceApi';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
@@ -34,9 +36,7 @@ import { signIn } from '@/services/helpers/login';
 import { ResourceFetcherService } from '@/services/resource-fetcher';
 import { Workspace } from '@/services/workspace-adapter';
 import { hasLoginPage, isForbidden, isUnauthorized } from '@/services/workspace-client/helpers';
-import { RootState } from '@/store';
-import { aiConfigActionCreators } from '@/store/AiConfig';
-import { selectAiConfigEnabled } from '@/store/AiConfig/selectors';
+import { AppThunk, RootState } from '@/store';
 import { bannerAlertActionCreators } from '@/store/BannerAlert';
 import { brandingActionCreators } from '@/store/Branding';
 import { clusterConfigActionCreators, selectDashboardFavicon } from '@/store/ClusterConfig';
@@ -88,6 +88,10 @@ export default class Bootstrap {
     this.resourceFetcher = new ResourceFetcherService();
   }
 
+  private dispatch<T>(thunk: AppThunk<T>): T {
+    return thunk(this.store.dispatch, this.store.getState, undefined);
+  }
+
   async init(): Promise<void> {
     await this.fetchServerConfig()
       .then(() => this.doBackendsSanityCheck())
@@ -122,10 +126,11 @@ export default class Bootstrap {
       }),
       this.fetchPods().then(() => {
         this.watchWebSocketPods();
+        this.dispatch(localDevfilesActionCreators.subscribeToAgentPodChanges());
       }),
       this.fetchSshKeys(),
       this.fetchWorkspacePreferences(),
-      this.fetchAiRegistry().then(() => this.fetchAiProviderKeyStatus()),
+      bootstrapPlugins(this.store),
     ]);
 
     const errors = results
@@ -151,7 +156,7 @@ export default class Bootstrap {
           lastFetched: Date.now(),
         }),
       );
-    } catch (e) {
+    } catch (e: unknown) {
       if (isUnauthorized(e) || (isForbidden(e) && hasLoginPage(e))) {
         signIn();
       }
@@ -169,7 +174,7 @@ export default class Bootstrap {
     const { requestClusterConfig } = clusterConfigActionCreators;
     try {
       await requestClusterConfig()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
+    } catch (e: unknown) {
       console.warn(
         'Unable to fetch cluster configuration. This is expected behavior unless backend is configured to provide this information.',
       );
@@ -180,7 +185,7 @@ export default class Bootstrap {
     const { requestClusterInfo } = clusterInfoActionCreators;
     try {
       await requestClusterInfo()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
+    } catch (e: unknown) {
       console.warn(
         'Unable to fetch cluster info. This is expected behavior unless backend is configured to provide this information.',
       );
@@ -191,7 +196,7 @@ export default class Bootstrap {
     const { requestBranding } = brandingActionCreators;
     try {
       await requestBranding()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
+    } catch (e: unknown) {
       const errorMessage = common.helpers.errors.getMessage(e);
       this.issuesReporterService.registerIssue('unknown', new Error(errorMessage));
     }
@@ -302,7 +307,7 @@ export default class Bootstrap {
     const { requestDwDefaultEditor } = devWorkspacePluginsActionCreators;
     try {
       await requestDwDefaultEditor()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
+    } catch (e: unknown) {
       const message = `Required sources failed when trying to create the workspace: ${e}`;
       const { addBanner } = bannerAlertActionCreators;
       addBanner(message)(this.store.dispatch, this.store.getState, undefined);
@@ -315,7 +320,7 @@ export default class Bootstrap {
     const { requestDwDefaultPlugins } = devWorkspacePluginsActionCreators;
     try {
       await requestDwDefaultPlugins()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
+    } catch (e: unknown) {
       console.error('Failed to retrieve default plug-ins.', e);
     }
   }
@@ -324,7 +329,7 @@ export default class Bootstrap {
     const { requestNamespaces } = infrastructureNamespacesActionCreators;
     try {
       await requestNamespaces()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
+    } catch (e: unknown) {
       console.error(e);
     }
   }
@@ -333,7 +338,7 @@ export default class Bootstrap {
     const { requestServerConfig } = serverConfigActionCreators;
     try {
       await requestServerConfig()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
+    } catch (e: unknown) {
       console.error(e);
     }
   }
@@ -423,7 +428,7 @@ export default class Bootstrap {
 
       const error = this.workspaceStoppedDetector.getWorkspaceStoppedError(stoppedWorkspace, type);
       this.issuesReporterService.registerIssue(type, error, workspaceData);
-    } catch (e) {
+    } catch (e: unknown) {
       if (e instanceof WorkspaceRunningError) {
         if (e.workspace.ideUrl) {
           const ideUrl = e.workspace.ideUrl;
@@ -458,29 +463,6 @@ export default class Bootstrap {
   private async fetchSshKeys(): Promise<void> {
     const { requestSshKeys } = sshKeysActionCreators;
     await requestSshKeys()(this.store.dispatch, this.store.getState, undefined);
-  }
-
-  private async fetchAiRegistry(): Promise<void> {
-    const { requestAiRegistry } = aiConfigActionCreators;
-    try {
-      await requestAiRegistry()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
-      console.warn('Unable to fetch AI registry.', e);
-    }
-  }
-
-  private async fetchAiProviderKeyStatus(): Promise<void> {
-    const state = this.store.getState();
-    const enabled = selectAiConfigEnabled(state);
-    if (!enabled) {
-      return;
-    }
-    const { requestAiProviderKeyStatus } = aiConfigActionCreators;
-    try {
-      await requestAiProviderKeyStatus()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
-      console.warn('Unable to fetch AI provider key status.', e);
-    }
   }
 
   private async fetchWorkspacePreferences(): Promise<void> {
