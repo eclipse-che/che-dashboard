@@ -29,7 +29,7 @@
 }
 
 .name {
-  white-space: nowrap;
+  white-space: break-spaces;
 }
 
 .placeholder {

@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { NavItem } from '@patternfly/react-core';
+import { NavItem, Tooltip } from '@patternfly/react-core';
 import React from 'react';
 
 import { WorkspaceStatusIndicator } from '@/components/Workspace/Status/Indicator';
@@ -98,7 +98,13 @@ export class NavigationRecentItem extends React.PureComponent<Props, State> {
             containerScc={WorkspaceAdapter.getContainerScc(item.workspace.ref)}
             workspaceName={item.workspace.name}
           />
-          <span className={titleClassName}>{item.label}</span>
+          {item.label.length > 25 ? (
+            <Tooltip content={item.label}>
+              <span className={titleClassName}>{item.label}</span>
+            </Tooltip>
+          ) : (
+            <span className={titleClassName}>{item.label}</span>
+          )}
         </span>
         <RecentItemWorkspaceActions
           item={item}

@@ -26,6 +26,8 @@ import { Location, NavigateFunction } from 'react-router-dom';
 
 import Head from '@/components/Head';
 import Header from '@/components/Header';
+import LoaderAgentPanel from '@/components/LoaderAgentPanel';
+import ProgressIndicator from '@/components/Progress';
 import WorkspaceEvents from '@/components/WorkspaceEvents';
 import WorkspaceLogs from '@/components/WorkspaceLogs';
 import WorkspaceProgress from '@/components/WorkspaceProgress';
@@ -35,8 +37,10 @@ import {
 } from '@/components/WorkspaceProgress/StartingSteps/StartWorkspace/prepareRestart';
 import { ToggleBarsContext } from '@/contexts/ToggleBars';
 import styles from '@/pages/Loader/index.module.css';
+import { DevfileSchema } from '@/services/backend-client/devfileSchemaApi';
 import { DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
 import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
+import { AgentPodStatus } from '@/store/LocalDevfiles';
 
 export type Props = {
   location: Location;
@@ -44,10 +48,24 @@ export type Props = {
   searchParams: URLSearchParams;
   tabParam: string | undefined;
   workspace: Workspace | undefined;
+  workspaceContent: string;
   workspaceStatus: DevWorkspaceStatus;
+  devWorkspaceSchema: DevfileSchema | undefined;
   onTabChange: (tab: LoaderTab) => void;
+  agentPodStatus: AgentPodStatus | undefined;
+  agentTerminalUrl: string | undefined;
+  agentEnabled: boolean;
+  agentInitCommand: string | undefined;
+  agentInstanceId: string | undefined;
+  agentName: string | undefined;
+  agentDescription: string | undefined;
+  isDarkTheme: boolean;
+  onStartAgent: () => Promise<void>;
+  onStopAgent: () => void;
+  isLoading: boolean;
   onStartWorkspace: () => void;
   onStopWorkspace: () => void;
+  onSaveWorkspace: (content: string) => Promise<void>;
 };
 
 export type State = {
@@ -97,11 +115,25 @@ export class LoaderPage extends React.PureComponent<Props, State> {
     const {
       searchParams,
       workspace,
+      workspaceContent,
       workspaceStatus,
+      devWorkspaceSchema,
       location,
       navigate,
+      agentPodStatus,
+      agentTerminalUrl,
+      agentEnabled,
+      agentInitCommand,
+      agentInstanceId,
+      agentName,
+      agentDescription,
+      isDarkTheme,
+      isLoading,
+      onStartAgent,
+      onStopAgent,
       onStartWorkspace,
       onStopWorkspace,
+      onSaveWorkspace,
     } = this.props;
     const { activeTabKey, isActionsOpen } = this.state;
 
@@ -116,6 +148,7 @@ export class LoaderPage extends React.PureComponent<Props, State> {
 
     const isLogsTabDisabled = workspace === undefined;
     const isEventsTabDisabled = workspace === undefined;
+    const isDevWorkspaceTabDisabled = workspace === undefined;
 
     const containerScc = workspace ? WorkspaceAdapter.getContainerScc(workspace.ref) : undefined;
 
@@ -193,16 +226,17 @@ export class LoaderPage extends React.PureComponent<Props, State> {
               data-testid="loader-progress-tab"
               id="loader-progress-tab"
             >
-              <PageSection isFilled={true}>
-                <WorkspaceProgress
-                  location={location}
-                  navigate={navigate}
-                  searchParams={searchParams}
-                  showToastAlert={showToastAlert}
-                  isProgressTabActive={activeTabKey === LoaderTab.Progress}
-                  onTabChange={tab => this.handleTabClick(tab)}
-                />
-              </PageSection>
+              <div className={styles.tabContentPadded}>
+                <PageSection isFilled={true}>
+                  <WorkspaceProgress
+                    location={location}
+                    navigate={navigate}
+                    searchParams={searchParams}
+                    showToastAlert={showToastAlert}
+                    onTabChange={tab => this.handleTabClick(tab)}
+                  />
+                </PageSection>
+              </div>
             </Tab>
             <Tab
               eventKey={LoaderTab.Logs}
@@ -212,10 +246,9 @@ export class LoaderPage extends React.PureComponent<Props, State> {
               isDisabled={isLogsTabDisabled}
               isAriaDisabled={isLogsTabDisabled}
             >
-              <WorkspaceLogs
-                workspaceUID={workspace?.uid}
-                isActive={activeTabKey === LoaderTab.Logs}
-              />
+              <div className={styles.tabContentPadded}>
+                <WorkspaceLogs workspaceUID={workspace?.uid} />
+              </div>
             </Tab>
             <Tab
               eventKey={LoaderTab.Events}
@@ -225,12 +258,46 @@ export class LoaderPage extends React.PureComponent<Props, State> {
               isDisabled={isEventsTabDisabled}
               isAriaDisabled={isEventsTabDisabled}
             >
-              <WorkspaceEvents
-                workspaceUID={workspace?.uid}
-                hideWhenStopped={false}
-                isActive={activeTabKey === LoaderTab.Events}
-              />
+              <div className={styles.tabContentPadded}>
+                <WorkspaceEvents workspaceUID={workspace?.uid} />
+              </div>
             </Tab>
+            {agentEnabled && (
+              <Tab
+                eventKey={LoaderTab.DevWorkspace}
+                title={LoaderTab.DevWorkspace}
+                data-testid="loader-devworkspace-tab"
+                id="loader-devworkspace-tab"
+                isDisabled={isDevWorkspaceTabDisabled}
+                isAriaDisabled={isDevWorkspaceTabDisabled}
+              >
+                <div className={styles.progressIndicator}>
+                  <ProgressIndicator isLoading={isLoading} />
+                </div>
+                {workspace && (
+                  <LoaderAgentPanel
+                    agentPodStatus={agentPodStatus}
+                    agentTerminalUrl={agentTerminalUrl}
+                    agentInstanceId={agentInstanceId}
+                    agentInitCommand={agentInitCommand}
+                    agentName={agentName}
+                    agentDescription={agentDescription}
+                    isDarkTheme={isDarkTheme}
+                    workspaceName={workspace.name}
+                    workspaceNamespace={workspace.namespace}
+                    workspaceContent={workspaceContent}
+                    workspaceStatus={workspaceStatus}
+                    devWorkspaceSchema={devWorkspaceSchema}
+                    agentEnabled={agentEnabled}
+                    onStartAgent={onStartAgent}
+                    onStopAgent={onStopAgent}
+                    onStartWorkspace={onStartWorkspace}
+                    onStopWorkspace={onStopWorkspace}
+                    onSaveWorkspace={onSaveWorkspace}
+                  />
+                )}
+              </Tab>
+            )}
           </Tabs>
         </PageSection>
       </React.Fragment>

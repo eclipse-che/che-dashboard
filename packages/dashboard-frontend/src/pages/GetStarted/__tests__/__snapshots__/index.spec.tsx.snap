@@ -53,6 +53,9 @@ exports[`GetStarted snapshot 1`] = `
         <div
           data-testid="editor-image"
         />
+        <div
+          data-testid="preset-url"
+        />
       </div>
       <div
         className="spacer"

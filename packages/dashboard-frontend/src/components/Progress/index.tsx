@@ -24,7 +24,7 @@ type State = {
 };
 
 class ProgressIndicator extends React.PureComponent<Props, State> {
-  private intervalId: any;
+  private intervalId: number | undefined;
   private readonly onProgressInc: () => void;
 
   constructor(props: Props) {
@@ -41,7 +41,8 @@ class ProgressIndicator extends React.PureComponent<Props, State> {
   private updateProgressInterval(): void {
     if (this.props.isLoading) {
       if (!this.intervalId) {
-        this.intervalId = setInterval(() => {
+        this.setState({ progressVal: 1 });
+        this.intervalId = window.setInterval(() => {
           if (!this.props.isLoading && this.state.progressVal === 0) {
             if (this.intervalId) {
               clearInterval(this.intervalId);
@@ -61,8 +62,10 @@ class ProgressIndicator extends React.PureComponent<Props, State> {
   }
 
   // This method is called when the route parameters change
-  public componentDidUpdate(): void {
-    this.updateProgressInterval();
+  public componentDidUpdate(prevProps: Props) {
+    if (prevProps.isLoading !== this.props.isLoading) {
+      this.updateProgressInterval();
+    }
   }
 
   public componentWillUnmount(): void {
