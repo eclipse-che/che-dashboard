@@ -183,7 +183,7 @@ class UserPreferences extends React.PureComponent<Props, State> {
             </Tab>
             <Tab
               eventKey={UserPreferencesTab.DEVICE_AUTH_TOKENS}
-              title="Device Auth Token"
+              title="Device Auth Tokens"
               tabIndex={activeTabKey === UserPreferencesTab.DEVICE_AUTH_TOKENS ? 0 : -1}
             >
               <DeviceAuthTokens />

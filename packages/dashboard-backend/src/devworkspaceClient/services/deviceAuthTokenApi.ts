@@ -35,6 +35,11 @@ const DEVICE_AUTH_SECRET_NAME = 'device-authentication-github';
 const GITHUB_SCOPES = 'read:user repo user:email workflow';
 const GITHUB_API_TIMEOUT_MS = 30_000;
 
+// Binds an in-flight device code to the namespace that initiated the flow.
+// Prevents a different authenticated user from polling with another user's device code.
+// TTL matches GitHub's device code expiry (~15 min); cleared on successful auth.
+const activeDeviceCodes = new Map<string, { code: string; expiresAt: number }>();
+
 interface GitHubDeviceCodeResponse {
   device_code?: string;
   user_code?: string;
@@ -184,7 +189,9 @@ export class GitHubDeviceAuthTokenApiService implements IDeviceAuthTokenApi {
           clearTimeout(timer);
         }
       } catch (e) {
-        console.warn(`[device-auth] GitHub token revocation error: ${e}`);
+        console.warn(
+          `[device-auth] GitHub token revocation error: ${e instanceof Error ? e.message : String(e)}`,
+        );
       }
     }
 
@@ -199,7 +206,7 @@ export class GitHubDeviceAuthTokenApiService implements IDeviceAuthTokenApi {
     }
   }
 
-  async initiateDeviceAuth(): Promise<DeviceCodeResponse> {
+  async initiateDeviceAuth(namespace: string): Promise<DeviceCodeResponse> {
     const clientId = getGitHubClientId();
     const data = await githubPostDeviceCode({
       client_id: clientId,
@@ -216,6 +223,8 @@ export class GitHubDeviceAuthTokenApiService implements IDeviceAuthTokenApi {
         `Failed to initiate device auth: ${data.error_description ?? JSON.stringify(data)}`,
       );
     }
+    const expiresAt = Date.now() + (data.expires_in ?? 900) * 1_000;
+    activeDeviceCodes.set(namespace, { code: data.device_code, expiresAt });
     return {
       deviceCode: data.device_code,
       userCode: data.user_code,
@@ -225,6 +234,13 @@ export class GitHubDeviceAuthTokenApiService implements IDeviceAuthTokenApi {
   }
 
   async pollDeviceAuth(namespace: string, deviceCode: string): Promise<DeviceAuthPollResult> {
+    const stored = activeDeviceCodes.get(namespace);
+    if (!stored || stored.code !== deviceCode || Date.now() > stored.expiresAt) {
+      return {
+        status: 'error',
+        message: 'Device code is not valid for this session. Please initiate a new connection.',
+      };
+    }
     const clientId = getGitHubClientId();
     const data = await githubPostToken({
       client_id: clientId,
@@ -248,6 +264,7 @@ export class GitHubDeviceAuthTokenApiService implements IDeviceAuthTokenApi {
       return { status: 'error', message: 'No access_token in response' };
     }
 
+    activeDeviceCodes.delete(namespace);
     const token = await this.createDeviceAuthSecret(namespace, data.access_token);
     return { status: 'authorized', token };
   }
@@ -297,26 +314,30 @@ export class GitHubDeviceAuthTokenApiService implements IDeviceAuthTokenApi {
     });
     if (existing.items.length > 0 && existing.items[0].metadata?.name) {
       const existingName = existing.items[0].metadata.name;
-      const updated = await this.coreV1API.replaceNamespacedSecret({
-        name: existingName,
-        namespace,
-        body: {
-          metadata: {
-            name: existingName,
-            namespace,
-            labels: {
-              [DEVICE_AUTH_LABEL]: 'true',
-              [DEVICE_AUTH_PROVIDER_LABEL]: 'github',
+      try {
+        const updated = await this.coreV1API.replaceNamespacedSecret({
+          name: existingName,
+          namespace,
+          body: {
+            metadata: {
+              name: existingName,
+              namespace,
+              labels: {
+                [DEVICE_AUTH_LABEL]: 'true',
+                [DEVICE_AUTH_PROVIDER_LABEL]: 'github',
+              },
             },
+            data: { token: tokenData },
           },
-          data: { token: tokenData },
-        },
-      });
-      return {
-        name: existingName,
-        provider: 'github',
-        creationTimestamp: updated.metadata?.creationTimestamp?.toISOString(),
-      };
+        });
+        return {
+          name: existingName,
+          provider: 'github',
+          creationTimestamp: updated.metadata?.creationTimestamp?.toISOString(),
+        };
+      } catch {
+        // Secret was deleted between list and replace (TOCTOU) — fall through to create
+      }
     }
 
     // Use a deterministic name so concurrent poll completions (e.g. two browser

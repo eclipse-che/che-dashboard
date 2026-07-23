@@ -180,28 +180,33 @@ describe('DeviceAuthToken API Service', () => {
       );
     });
 
-    it('should still delete the K8s secret when GitHub token revocation throws', async () => {
-      process.env.CHE_GITHUB_OAUTH_CLIENT_ID = 'test-client-id';
+    describe('revocation behavior', () => {
+      const origClientId = process.env.CHE_GITHUB_OAUTH_CLIENT_ID;
+      afterEach(() => {
+        process.env.CHE_GITHUB_OAUTH_CLIENT_ID = origClientId;
+      });
 
-      // Secret has a token in data field (base64 encoded)
-      spyReadNamespacedSecret.mockResolvedValueOnce({
-        metadata: {
-          name: tokenName,
-          resourceVersion,
-          labels: { [DEVICE_AUTH_LABEL]: 'true' },
-        },
-        data: { token: Buffer.from('ghp_test_token').toString('base64') },
-      } as V1Secret);
+      it('should still delete the K8s secret when GitHub token revocation throws', async () => {
+        process.env.CHE_GITHUB_OAUTH_CLIENT_ID = 'test-client-id';
 
-      // fetch (revocation call) throws a network error
-      mockFetch.mockRejectedValueOnce(new Error('Network error'));
+        // Secret has a token in data field (base64 encoded)
+        spyReadNamespacedSecret.mockResolvedValueOnce({
+          metadata: {
+            name: tokenName,
+            resourceVersion,
+            labels: { [DEVICE_AUTH_LABEL]: 'true' },
+          },
+          data: { token: Buffer.from('ghp_test_token').toString('base64') },
+        } as V1Secret);
 
-      // Should NOT throw — deleteNamespacedSecret must still be called
-      await expect(service.deleteToken(namespace, tokenName)).resolves.toBeUndefined();
-      expect(spyDeleteNamespacedSecret).toHaveBeenCalled();
+        // fetch (revocation call) throws a network error
+        mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
-      delete process.env.CHE_GITHUB_OAUTH_CLIENT_ID;
-    });
+        // Should NOT throw — deleteNamespacedSecret must still be called
+        await expect(service.deleteToken(namespace, tokenName)).resolves.toBeUndefined();
+        expect(spyDeleteNamespacedSecret).toHaveBeenCalled();
+      });
+    }); // revocation behavior
   });
 
   describe('initiateDeviceAuth', () => {
@@ -226,7 +231,7 @@ describe('DeviceAuthToken API Service', () => {
           }),
       });
 
-      const result = await service.initiateDeviceAuth();
+      const result = await service.initiateDeviceAuth(namespace);
 
       expect(result).toEqual({
         deviceCode: 'dev-code-123',
@@ -238,7 +243,9 @@ describe('DeviceAuthToken API Service', () => {
 
     it('should throw when CHE_GITHUB_OAUTH_CLIENT_ID is not set', async () => {
       delete process.env.CHE_GITHUB_OAUTH_CLIENT_ID;
-      await expect(service.initiateDeviceAuth()).rejects.toThrow('CHE_GITHUB_OAUTH_CLIENT_ID');
+      await expect(service.initiateDeviceAuth(namespace)).rejects.toThrow(
+        'CHE_GITHUB_OAUTH_CLIENT_ID',
+      );
     });
 
     it('should throw when GitHub returns an error', async () => {
@@ -246,13 +253,13 @@ describe('DeviceAuthToken API Service', () => {
         ok: true,
         json: () => Promise.resolve({ error: 'invalid_client', error_description: 'Bad client' }),
       });
-      await expect(service.initiateDeviceAuth()).rejects.toThrow('Bad client');
+      await expect(service.initiateDeviceAuth(namespace)).rejects.toThrow('Bad client');
     });
   });
 
   describe('pollDeviceAuth', () => {
     const origClientId = process.env.CHE_GITHUB_OAUTH_CLIENT_ID;
-    beforeEach(() => {
+    beforeEach(async () => {
       process.env.CHE_GITHUB_OAUTH_CLIENT_ID = 'test-client-id';
       stubCoreV1Api.createNamespacedSecret = jest.fn().mockResolvedValue({
         metadata: {
@@ -266,6 +273,19 @@ describe('DeviceAuthToken API Service', () => {
           creationTimestamp: new Date('2024-01-01'),
         },
       });
+      // Seed active code cache so pollDeviceAuth accepts 'dev-code-123'
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            device_code: 'dev-code-123',
+            user_code: 'ABCD-1234',
+            verification_uri: 'https://github.com/login/device',
+            interval: 5,
+            expires_in: 900,
+          }),
+      });
+      await service.initiateDeviceAuth(namespace);
     });
     afterEach(() => {
       process.env.CHE_GITHUB_OAUTH_CLIENT_ID = origClientId;
@@ -315,6 +335,19 @@ describe('DeviceAuthToken API Service', () => {
     });
 
     it('should replace existing K8s secret when reconnecting', async () => {
+      // Seed a second code for this reconnect scenario
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            device_code: 'dev-code-456',
+            user_code: 'EFGH-5678',
+            verification_uri: 'https://github.com/login/device',
+            interval: 5,
+            expires_in: 900,
+          }),
+      });
+      await service.initiateDeviceAuth(namespace);
       const existingName = 'device-authentication-github';
       spyListNamespacedSecret.mockResolvedValueOnce({
         items: [{ metadata: { name: existingName } }],
@@ -354,6 +387,68 @@ describe('DeviceAuthToken API Service', () => {
       });
       const result = await service.pollDeviceAuth(namespace, 'dev-code-123');
       expect(result).toEqual({ status: 'error', message: 'No access_token in response' });
+    });
+  });
+
+  describe('validateToken', () => {
+    const origClientId = process.env.CHE_GITHUB_OAUTH_CLIENT_ID;
+    afterEach(() => {
+      process.env.CHE_GITHUB_OAUTH_CLIENT_ID = origClientId;
+      jest.clearAllMocks();
+    });
+
+    it('should return unknown when secret is not found', async () => {
+      spyReadNamespacedSecret.mockRejectedValueOnce(new Error('Not found'));
+      const result = await service.validateToken(namespace, tokenName);
+      expect(result).toBe('unknown');
+    });
+
+    it('should return unknown when secret does not carry the device-auth label', async () => {
+      spyReadNamespacedSecret.mockResolvedValueOnce({
+        metadata: { name: tokenName, labels: {} },
+        data: { token: Buffer.from('ghp_test').toString('base64') },
+      } as V1Secret);
+      const result = await service.validateToken(namespace, tokenName);
+      expect(result).toBe('unknown');
+    });
+
+    it('should return unknown when token data is empty', async () => {
+      spyReadNamespacedSecret.mockResolvedValueOnce({
+        metadata: { name: tokenName, labels: { [DEVICE_AUTH_LABEL]: 'true' } },
+        data: {},
+      } as V1Secret);
+      const result = await service.validateToken(namespace, tokenName);
+      expect(result).toBe('unknown');
+    });
+
+    it('should return valid when GitHub responds with 200', async () => {
+      spyReadNamespacedSecret.mockResolvedValueOnce({
+        metadata: { name: tokenName, labels: { [DEVICE_AUTH_LABEL]: 'true' } },
+        data: { token: Buffer.from('ghp_test_token').toString('base64') },
+      } as V1Secret);
+      mockFetch.mockResolvedValueOnce({ ok: true });
+      const result = await service.validateToken(namespace, tokenName);
+      expect(result).toBe('valid');
+    });
+
+    it('should return invalid when GitHub responds with non-200', async () => {
+      spyReadNamespacedSecret.mockResolvedValueOnce({
+        metadata: { name: tokenName, labels: { [DEVICE_AUTH_LABEL]: 'true' } },
+        data: { token: Buffer.from('ghp_revoked_token').toString('base64') },
+      } as V1Secret);
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 401 });
+      const result = await service.validateToken(namespace, tokenName);
+      expect(result).toBe('invalid');
+    });
+
+    it('should return unknown when GitHub API throws (network error)', async () => {
+      spyReadNamespacedSecret.mockResolvedValueOnce({
+        metadata: { name: tokenName, labels: { [DEVICE_AUTH_LABEL]: 'true' } },
+        data: { token: Buffer.from('ghp_test_token').toString('base64') },
+      } as V1Secret);
+      mockFetch.mockRejectedValueOnce(new Error('Network error'));
+      const result = await service.validateToken(namespace, tokenName);
+      expect(result).toBe('unknown');
     });
   });
 });

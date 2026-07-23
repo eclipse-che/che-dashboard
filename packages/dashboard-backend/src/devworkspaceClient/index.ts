@@ -143,8 +143,10 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
     return new AiRegistryApiService(this.kubeConfig);
   }
 
+  private _deviceAuthTokenApi: IDeviceAuthTokenApi | undefined;
+
   get deviceAuthTokenApi(): IDeviceAuthTokenApi {
-    return new GitHubDeviceAuthTokenApiService(this.kubeConfig);
+    return (this._deviceAuthTokenApi ??= new GitHubDeviceAuthTokenApiService(this.kubeConfig));
   }
 
   get sccPermissionApi(): ISccPermissionApi {

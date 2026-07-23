@@ -89,9 +89,10 @@ export function registerDeviceAuthTokenRoutes(instance: FastifyInstance) {
       `${baseApiPath}/namespace/:namespace/device-auth-token/initiate`,
       Object.assign({}, rateLimitConfig, getSchema({ tags, params: namespacedSchema })),
       async function (request: FastifyRequest) {
+        const { namespace } = request.params as restParams.INamespacedParams;
         const token = getToken(request);
         const { deviceAuthTokenApi } = getDevWorkspaceClient(token);
-        return deviceAuthTokenApi.initiateDeviceAuth();
+        return deviceAuthTokenApi.initiateDeviceAuth(namespace);
       },
     );
 

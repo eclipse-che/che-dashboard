@@ -317,7 +317,7 @@ export const deviceAuthPollBodySchema: JSONSchema7 = {
   type: 'object',
   required: ['deviceCode'],
   properties: {
-    deviceCode: { type: 'string', minLength: 1, maxLength: 100 },
+    deviceCode: { type: 'string', minLength: 1, maxLength: 100, pattern: '^[a-zA-Z0-9_-]+$' },
   },
 };
 

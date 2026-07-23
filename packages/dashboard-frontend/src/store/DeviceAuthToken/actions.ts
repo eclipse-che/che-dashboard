@@ -70,6 +70,7 @@ export const actionCreators = {
     const state = getState();
     const namespace = selectDefaultNamespace(state).name;
     await verifyAuthorized(dispatch, getState);
+    // Pass namespace so the backend can bind the device code to this user's namespace (security)
     return apiInitiateDeviceAuth(namespace);
   },
 };

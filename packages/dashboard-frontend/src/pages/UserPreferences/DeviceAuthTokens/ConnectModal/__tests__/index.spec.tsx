@@ -95,4 +95,22 @@ describe('ConnectModal', () => {
     screen.getByTestId('cancel-button').click();
     expect(mockOnCloseModal).toHaveBeenCalled();
   });
+
+  it('should increase poll interval by 5s on slow_down', async () => {
+    (pollDeviceAuth as jest.Mock).mockResolvedValue({ status: 'slow_down' });
+    renderComponent(true);
+    await waitFor(() => screen.getByTestId('user-code'));
+    // advance by original 5s interval
+    jest.advanceTimersByTime(5000);
+    await waitFor(() => expect(pollDeviceAuth).toHaveBeenCalled());
+    const callCount = (pollDeviceAuth as jest.Mock).mock.calls.length;
+    // advance by 5s (original) — should NOT trigger yet (interval is now 10s)
+    jest.advanceTimersByTime(5000);
+    await Promise.resolve(); // flush microtasks
+    // advance remaining 5s to complete the 10s interval
+    jest.advanceTimersByTime(5000);
+    await waitFor(() =>
+      expect((pollDeviceAuth as jest.Mock).mock.calls.length).toBeGreaterThan(callCount),
+    );
+  });
 });

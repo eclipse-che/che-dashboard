@@ -639,7 +639,7 @@ export interface IDeviceAuthTokenApi {
   /**
    * Initiates a GitHub Device Authorization flow and returns the device code and user code.
    */
-  initiateDeviceAuth(): Promise<DeviceCodeResponse>;
+  initiateDeviceAuth(namespace: string): Promise<DeviceCodeResponse>;
 
   /**
    * Polls GitHub for the access token using the device code.

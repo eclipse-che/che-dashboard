@@ -184,8 +184,12 @@ class DeviceAuthTokens extends React.PureComponent<Props, State> {
       });
     try {
       await this.props.requestDeviceAuthTokens();
-    } catch {
-      // ignore refresh errors
+    } catch (e) {
+      this.appAlerts.showAlert({
+        key: 'device-auth-token-refresh-failed',
+        title: 'Token added but the list could not be refreshed. Try navigating away and back.',
+        variant: AlertVariant.warning,
+      });
     }
   }
 

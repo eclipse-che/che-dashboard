@@ -35,6 +35,8 @@ import {
 } from '@/services/backend-client/deviceAuthTokenApi';
 import { deviceAuthTokenActionCreators } from '@/store/DeviceAuthToken';
 
+const MAX_POLL_ERRORS = 15;
+
 const connector = connect(null, {
   initiateDeviceAuth: deviceAuthTokenActionCreators.initiateDeviceAuth,
 });
@@ -135,7 +137,12 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
       if (!this._isMounted) {
         return;
       }
-      this.setState(prev => ({ pollErrorCount: prev.pollErrorCount + 1 }));
+      const nextCount = this.state.pollErrorCount + 1;
+      this.setState({ pollErrorCount: nextCount });
+      if (nextCount >= MAX_POLL_ERRORS) {
+        this.setState({ error: 'Unable to reach the server. Please close and try again.' });
+        return;
+      }
       this.schedulePoll(response);
       return;
     }
