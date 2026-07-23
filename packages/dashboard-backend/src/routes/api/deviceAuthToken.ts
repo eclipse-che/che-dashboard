@@ -16,6 +16,8 @@ import { baseApiPath } from '@/constants/config';
 import {
   deviceAuthPollBodySchema,
   deviceAuthTokenParamsSchema,
+  deviceAuthTokenResponseSchema,
+  deviceAuthValidateResponseSchema,
   namespacedSchema,
 } from '@/constants/schemas';
 import { restParams } from '@/models';
@@ -43,7 +45,15 @@ export function registerDeviceAuthTokenRoutes(instance: FastifyInstance) {
      */
     server.get(
       `${baseApiPath}/namespace/:namespace/device-auth-token`,
-      Object.assign({}, rateLimitConfig, getSchema({ tags, params: namespacedSchema })),
+      Object.assign(
+        {},
+        rateLimitConfig,
+        getSchema({
+          tags,
+          params: namespacedSchema,
+          response: { 200: deviceAuthTokenResponseSchema },
+        }),
+      ),
       async function (request: FastifyRequest) {
         const { namespace } = request.params as restParams.INamespacedParams;
         const token = getToken(request);
@@ -113,7 +123,15 @@ export function registerDeviceAuthTokenRoutes(instance: FastifyInstance) {
      */
     server.get(
       `${baseApiPath}/namespace/:namespace/device-auth-token/:tokenName/validate`,
-      Object.assign({}, rateLimitConfig, getSchema({ tags, params: deviceAuthTokenParamsSchema })),
+      Object.assign(
+        {},
+        rateLimitConfig,
+        getSchema({
+          tags,
+          params: deviceAuthTokenParamsSchema,
+          response: { 200: deviceAuthValidateResponseSchema },
+        }),
+      ),
       async function (request: FastifyRequest) {
         const { namespace, tokenName } =
           request.params as restParams.DeviceAuthTokenNamespacedParams;

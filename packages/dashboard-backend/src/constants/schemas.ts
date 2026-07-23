@@ -321,6 +321,28 @@ export const deviceAuthPollBodySchema: JSONSchema7 = {
   },
 };
 
+export const deviceAuthTokenResponseSchema = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      name: { type: 'string' },
+      provider: { type: 'string' },
+      creationTimestamp: { type: 'string' },
+      valid: { type: 'string', enum: ['valid', 'invalid', 'unknown'] },
+    },
+    required: ['name'],
+  },
+};
+
+export const deviceAuthValidateResponseSchema = {
+  type: 'object',
+  properties: {
+    valid: { type: 'string', enum: ['valid', 'invalid', 'unknown'] },
+  },
+  required: ['valid'],
+};
+
 // namespaced schemas
 
 export const namespacedSchema: JSONSchema7 = {
