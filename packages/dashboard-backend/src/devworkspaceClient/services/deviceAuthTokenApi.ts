@@ -111,7 +111,8 @@ async function githubPostToken(params: Record<string, string>): Promise<GitHubTo
   }
 }
 
-export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
+// GitHub-specific implementation. Only GitHub OAuth App device flow is supported.
+export class GitHubDeviceAuthTokenApiService implements IDeviceAuthTokenApi {
   private readonly coreV1API: CoreV1API;
 
   constructor(kc: k8s.KubeConfig) {
@@ -251,19 +252,22 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
     return { status: 'authorized', token };
   }
 
-  async validateToken(namespace: string, tokenName: string): Promise<boolean | undefined> {
+  async validateToken(
+    namespace: string,
+    tokenName: string,
+  ): Promise<'valid' | 'invalid' | 'unknown'> {
     let secret: k8s.V1Secret;
     try {
       secret = await this.coreV1API.readNamespacedSecret({ name: tokenName, namespace });
     } catch {
-      return undefined;
+      return 'unknown'; // secret not found or K8s API error
     }
     if (secret.metadata?.labels?.[DEVICE_AUTH_LABEL] !== 'true') {
-      return undefined;
+      return 'unknown'; // not a device-auth secret
     }
     const rawToken = Buffer.from(secret.data?.['token'] ?? '', 'base64').toString('utf-8');
     if (!rawToken) {
-      return undefined;
+      return 'unknown'; // empty token field
     }
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 5_000);
@@ -272,9 +276,9 @@ export class DeviceAuthTokenApiService implements IDeviceAuthTokenApi {
         headers: { Authorization: `token ${rawToken}`, Accept: 'application/vnd.github+json' },
         signal: controller.signal,
       });
-      return response.ok;
+      return response.ok ? 'valid' : 'invalid';
     } catch {
-      return undefined;
+      return 'unknown'; // network error or timeout
     } finally {
       clearTimeout(timer);
     }

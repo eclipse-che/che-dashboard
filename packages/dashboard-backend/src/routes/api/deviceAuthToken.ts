@@ -120,7 +120,7 @@ export function registerDeviceAuthTokenRoutes(instance: FastifyInstance) {
         const token = getToken(request);
         const { deviceAuthTokenApi } = getDevWorkspaceClient(token);
         const valid = await deviceAuthTokenApi.validateToken(namespace, tokenName);
-        return { valid: valid ?? null };
+        return { valid };
       },
     );
   });

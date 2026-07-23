@@ -16,7 +16,7 @@ import { api } from '@eclipse-che/common';
 import * as mockClient from '@kubernetes/client-node';
 import { CoreV1Api, V1Secret, V1SecretList } from '@kubernetes/client-node';
 
-import { DeviceAuthTokenApiService } from '@/devworkspaceClient/services/deviceAuthTokenApi';
+import { GitHubDeviceAuthTokenApiService } from '@/devworkspaceClient/services/deviceAuthTokenApi';
 
 jest.mock('@/devworkspaceClient/services/helpers/retryableExec');
 
@@ -31,7 +31,7 @@ const mockFetch = jest.fn();
 global.fetch = mockFetch as unknown as typeof fetch;
 
 describe('DeviceAuthToken API Service', () => {
-  let service: DeviceAuthTokenApiService;
+  let service: GitHubDeviceAuthTokenApiService;
 
   const stubCoreV1Api = {
     listNamespacedSecret: () => {
@@ -60,7 +60,7 @@ describe('DeviceAuthToken API Service', () => {
     const { KubeConfig } = mockClient;
     const kubeConfig = new KubeConfig();
     kubeConfig.makeApiClient = jest.fn().mockImplementation(_api => stubCoreV1Api);
-    service = new DeviceAuthTokenApiService(kubeConfig);
+    service = new GitHubDeviceAuthTokenApiService(kubeConfig);
   });
 
   afterEach(() => {
@@ -205,11 +205,12 @@ describe('DeviceAuthToken API Service', () => {
   });
 
   describe('initiateDeviceAuth', () => {
+    const origClientId = process.env.CHE_GITHUB_OAUTH_CLIENT_ID;
     beforeEach(() => {
       process.env.CHE_GITHUB_OAUTH_CLIENT_ID = 'test-client-id';
     });
     afterEach(() => {
-      delete process.env.CHE_GITHUB_OAUTH_CLIENT_ID;
+      process.env.CHE_GITHUB_OAUTH_CLIENT_ID = origClientId;
       jest.clearAllMocks();
     });
 
@@ -250,6 +251,7 @@ describe('DeviceAuthToken API Service', () => {
   });
 
   describe('pollDeviceAuth', () => {
+    const origClientId = process.env.CHE_GITHUB_OAUTH_CLIENT_ID;
     beforeEach(() => {
       process.env.CHE_GITHUB_OAUTH_CLIENT_ID = 'test-client-id';
       stubCoreV1Api.createNamespacedSecret = jest.fn().mockResolvedValue({
@@ -266,7 +268,7 @@ describe('DeviceAuthToken API Service', () => {
       });
     });
     afterEach(() => {
-      delete process.env.CHE_GITHUB_OAUTH_CLIENT_ID;
+      process.env.CHE_GITHUB_OAUTH_CLIENT_ID = origClientId;
       jest.clearAllMocks();
     });
 

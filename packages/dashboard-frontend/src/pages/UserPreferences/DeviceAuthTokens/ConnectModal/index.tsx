@@ -55,6 +55,7 @@ export type State = {
   error: string | undefined;
   isLoading: boolean;
   copyTimerId: number | undefined;
+  pollErrorCount: number;
 };
 
 class ConnectModalClass extends React.PureComponent<Props, State> {
@@ -68,6 +69,7 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
       error: undefined,
       isLoading: false,
       copyTimerId: undefined,
+      pollErrorCount: 0,
     };
   }
 
@@ -96,7 +98,7 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
     if (this.state.isLoading) {
       return;
     }
-    this.setState({ deviceCode: undefined, error: undefined, isLoading: true });
+    this.setState({ deviceCode: undefined, error: undefined, isLoading: true, pollErrorCount: 0 });
     try {
       const result = await this.props.initiateDeviceAuth();
       this.setState({ deviceCode: result, isLoading: false });
@@ -133,6 +135,7 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
       if (!this._isMounted) {
         return;
       }
+      this.setState(prev => ({ pollErrorCount: prev.pollErrorCount + 1 }));
       this.schedulePoll(response);
       return;
     }
@@ -145,6 +148,7 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
       // RFC 8628 §3.5: increase interval by 5s on slow_down
       this.schedulePoll({ ...response, interval: response.interval + 5 });
     } else if (result.status === 'authorized') {
+      this.setState({ pollErrorCount: 0 });
       this.props.onSuccess(result.token);
     } else if (result.status === 'expired') {
       this.setState({ error: 'The code has expired. Please try again.' });
@@ -186,6 +190,16 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
               style={{ color: 'var(--pf-t--global--color--status--danger--default)' }}
             >
               {error}
+            </Content>
+          )}
+          {this.state.pollErrorCount >= 3 && !error && (
+            <Content
+              style={{
+                color: 'var(--pf-t--global--color--status--warning--default)',
+                marginBottom: '0.5rem',
+              }}
+            >
+              Having trouble reaching the server. Still trying&hellip;
             </Content>
           )}
           {deviceCode && !error && (
