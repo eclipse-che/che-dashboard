@@ -12,6 +12,7 @@
 
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
+import { existsSync, readFileSync } from 'fs';
 
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import {
@@ -58,12 +59,55 @@ interface GitHubTokenResponse {
   error_description?: string;
 }
 
-function getGitHubClientId(): string {
-  const clientId = process.env.CHE_GITHUB_OAUTH_CLIENT_ID;
-  if (!clientId) {
-    throw new Error('CHE_GITHUB_OAUTH_CLIENT_ID environment variable is not set');
+// Mounted file path — same path Che Server uses when the operator
+// mounts github-oauth-config into the pod as a volume.
+const GITHUB_OAUTH_ID_FILE = '/che-conf/oauth/github/id';
+
+async function getGitHubClientId(): Promise<string> {
+  // Priority 1: env var (operator auto-injection in standard deployments)
+  if (process.env.CHE_GITHUB_OAUTH_CLIENT_ID) {
+    return process.env.CHE_GITHUB_OAUTH_CLIENT_ID;
   }
-  return clientId;
+  // Priority 2: mounted file (only needed with a custom deployment spec where
+  // the operator does not auto-inject the env var)
+  if (existsSync(GITHUB_OAUTH_ID_FILE)) {
+    const id = readFileSync(GITHUB_OAUTH_ID_FILE, 'utf8').trim();
+    if (id) {
+      return id;
+    }
+  }
+  // Priority 3: clientId from GET /api/oauth on the Che Server (available
+  // once che-server#1035 is deployed — no env var or volume mount needed).
+  const cheInternalUrl = process.env.CHE_INTERNAL_URL;
+  if (cheInternalUrl) {
+    try {
+      const { getServiceAccountToken } = await import(
+        '@/routes/api/helpers/getServiceAccountToken'
+      );
+      const saToken = getServiceAccountToken();
+      const response = await fetch(`${cheInternalUrl}/oauth`, {
+        headers: { Authorization: `Bearer ${saToken}` },
+        signal: AbortSignal.timeout(5_000),
+      });
+      if (response.ok) {
+        const providers = (await response.json()) as Array<{
+          name: string;
+          clientId?: string;
+        }>;
+        const github = providers.find(p => p.name === 'github');
+        if (github?.clientId) {
+          return github.clientId;
+        }
+      }
+    } catch {
+      // fall through
+    }
+  }
+  throw new Error(
+    'GitHub OAuth client_id is not available. ' +
+      'Ensure CHE_GITHUB_OAUTH_CLIENT_ID is set, or deploy che-server#1035 ' +
+      'which exposes clientId via GET /api/oauth.',
+  );
 }
 
 async function githubPostDeviceCode(
@@ -207,7 +251,7 @@ export class GitHubDeviceAuthTokenApiService implements IDeviceAuthTokenApi {
   }
 
   async initiateDeviceAuth(namespace: string): Promise<DeviceCodeResponse> {
-    const clientId = getGitHubClientId();
+    const clientId = await getGitHubClientId();
     const data = await githubPostDeviceCode({
       client_id: clientId,
       scope: GITHUB_SCOPES,
@@ -241,7 +285,7 @@ export class GitHubDeviceAuthTokenApiService implements IDeviceAuthTokenApi {
         message: 'Device code is not valid for this session. Please initiate a new connection.',
       };
     }
-    const clientId = getGitHubClientId();
+    const clientId = await getGitHubClientId();
     const data = await githubPostToken({
       client_id: clientId,
       device_code: deviceCode,
