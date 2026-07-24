@@ -90,7 +90,7 @@
     "yaml": "^2.8.3",
     "picomatch": "^2.3.2",
     "undici": "7.28.0",
-    "svgo": "^3.3.3",
+    "svgo": "^3.3.4",
     "follow-redirects": "^1.16.0",
     "@fastify/static": "^9.1.1",
     "brace-expansion@^1.0.0": "^1.1.13",
