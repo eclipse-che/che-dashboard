@@ -15,6 +15,8 @@ import { spawn } from 'child_process';
 import { stringify } from 'querystring';
 import WebSocket from 'ws';
 
+import { logger } from '@/utils/logger';
+
 export type ServerConfig = {
   opts: { [key: string]: any };
   server: string;
@@ -49,35 +51,39 @@ export async function exec(
   // everything went OK and stdOutStream contains the response
   let stdOut = '';
   let stdError = '';
+  const MAX_OUTPUT_BYTES = 1 * 1024 * 1024; // 1 MiB per stream — guards against runaway output
   const { server, opts } = serverConfig;
   try {
     await new Promise<void>((resolve, reject) => {
       const k8sServer = server.replace(/^http/, 'ws');
       if (!k8sServer) {
         reject('Failed to get kubernetes client server.');
+        return; // prevent fall-through to WebSocket construction with empty URL
       }
       const queryStr = stringify({ stdout: true, stderr: true, command, container });
       const url = `${k8sServer}/api/v1/namespaces/${namespace}/pods/${pod}/exec?${queryStr}`;
 
       const client = new WebSocket(url, PROTOCOLS, opts);
       let openTimeoutObj: NodeJS.Timeout | undefined;
-      let responseTimeoutObj: NodeJS.Timeout | undefined;
+      let timedOut = false;
 
       client.onopen = () => {
         openTimeoutObj = setTimeout(() => {
-          if (client.OPEN) {
+          timedOut = true;
+          if (client.readyState === WebSocket.OPEN) {
             client.close();
           }
         }, 30000);
       };
 
       client.onclose = () => {
-        resolve();
         if (openTimeoutObj) {
           clearTimeout(openTimeoutObj);
         }
-        if (responseTimeoutObj) {
-          clearTimeout(responseTimeoutObj);
+        if (timedOut) {
+          reject(new Error('exec timed out after 30 seconds'));
+        } else {
+          resolve();
         }
       };
 
@@ -85,7 +91,9 @@ export async function exec(
         const message = helpers.errors.getMessage(err);
         stdError += message;
         reject(message);
-        client.close();
+        if (client.readyState === WebSocket.OPEN) {
+          client.close();
+        }
       };
 
       client.onmessage = (event: WebSocket.MessageEvent) => {
@@ -94,27 +102,46 @@ export async function exec(
         }
         const channel = CHANNELS[parseInt(event.data[0], 8)];
 
+        // Empty STDOUT frames signal exec readiness; skip them.
         if (channel === CHANNELS[CHANNELS.STD_OUT] && event.data.length === 1) {
-          if (!responseTimeoutObj) {
-            responseTimeoutObj = setTimeout(() => {
-              if (client.OPEN) {
-                client.close();
-              }
-            }, 3000);
-          }
           return;
         }
 
         const message = Buffer.from(event.data.substr(1), 'base64').toString('utf-8').trim();
 
         if (channel === CHANNELS[CHANNELS.STD_OUT]) {
-          stdOut += message;
+          if (stdOut.length + message.length <= MAX_OUTPUT_BYTES) {
+            stdOut += message;
+          } else {
+            logger.warn(`exec: stdout truncated at ${MAX_OUTPUT_BYTES} bytes`);
+          }
         } else if (channel === CHANNELS[CHANNELS.STD_ERROR]) {
-          stdError += message;
+          if (stdError.length + message.length <= MAX_OUTPUT_BYTES) {
+            stdError += message;
+          } else {
+            logger.warn(`exec: stderr truncated at ${MAX_OUTPUT_BYTES} bytes`);
+          }
         } else if (channel === CHANNELS[CHANNELS.ERROR]) {
-          stdError += message;
+          // Kubernetes sends process exit status as JSON on the ERROR channel,
+          // e.g. {"status":"Success"} or {"status":"Failure","message":"..."}.
+          // Close the socket on any terminal status so the promise settles
+          // promptly instead of waiting for the 30-second timeout.
+          try {
+            const status = JSON.parse(message) as { status?: string; message?: string };
+            if (status.status === 'Failure' && status.message) {
+              stdError += status.message;
+            }
+            if (status.status === 'Success' || status.status === 'Failure') {
+              if (client.readyState === WebSocket.OPEN) {
+                client.close();
+              }
+            }
+          } catch {
+            if (stdError.length + message.length <= MAX_OUTPUT_BYTES) {
+              stdError += message;
+            }
+          }
         }
-        client.close();
       };
     });
   } catch (e) {
