@@ -15,6 +15,8 @@ import { spawn } from 'child_process';
 import { stringify } from 'querystring';
 import WebSocket from 'ws';
 
+import { logger } from '@/utils/logger';
+
 export type ServerConfig = {
   opts: { [key: string]: any };
   server: string;
@@ -110,10 +112,14 @@ export async function exec(
         if (channel === CHANNELS[CHANNELS.STD_OUT]) {
           if (stdOut.length + message.length <= MAX_OUTPUT_BYTES) {
             stdOut += message;
+          } else {
+            logger.warn(`exec: stdout truncated at ${MAX_OUTPUT_BYTES} bytes`);
           }
         } else if (channel === CHANNELS[CHANNELS.STD_ERROR]) {
           if (stdError.length + message.length <= MAX_OUTPUT_BYTES) {
             stdError += message;
+          } else {
+            logger.warn(`exec: stderr truncated at ${MAX_OUTPUT_BYTES} bytes`);
           }
         } else if (channel === CHANNELS[CHANNELS.ERROR]) {
           // Kubernetes sends process exit status as JSON on the ERROR channel,
