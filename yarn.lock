@@ -1089,7 +1089,7 @@ __metadata:
     "@fastify/http-proxy": "npm:^11.4.4"
     "@fastify/oauth2": "npm:^8.2.0"
     "@fastify/rate-limit": "npm:^10.3.0"
-    "@fastify/static": "npm:^9.1.1"
+    "@fastify/static": "npm:^10.1.2"
     "@fastify/swagger": "npm:^9.7.0"
     "@fastify/swagger-ui": "npm:^5.2.5"
     "@fastify/websocket": "npm:^11.2.0"
