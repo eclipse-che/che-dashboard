@@ -21,6 +21,7 @@ import {
   namespacedSchema,
 } from '@/constants/schemas';
 import { restParams } from '@/models';
+import { getDeviceAuthClientId } from '@/routes/api/helpers/getDeviceAuthClientId';
 import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
 import { getToken } from '@/routes/api/helpers/getToken';
 import { getSchema } from '@/services/helpers';
@@ -34,6 +35,9 @@ const rateLimitConfig = {
     },
   },
 };
+
+const DEVICE_AUTH_NOT_CONFIGURED_MSG =
+  'GitHub device auth is not configured. Create a device-auth-config ConfigMap in the Che namespace with a github_client_id key.';
 
 export function registerDeviceAuthTokenRoutes(instance: FastifyInstance) {
   instance.register(async server => {
@@ -82,17 +86,21 @@ export function registerDeviceAuthTokenRoutes(instance: FastifyInstance) {
 
     /**
      * POST /dashboard/api/namespace/:namespace/device-auth-token/initiate
-     * Calls GitHub to obtain a device code. Requires CHE_GITHUB_OAUTH_CLIENT_ID env var.
+     * Calls GitHub to obtain a device code. Reads client_id from device-auth-config ConfigMap.
      * Uses user bearer token for auth.
      */
     server.post(
       `${baseApiPath}/namespace/:namespace/device-auth-token/initiate`,
       Object.assign({}, rateLimitConfig, getSchema({ tags, params: namespacedSchema })),
-      async function (request: FastifyRequest) {
+      async function (request: FastifyRequest, reply: FastifyReply) {
+        const clientId = await getDeviceAuthClientId();
+        if (!clientId) {
+          return reply.code(503).send({ message: DEVICE_AUTH_NOT_CONFIGURED_MSG });
+        }
         const { namespace } = request.params as restParams.INamespacedParams;
         const token = getToken(request);
         const { deviceAuthTokenApi } = getDevWorkspaceClient(token);
-        return deviceAuthTokenApi.initiateDeviceAuth(namespace);
+        return deviceAuthTokenApi.initiateDeviceAuth(namespace, clientId);
       },
     );
 
@@ -108,14 +116,19 @@ export function registerDeviceAuthTokenRoutes(instance: FastifyInstance) {
         rateLimitConfig,
         getSchema({ tags, params: namespacedSchema, body: deviceAuthPollBodySchema }),
       ),
-      async function (request: FastifyRequest) {
+      async function (request: FastifyRequest, reply: FastifyReply) {
+        const clientId = await getDeviceAuthClientId();
+        if (!clientId) {
+          return reply.code(503).send({ message: DEVICE_AUTH_NOT_CONFIGURED_MSG });
+        }
         const { namespace } = request.params as restParams.INamespacedParams;
         const { deviceCode } = request.body as { deviceCode: string };
         const token = getToken(request);
         const { deviceAuthTokenApi } = getDevWorkspaceClient(token);
-        return deviceAuthTokenApi.pollDeviceAuth(namespace, deviceCode);
+        return deviceAuthTokenApi.pollDeviceAuth(namespace, deviceCode, clientId);
       },
     );
+
     /**
      * GET /dashboard/api/namespace/:namespace/device-auth-token/:tokenName/validate
      * Checks whether the stored GitHub token is still valid.

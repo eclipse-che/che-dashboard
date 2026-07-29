@@ -94,14 +94,13 @@ class DeviceAuthTokens extends React.PureComponent<Props, State> {
         variant: AlertVariant.danger,
       });
     }
-    if (prevProps.tokens.length === 0 && tokens.length > 0) {
+    if (tokens.length > 0 && prevProps.tokens !== tokens) {
       this.validateTokensInBackground();
     }
   }
 
   private validateTokensInBackground(): void {
     const { tokens, namespace } = this.props;
-    this.setState({ validatedTokens: {} });
     tokens.forEach(token => {
       validateDeviceAuthToken(namespace, token.name)
         .then(valid => {

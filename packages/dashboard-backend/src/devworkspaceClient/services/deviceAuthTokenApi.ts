@@ -12,7 +12,6 @@
 
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
-import { existsSync, readFileSync } from 'fs';
 
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import {
@@ -57,57 +56,6 @@ interface GitHubTokenResponse {
   scope?: string;
   error?: string;
   error_description?: string;
-}
-
-// Mounted file path — same path Che Server uses when the operator
-// mounts github-oauth-config into the pod as a volume.
-const GITHUB_OAUTH_ID_FILE = '/che-conf/oauth/github/id';
-
-async function getGitHubClientId(): Promise<string> {
-  // Priority 1: env var (operator auto-injection in standard deployments)
-  if (process.env.CHE_GITHUB_OAUTH_CLIENT_ID) {
-    return process.env.CHE_GITHUB_OAUTH_CLIENT_ID;
-  }
-  // Priority 2: mounted file (only needed with a custom deployment spec where
-  // the operator does not auto-inject the env var)
-  if (existsSync(GITHUB_OAUTH_ID_FILE)) {
-    const id = readFileSync(GITHUB_OAUTH_ID_FILE, 'utf8').trim();
-    if (id) {
-      return id;
-    }
-  }
-  // Priority 3: clientId from GET /api/oauth on the Che Server (available
-  // once che-server#1035 is deployed — no env var or volume mount needed).
-  const cheInternalUrl = process.env.CHE_INTERNAL_URL;
-  if (cheInternalUrl) {
-    try {
-      const { getServiceAccountToken } = await import(
-        '@/routes/api/helpers/getServiceAccountToken'
-      );
-      const saToken = getServiceAccountToken();
-      const response = await fetch(`${cheInternalUrl}/oauth`, {
-        headers: { Authorization: `Bearer ${saToken}` },
-        signal: AbortSignal.timeout(5_000),
-      });
-      if (response.ok) {
-        const providers = (await response.json()) as Array<{
-          name: string;
-          clientId?: string;
-        }>;
-        const github = providers.find(p => p.name === 'github');
-        if (github?.clientId) {
-          return github.clientId;
-        }
-      }
-    } catch {
-      // fall through
-    }
-  }
-  throw new Error(
-    'GitHub OAuth client_id is not available. ' +
-      'Ensure CHE_GITHUB_OAUTH_CLIENT_ID is set, or deploy che-server#1035 ' +
-      'which exposes clientId via GET /api/oauth.',
-  );
 }
 
 async function githubPostDeviceCode(
@@ -198,8 +146,9 @@ export class GitHubDeviceAuthTokenApiService implements IDeviceAuthTokenApi {
     }
 
     if (secret.metadata?.labels?.[DEVICE_AUTH_LABEL] !== 'true') {
-      throw new Error(
-        `Secret "${tokenName}" does not carry the ${DEVICE_AUTH_LABEL_SELECTOR} label`,
+      throw Object.assign(
+        new Error(`Secret "${tokenName}" does not carry the ${DEVICE_AUTH_LABEL_SELECTOR} label`),
+        { statusCode: 403 },
       );
     }
 
@@ -250,8 +199,7 @@ export class GitHubDeviceAuthTokenApiService implements IDeviceAuthTokenApi {
     }
   }
 
-  async initiateDeviceAuth(namespace: string): Promise<DeviceCodeResponse> {
-    const clientId = await getGitHubClientId();
+  async initiateDeviceAuth(namespace: string, clientId: string): Promise<DeviceCodeResponse> {
     const data = await githubPostDeviceCode({
       client_id: clientId,
       scope: GITHUB_SCOPES,
@@ -277,15 +225,21 @@ export class GitHubDeviceAuthTokenApiService implements IDeviceAuthTokenApi {
     };
   }
 
-  async pollDeviceAuth(namespace: string, deviceCode: string): Promise<DeviceAuthPollResult> {
+  async pollDeviceAuth(
+    namespace: string,
+    deviceCode: string,
+    clientId: string,
+  ): Promise<DeviceAuthPollResult> {
     const stored = activeDeviceCodes.get(namespace);
     if (!stored || stored.code !== deviceCode || Date.now() > stored.expiresAt) {
+      if (stored && Date.now() > stored.expiresAt) {
+        activeDeviceCodes.delete(namespace);
+      }
       return {
         status: 'error',
         message: 'Device code is not valid for this session. Please initiate a new connection.',
       };
     }
-    const clientId = await getGitHubClientId();
     const data = await githubPostToken({
       client_id: clientId,
       device_code: deviceCode,
@@ -358,6 +312,7 @@ export class GitHubDeviceAuthTokenApiService implements IDeviceAuthTokenApi {
     });
     if (existing.items.length > 0 && existing.items[0].metadata?.name) {
       const existingName = existing.items[0].metadata.name;
+      const existingMeta = existing.items[0].metadata;
       try {
         const updated = await this.coreV1API.replaceNamespacedSecret({
           name: existingName,
@@ -366,7 +321,9 @@ export class GitHubDeviceAuthTokenApiService implements IDeviceAuthTokenApi {
             metadata: {
               name: existingName,
               namespace,
+              resourceVersion: existingMeta.resourceVersion,
               labels: {
+                ...(existingMeta.labels ?? {}),
                 [DEVICE_AUTH_LABEL]: 'true',
                 [DEVICE_AUTH_PROVIDER_LABEL]: 'github',
               },

@@ -210,12 +210,7 @@ describe('DeviceAuthToken API Service', () => {
   });
 
   describe('initiateDeviceAuth', () => {
-    const origClientId = process.env.CHE_GITHUB_OAUTH_CLIENT_ID;
-    beforeEach(() => {
-      process.env.CHE_GITHUB_OAUTH_CLIENT_ID = 'test-client-id';
-    });
     afterEach(() => {
-      process.env.CHE_GITHUB_OAUTH_CLIENT_ID = origClientId;
       jest.clearAllMocks();
     });
 
@@ -231,7 +226,7 @@ describe('DeviceAuthToken API Service', () => {
           }),
       });
 
-      const result = await service.initiateDeviceAuth(namespace);
+      const result = await service.initiateDeviceAuth(namespace, 'test-client-id');
 
       expect(result).toEqual({
         deviceCode: 'dev-code-123',
@@ -241,26 +236,19 @@ describe('DeviceAuthToken API Service', () => {
       });
     });
 
-    it('should throw when CHE_GITHUB_OAUTH_CLIENT_ID is not set', async () => {
-      delete process.env.CHE_GITHUB_OAUTH_CLIENT_ID;
-      await expect(service.initiateDeviceAuth(namespace)).rejects.toThrow(
-        'CHE_GITHUB_OAUTH_CLIENT_ID',
-      );
-    });
-
     it('should throw when GitHub returns an error', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () => Promise.resolve({ error: 'invalid_client', error_description: 'Bad client' }),
       });
-      await expect(service.initiateDeviceAuth(namespace)).rejects.toThrow('Bad client');
+      await expect(service.initiateDeviceAuth(namespace, 'test-client-id')).rejects.toThrow(
+        'Bad client',
+      );
     });
   });
 
   describe('pollDeviceAuth', () => {
-    const origClientId = process.env.CHE_GITHUB_OAUTH_CLIENT_ID;
     beforeEach(async () => {
-      process.env.CHE_GITHUB_OAUTH_CLIENT_ID = 'test-client-id';
       stubCoreV1Api.createNamespacedSecret = jest.fn().mockResolvedValue({
         metadata: {
           name: 'device-authentication-github',
@@ -285,10 +273,9 @@ describe('DeviceAuthToken API Service', () => {
             expires_in: 900,
           }),
       });
-      await service.initiateDeviceAuth(namespace);
+      await service.initiateDeviceAuth(namespace, 'test-client-id');
     });
     afterEach(() => {
-      process.env.CHE_GITHUB_OAUTH_CLIENT_ID = origClientId;
       jest.clearAllMocks();
     });
 
@@ -297,7 +284,7 @@ describe('DeviceAuthToken API Service', () => {
         ok: true,
         json: () => Promise.resolve({ error: 'authorization_pending' }),
       });
-      const result = await service.pollDeviceAuth(namespace, 'dev-code-123');
+      const result = await service.pollDeviceAuth(namespace, 'dev-code-123', 'test-client-id');
       expect(result).toEqual({ status: 'pending' });
     });
 
@@ -306,7 +293,7 @@ describe('DeviceAuthToken API Service', () => {
         ok: true,
         json: () => Promise.resolve({ error: 'slow_down' }),
       });
-      const result = await service.pollDeviceAuth(namespace, 'dev-code-123');
+      const result = await service.pollDeviceAuth(namespace, 'dev-code-123', 'test-client-id');
       expect(result).toEqual({ status: 'slow_down' });
     });
 
@@ -315,7 +302,7 @@ describe('DeviceAuthToken API Service', () => {
         ok: true,
         json: () => Promise.resolve({ error: 'expired_token' }),
       });
-      const result = await service.pollDeviceAuth(namespace, 'dev-code-123');
+      const result = await service.pollDeviceAuth(namespace, 'dev-code-123', 'test-client-id');
       expect(result).toEqual({ status: 'expired' });
     });
 
@@ -325,7 +312,7 @@ describe('DeviceAuthToken API Service', () => {
         json: () =>
           Promise.resolve({ access_token: 'ghp_token123', token_type: 'bearer', scope: 'repo' }),
       });
-      const result = await service.pollDeviceAuth(namespace, 'dev-code-123');
+      const result = await service.pollDeviceAuth(namespace, 'dev-code-123', 'test-client-id');
       expect(result.status).toBe('authorized');
       expect((result as { status: 'authorized'; token: api.DeviceAuthToken }).token.provider).toBe(
         'github',
@@ -347,7 +334,7 @@ describe('DeviceAuthToken API Service', () => {
             expires_in: 900,
           }),
       });
-      await service.initiateDeviceAuth(namespace);
+      await service.initiateDeviceAuth(namespace, 'test-client-id');
       const existingName = 'device-authentication-github';
       spyListNamespacedSecret.mockResolvedValueOnce({
         items: [{ metadata: { name: existingName } }],
@@ -358,7 +345,7 @@ describe('DeviceAuthToken API Service', () => {
           Promise.resolve({ access_token: 'ghp_new_token', token_type: 'bearer', scope: 'repo' }),
       });
 
-      const result = await service.pollDeviceAuth(namespace, 'dev-code-456');
+      const result = await service.pollDeviceAuth(namespace, 'dev-code-456', 'test-client-id');
 
       expect(result.status).toBe('authorized');
       expect((result as { status: 'authorized'; token: api.DeviceAuthToken }).token.name).toBe(
@@ -376,7 +363,7 @@ describe('DeviceAuthToken API Service', () => {
         json: () =>
           Promise.resolve({ error: 'access_denied', error_description: 'User denied access' }),
       });
-      const result = await service.pollDeviceAuth(namespace, 'dev-code-123');
+      const result = await service.pollDeviceAuth(namespace, 'dev-code-123', 'test-client-id');
       expect(result).toEqual({ status: 'error', message: 'User denied access' });
     });
 
@@ -385,7 +372,7 @@ describe('DeviceAuthToken API Service', () => {
         ok: true,
         json: () => Promise.resolve({}),
       });
-      const result = await service.pollDeviceAuth(namespace, 'dev-code-123');
+      const result = await service.pollDeviceAuth(namespace, 'dev-code-123', 'test-client-id');
       expect(result).toEqual({ status: 'error', message: 'No access_token in response' });
     });
   });

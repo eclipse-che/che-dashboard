@@ -152,8 +152,8 @@ class ConnectModalClass extends React.PureComponent<Props, State> {
     if (result.status === 'pending') {
       this.schedulePoll(response);
     } else if (result.status === 'slow_down') {
-      // RFC 8628 §3.5: increase interval by 5s on slow_down
-      this.schedulePoll({ ...response, interval: response.interval + 5 });
+      // RFC 8628 §3.5: increase interval by 5s on slow_down; cap at 60s
+      this.schedulePoll({ ...response, interval: Math.min(response.interval + 5, 60) });
     } else if (result.status === 'authorized') {
       this.setState({ pollErrorCount: 0 });
       this.props.onSuccess(result.token);

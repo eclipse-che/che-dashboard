@@ -14,6 +14,7 @@ import { ClusterConfig } from '@eclipse-che/common';
 import { FastifyInstance } from 'fastify';
 
 import { baseApiPath } from '@/constants/config';
+import { getDeviceAuthClientId } from '@/routes/api/helpers/getDeviceAuthClientId';
 import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
 import { getServiceAccountToken } from '@/routes/api/helpers/getServiceAccountToken';
 import { getSchema } from '@/services/helpers';
@@ -28,36 +29,6 @@ export function registerClusterConfigRoute(instance: FastifyInstance) {
   });
 }
 
-/**
- * Determines whether GitHub OAuth is configured by calling the Che Server's
- * /api/oauth endpoint with the dashboard SA token — the same source the
- * Git Services tab uses. No RBAC changes or env vars required.
- * Falls back to CHE_GITHUB_OAUTH_CLIENT_ID env var for local dev / override.
- */
-async function isGitHubOAuthConfigured(): Promise<boolean> {
-  if (process.env.CHE_GITHUB_OAUTH_CLIENT_ID) {
-    return true;
-  }
-  const cheInternalUrl = process.env.CHE_INTERNAL_URL;
-  if (!cheInternalUrl) {
-    return false;
-  }
-  try {
-    const saToken = getServiceAccountToken();
-    const response = await fetch(`${cheInternalUrl}/oauth`, {
-      headers: { Authorization: `Bearer ${saToken}` },
-      signal: AbortSignal.timeout(5_000),
-    });
-    if (!response.ok) {
-      return false;
-    }
-    const providers = (await response.json()) as Array<{ name: string }>;
-    return Array.isArray(providers) && providers.some(p => p.name === 'github');
-  } catch {
-    return false;
-  }
-}
-
 async function buildClusterConfig(): Promise<ClusterConfig> {
   const token = getServiceAccountToken();
   const { serverConfigApi } = getDevWorkspaceClient(token);
@@ -68,6 +39,7 @@ async function buildClusterConfig(): Promise<ClusterConfig> {
   const allWorkspacesLimit = serverConfigApi.getAllWorkspacesLimit(cheCustomResource);
   const dashboardFavicon = serverConfigApi.getDashboardLogo(cheCustomResource);
   const currentArchitecture = await serverConfigApi.getCurrentArchitecture();
+  const clientId = await getDeviceAuthClientId();
 
   return {
     dashboardWarning,
@@ -75,6 +47,6 @@ async function buildClusterConfig(): Promise<ClusterConfig> {
     allWorkspacesLimit,
     runningWorkspacesLimit,
     currentArchitecture,
-    githubDeviceAuthEnabled: await isGitHubOAuthConfigured(),
+    githubDeviceAuthEnabled: clientId !== null,
   };
 }
