@@ -11,3 +11,4 @@
  */
 
 export * from './backup';
+export * from './terminal-themes';

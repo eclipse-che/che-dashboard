@@ -24,6 +24,9 @@ import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 jest.mock('@/pages/Loader');
+jest.mock('@/services/backend-client/devworkspaceSchemaApi', () => ({
+  fetchDevWorkspaceSchema: jest.fn().mockResolvedValue({}),
+}));
 
 const mockFindTargetWorkspace = jest.fn().mockReturnValue(undefined);
 jest.mock('@/services/helpers/factoryFlow/findTargetWorkspace', () => ({

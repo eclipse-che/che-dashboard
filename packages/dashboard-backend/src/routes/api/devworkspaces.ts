@@ -28,6 +28,12 @@ import { PostStartInjector } from '@/services/PostStartInjector';
 
 const tags = ['Devworkspace'];
 
+const RESOURCE_TYPE_LABEL = 'che.eclipse.org/type';
+
+function isAgentWorkspace(labels: Record<string, string> | undefined): boolean {
+  return labels?.[RESOURCE_TYPE_LABEL] === 'agent';
+}
+
 export function registerDevworkspacesRoutes(instance: FastifyInstance) {
   instance.register(async server => {
     server.get(
@@ -66,12 +72,13 @@ export function registerDevworkspacesRoutes(instance: FastifyInstance) {
         // Trigger server-side injection when workspace is created in started mode
         // (e.g. factory URL flow). Without this the watch would only be set up on
         // PATCH /spec/started=true (restart), missing first-time creation.
+        // Skip for agent workspaces — they don't need kubeconfig/podman injection.
         const workspaceName = devWorkspace.metadata?.name;
-        if (devworkspace.spec?.started === true && workspaceName) {
-          // Pass a fresh devworkspaceApi instance (DevWorkspaceClient.devworkspaceApi is a
-          // getter — each access returns a new DevWorkspaceApiService). PostStartInjector
-          // calls stopWatching() on this instance when done; passing the same instance that
-          // the route already used for .create() would cancel the route's own watch.
+        if (
+          devworkspace.spec?.started === true &&
+          workspaceName &&
+          !isAgentWorkspace(devworkspace.metadata?.labels)
+        ) {
           PostStartInjector.watchAndInject(
             namespace,
             workspaceName,
@@ -113,8 +120,7 @@ export function registerDevworkspacesRoutes(instance: FastifyInstance) {
         );
 
         const isStarting = patch.some(p => p.path === '/spec/started' && p.value === true);
-        if (isStarting) {
-          // See comment above — pass a fresh devworkspaceApi instance.
+        if (isStarting && !isAgentWorkspace(devWorkspace.metadata?.labels)) {
           PostStartInjector.watchAndInject(
             namespace,
             workspaceName,

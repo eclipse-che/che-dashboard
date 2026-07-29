@@ -47,7 +47,7 @@ class Header extends React.PureComponent<Props> {
   }
 
   public render(): React.ReactElement {
-    const { actions, title, status, containerScc, hideBreadcrumbs } = this.props;
+    const { title, status, containerScc, hideBreadcrumbs, actions } = this.props;
 
     return (
       <PageSection>

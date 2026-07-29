@@ -14,6 +14,7 @@ import { api } from '@eclipse-che/common';
 import EventEmitter from 'events';
 
 import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
+import { getToken } from '@/routes/api/helpers/getToken';
 import { webSocketHandler } from '@/routes/api/websocket';
 import { logger } from '@/utils/logger';
 
@@ -23,18 +24,30 @@ jest.mock('../helpers/getToken.ts', () => ({
 jest.mock('../helpers/getDevWorkspaceClient.ts');
 
 describe('WebSocket handler', () => {
-  let mockWs: EventEmitter & { send: jest.Mock };
+  let mockWs: EventEmitter & { send: jest.Mock; close: jest.Mock };
   let mockRequest: unknown;
 
   beforeEach(() => {
     jest.clearAllMocks();
     mockWs = Object.assign(new EventEmitter(), {
       send: jest.fn(),
+      close: jest.fn(),
       readyState: 1, // WebSocket.OPEN
     });
     mockRequest = {
       headers: { authorization: 'Bearer test-token' },
     };
+  });
+
+  it('should close connection when authentication fails', () => {
+    (getToken as jest.Mock).mockImplementationOnce(() => {
+      throw new Error('Bearer Token Authorization is required');
+    });
+
+    webSocketHandler(mockWs as never, mockRequest as never);
+
+    expect(mockWs.close).toHaveBeenCalledWith(1008, 'Authentication required');
+    expect(getDevWorkspaceClient).not.toHaveBeenCalled();
   });
 
   it('should send StatusMessage to subscriber when watcher.start() rejects', async () => {
@@ -53,6 +66,10 @@ describe('WebSocket handler', () => {
         stopWatching: jest.fn(),
       },
       logsApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
+      configMapWatchApi: {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },
@@ -106,6 +123,10 @@ describe('WebSocket handler', () => {
         watchInNamespace: jest.fn().mockRejectedValue(watchError),
         stopWatching: jest.fn(),
       },
+      configMapWatchApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
     });
 
     webSocketHandler(mockWs as never, mockRequest as never);
@@ -150,6 +171,10 @@ describe('WebSocket handler', () => {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },
+      configMapWatchApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
     });
 
     webSocketHandler(mockWs as never, mockRequest as never);
@@ -183,6 +208,10 @@ describe('WebSocket handler', () => {
         stopWatching: jest.fn(),
       },
       logsApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
+      configMapWatchApi: {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },
@@ -220,6 +249,10 @@ describe('WebSocket handler', () => {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },
+      configMapWatchApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
     });
 
     webSocketHandler(mockWs as never, mockRequest as never);
@@ -253,6 +286,10 @@ describe('WebSocket handler', () => {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },
+      configMapWatchApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
     });
 
     webSocketHandler(mockWs as never, mockRequest as never);
@@ -279,6 +316,10 @@ describe('WebSocket handler', () => {
         stopWatching: jest.fn(),
       },
       logsApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
+      configMapWatchApi: {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },

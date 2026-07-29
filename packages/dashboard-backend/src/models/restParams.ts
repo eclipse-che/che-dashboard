@@ -25,6 +25,10 @@ export interface IDevWorkspaceSpecParams {
   devworkspace: V1alpha2DevWorkspace;
 }
 
+export interface IDevfileVersionParams {
+  version: string;
+}
+
 export interface IYamlResolverParams {
   url: string;
 }

@@ -1,0 +1,43 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+.devfileTable :global(tr) {
+  border-block-end: var(--pf-v6-c-table__tr--BorderBlockEndWidth, 1px) solid
+    var(--pf-v6-c-table__tr--BorderBlockEndColor, var(--pf-t--global--border--color--default));
+}
+
+.devfileTable :global(label) {
+  position: relative;
+  top: 2px;
+}
+
+.cellEllipsis {
+  overflow: hidden;
+  max-width: 200px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.progressIndicator {
+  position: relative;
+  top: -5px;
+}
+
+.cellId {
+  overflow: hidden;
+
+  max-width: 150px;
+
+  font-family: var(--pf-t--global--font--family--mono);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

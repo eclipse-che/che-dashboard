@@ -35,10 +35,12 @@ const store = new MockStoreBuilder()
 
 describe('BannerAlertWebSocket component', () => {
   beforeEach(() => {
+    jest.useFakeTimers();
     container.snapshot();
   });
 
   afterEach(() => {
+    jest.useRealTimers();
     container.restore();
   });
 
@@ -52,6 +54,11 @@ describe('BannerAlertWebSocket component', () => {
 
     // mount and render the component
     const component = renderComponent(<BannerAlertWebSocket />);
+
+    // advance past the debounce delay
+    act(() => {
+      jest.advanceTimersByTime(10000);
+    });
 
     expect(
       component.queryByText(failingMessage, {
@@ -74,11 +81,17 @@ describe('BannerAlertWebSocket component', () => {
     ).toBeFalsy();
 
     const websocketClient = container.get(WebsocketClient);
-    (websocketClient as any).notifyConnectionEventListeners(
-      ConnectionEvent.ERROR,
-      'WebSocket connection error.',
-    );
-    component.rerender(comp);
+    act(() => {
+      (websocketClient as any).notifyConnectionEventListeners(
+        ConnectionEvent.ERROR,
+        'WebSocket connection error.',
+      );
+    });
+
+    // advance past the debounce delay
+    act(() => {
+      jest.advanceTimersByTime(10000);
+    });
 
     expect(
       component.getAllByText(failingMessage, {

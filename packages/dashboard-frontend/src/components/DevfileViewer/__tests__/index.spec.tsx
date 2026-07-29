@@ -10,73 +10,257 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { render } from '@testing-library/react';
 import React from 'react';
 
-import { DevfileViewer } from '@/components/DevfileViewer';
-import { useTheme } from '@/contexts/ThemeContext';
-import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
+import { DevfileViewer, Props } from '@/components/DevfileViewer';
 
-jest.mock('@/contexts/ThemeContext', () => ({
-  useTheme: jest.fn(),
+jest.unmock('@/components/DevfileViewer');
+
+// These need to be declared before jest.mock calls since jest.mock is hoisted
+// but the variable declarations with `var` keyword are also hoisted (unlike let/const)
+/* eslint-disable no-var */
+var mockViewDispatch: jest.Mock;
+var mockViewDestroy: jest.Mock;
+var mockDocToString: jest.Mock;
+var mockEditorViewInstance: {
+  dispatch: jest.Mock;
+  destroy: jest.Mock;
+  state: { doc: { toString: jest.Mock } };
+};
+var mockReconfigure: jest.Mock;
+var mockCompartmentOf: jest.Mock;
+/* eslint-enable no-var */
+
+jest.mock('@codemirror/state', () => {
+  mockReconfigure = jest.fn().mockReturnValue('reconfigure-effect');
+  mockCompartmentOf = jest.fn().mockReturnValue('theme-extension');
+
+  return {
+    Compartment: jest.fn().mockImplementation(() => ({
+      of: mockCompartmentOf,
+      reconfigure: mockReconfigure,
+    })),
+    EditorState: {
+      create: jest.fn().mockReturnValue('mock-state'),
+      readOnly: {
+        of: jest.fn().mockReturnValue('readonly-extension'),
+      },
+    },
+  };
+});
+
+jest.mock('@codemirror/view', () => {
+  mockViewDispatch = jest.fn();
+  mockViewDestroy = jest.fn();
+  mockDocToString = jest.fn().mockReturnValue('');
+  mockEditorViewInstance = {
+    dispatch: mockViewDispatch,
+    destroy: mockViewDestroy,
+    state: {
+      doc: {
+        toString: mockDocToString,
+      },
+    },
+  };
+
+  return {
+    EditorView: Object.assign(
+      jest.fn().mockImplementation(() => mockEditorViewInstance),
+      {
+        theme: jest.fn().mockReturnValue('light-theme'),
+        lineWrapping: 'line-wrapping',
+      },
+    ),
+  };
+});
+
+jest.mock('@codemirror/lang-yaml', () => ({
+  yaml: jest.fn().mockReturnValue('yaml-extension'),
 }));
 
-const mockUseTheme = useTheme as jest.Mock;
+jest.mock('@codemirror/language', () => ({
+  HighlightStyle: {
+    define: jest.fn().mockReturnValue('highlight-style'),
+  },
+  syntaxHighlighting: jest.fn().mockReturnValue('syntax-highlighting'),
+}));
 
-const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
+jest.mock('@codemirror/theme-one-dark', () => ({
+  oneDark: 'one-dark-theme',
+}));
 
-const sampleDevfile = 'schemaVersion: 2.2.0\nmetadata:\n  name: test-workspace';
+jest.mock('@lezer/highlight', () => ({
+  tags: {
+    keyword: 'keyword',
+    string: 'string',
+    variableName: 'variableName',
+    name: 'name',
+    deleted: 'deleted',
+    character: 'character',
+    propertyName: 'propertyName',
+    macroName: 'macroName',
+  },
+}));
+
+jest.mock('codemirror', () => ({
+  basicSetup: 'basic-setup-extension',
+}));
+
+let mockIsDarkTheme = false;
+jest.mock('@/contexts/ThemeContext', () => ({
+  useTheme: () => ({
+    isDarkTheme: mockIsDarkTheme,
+  }),
+}));
+
+function renderComponent(overrides?: Partial<Props>) {
+  const defaultProps: Props = {
+    isActive: true,
+    isExpanded: false,
+    value: 'schemaVersion: 2.2.2\nmetadata:\n  name: test\n',
+    id: 'test-viewer',
+  };
+  return render(<DevfileViewer {...defaultProps} {...overrides} />);
+}
 
 describe('DevfileViewer', () => {
   beforeEach(() => {
-    mockUseTheme.mockReturnValue({
-      themePreference: 'LIGHT',
-      isDarkTheme: false,
-      setThemePreference: jest.fn(),
-    });
-  });
-
-  afterEach(() => {
     jest.clearAllMocks();
+    mockIsDarkTheme = false;
+    mockDocToString.mockReturnValue('');
   });
 
-  test('snapshot with light theme', () => {
-    const snapshot = createSnapshot(sampleDevfile);
-    expect(snapshot.toJSON()).toMatchSnapshot();
+  test('renders a container div with the correct id', () => {
+    renderComponent();
+
+    const container = document.getElementById('test-viewer');
+    expect(container).toBeTruthy();
   });
 
-  test('renders content in light theme', () => {
-    renderComponent(sampleDevfile);
+  test('renders with devfileViewer class', () => {
+    renderComponent();
 
-    const textbox = screen.getByRole('textbox');
-    expect(textbox).toHaveTextContent('schemaVersion');
+    const container = document.getElementById('test-viewer');
+    expect(container?.parentElement?.className).toContain('devfileViewer');
   });
 
-  test('renders content in dark theme', () => {
-    mockUseTheme.mockReturnValue({
-      themePreference: 'DARK',
-      isDarkTheme: true,
-      setThemePreference: jest.fn(),
-    });
+  test('creates EditorView when container ref is set', () => {
+    const { EditorView } = jest.requireMock<{ EditorView: jest.Mock }>('@codemirror/view');
 
-    renderComponent(sampleDevfile);
+    renderComponent();
 
-    const textbox = screen.getByRole('textbox');
-    expect(textbox).toHaveTextContent('schemaVersion');
+    expect(EditorView).toHaveBeenCalledWith(
+      expect.objectContaining({
+        state: 'mock-state',
+      }),
+    );
   });
 
-  test('handles content change', () => {
-    const { reRenderComponent } = renderComponent(sampleDevfile);
+  test('creates EditorState with correct doc and extensions', () => {
+    const { EditorState } = jest.requireMock<{ EditorState: { create: jest.Mock } }>(
+      '@codemirror/state',
+    );
 
-    const textbox = screen.getByRole('textbox');
-    expect(textbox).toHaveTextContent('test-workspace');
+    renderComponent();
 
-    const updatedDevfile = 'schemaVersion: 2.2.0\nmetadata:\n  name: updated-workspace';
-    reRenderComponent(updatedDevfile);
+    expect(EditorState.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        doc: 'schemaVersion: 2.2.2\nmetadata:\n  name: test\n',
+      }),
+    );
+  });
 
-    expect(textbox).toHaveTextContent('updated-workspace');
+  test('uses light theme compartment when isDarkTheme is false', () => {
+    mockIsDarkTheme = false;
+    renderComponent();
+
+    // The compartment.of should be called with light theme (not oneDark)
+    expect(mockCompartmentOf).toHaveBeenCalled();
+  });
+
+  test('uses dark theme compartment when isDarkTheme is true', () => {
+    mockIsDarkTheme = true;
+    renderComponent();
+
+    expect(mockCompartmentOf).toHaveBeenCalledWith('one-dark-theme');
+  });
+
+  test('dispatches theme reconfigure when isDarkTheme changes', () => {
+    mockIsDarkTheme = false;
+    const { rerender } = renderComponent();
+
+    // Clear calls from initial render
+    mockViewDispatch.mockClear();
+    mockReconfigure.mockClear();
+
+    mockIsDarkTheme = true;
+    rerender(
+      <DevfileViewer
+        isActive={true}
+        isExpanded={false}
+        value="schemaVersion: 2.2.2\nmetadata:\n  name: test\n"
+        id="test-viewer"
+      />,
+    );
+
+    expect(mockReconfigure).toHaveBeenCalledWith('one-dark-theme');
+    expect(mockViewDispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        effects: 'reconfigure-effect',
+      }),
+    );
+  });
+
+  test('dispatches content change when value prop changes', () => {
+    mockDocToString.mockReturnValue('old content');
+    const { rerender } = renderComponent({ value: 'old content' });
+
+    // Clear dispatch calls from initial render
+    mockViewDispatch.mockClear();
+
+    rerender(
+      <DevfileViewer isActive={true} isExpanded={false} value="new content" id="test-viewer" />,
+    );
+
+    expect(mockViewDispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        changes: expect.objectContaining({
+          from: 0,
+          insert: 'new content',
+        }),
+      }),
+    );
+  });
+
+  test('does not dispatch content change when value is the same', () => {
+    const content = 'same content';
+    mockDocToString.mockReturnValue(content);
+    const { rerender } = renderComponent({ value: content });
+
+    mockViewDispatch.mockClear();
+
+    rerender(<DevfileViewer isActive={true} isExpanded={false} value={content} id="test-viewer" />);
+
+    // dispatch should not be called for content changes
+    const contentChangeCalls = mockViewDispatch.mock.calls.filter(
+      (call: unknown[]) => (call[0] as Record<string, unknown>).changes !== undefined,
+    );
+    expect(contentChangeCalls).toHaveLength(0);
+  });
+
+  test('renders with different id', () => {
+    renderComponent({ id: 'custom-viewer-id' });
+
+    const container = document.getElementById('custom-viewer-id');
+    expect(container).toBeTruthy();
+  });
+
+  test('destroys EditorView on unmount', () => {
+    const { unmount } = renderComponent();
+
+    unmount();
+
+    expect(mockViewDestroy).toHaveBeenCalled();
   });
 });
-
-function getComponent(value: string): React.ReactElement {
-  return <DevfileViewer id="devfile-viewer-id" isActive={true} isExpanded={true} value={value} />;
-}
