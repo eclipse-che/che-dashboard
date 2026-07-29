@@ -247,6 +247,16 @@ export interface IDevWorkspaceResources {
   editorContent: string | undefined;
 }
 
+export interface IWorkspaceCreationRequest {
+  devfileContent?: string;
+  devfileUrl?: string;
+  editorPath?: string;
+  editorContent?: string;
+  projectName?: string;
+  editorImage?: string;
+  aiProviders?: string[];
+}
+
 export interface IGettingStartedSample {
   displayName: string;
   description?: string;
