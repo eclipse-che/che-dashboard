@@ -10,12 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { PageContext, PageSidebar, PageSidebarBody } from '@patternfly/react-core';
+import { Nav, PageContext, PageSidebar, PageSidebarBody } from '@patternfly/react-core';
 import { History } from 'history';
 import React from 'react';
 
 import { useAnnounceOnChange } from '@/components/WorkspaceProgress/StepTitle/useAnnounceOnChange';
 import Navigation from '@/Layout/Navigation';
+import styles from '@/Layout/Sidebar/index.module.css';
+import NavigationAgentList from '@/plugins/dashboard-ai-agent/navigation/AgentList';
 
 export type Props = {
   history: History;
@@ -37,8 +39,15 @@ export function Sidebar({ history }: Props): React.ReactElement {
 
   return (
     <PageSidebar {...inertProp}>
-      <PageSidebarBody>
-        <Navigation history={history} />
+      <PageSidebarBody className={styles.sidebarBody}>
+        <div className={styles.mainNavWrapper}>
+          <Navigation history={history} />
+        </div>
+        <div className={styles.agentNavWrapper}>
+          <Nav aria-label="Agent Pods">
+            <NavigationAgentList activePath="" />
+          </Nav>
+        </div>
       </PageSidebarBody>
     </PageSidebar>
   );

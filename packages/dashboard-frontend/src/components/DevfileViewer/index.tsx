@@ -40,7 +40,7 @@ const createLightTheme = () => {
       },
       '.cm-gutters': {
         backgroundColor: '#f7f7f7',
-        color: '#636363',
+        color: '#999',
       },
       '.cm-activeLineGutter': {
         backgroundColor: '#f7f7f7',
@@ -50,25 +50,10 @@ const createLightTheme = () => {
   );
 };
 
-const createDarkGutterTheme = () => {
-  return EditorView.theme(
-    {
-      '.cm-gutters': {
-        backgroundColor: '#161b22',
-        color: '#8b949e',
-      },
-      '.cm-activeLineGutter': {
-        backgroundColor: '#161b22',
-      },
-    },
-    { dark: true },
-  );
-};
-
 const createLightHighlightStyle = () => {
   return HighlightStyle.define([
-    { tag: t.keyword, color: '#4c7399' },
-    { tag: [t.string], color: '#4c7399' },
+    { tag: t.keyword, color: '#5e81ac' },
+    { tag: [t.string], color: '#5e81ac' },
     { tag: [t.variableName], color: '#008080' },
     {
       tag: [t.name, t.deleted, t.character, t.propertyName, t.macroName],
@@ -81,7 +66,6 @@ export const DevfileViewer: React.FC<Props> = ({ value, id }) => {
   const { isDarkTheme } = useTheme();
 
   const lightTheme = useMemo(() => createLightTheme(), []);
-  const darkGutterTheme = useMemo(() => createDarkGutterTheme(), []);
   const lightHighlightStyle = useMemo(() => createLightHighlightStyle(), []);
 
   const extensions = useMemo(() => {
@@ -90,9 +74,9 @@ export const DevfileViewer: React.FC<Props> = ({ value, id }) => {
       yaml(),
     ];
     return isDarkTheme
-      ? [darkGutterTheme, ...baseExtensions]
+      ? baseExtensions
       : [lightTheme, syntaxHighlighting(lightHighlightStyle), ...baseExtensions];
-  }, [isDarkTheme, darkGutterTheme, lightTheme, lightHighlightStyle]);
+  }, [isDarkTheme, lightTheme, lightHighlightStyle]);
 
   return (
     <div className={styles.devfileViewer}>

@@ -11,6 +11,8 @@
  */
 
 import { container } from '@/inversify.config';
+import { aiAgentRegistryActionCreators } from '@/plugins/dashboard-ai-agent/store/AiAgentRegistry';
+import { actionCreators as localDevfilesActionCreators } from '@/plugins/dashboard-ai-agent/store/LocalDevfiles';
 import { provisionKubernetesNamespace } from '@/services/backend-client/kubernetesNamespaceApi';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import Bootstrap from '@/services/bootstrap';
@@ -98,6 +100,12 @@ jest
   .spyOn(workspacePreferencesActionCreators, 'requestPreferences')
   .mockImplementation(() => jest.fn());
 jest.spyOn(bannerAlertActionCreators, 'addBanner').mockImplementation(() => jest.fn());
+jest
+  .spyOn(localDevfilesActionCreators, 'subscribeToAgentPodChanges')
+  .mockImplementation(() => jest.fn());
+jest
+  .spyOn(aiAgentRegistryActionCreators, 'requestAiAgentRegistry')
+  .mockImplementation(() => jest.fn().mockResolvedValue(undefined));
 
 const mockWebsocketClient = {
   connect: jest.fn(),

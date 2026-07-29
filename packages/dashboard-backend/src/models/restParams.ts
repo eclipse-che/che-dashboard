@@ -80,3 +80,7 @@ export interface AiProviderKeyBody {
   envVarName: string;
   apiKey: string;
 }
+
+export interface IDevfileVersionParams {
+  version?: string;
+}

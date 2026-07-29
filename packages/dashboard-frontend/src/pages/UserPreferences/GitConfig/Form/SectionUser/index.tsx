@@ -24,8 +24,8 @@ export type Props = {
 };
 
 export class GitConfigSectionUser extends React.PureComponent<Props> {
-  private isNameValid = false;
-  private isEmailValid = false;
+  private isNameValid = true;
+  private isEmailValid = true;
 
   private handleChange(
     partialConfigUser: Partial<GitConfig['user']>,

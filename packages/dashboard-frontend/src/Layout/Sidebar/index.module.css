@@ -1,0 +1,31 @@
+/*
+ * Copyright (c) 2018-2026 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+/* Make the sidebar body a flex column so agent pods can be pushed to the bottom */
+.sidebarBody {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0;
+}
+
+/* Main navigation fills all available vertical space */
+.mainNavWrapper {
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+
+/* Agent pods section sticks to the bottom and grows upward */
+.agentNavWrapper {
+  flex: 0 0 auto;
+  margin-top: auto;
+}

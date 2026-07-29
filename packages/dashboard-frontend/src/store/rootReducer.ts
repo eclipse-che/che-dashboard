@@ -10,7 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { aiConfigReducer } from '@/store/AiConfig';
+import { reducer as aiConfigReducer } from '@/plugins/ai-selector/store/AiConfig/reducer';
+import { aiAgentRegistryReducer } from '@/plugins/dashboard-ai-agent/store/AiAgentRegistry';
+import { devfileSchemaReducer } from '@/plugins/dashboard-ai-agent/store/DevfileSchema';
+import { devWorkspaceSchemaReducer } from '@/plugins/dashboard-ai-agent/store/DevWorkspaceSchema';
+import { localDevfilesReducer } from '@/plugins/dashboard-ai-agent/store/LocalDevfiles';
 import { backupsReducer } from '@/store/Backups';
 import { bannerAlertReducer } from '@/store/BannerAlert';
 import { brandingReducer } from '@/store/Branding';
@@ -39,7 +43,11 @@ import { devWorkspacesReducer } from '@/store/Workspaces/devWorkspaces';
 import { workspacePreferencesReducer } from '@/store/Workspaces/Preferences';
 
 export const rootReducer = {
+  aiAgentRegistry: aiAgentRegistryReducer,
   aiConfig: aiConfigReducer,
+  devfileSchema: devfileSchemaReducer,
+  devWorkspaceSchema: devWorkspaceSchemaReducer,
+  localDevfiles: localDevfilesReducer,
   backups: backupsReducer,
   bannerAlert: bannerAlertReducer,
   branding: brandingReducer,

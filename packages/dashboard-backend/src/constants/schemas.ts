@@ -372,6 +372,13 @@ export const namespacedWorkspacePreferencesAuthorizationSchema: JSONSchema7 = {
   required: ['namespace', 'provider'],
 };
 
+export const devfileVersionSchema: JSONSchema7 = {
+  type: 'object',
+  properties: {
+    version: { type: 'string' },
+  },
+};
+
 export const namespacedWorkspacePreferencesTrustedSourceSchema: JSONSchema7 = {
   type: 'object',
   properties: {

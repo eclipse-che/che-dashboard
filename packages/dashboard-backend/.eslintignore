@@ -1,0 +1,4 @@
+# Plugin source files are managed in a separate repo (che-dashboard-plugins)
+# and symlinked into src/plugins/ at build time. They follow their own lint
+# rules and should not be linted as part of the dashboard-backend package.
+src/plugins/

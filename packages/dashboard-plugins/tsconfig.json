@@ -1,0 +1,29 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2021",
+    "lib": [
+      "ES2021",
+      "dom"
+    ],
+    "module": "commonjs",
+    "baseUrl": "./",
+    "moduleResolution": "node",
+    "paths": {
+      "@plugins/*": [
+        "./src/*"
+      ]
+    },
+    "jsx": "react",
+    "resolveJsonModule": true,
+    "outDir": "lib",
+    "rootDir": "src"
+  },
+  "exclude": [
+    "node_modules",
+    "lib"
+  ],
+  "include": [
+    "src"
+  ]
+}

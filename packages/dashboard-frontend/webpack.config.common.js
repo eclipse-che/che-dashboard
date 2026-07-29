@@ -11,6 +11,7 @@
  */
 
 const CopyPlugin = require('copy-webpack-plugin');
+const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
@@ -73,7 +74,16 @@ const config = {
       {
         test: /\.tsx?$/,
         include: path.join(__dirname, 'src'),
-        use: ['ts-loader'],
+        use: [{
+          loader: 'ts-loader',
+          options: {
+            // TS6059: file is not under 'rootDir'. Plugin files are mounted via
+            // symlinks outside the dashboard src tree, so TypeScript raises this
+            // error for them. Suppressing it here lets the build succeed while
+            // symlink-based plugins are compiled alongside core dashboard code.
+            ignoreDiagnostics: [6059],
+          },
+        }],
         exclude: /node_modules/,
       },
       {
@@ -88,10 +98,49 @@ const config = {
   },
   resolve: {
     extensions: ['.js', '.ts', '.tsx'],
-    alias: {
-      // alias for absolute imports (see tsconfig.json)
-      '@': path.resolve(__dirname, 'src/'),
-    },
+    symlinks: false,
+    alias: (() => {
+      // IMPORTANT: webpack alias resolution uses first-match-wins (forEachBail).
+      // Specific plugin aliases MUST be listed BEFORE the general '@' alias,
+      // otherwise '@' intercepts all '@/...' imports and plugin aliases never fire.
+      const pluginsDir = path.join(__dirname, 'src/plugins');
+      const pluginAliases = {};
+
+      if (fs.existsSync(pluginsDir)) {
+        const pluginDirs = fs.readdirSync(pluginsDir).filter(n => {
+          const full = path.join(pluginsDir, n);
+          try {
+            return (fs.lstatSync(full).isSymbolicLink() || fs.statSync(full).isDirectory())
+              && !n.endsWith('.ts') && !n.endsWith('.tsx');
+          } catch { return false; }
+        });
+
+        for (const pluginName of pluginDirs) {
+          const pluginDir = path.resolve(pluginsDir, pluginName);
+          pluginAliases[`@/plugins/${pluginName}`] = pluginDir;
+
+          // For components and pages the plugin provides, alias the @/components/<X>
+          // and @/pages/<X> paths to the plugin dir when not present in dashboard src.
+          for (const subdir of ['components', 'pages']) {
+            const pluginSubdir = path.join(pluginDir, subdir);
+            if (!fs.existsSync(pluginSubdir)) continue;
+            for (const entry of fs.readdirSync(pluginSubdir)) {
+              const dashboardPath = path.join(__dirname, 'src', subdir, entry);
+              if (!fs.existsSync(dashboardPath)) {
+                pluginAliases[`@/${subdir}/${entry}`] = path.resolve(pluginSubdir, entry);
+              }
+            }
+          }
+        }
+      }
+
+      return {
+        // Specific plugin aliases come FIRST so they win over the general '@' alias
+        ...pluginAliases,
+        // General '@' alias for absolute imports (see tsconfig.json) — must be LAST
+        '@': path.resolve(__dirname, 'src/'),
+      };
+    })(),
     fallback: {
       "fs": false,
       "net": false,

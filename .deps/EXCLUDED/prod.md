@@ -13,5 +13,9 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `launder@1.7.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/launder/1.7.1) |
 | `brace-expansion@5.0.7` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/brace-expansion/5.0.7) |
 | `js-yaml@4.3.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/js-yaml/4.3.0) |
+| `@eclipse-che/common@workspace:packages/common` | ecd.che |
+| `sanitize-html@2.17.6` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sanitize-html/2.17.6) |
+
+
 
 

@@ -189,6 +189,13 @@ export class WebsocketClient {
     this.messageHandler.addListener(channel, listener);
   }
 
+  public removeChannelMessageListener(
+    channel: api.webSocket.Channel,
+    listener: ChannelListener,
+  ): void {
+    this.messageHandler.removeListener(channel, listener);
+  }
+
   /**
    * Returns true if the given channel has a listener.
    */
