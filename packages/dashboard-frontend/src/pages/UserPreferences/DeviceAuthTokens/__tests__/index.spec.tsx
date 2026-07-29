@@ -33,8 +33,6 @@ jest.mock('@/pages/UserPreferences/DeviceAuthTokens/ConnectModal');
 jest.mock('@/pages/UserPreferences/DeviceAuthTokens/DeleteModal');
 jest.mock('@/pages/UserPreferences/DeviceAuthTokens/List');
 
-console.error = jest.fn();
-
 const mockShowAlert = jest.fn();
 
 const mockRequestDeviceAuthTokens = jest.fn();
@@ -63,8 +61,10 @@ const { renderComponent } = getComponentRenderer(getComponent);
 describe('DeviceAuthTokens', () => {
   let storeBuilder: MockStoreBuilder;
   let localState: Partial<State>;
+  let consoleErrorSpy: jest.SpyInstance;
 
   beforeEach(() => {
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     storeBuilder = new MockStoreBuilder().withClusterConfig({ githubDeviceAuthEnabled: true });
 
     class MockAppAlerts extends AppAlerts {
@@ -78,6 +78,7 @@ describe('DeviceAuthTokens', () => {
   });
 
   afterEach(() => {
+    consoleErrorSpy.mockRestore();
     jest.clearAllMocks();
     container.restore();
     localState = {};

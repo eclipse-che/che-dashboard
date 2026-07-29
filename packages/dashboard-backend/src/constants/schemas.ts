@@ -329,7 +329,6 @@ export const deviceAuthTokenResponseSchema = {
       name: { type: 'string' },
       provider: { type: 'string' },
       creationTimestamp: { type: 'string' },
-      valid: { type: 'string', enum: ['valid', 'invalid', 'unknown'] },
     },
     required: ['name'],
   },

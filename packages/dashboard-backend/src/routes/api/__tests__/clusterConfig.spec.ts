@@ -24,6 +24,7 @@ import { setup, teardown } from '@/utils/appBuilder';
 
 jest.mock('../helpers/getServiceAccountToken.ts');
 jest.mock('../helpers/getDevWorkspaceClient.ts');
+jest.mock('../helpers/getDeviceAuthClientId.ts');
 
 describe('Cluster Config Route', () => {
   let app: FastifyInstance;

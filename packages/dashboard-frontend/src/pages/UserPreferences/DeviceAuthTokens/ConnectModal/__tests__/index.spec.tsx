@@ -15,8 +15,16 @@ import React from 'react';
 import { Provider } from 'react-redux';
 
 import { ConnectModal } from '@/pages/UserPreferences/DeviceAuthTokens/ConnectModal';
-import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
-import { DeviceCodeResponse, pollDeviceAuth } from '@/services/backend-client/deviceAuthTokenApi';
+import getComponentRenderer, {
+  render,
+  screen,
+  waitFor,
+} from '@/services/__mocks__/getComponentRenderer';
+import {
+  DeviceAuthPollResult,
+  DeviceCodeResponse,
+  pollDeviceAuth,
+} from '@/services/backend-client/deviceAuthTokenApi';
 import { AppThunk } from '@/store';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { deviceAuthTokenActionCreators } from '@/store/DeviceAuthToken';
@@ -94,6 +102,29 @@ describe('ConnectModal', () => {
     await waitFor(() => screen.getByTestId('cancel-button'));
     screen.getByTestId('cancel-button').click();
     expect(mockOnCloseModal).toHaveBeenCalled();
+  });
+
+  it('should not call onSuccess when component unmounts before poll resolves', async () => {
+    let resolvePoll!: (result: DeviceAuthPollResult) => void;
+    const pendingPoll = new Promise<DeviceAuthPollResult>(resolve => {
+      resolvePoll = resolve;
+    });
+    (pollDeviceAuth as jest.Mock).mockReturnValue(pendingPoll);
+
+    const { unmount } = render(getComponent(true));
+    await waitFor(() => screen.getByTestId('user-code'));
+
+    // advance to trigger the first scheduled poll
+    jest.advanceTimersByTime(5000);
+
+    // unmount while the poll promise is still pending
+    unmount();
+
+    // resolve the in-flight poll after unmount
+    resolvePoll({ status: 'authorized', token: newToken });
+    await Promise.resolve();
+
+    expect(mockOnSuccess).not.toHaveBeenCalled();
   });
 
   it('should increase poll interval by 5s on slow_down', async () => {

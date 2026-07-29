@@ -642,13 +642,17 @@ export interface IDeviceAuthTokenApi {
   /**
    * Initiates a GitHub Device Authorization flow and returns the device code and user code.
    */
-  initiateDeviceAuth(namespace: string): Promise<DeviceCodeResponse>;
+  initiateDeviceAuth(namespace: string, clientId: string): Promise<DeviceCodeResponse>;
 
   /**
    * Polls GitHub for the access token using the device code.
    * On success, stores the token as a Kubernetes secret.
    */
-  pollDeviceAuth(namespace: string, deviceCode: string): Promise<DeviceAuthPollResult>;
+  pollDeviceAuth(
+    namespace: string,
+    deviceCode: string,
+    clientId: string,
+  ): Promise<DeviceAuthPollResult>;
   validateToken(namespace: string, tokenName: string): Promise<'valid' | 'invalid' | 'unknown'>;
 }
 
