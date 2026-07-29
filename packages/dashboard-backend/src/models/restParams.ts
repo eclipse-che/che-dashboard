@@ -80,3 +80,13 @@ export interface AiProviderKeyBody {
   envVarName: string;
   apiKey: string;
 }
+
+export interface IWorkspaceCreationParams {
+  devfileUrl?: string;
+  devfilePath?: string;
+  remoteAddURL?: string;
+  storageType?: string;
+  image?: string;
+  cheEditor?: string;
+  errorCode?: string;
+}
