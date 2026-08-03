@@ -108,6 +108,37 @@ describe('helpers', () => {
     });
   });
 
+  describe('getRepositoryUrlFromLocation', () => {
+    describe('gitlab', () => {
+      test('should return repo URL from tree URL', () => {
+        expect(
+          helpers.getRepositoryUrlFromLocation(
+            'https://gitlab.com/eclipse-che/che-dashboard/-/tree/main',
+          ),
+        ).toBe('https://gitlab.com/eclipse-che/che-dashboard');
+      });
+      test('should return repo URL from blob URL', () => {
+        expect(
+          helpers.getRepositoryUrlFromLocation(
+            'https://gitlab.com/eclipse-che/che-dashboard/-/blob/main/devfile.yaml',
+          ),
+        ).toBe('https://gitlab.com/eclipse-che/che-dashboard');
+      });
+      test('should return repo URL from blob URL with subgroups', () => {
+        expect(
+          helpers.getRepositoryUrlFromLocation(
+            'https://gitlab.com/group/subgroup/repo/-/blob/main/devfile.yaml',
+          ),
+        ).toBe('https://gitlab.com/group/subgroup/repo');
+      });
+      test('should return repo URL unchanged when no tree or blob', () => {
+        expect(
+          helpers.getRepositoryUrlFromLocation('https://gitlab.com/eclipse-che/che-dashboard.git'),
+        ).toBe('https://gitlab.com/eclipse-che/che-dashboard.git');
+      });
+    });
+  });
+
   describe('getBranchFromLocation', () => {
     describe('supported GitServices', () => {
       const branch = 'main';
@@ -135,6 +166,28 @@ describe('helpers', () => {
           expect(
             helpers.getBranchFromLocation(
               `https://gitlab.com/eclipse-che/che-dashboard/-/tree/${branch}`,
+            ),
+          ).toBe(branch);
+        });
+        test('should return slashed branch from tree URL', () => {
+          expect(
+            helpers.getBranchFromLocation(
+              'https://gitlab.com/eclipse-che/che-dashboard/-/tree/feature/my-branch',
+            ),
+          ).toBe('feature/my-branch');
+        });
+        test('should return the revision from blob URL', () => {
+          const revision = 'f14e0f02e16a38d73115f8bf3b9d46f7b35fb5a9';
+          expect(
+            helpers.getBranchFromLocation(
+              `https://gitlab.com/eclipse-che/che-dashboard/-/blob/${revision}/devfile.yaml`,
+            ),
+          ).toBe(revision);
+        });
+        test('should return the branch name from blob URL', () => {
+          expect(
+            helpers.getBranchFromLocation(
+              `https://gitlab.com/eclipse-che/che-dashboard/-/blob/${branch}/devfile.yaml`,
             ),
           ).toBe(branch);
         });
@@ -231,6 +284,15 @@ describe('helpers', () => {
               branch,
             ),
           ).toBe(`https://gitlab.com/group/subgroup/repository.git/-/tree/${branch}`);
+        });
+        test('should convert blob URL to tree URL with branch', () => {
+          const revision = 'f14e0f02e16a38d73115f8bf3b9d46f7b35fb5a9';
+          expect(
+            helpers.setBranchToLocation(
+              `https://gitlab.com/eclipse-che/che-dashboard/-/blob/${revision}/devfile.yaml`,
+              branch,
+            ),
+          ).toBe(`https://gitlab.com/eclipse-che/che-dashboard/-/tree/${branch}`);
         });
       });
       describe('Bitbucket', () => {
@@ -334,6 +396,53 @@ describe('helpers', () => {
             gitBranch: undefined,
             remotes: undefined,
             devfilePath: undefined,
+          });
+        });
+        test('should return options from GitLab blob URL', () => {
+          const revision = 'f14e0f02e16a38d73115f8bf3b9d46f7b35fb5a9';
+          const location = `https://gitlab.com/eclipse-che/che-dashboard/-/blob/${revision}/devfile.yaml`;
+          const options = helpers.getGitRepoOptionsFromLocation(location);
+          expect(options).toEqual({
+            location: `https://gitlab.com/eclipse-che/che-dashboard/-/blob/${revision}/devfile.yaml`,
+            hasSupportedGitService: true,
+            gitBranch: revision,
+            remotes: [],
+            devfilePath: 'devfile.yaml',
+          });
+        });
+        test('should return options from GitLab blob URL with branch name', () => {
+          const location = 'https://gitlab.com/eclipse-che/che-dashboard/-/blob/main/devfile.yaml';
+          const options = helpers.getGitRepoOptionsFromLocation(location);
+          expect(options).toEqual({
+            location: 'https://gitlab.com/eclipse-che/che-dashboard/-/blob/main/devfile.yaml',
+            hasSupportedGitService: true,
+            gitBranch: 'main',
+            remotes: [],
+            devfilePath: 'devfile.yaml',
+          });
+        });
+        test('should return options from GitLab blob URL with nested file path', () => {
+          const revision = 'f14e0f02e16a38d73115f8bf3b9d46f7b35fb5a9';
+          const location = `https://gitlab.com/eclipse-che/che-dashboard/-/blob/${revision}/path/to/devfile.yaml`;
+          const options = helpers.getGitRepoOptionsFromLocation(location);
+          expect(options).toEqual({
+            location: `https://gitlab.com/eclipse-che/che-dashboard/-/blob/${revision}/path/to/devfile.yaml`,
+            hasSupportedGitService: true,
+            gitBranch: revision,
+            remotes: [],
+            devfilePath: 'path/to/devfile.yaml',
+          });
+        });
+        test('should return options from GitLab blob URL with subgroups', () => {
+          const revision = 'f14e0f02e16a38d73115f8bf3b9d46f7b35fb5a9';
+          const location = `https://gitlab.com/group/subgroup/repo/-/blob/${revision}/devfile.yaml`;
+          const options = helpers.getGitRepoOptionsFromLocation(location);
+          expect(options).toEqual({
+            location: `https://gitlab.com/group/subgroup/repo/-/blob/${revision}/devfile.yaml`,
+            hasSupportedGitService: true,
+            gitBranch: revision,
+            remotes: [],
+            devfilePath: 'devfile.yaml',
           });
         });
         test('should return all supported options', () => {

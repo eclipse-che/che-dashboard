@@ -88,6 +88,9 @@ export function getRepositoryUrlFromLocation(location: string): string {
       break;
     case 'gitlab':
       indexOf = location.indexOf('/-/tree');
+      if (indexOf < 0) {
+        indexOf = location.indexOf('/-/blob');
+      }
       if (indexOf > 0) {
         repo = location.substring(0, indexOf);
       }
@@ -126,11 +129,15 @@ export function getBranchFromLocation(location: string): string | undefined {
         branch = pathname.slice(3).join('/');
       }
       break;
-    case 'gitlab':
-      if (pathname[2] === '-' && pathname[3] === 'tree') {
-        branch = pathname.slice(4).join('/');
+    case 'gitlab': {
+      const dashIdx = pathname.indexOf('-');
+      if (dashIdx >= 0 && pathname[dashIdx + 1] === 'tree') {
+        branch = pathname.slice(dashIdx + 2).join('/');
+      } else if (dashIdx >= 0 && pathname[dashIdx + 1] === 'blob') {
+        branch = pathname[dashIdx + 2];
       }
       break;
+    }
     case 'bitbucket-server':
       if (pathname[2] === 'src') {
         branch = pathname.slice(3).join('/');
@@ -209,7 +216,7 @@ export function setBranchToLocation(location: string, branch: string | undefined
         url.pathname = `${user}/${project}/tree/${branch}`;
         break;
       case 'gitlab':
-        url.pathname = `${pathname.replace(/\/-\/tree\/.*$/, '')}/-/tree/${branch}`;
+        url.pathname = `${pathname.replace(/\/-\/(tree|blob)\/.*$/, '')}/-/tree/${branch}`;
         break;
       case 'bitbucket-server':
         url.pathname = `${user}/${project}/src/${branch}`;
@@ -300,7 +307,19 @@ export function getGitRepoOptionsFromLocation(location: string): {
   hasSupportedGitService: boolean;
 } {
   const { path, searchParams } = getFactoryParamsFromLocation(location);
-  const devfilePath = searchParams.get('devfilePath') || undefined;
+  let devfilePath = searchParams.get('devfilePath') || undefined;
+
+  if (
+    !devfilePath &&
+    isSupportedGitService(location) &&
+    getSupportedGitService(location) === 'gitlab'
+  ) {
+    const pathname = new URL(location).pathname.replace(/^\//, '').replace(/\/$/, '').split('/');
+    const blobIdx = pathname.indexOf('-');
+    if (blobIdx >= 0 && pathname[blobIdx + 1] === 'blob' && pathname.length > blobIdx + 3) {
+      devfilePath = pathname.slice(blobIdx + 3).join('/');
+    }
+  }
   let remotes: GitRemote[] | undefined;
   const _remotes = searchParams.get('remotes') || undefined;
   if (_remotes === 'true' || _remotes === '{}') {
