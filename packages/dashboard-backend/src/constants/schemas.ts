@@ -394,3 +394,24 @@ export const namespacedSccSchema: JSONSchema7 = {
   },
   required: ['namespace', 'scc'],
 };
+
+export const workspaceCreationSchema: JSONSchema7 = {
+  type: 'object',
+  properties: {
+    devfileContent: {
+      type: 'string',
+    },
+    editorContent: {
+      type: 'string',
+    },
+    editorPath: {
+      type: 'string',
+    },
+    gitBranch: {
+      type: 'string',
+    },
+    remoteUrl: {
+      type: 'string',
+    },
+  },
+};
