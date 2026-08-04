@@ -49,6 +49,7 @@ import { registerSccPermissionRoute } from '@/routes/api/sccPermission';
 import { registerServerConfigRoute } from '@/routes/api/serverConfig';
 import { registerSShKeysRoutes } from '@/routes/api/sshKeys';
 import { registerWebsocket } from '@/routes/api/websocket';
+import { registerWorkspaceCreationRoute } from '@/routes/api/workspaceCreation';
 import { registerWorkspacePreferencesRoute } from '@/routes/api/workspacePreferences';
 import { registerFactoryAcceptanceRedirect } from '@/routes/factoryAcceptanceRedirect';
 import { registerWorkspaceRedirect } from '@/routes/workspaceRedirect';
@@ -149,5 +150,7 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
     registerAiConfigRoutes(server),
 
     registerAiRegistryRoute(isLocalRun(), server),
+
+    registerWorkspaceCreationRoute(server),
   ]);
 }
