@@ -265,3 +265,16 @@ export interface IStreamedFile {
   stream: ReadStream;
   size: number;
 }
+
+export interface IWorkspaceCreationRequest {
+  devfileContent?: string;
+  devfileUrl?: string;
+  editorContent?: string;
+  editorPath?: string;
+  name?: string;
+  attributes?: Record<string, string>;
+}
+
+export interface IWorkspaceCreationResponse {
+  devWorkspace: V1alpha2DevWorkspace;
+}
