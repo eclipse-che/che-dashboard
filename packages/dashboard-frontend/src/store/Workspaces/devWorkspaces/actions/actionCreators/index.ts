@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { createWorkspace } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/createWorkspace';
 import { createWorkspaceFromDevfile } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/createWorkspaceFromDevfile';
 import { createWorkspaceFromResources } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/createWorkspaceFromResources';
 import { handleWebSocketMessage } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/handleWebSocketMessage';
@@ -27,6 +28,7 @@ import { updateWorkspaceWithDefaultDevfile } from '@/store/Workspaces/devWorkspa
 export const onStatusChangeCallbacks = new Map<string, (status: string) => void>();
 
 export const actionCreators = {
+  createWorkspace,
   createWorkspaceFromDevfile: createWorkspaceFromDevfile,
   createWorkspaceFromResources,
   restoreWorkspaceFromBackup,
