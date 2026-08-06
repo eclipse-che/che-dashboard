@@ -10,6 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import {
+  _resetCacheForTesting,
+  getDeviceAuthClientId,
+} from '@/routes/api/helpers/getDeviceAuthClientId';
+
 const mockReadNamespacedConfigMap = jest.fn();
 
 jest.mock('@/routes/api/helpers/getServiceAccountToken', () => ({
@@ -32,7 +37,7 @@ describe('getDeviceAuthClientId', () => {
   const origEnv = { ...process.env };
 
   beforeEach(() => {
-    jest.resetModules();
+    _resetCacheForTesting();
     process.env = { ...origEnv };
     delete process.env.DEVICE_AUTH_GITHUB_CLIENT_ID;
     process.env.CHECLUSTER_CR_NAMESPACE = 'eclipse-che';
@@ -47,60 +52,30 @@ describe('getDeviceAuthClientId', () => {
     mockReadNamespacedConfigMap.mockResolvedValueOnce({
       data: { github_client_id: '01ab8ac9400c4e429b23' },
     });
-    let result: string | null;
-    jest.isolateModules(() => {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { getDeviceAuthClientId } = require('@/routes/api/helpers/getDeviceAuthClientId');
-      result = getDeviceAuthClientId();
-    });
-    await expect(result!).resolves.toBe('01ab8ac9400c4e429b23');
+    await expect(getDeviceAuthClientId()).resolves.toBe('01ab8ac9400c4e429b23');
   });
 
   it('returns null when ConfigMap key is absent', async () => {
     mockReadNamespacedConfigMap.mockResolvedValueOnce({ data: {} });
-    let result: Promise<string | null>;
-    jest.isolateModules(() => {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { getDeviceAuthClientId } = require('@/routes/api/helpers/getDeviceAuthClientId');
-      result = getDeviceAuthClientId();
-    });
-    await expect(result!).resolves.toBeNull();
+    await expect(getDeviceAuthClientId()).resolves.toBeNull();
   });
 
   it('returns null when ConfigMap does not exist', async () => {
     mockReadNamespacedConfigMap.mockRejectedValueOnce(
       Object.assign(new Error('Not Found'), { code: 404 }),
     );
-    let result: Promise<string | null>;
-    jest.isolateModules(() => {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { getDeviceAuthClientId } = require('@/routes/api/helpers/getDeviceAuthClientId');
-      result = getDeviceAuthClientId();
-    });
-    await expect(result!).resolves.toBeNull();
+    await expect(getDeviceAuthClientId()).resolves.toBeNull();
   });
 
   it('returns value from DEVICE_AUTH_GITHUB_CLIENT_ID env var without hitting K8s', async () => {
     process.env.DEVICE_AUTH_GITHUB_CLIENT_ID = 'local-override-id';
-    let result: Promise<string | null>;
-    jest.isolateModules(() => {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { getDeviceAuthClientId } = require('@/routes/api/helpers/getDeviceAuthClientId');
-      result = getDeviceAuthClientId();
-    });
-    await expect(result!).resolves.toBe('local-override-id');
+    await expect(getDeviceAuthClientId()).resolves.toBe('local-override-id');
     expect(mockReadNamespacedConfigMap).not.toHaveBeenCalled();
   });
 
   it('returns null when CHECLUSTER_CR_NAMESPACE is not set', async () => {
     delete process.env.CHECLUSTER_CR_NAMESPACE;
-    let result: Promise<string | null>;
-    jest.isolateModules(() => {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { getDeviceAuthClientId } = require('@/routes/api/helpers/getDeviceAuthClientId');
-      result = getDeviceAuthClientId();
-    });
-    await expect(result!).resolves.toBeNull();
+    await expect(getDeviceAuthClientId()).resolves.toBeNull();
     expect(mockReadNamespacedConfigMap).not.toHaveBeenCalled();
   });
 
@@ -108,13 +83,8 @@ describe('getDeviceAuthClientId', () => {
     mockReadNamespacedConfigMap.mockResolvedValue({
       data: { github_client_id: 'cached-id' },
     });
-    let getDeviceAuthClientId: () => Promise<string | null>;
-    jest.isolateModules(() => {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      ({ getDeviceAuthClientId } = require('@/routes/api/helpers/getDeviceAuthClientId'));
-    });
-    await getDeviceAuthClientId!();
-    await getDeviceAuthClientId!();
+    await getDeviceAuthClientId();
+    await getDeviceAuthClientId();
     expect(mockReadNamespacedConfigMap).toHaveBeenCalledTimes(1);
   });
 });

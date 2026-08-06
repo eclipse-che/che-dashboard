@@ -20,6 +20,11 @@ const CACHE_TTL_MS = 90_000;
 
 let cache: { value: string | null; expiresAt: number } | null = null;
 
+/** Resets the TTL cache. For testing only. */
+export function _resetCacheForTesting(): void {
+  cache = null;
+}
+
 export async function getDeviceAuthClientId(): Promise<string | null> {
   if (cache && Date.now() < cache.expiresAt) {
     return cache.value;

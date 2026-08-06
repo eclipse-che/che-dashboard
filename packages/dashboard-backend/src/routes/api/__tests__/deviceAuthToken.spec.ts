@@ -24,6 +24,7 @@ jest.mock('@/routes/api/helpers/getDeviceAuthClientId', () => ({
 }));
 
 const namespace = 'user-che';
+const authHeader = { authorization: 'Bearer test-token' };
 
 describe('Device Auth Token Routes', () => {
   let app: FastifyInstance;
@@ -46,6 +47,7 @@ describe('Device Auth Token Routes', () => {
       const res = await app.inject({
         method: 'POST',
         url: `${baseApiPath}/namespace/${namespace}/device-auth-token/initiate`,
+        headers: authHeader,
       });
       expect(res.statusCode).toBe(503);
     });
@@ -57,6 +59,7 @@ describe('Device Auth Token Routes', () => {
       const res = await app.inject({
         method: 'POST',
         url: `${baseApiPath}/namespace/${namespace}/device-auth-token/initiate`,
+        headers: authHeader,
       });
       expect(res.statusCode).not.toBe(503);
     });
@@ -68,6 +71,7 @@ describe('Device Auth Token Routes', () => {
       const res = await app.inject({
         method: 'POST',
         url: `${baseApiPath}/namespace/${namespace}/device-auth-token/poll`,
+        headers: authHeader,
         payload: { deviceCode: 'ABCD-1234' },
       });
       expect(res.statusCode).toBe(503);
@@ -80,6 +84,7 @@ describe('Device Auth Token Routes', () => {
       const res = await app.inject({
         method: 'POST',
         url: `${baseApiPath}/namespace/${namespace}/device-auth-token/poll`,
+        headers: authHeader,
         payload: { deviceCode: 'ABCD-1234' },
       });
       expect(res.statusCode).not.toBe(503);

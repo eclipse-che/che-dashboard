@@ -92,13 +92,13 @@ export function registerDeviceAuthTokenRoutes(instance: FastifyInstance) {
     server.post(
       `${baseApiPath}/namespace/:namespace/device-auth-token/initiate`,
       Object.assign({}, rateLimitConfig, getSchema({ tags, params: namespacedSchema })),
-      async function (request: FastifyRequest, reply: FastifyReply) {
-        const clientId = await getDeviceAuthClientId();
-        if (!clientId) {
-          return reply.code(503).send({ message: DEVICE_AUTH_NOT_CONFIGURED_MSG });
-        }
+      async function (request: FastifyRequest) {
         const { namespace } = request.params as restParams.INamespacedParams;
         const token = getToken(request);
+        const clientId = await getDeviceAuthClientId();
+        if (!clientId) {
+          throw Object.assign(new Error(DEVICE_AUTH_NOT_CONFIGURED_MSG), { statusCode: 503 });
+        }
         const { deviceAuthTokenApi } = getDevWorkspaceClient(token);
         return deviceAuthTokenApi.initiateDeviceAuth(namespace, clientId);
       },
@@ -116,14 +116,14 @@ export function registerDeviceAuthTokenRoutes(instance: FastifyInstance) {
         rateLimitConfig,
         getSchema({ tags, params: namespacedSchema, body: deviceAuthPollBodySchema }),
       ),
-      async function (request: FastifyRequest, reply: FastifyReply) {
-        const clientId = await getDeviceAuthClientId();
-        if (!clientId) {
-          return reply.code(503).send({ message: DEVICE_AUTH_NOT_CONFIGURED_MSG });
-        }
+      async function (request: FastifyRequest) {
         const { namespace } = request.params as restParams.INamespacedParams;
         const { deviceCode } = request.body as { deviceCode: string };
         const token = getToken(request);
+        const clientId = await getDeviceAuthClientId();
+        if (!clientId) {
+          throw Object.assign(new Error(DEVICE_AUTH_NOT_CONFIGURED_MSG), { statusCode: 503 });
+        }
         const { deviceAuthTokenApi } = getDevWorkspaceClient(token);
         return deviceAuthTokenApi.pollDeviceAuth(namespace, deviceCode, clientId);
       },
