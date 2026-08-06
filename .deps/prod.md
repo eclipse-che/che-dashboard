@@ -27,7 +27,7 @@
 | `@fastify/rate-limit@10.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/rate-limit/10.3.0) |
 | `@fastify/reply-from@12.6.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/reply-from/12.6.2) |
 | `@fastify/send@4.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/send/4.1.0) |
-| `@fastify/static@9.1.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/static/9.1.3) |
+| `@fastify/static@9.1.3` |  |  |
 | `@fastify/swagger-ui@5.2.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/swagger-ui/5.2.5) |
 | `@fastify/swagger@9.7.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/swagger/9.7.0) |
 | `@fastify/websocket@11.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/websocket/11.2.0) |
@@ -35,10 +35,10 @@
 | `@hapi/bourne@3.0.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/bourne/3.0.0) |
 | `@hapi/topo@5.1.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/topo/5.1.0) |
 | `@hapi/wreck@18.1.2` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/wreck/18.1.2) |
-| `@inversifyjs/common@1.5.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@inversifyjs/common/1.5.0) |
-| `@inversifyjs/container@1.9.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@inversifyjs/container/1.9.1) |
+| `@inversifyjs/common@1.5.0` |  |  |
+| `@inversifyjs/container@1.9.1` |  |  |
 | `@inversifyjs/core@5.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@inversifyjs/core/5.2.0) |
-| `@inversifyjs/prototype-utils@0.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@inversifyjs/prototype-utils/0.1.0) |
+| `@inversifyjs/prototype-utils@0.1.0` |  |  |
 | `@inversifyjs/reflect-metadata-utils@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@inversifyjs/reflect-metadata-utils/1.1.0) |
 | `@kubernetes/client-node@1.4.0` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@kubernetes/client-node/1.4.0) |
 | `@lezer/common@1.2.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lezer/common/1.2.3) |
