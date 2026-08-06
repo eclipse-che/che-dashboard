@@ -82,9 +82,9 @@
 | `browserify-sign@4.2.2` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/browserify-sign/4.2.2) |
 | `buffer-xor@1.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/buffer-xor/1.0.3) |
 | `buffer@6.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/buffer/6.0.3) |
-| `call-bind-apply-helpers@1.0.2` |  |  |
+| `call-bind-apply-helpers@1.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/call-bind-apply-helpers/1.0.2) |
 | `call-bound@1.0.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/call-bound/1.0.4) |
-| `camelcase@5.0.0` |  |  |
+| `camelcase@5.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/camelcase/5.0.0) |
 | `codemirror@6.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/codemirror/6.0.1) |
 | `content-disposition@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/content-disposition/1.0.1) |
 | `cookie@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cookie/1.0.1) |
@@ -164,7 +164,7 @@
 | `math-intrinsics@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/math-intrinsics/1.1.0) |
 | `md5.js@1.3.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/md5.js/1.3.5) |
 | `miller-rabin@4.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/miller-rabin/4.0.1) |
-| `mime@3.0.0` |  |  |
+| `mime@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/mime/3.0.0) |
 | `minimalistic-assert@1.0.1` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/minimalistic-assert/1.0.1) |
 | `mri@1.1.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/mri/1.1.4) |
 | `multi-ini@2.3.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/multi-ini/2.3.2) |
@@ -175,13 +175,13 @@
 | `parse-srcset@1.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/parse-srcset/1.0.2) |
 | `pino-abstract-transport@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pino-abstract-transport/1.1.0) |
 | `pino-abstract-transport@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pino-abstract-transport/3.0.0) |
-| `pino-pretty@10.2.3` |  |  |
+| `pino-pretty@10.2.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pino-pretty/10.2.3) |
 | `pino-std-serializers@6.2.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pino-std-serializers/6.2.2) |
 | `pino-std-serializers@7.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pino-std-serializers/7.0.0) |
 | `pino@10.3.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pino/10.3.1) |
-| `pino@8.16.1` |  |  |
+| `pino@8.16.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pino/8.16.1) |
 | `process-warning@2.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/process-warning/2.3.0) |
-| `process-warning@4.0.1` |  |  |
+| `process-warning@4.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/process-warning/4.0.1) |
 | `process-warning@5.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/process-warning/5.0.0) |
 | `process@0.11.10` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/process/0.11.10) |
 | `public-encrypt@4.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/public-encrypt/4.0.3) |
