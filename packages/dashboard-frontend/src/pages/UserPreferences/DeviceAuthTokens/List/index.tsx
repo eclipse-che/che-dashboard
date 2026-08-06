@@ -124,7 +124,9 @@ export class DeviceAuthTokensList extends React.PureComponent<Props, State> {
             }}
           >
             <CardTitle data-testid="token-provider">
-              {token.provider ?? 'GitHub'}
+              {token.provider != null
+                ? token.provider.charAt(0).toUpperCase() + token.provider.slice(1)
+                : 'GitHub'}
               {token.valid === 'valid' && (
                 <CheTooltip content={<span>Token is valid</span>}>
                   <CheckCircleIcon

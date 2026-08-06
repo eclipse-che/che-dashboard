@@ -181,29 +181,45 @@ describe('DeviceAuthToken API Service', () => {
     });
 
     describe('revocation behavior', () => {
-      const origClientId = process.env.CHE_GITHUB_OAUTH_CLIENT_ID;
-      afterEach(() => {
-        process.env.CHE_GITHUB_OAUTH_CLIENT_ID = origClientId;
-      });
+      const rawToken = 'ghp_test_token';
+      const encodedToken = Buffer.from(rawToken).toString('base64');
 
-      it('should still delete the K8s secret when GitHub token revocation throws', async () => {
-        process.env.CHE_GITHUB_OAUTH_CLIENT_ID = 'test-client-id';
-
-        // Secret has a token in data field (base64 encoded)
-        spyReadNamespacedSecret.mockResolvedValueOnce({
+      beforeEach(() => {
+        spyReadNamespacedSecret.mockResolvedValue({
           metadata: {
             name: tokenName,
             resourceVersion,
             labels: { [DEVICE_AUTH_LABEL]: 'true' },
           },
-          data: { token: Buffer.from('ghp_test_token').toString('base64') },
+          data: { token: encodedToken },
         } as V1Secret);
+      });
 
-        // fetch (revocation call) throws a network error
+      it('should still delete the K8s secret when GitHub token revocation throws', async () => {
         mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
         // Should NOT throw — deleteNamespacedSecret must still be called
         await expect(service.deleteToken(namespace, tokenName)).resolves.toBeUndefined();
+        expect(spyDeleteNamespacedSecret).toHaveBeenCalled();
+      });
+
+      it('should call GitHub revoke API with correct URL, headers, and body on success', async () => {
+        mockFetch.mockResolvedValueOnce({ ok: true, status: 200 });
+
+        await service.deleteToken(namespace, tokenName);
+
+        expect(mockFetch).toHaveBeenCalledWith(
+          'https://api.github.com/credentials/revoke',
+          expect.objectContaining({
+            method: 'POST',
+            headers: expect.objectContaining({
+              Authorization: `Bearer ${rawToken}`,
+              'Content-Type': 'application/json',
+              'X-GitHub-Api-Version': '2022-11-28',
+            }),
+            body: JSON.stringify({ credentials: [rawToken] }),
+          }),
+        );
         expect(spyDeleteNamespacedSecret).toHaveBeenCalled();
       });
     }); // revocation behavior
@@ -317,7 +333,19 @@ describe('DeviceAuthToken API Service', () => {
       expect((result as { status: 'authorized'; token: api.DeviceAuthToken }).token.provider).toBe(
         'github',
       );
-      expect(stubCoreV1Api.createNamespacedSecret).toHaveBeenCalled();
+      expect(stubCoreV1Api.createNamespacedSecret).toHaveBeenCalledWith({
+        namespace,
+        body: expect.objectContaining({
+          metadata: expect.objectContaining({
+            name: 'device-authentication-github',
+            labels: {
+              [DEVICE_AUTH_LABEL]: 'true',
+              [DEVICE_AUTH_PROVIDER_LABEL]: 'github',
+            },
+          }),
+          data: { token: Buffer.from('ghp_token123').toString('base64') },
+        }),
+      });
       expect(stubCoreV1Api.replaceNamespacedSecret).not.toHaveBeenCalled();
     });
 
