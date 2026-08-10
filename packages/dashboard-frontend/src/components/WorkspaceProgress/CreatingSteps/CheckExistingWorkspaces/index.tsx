@@ -233,6 +233,7 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
     workspaces: Workspace[],
     factoryParams: FactoryParams,
   ): Workspace[] {
+    const factoryDevfilePath = factoryParams.overrides?.['override.devfileFilename'];
     return workspaces.filter(workspace => {
       let revision: string | undefined;
       const projects = workspace.ref.spec.template.projects;
@@ -244,7 +245,11 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
           }
         }
       }
-      return workspace.source === factoryParams.sourceUrl && revision === factoryParams.revision;
+      return (
+        workspace.source === factoryParams.sourceUrl &&
+        revision === factoryParams.revision &&
+        workspace.devfilePath === factoryDevfilePath
+      );
     });
   }
 

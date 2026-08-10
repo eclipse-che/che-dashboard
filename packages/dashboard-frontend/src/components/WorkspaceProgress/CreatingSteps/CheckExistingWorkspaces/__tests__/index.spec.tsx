@@ -752,6 +752,87 @@ describe('Creating steps, checking existing workspaces', () => {
         });
       });
     });
+    describe('devfilePath in factory params', () => {
+      const devfilePath = 'apps/appA/devfile.yaml';
+      const differentDevfilePath = 'apps/appB/devfile.yaml';
+
+      it('should open the existing workspace with the same devfilePath', async () => {
+        const localSearchParams = new URLSearchParams({
+          [FACTORY_URL_ATTR]: factoryUrl,
+          'override.devfileFilename': devfilePath,
+        });
+        const localStore = new MockStoreBuilder()
+          .withDevWorkspaces({
+            workspaces: [
+              new DevWorkspaceBuilder()
+                .withMetadata({
+                  name: workspaceName,
+                  namespace: 'user-che',
+                  annotations: {
+                    [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                      factory: {
+                        params: `url=${factoryUrl}&override.devfileFilename=${devfilePath}`,
+                      },
+                    }),
+                  },
+                })
+                .build(),
+            ],
+          })
+          .withFactoryResolver({
+            resolver: {
+              location: factoryUrl,
+              devfile: {
+                schemaVersion: '2.1.0',
+                metadata: { name: workspaceName },
+              } as devfileApi.Devfile,
+            },
+          })
+          .build();
+
+        renderComponent(localStore, localSearchParams);
+
+        await waitFor(() =>
+          expect(mockTabManagerReplace).toHaveBeenCalledWith(
+            expect.stringContaining(`/ide/user-che/${workspaceName}`),
+          ),
+        );
+      });
+
+      it('should not reuse the workspace when devfilePath differs', async () => {
+        const localSearchParams = new URLSearchParams({
+          [FACTORY_URL_ATTR]: factoryUrl,
+          'override.devfileFilename': differentDevfilePath,
+        });
+        const localStore = new MockStoreBuilder()
+          .withDevWorkspaces({
+            workspaces: [
+              new DevWorkspaceBuilder()
+                .withMetadata({
+                  name: workspaceName,
+                  namespace: 'user-che',
+                  annotations: {
+                    [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                      factory: {
+                        params: `url=${factoryUrl}&override.devfileFilename=${devfilePath}`,
+                      },
+                    }),
+                  },
+                })
+                .build(),
+            ],
+          })
+          .build();
+
+        renderComponent(localStore, localSearchParams);
+
+        await jest.runOnlyPendingTimersAsync();
+
+        await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
+        expect(mockTabManagerReplace).not.toHaveBeenCalled();
+      });
+    });
+
     describe('with several existing workspace created from the same repository', () => {
       describe('DEVWORKSPACE_DEVFILE_SOURCE conflict faced', () => {
         beforeEach(() => {
