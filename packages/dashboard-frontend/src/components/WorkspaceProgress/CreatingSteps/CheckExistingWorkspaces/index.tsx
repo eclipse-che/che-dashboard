@@ -157,10 +157,12 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
     }
 
     // check if there are existing workspaces created from the same repo
+    const resolvedSource =
+      factoryResolver?.location === factoryParams.sourceUrl ? factoryResolver.source : undefined;
     const sameRepoWorkspaces = this.getSameRepoWorkspaces(
       allWorkspaces,
       factoryParams,
-      factoryResolver?.source,
+      resolvedSource,
     );
     if (sameRepoWorkspaces.length > 0) {
       let existingWorkspace: Workspace | undefined = undefined;
@@ -268,10 +270,13 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
     const { factoryParams } = this.state;
     const key = this.name;
 
+    const { factoryResolver } = this.props;
+    const resolvedSource =
+      factoryResolver?.location === factoryParams.sourceUrl ? factoryResolver.source : undefined;
     const sameRepoWorkspaces = this.getSameRepoWorkspaces(
       allWorkspaces,
       factoryParams,
-      this.props.factoryResolver?.source,
+      resolvedSource,
     );
     let title: string;
     let openExistingWorkspaceAction: ActionCallback | ActionGroup;

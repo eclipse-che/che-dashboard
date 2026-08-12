@@ -921,6 +921,58 @@ describe('Creating steps, checking existing workspaces', () => {
           ),
         );
       });
+
+      it('should show alert when normalization reveals an existing workspace (buildAlertItem path)', async () => {
+        const defaultSource = 'devfile.yaml';
+        // Factory URL explicitly names the default source; existing targets a non-existent name
+        // so the conflict alert fires instead of silently redirecting.
+        const localSearchParams = new URLSearchParams({
+          [FACTORY_URL_ATTR]: factoryUrl,
+          'override.devfileFilename': defaultSource,
+          [EXISTING_WORKSPACE_NAME]: 'no-such-workspace',
+        });
+        // Workspace was created without override.devfileFilename (devfilePath = undefined)
+        const localStore = new MockStoreBuilder()
+          .withDevWorkspaces({
+            workspaces: [
+              new DevWorkspaceBuilder()
+                .withMetadata({
+                  name: workspaceName,
+                  namespace: 'user-che',
+                  annotations: {
+                    [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                      factory: { params: `url=${factoryUrl}` },
+                    }),
+                  },
+                })
+                .build(),
+            ],
+          })
+          .withFactoryResolver({
+            resolver: {
+              source: defaultSource,
+              location: factoryUrl,
+              devfile: {
+                schemaVersion: '2.1.0',
+                metadata: { name: workspaceName },
+              } as devfileApi.Devfile,
+            },
+          })
+          .build();
+
+        renderComponent(localStore, localSearchParams);
+        await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+        const expectAlertItem = expect.objectContaining({
+          title: 'Existing workspace found',
+          children: expect.stringContaining(workspaceName),
+          actionCallbacks: [
+            expect.objectContaining({ title: 'Open the existing workspace' }),
+            expect.objectContaining({ title: 'Create a new workspace' }),
+          ],
+        });
+        await waitFor(() => expect(mockOnError).toHaveBeenCalledWith(expectAlertItem));
+      });
     });
 
     describe('with several existing workspace created from the same repository', () => {

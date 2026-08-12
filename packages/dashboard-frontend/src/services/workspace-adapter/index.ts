@@ -196,18 +196,16 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
       return undefined;
     }
     // Parse the devfile source annotation to extract the repository URL
-    const devfileSource = load(devfileSourceStr) as {
-      factory?: {
-        params?: string;
-      };
-      scm?: {
-        repo?: string;
-        fileName?: string;
-      };
-      url?: {
-        location?: string;
-      };
+    let devfileSource: {
+      factory?: { params?: string };
+      scm?: { repo?: string; fileName?: string };
+      url?: { location?: string };
     };
+    try {
+      devfileSource = load(devfileSourceStr) as typeof devfileSource;
+    } catch {
+      return undefined;
+    }
     // Check if the devfile source has a factory with parameters.
     // Use URLSearchParams.get() so that '=' characters inside the URL value are
     // handled correctly (the old split('=')[1] approach truncates the value at the
@@ -241,9 +239,12 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
     if (!devfileSourceStr) {
       return undefined;
     }
-    const devfileSource = load(devfileSourceStr) as {
-      factory?: { params?: string };
-    };
+    let devfileSource: { factory?: { params?: string } };
+    try {
+      devfileSource = load(devfileSourceStr) as typeof devfileSource;
+    } catch {
+      return undefined;
+    }
     const rawFactoryParams = devfileSource?.factory?.params;
     if (!rawFactoryParams) {
       return undefined;
