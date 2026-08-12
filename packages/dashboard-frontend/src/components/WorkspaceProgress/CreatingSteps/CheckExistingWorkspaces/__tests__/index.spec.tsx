@@ -831,6 +831,96 @@ describe('Creating steps, checking existing workspaces', () => {
         await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
         expect(mockTabManagerReplace).not.toHaveBeenCalled();
       });
+
+      it('should reuse a workspace created without override when the factory URL specifies the resolver default source', async () => {
+        const defaultSource = 'devfile.yaml';
+        const localSearchParams = new URLSearchParams({
+          [FACTORY_URL_ATTR]: factoryUrl,
+          'override.devfileFilename': defaultSource,
+        });
+        // Workspace was created without override.devfileFilename (devfilePath = undefined)
+        const localStore = new MockStoreBuilder()
+          .withDevWorkspaces({
+            workspaces: [
+              new DevWorkspaceBuilder()
+                .withMetadata({
+                  name: workspaceName,
+                  namespace: 'user-che',
+                  annotations: {
+                    [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                      factory: { params: `url=${factoryUrl}` },
+                    }),
+                  },
+                })
+                .build(),
+            ],
+          })
+          .withFactoryResolver({
+            resolver: {
+              source: defaultSource,
+              location: factoryUrl,
+              devfile: {
+                schemaVersion: '2.1.0',
+                metadata: { name: workspaceName },
+              } as devfileApi.Devfile,
+            },
+          })
+          .build();
+
+        renderComponent(localStore, localSearchParams);
+
+        await waitFor(() =>
+          expect(mockTabManagerReplace).toHaveBeenCalledWith(
+            expect.stringContaining(`/ide/user-che/${workspaceName}`),
+          ),
+        );
+      });
+
+      it('should reuse a workspace created with the explicit default source when the factory URL has no override', async () => {
+        const defaultSource = 'devfile.yaml';
+        const localSearchParams = new URLSearchParams({
+          [FACTORY_URL_ATTR]: factoryUrl,
+          // no override.devfileFilename
+        });
+        // Workspace was created with override.devfileFilename=devfile.yaml (devfilePath = "devfile.yaml")
+        const localStore = new MockStoreBuilder()
+          .withDevWorkspaces({
+            workspaces: [
+              new DevWorkspaceBuilder()
+                .withMetadata({
+                  name: workspaceName,
+                  namespace: 'user-che',
+                  annotations: {
+                    [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                      factory: {
+                        params: `url=${factoryUrl}&override.devfileFilename=${defaultSource}`,
+                      },
+                    }),
+                  },
+                })
+                .build(),
+            ],
+          })
+          .withFactoryResolver({
+            resolver: {
+              source: defaultSource,
+              location: factoryUrl,
+              devfile: {
+                schemaVersion: '2.1.0',
+                metadata: { name: workspaceName },
+              } as devfileApi.Devfile,
+            },
+          })
+          .build();
+
+        renderComponent(localStore, localSearchParams);
+
+        await waitFor(() =>
+          expect(mockTabManagerReplace).toHaveBeenCalledWith(
+            expect.stringContaining(`/ide/user-che/${workspaceName}`),
+          ),
+        );
+      });
     });
 
     describe('with several existing workspace created from the same repository', () => {

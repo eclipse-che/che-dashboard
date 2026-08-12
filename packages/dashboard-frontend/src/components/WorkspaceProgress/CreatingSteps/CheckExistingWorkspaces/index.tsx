@@ -157,7 +157,11 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
     }
 
     // check if there are existing workspaces created from the same repo
-    const sameRepoWorkspaces = this.getSameRepoWorkspaces(allWorkspaces, factoryParams);
+    const sameRepoWorkspaces = this.getSameRepoWorkspaces(
+      allWorkspaces,
+      factoryParams,
+      factoryResolver?.source,
+    );
     if (sameRepoWorkspaces.length > 0) {
       let existingWorkspace: Workspace | undefined = undefined;
       if (factoryParams.existing) {
@@ -232,8 +236,13 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
   private getSameRepoWorkspaces(
     workspaces: Workspace[],
     factoryParams: FactoryParams,
+    resolvedDefaultSource?: string,
   ): Workspace[] {
     const factoryDevfilePath = factoryParams.overrides?.['override.devfileFilename'];
+    // Normalize: when devfileFilename is omitted, fall back to the resolver's source
+    // so that a workspace created without the override matches one created with the
+    // explicit default filename (e.g. devfile.yaml) and vice-versa.
+    const effectiveFactoryDevfilePath = factoryDevfilePath ?? resolvedDefaultSource;
     return workspaces.filter(workspace => {
       let revision: string | undefined;
       const projects = workspace.ref.spec.template.projects;
@@ -245,10 +254,11 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
           }
         }
       }
+      const effectiveWorkspaceDevfilePath = workspace.devfilePath ?? resolvedDefaultSource;
       return (
         workspace.source === factoryParams.sourceUrl &&
         revision === factoryParams.revision &&
-        workspace.devfilePath === factoryDevfilePath
+        effectiveWorkspaceDevfilePath === effectiveFactoryDevfilePath
       );
     });
   }
@@ -258,7 +268,11 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
     const { factoryParams } = this.state;
     const key = this.name;
 
-    const sameRepoWorkspaces = this.getSameRepoWorkspaces(allWorkspaces, factoryParams);
+    const sameRepoWorkspaces = this.getSameRepoWorkspaces(
+      allWorkspaces,
+      factoryParams,
+      this.props.factoryResolver?.source,
+    );
     let title: string;
     let openExistingWorkspaceAction: ActionCallback | ActionGroup;
     if (sameRepoWorkspaces.length > 1) {
