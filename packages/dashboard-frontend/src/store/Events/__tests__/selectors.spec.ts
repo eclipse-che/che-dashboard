@@ -10,7 +10,10 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { WorkspaceAdapter } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
+import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import {
   selectAllEvents,
   selectEventsError,
@@ -30,7 +33,7 @@ describe('Events Selectors', () => {
       error: 'Something went wrong',
       resourceVersion: '125',
     },
-  } as RootState;
+  } as unknown as RootState;
 
   it('should select all events', () => {
     const result = selectAllEvents(mockState);
@@ -38,27 +41,166 @@ describe('Events Selectors', () => {
   });
 
   it('should select events from a specific resource version', () => {
-    const selectFromResourceVersion = selectEventsFromResourceVersion(mockState);
-    const result = selectFromResourceVersion('124');
-    expect(result).toEqual([
+    // No workspaces in store — all events pass the blocklist
+    const store = new MockStoreBuilder()
+      .withEvents({ events: mockState.events.events as never[], resourceVersion: '125' })
+      .build();
+    const fn = selectEventsFromResourceVersion(store.getState() as RootState);
+    expect(fn('124')).toEqual([
       { metadata: { name: 'event2', resourceVersion: '124' } },
       { metadata: { name: 'event3', resourceVersion: '125' } },
     ]);
   });
 
   it('should return an empty array if resource version is invalid', () => {
-    const selectFromResourceVersion = selectEventsFromResourceVersion(mockState);
-    const result = selectFromResourceVersion('invalid');
-    expect(result).toEqual([]);
+    const store = new MockStoreBuilder()
+      .withEvents({ events: mockState.events.events as never[], resourceVersion: '125' })
+      .build();
+    const fn = selectEventsFromResourceVersion(store.getState() as RootState);
+    expect(fn('invalid')).toEqual([]);
   });
 
   it('should select events error', () => {
-    const result = selectEventsError(mockState);
-    expect(result).toEqual(mockState.events.error);
+    expect(selectEventsError(mockState)).toEqual(mockState.events.error);
   });
 
   it('should select events resource version', () => {
-    const result = selectEventsResourceVersion(mockState);
-    expect(result).toEqual(mockState.events.resourceVersion);
+    expect(selectEventsResourceVersion(mockState)).toEqual(mockState.events.resourceVersion);
+  });
+
+  describe('workspace filtering — blocklist approach', () => {
+    // Build two real DevWorkspace objects via DevWorkspaceBuilder
+    const currentDW = new DevWorkspaceBuilder()
+      .withId('workspaceabc')
+      .withName('my-workspace')
+      .withNamespace('user-che')
+      .build();
+    const otherDW = new DevWorkspaceBuilder()
+      .withId('workspaceXYZ')
+      .withName('other-workspace')
+      .withNamespace('user-che')
+      .build();
+
+    const currentWorkspaceId = WorkspaceAdapter.getId(currentDW);
+    const currentWorkspaceName = 'my-workspace';
+
+    const events = [
+      // current workspace — DevWorkspace CR event
+      {
+        metadata: { resourceVersion: '100' },
+        involvedObject: { name: 'my-workspace' },
+        message: 'devworkspace event',
+      },
+      // current workspace — Deployment event
+      {
+        metadata: { resourceVersion: '101' },
+        involvedObject: { name: currentWorkspaceId },
+        message: 'deployment event',
+      },
+      // current workspace — ReplicaSet event
+      {
+        metadata: { resourceVersion: '102' },
+        involvedObject: { name: currentWorkspaceId + '-7867c75d84' },
+        message: 'replicaset event',
+      },
+      // current workspace — Pod event
+      {
+        metadata: { resourceVersion: '103' },
+        involvedObject: { name: currentWorkspaceId + '-7867c75d84-kwb97' },
+        message: 'pod event',
+      },
+      // generic cluster event (not tied to any workspace)
+      {
+        metadata: { resourceVersion: '104' },
+        involvedObject: { name: 'some-other-resource' },
+        message: 'generic event',
+      },
+      // other workspace — DevWorkspace CR event
+      {
+        metadata: { resourceVersion: '105' },
+        involvedObject: { name: 'other-workspace' },
+        message: 'other devworkspace event',
+      },
+      // other workspace — pod event
+      {
+        metadata: { resourceVersion: '106' },
+        involvedObject: { name: WorkspaceAdapter.getId(otherDW) + '-abc123-pod1' },
+        message: 'other pod event',
+      },
+    ];
+
+    let state: RootState;
+    beforeEach(() => {
+      state = new MockStoreBuilder()
+        .withDevWorkspaces({ workspaces: [currentDW, otherDW] })
+        .withEvents({ events: events as never[], resourceVersion: '106' })
+        .build()
+        .getState() as RootState;
+    });
+
+    it('should show current workspace DevWorkspace events', () => {
+      const result = selectEventsFromResourceVersion(state)(
+        '100',
+        currentWorkspaceId,
+        currentWorkspaceName,
+      );
+      expect(result.map(e => (e as { message: string }).message)).toContain('devworkspace event');
+    });
+
+    it('should show current workspace Deployment events', () => {
+      const result = selectEventsFromResourceVersion(state)(
+        '100',
+        currentWorkspaceId,
+        currentWorkspaceName,
+      );
+      expect(result.map(e => (e as { message: string }).message)).toContain('deployment event');
+    });
+
+    it('should show current workspace ReplicaSet events', () => {
+      const result = selectEventsFromResourceVersion(state)(
+        '100',
+        currentWorkspaceId,
+        currentWorkspaceName,
+      );
+      expect(result.map(e => (e as { message: string }).message)).toContain('replicaset event');
+    });
+
+    it('should show current workspace Pod events', () => {
+      const result = selectEventsFromResourceVersion(state)(
+        '100',
+        currentWorkspaceId,
+        currentWorkspaceName,
+      );
+      expect(result.map(e => (e as { message: string }).message)).toContain('pod event');
+    });
+
+    it('should show generic cluster events not tied to any workspace', () => {
+      const result = selectEventsFromResourceVersion(state)(
+        '100',
+        currentWorkspaceId,
+        currentWorkspaceName,
+      );
+      expect(result.map(e => (e as { message: string }).message)).toContain('generic event');
+    });
+
+    it('should hide other workspace DevWorkspace events', () => {
+      const result = selectEventsFromResourceVersion(state)(
+        '100',
+        currentWorkspaceId,
+        currentWorkspaceName,
+      );
+      expect(result.map(e => (e as { message: string }).message)).not.toContain(
+        'other devworkspace event',
+      );
+    });
+
+    it('should hide other workspace Pod events', () => {
+      const result = selectEventsFromResourceVersion(state)(
+        '100',
+        currentWorkspaceId,
+        currentWorkspaceName,
+      );
+      expect(result.map(e => (e as { message: string }).message)).not.toContain('other pod event');
+    });
   });
 });
