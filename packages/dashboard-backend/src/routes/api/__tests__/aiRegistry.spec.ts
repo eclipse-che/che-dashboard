@@ -16,7 +16,9 @@ import { FastifyInstance } from 'fastify';
 
 import { baseApiPath } from '@/constants/config';
 import { stubAiRegistry } from '@/routes/api/helpers/__mocks__/getDevWorkspaceClient';
+import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
 import { setup, teardown } from '@/utils/appBuilder';
+import { logger } from '@/utils/logger';
 
 jest.mock('../helpers/getDevWorkspaceClient.ts');
 jest.mock('../helpers/getServiceAccountToken.ts');
@@ -38,5 +40,21 @@ describe('AI Registry Route', () => {
 
     expect(res.statusCode).toEqual(200);
     expect(res.json()).toEqual(stubAiRegistry);
+  });
+
+  test('logs a warning and returns all tools when arch detection fails', async () => {
+    jest.mocked(getDevWorkspaceClient).mockReturnValueOnce({
+      aiRegistryApi: { get: jest.fn().mockResolvedValue(stubAiRegistry) },
+      serverConfigApi: {
+        getCurrentArchitecture: jest.fn().mockRejectedValue(new Error('uname failed')),
+      },
+    } as unknown as ReturnType<typeof getDevWorkspaceClient>);
+    const warnSpy = jest.spyOn(logger, 'warn').mockImplementation(jest.fn() as typeof logger.warn);
+
+    const res = await app.inject().get(`${baseApiPath}/ai-registry`);
+
+    expect(res.statusCode).toEqual(200);
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
   });
 });

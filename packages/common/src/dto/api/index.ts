@@ -19,6 +19,8 @@ import { CoreV1EventList, V1PodList } from '@kubernetes/client-node';
 import * as webSocket from './webSocket';
 import { ReadStream } from 'fs';
 
+import { Architecture } from '../cluster-config';
+
 export { webSocket };
 
 export type GitOauthProvider =
@@ -120,6 +122,8 @@ export interface AiToolDefinition {
   envVarName?: string;
   /** One-time setup command run in the editor container at postStart */
   setupCommand?: string;
+  /** Architectures this tool supports. Omit to support all architectures. */
+  arch?: Architecture[];
 }
 
 export interface AiProviderDefinition {

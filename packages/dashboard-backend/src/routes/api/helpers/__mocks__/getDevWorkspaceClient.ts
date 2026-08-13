@@ -313,7 +313,7 @@ export const getDevWorkspaceClient = jest.fn(
         delete: (_namespace, _providerId) => Promise.resolve(),
       } as IAiProviderKeyApi,
       aiRegistryApi: {
-        get: () => Promise.resolve(stubAiRegistry),
+        get: (_currentArch?) => Promise.resolve(stubAiRegistry),
       } as IAiRegistryApi,
       sccPermissionApi: {
         checkSccPermission: (_namespace, _sccName) => Promise.resolve(true),
