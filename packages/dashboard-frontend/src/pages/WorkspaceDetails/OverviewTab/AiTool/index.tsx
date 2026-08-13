@@ -101,8 +101,9 @@ class AiToolFormGroup extends React.PureComponent<Props, State> {
       return;
     }
 
-    // removeAiToolFromWorkspace / addAiToolToWorkspace each clone internally,
-    // so passing workspace.ref directly avoids a redundant up-front deep copy.
+    // SAFETY: relies on removeAiToolFromWorkspace / addAiToolToWorkspace cloning workspace.ref
+    // internally via JSON.parse(JSON.stringify(...)). If those functions change to mutate
+    // in place, this line must be reverted to cloneDeep(workspace.ref).
     let updatedDw = workspace.ref;
 
     // Remove tools no longer selected OR whose version changed
