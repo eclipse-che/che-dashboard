@@ -82,17 +82,19 @@ export class AiRegistryApiService implements IAiRegistryApi {
               t !== null &&
               typeof (t as Record<string, unknown>).providerId === 'string',
           );
-          // Normalize OCI/Docker arch aliases (amd64, aarch64) to the Linux names
-          // used by the Architecture type so registry entries using either convention match.
-          const normalizeArch = (a: string): Architecture => {
+          // Normalize OCI/Docker aliases to Linux kernel names before comparing so
+          // both 'amd64'/'x86_64' and 'aarch64'/'arm64' match each other.
+          const toCanonical = (a: Architecture): Architecture => {
             if (a === 'amd64') return 'x86_64';
             if (a === 'aarch64') return 'arm64';
-            return a as Architecture;
+            return a;
           };
-          const filteredTools = currentArch
+          const canonicalArch = currentArch ? toCanonical(currentArch) : undefined;
+          const filteredTools = canonicalArch
             ? allTools.filter(
                 tool =>
-                  !Array.isArray(tool.arch) || tool.arch.map(normalizeArch).includes(currentArch),
+                  !Array.isArray(tool.arch) ||
+                  tool.arch.map(a => toCanonical(a as Architecture)).includes(canonicalArch),
               )
             : allTools;
           return {

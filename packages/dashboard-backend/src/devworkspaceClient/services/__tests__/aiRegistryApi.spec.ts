@@ -378,6 +378,24 @@ describe('AI Registry API Service', () => {
       expect(result.tools).toHaveLength(1);
     });
 
+    it('should match x86_64 tools when currentArch is passed as "amd64"', async () => {
+      const result = await service.get('amd64');
+
+      expect(result.tools).toHaveLength(3);
+      expect(result.tools).toContainEqual(toolNoArch);
+      expect(result.tools).toContainEqual(toolX86Only);
+      expect(result.tools).toContainEqual(toolX86AndArm);
+    });
+
+    it('should match arm64 tools when currentArch is passed as "aarch64"', async () => {
+      const result = await service.get('aarch64');
+
+      expect(result.tools).toHaveLength(2);
+      expect(result.tools).toContainEqual(toolNoArch);
+      expect(result.tools).toContainEqual(toolX86AndArm);
+      expect(result.tools).not.toContainEqual(toolX86Only);
+    });
+
     it('should treat a non-array arch value as no restriction when filtering', async () => {
       const toolMalformedArch = {
         ...toolX86Only,
