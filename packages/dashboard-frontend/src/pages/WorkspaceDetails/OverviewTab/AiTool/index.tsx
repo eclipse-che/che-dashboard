@@ -12,16 +12,18 @@
 
 import { Button, FormGroup, FormGroupLabelHelp } from '@patternfly/react-core';
 import { PencilAltIcon } from '@patternfly/react-icons';
-import cloneDeep from 'lodash/cloneDeep';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { AiToolInfoModal } from '@/pages/WorkspaceDetails/OverviewTab/AiTool/InfoModal';
-import { AiToolSelectorModal } from '@/pages/WorkspaceDetails/OverviewTab/AiTool/SelectorModal';
+import {
+  AiToolSelectorModal,
+  SelectedVersions,
+} from '@/pages/WorkspaceDetails/OverviewTab/AiTool/SelectorModal';
 import overviewStyles from '@/pages/WorkspaceDetails/OverviewTab/index.module.css';
 import {
   addAiToolToWorkspace,
-  getInjectedAiToolIds,
+  getInjectedAiToolInfo,
   removeAiToolFromWorkspace,
 } from '@/services/helpers/aiTools';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
@@ -38,24 +40,27 @@ export type State = {
   isSelectorOpen: boolean;
   isInfoOpen: boolean;
   selected: string[];
+  selectedVersions: SelectedVersions;
 };
 
 class AiToolFormGroup extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
+    const { ids, versions } = getInjectedAiToolInfo(props.workspace, props.aiTools);
     this.state = {
       isSelectorOpen: false,
       isInfoOpen: false,
-      selected: getInjectedAiToolIds(props.workspace, props.aiTools),
+      selected: ids,
+      selectedVersions: versions,
     };
   }
 
   public componentDidUpdate(prevProps: Props): void {
     const { aiTools, workspace } = this.props;
-    const newToolIds = getInjectedAiToolIds(workspace, aiTools);
-    const prevToolIds = getInjectedAiToolIds(prevProps.workspace, prevProps.aiTools);
+    const { ids: newToolIds, versions: newVersions } = getInjectedAiToolInfo(workspace, aiTools);
+    const { ids: prevToolIds } = getInjectedAiToolInfo(prevProps.workspace, prevProps.aiTools);
     if (newToolIds.join(',') !== prevToolIds.join(',')) {
-      this.setState({ selected: newToolIds });
+      this.setState({ selected: newToolIds, selectedVersions: newVersions });
     }
   }
 
@@ -69,39 +74,53 @@ class AiToolFormGroup extends React.PureComponent<Props, State> {
 
   private handleCancelChanges(): void {
     const { aiTools, workspace } = this.props;
-    this.setState({
-      selected: getInjectedAiToolIds(workspace, aiTools),
-      isSelectorOpen: false,
-    });
+    const { ids, versions } = getInjectedAiToolInfo(workspace, aiTools);
+    this.setState({ selected: ids, selectedVersions: versions, isSelectorOpen: false });
   }
 
-  private async handleConfirmChanges(): Promise<void> {
+  private async handleConfirmChanges(newVersions: SelectedVersions): Promise<void> {
     const { workspace, aiTools, onSave } = this.props;
-    const currentToolIds = getInjectedAiToolIds(workspace, aiTools);
+    const { ids: currentToolIds, versions: currentVersions } = getInjectedAiToolInfo(
+      workspace,
+      aiTools,
+    );
     const { selected } = this.state;
 
-    if (selected.join(',') === currentToolIds.join(',')) {
+    // Determine which tools need to be re-injected due to version change
+    const versionChanged = (id: string): boolean => {
+      const newTag = newVersions[id];
+      const currentTag = currentVersions[id];
+      return newTag !== undefined && currentTag !== undefined && newTag !== currentTag;
+    };
+
+    const noSelectionChange = selected.join(',') === currentToolIds.join(',');
+    const noVersionChange = selected.every(id => !versionChanged(id));
+
+    if (noSelectionChange && noVersionChange) {
       this.setState({ isSelectorOpen: false });
       return;
     }
 
-    let updatedDw = cloneDeep(workspace.ref);
+    // removeAiToolFromWorkspace / addAiToolToWorkspace each clone internally,
+    // so passing workspace.ref directly avoids a redundant up-front deep copy.
+    let updatedDw = workspace.ref;
 
-    // Remove tools that are no longer selected
+    // Remove tools no longer selected OR whose version changed
     for (const toolId of currentToolIds) {
-      if (!selected.includes(toolId)) {
+      if (!selected.includes(toolId) || versionChanged(toolId)) {
         updatedDw = removeAiToolFromWorkspace(constructWorkspace(updatedDw), toolId, aiTools);
       }
     }
 
-    // Add tools that are newly selected
+    // Add newly selected tools OR re-add those with a new version
     for (const toolId of selected) {
-      if (!currentToolIds.includes(toolId)) {
-        updatedDw = addAiToolToWorkspace(constructWorkspace(updatedDw), toolId, aiTools);
+      if (!currentToolIds.includes(toolId) || versionChanged(toolId)) {
+        const tag = newVersions[toolId];
+        updatedDw = addAiToolToWorkspace(constructWorkspace(updatedDw), toolId, aiTools, tag);
       }
     }
 
-    this.setState({ isSelectorOpen: false });
+    this.setState({ isSelectorOpen: false, selectedVersions: newVersions });
     await onSave(constructWorkspace(updatedDw));
   }
 
@@ -112,10 +131,13 @@ class AiToolFormGroup extends React.PureComponent<Props, State> {
       return null;
     }
 
-    const { selected, isSelectorOpen, isInfoOpen } = this.state;
+    const { selected, selectedVersions, isSelectorOpen, isInfoOpen } = this.state;
 
     const displayName = this.getDisplayName(selected);
-    const originSelection = getInjectedAiToolIds(workspace, aiTools);
+    const { ids: originSelection, versions: originVersions } = getInjectedAiToolInfo(
+      workspace,
+      aiTools,
+    );
 
     return (
       <FormGroup
@@ -148,7 +170,9 @@ class AiToolFormGroup extends React.PureComponent<Props, State> {
           aiTools={aiTools}
           aiProviders={this.props.aiProviders}
           selected={selected}
+          selectedVersions={selectedVersions}
           originSelection={originSelection}
+          originVersions={originVersions}
           onToggle={toolId => {
             this.setState(prev => {
               const isSelected = prev.selected.includes(toolId);
@@ -159,7 +183,7 @@ class AiToolFormGroup extends React.PureComponent<Props, State> {
               };
             });
           }}
-          onConfirm={() => this.handleConfirmChanges()}
+          onConfirm={newVersions => this.handleConfirmChanges(newVersions)}
           onCancel={() => this.handleCancelChanges()}
         />
         <AiToolInfoModal

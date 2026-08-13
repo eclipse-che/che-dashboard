@@ -34,11 +34,14 @@ jest.mock('@/pages/WorkspaceDetails/OverviewTab/AiTool/SelectorModal', () => ({
   AiToolSelectorModal: () => <div data-testid="ai-tool-selector-modal" />,
 }));
 
-const mockGetInjectedAiToolIds = jest.fn<string[], [Workspace, api.AiToolDefinition[]]>();
+const mockGetInjectedAiToolInfo = jest.fn<
+  { ids: string[]; versions: Record<string, string> },
+  [Workspace, api.AiToolDefinition[]]
+>();
 
 jest.mock('@/services/helpers/aiTools', () => ({
-  getInjectedAiToolIds: (...args: [Workspace, api.AiToolDefinition[]]) =>
-    mockGetInjectedAiToolIds(...args),
+  getInjectedAiToolInfo: (...args: [Workspace, api.AiToolDefinition[]]) =>
+    mockGetInjectedAiToolInfo(...args),
   addAiToolToWorkspace: jest.fn(),
   removeAiToolFromWorkspace: jest.fn(),
 }));
@@ -106,7 +109,7 @@ describe('AiToolFormGroup', () => {
 
   beforeEach(() => {
     mockWorkspace = buildMockWorkspace();
-    mockGetInjectedAiToolIds.mockReturnValue([]);
+    mockGetInjectedAiToolInfo.mockReturnValue({ ids: [], versions: {} });
   });
 
   afterEach(() => {
@@ -178,7 +181,7 @@ describe('AiToolFormGroup', () => {
   });
 
   test('renders single tool name when one tool is injected', () => {
-    mockGetInjectedAiToolIds.mockReturnValue(['anthropic/claude']);
+    mockGetInjectedAiToolInfo.mockReturnValue({ ids: ['anthropic/claude'], versions: {} });
 
     render(
       <AiToolFormGroup
@@ -195,7 +198,10 @@ describe('AiToolFormGroup', () => {
   });
 
   test('renders multiple tool names when multiple tools are injected', () => {
-    mockGetInjectedAiToolIds.mockReturnValue(['anthropic/claude', 'openai/codex']);
+    mockGetInjectedAiToolInfo.mockReturnValue({
+      ids: ['anthropic/claude', 'openai/codex'],
+      versions: {},
+    });
 
     render(
       <AiToolFormGroup
