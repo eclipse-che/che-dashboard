@@ -11,6 +11,9 @@
  */
 
 .label {
+  position: relative;
+  top: 0.125rem;
+
   margin-left: 5px;
   padding: 0 5px;
 

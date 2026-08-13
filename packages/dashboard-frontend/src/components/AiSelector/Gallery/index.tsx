@@ -15,6 +15,7 @@ import { Gallery } from '@patternfly/react-core';
 import React from 'react';
 
 import { AiProviderEntry } from '@/components/AiSelector/Gallery/Entry';
+import { groupToolsByProvider } from '@/services/helpers/aiTools';
 
 export type Props = {
   providers: api.AiToolDefinition[];
@@ -22,32 +23,39 @@ export type Props = {
   selectedProviderIds: string[];
   providerKeyExists: Record<string, boolean>;
   onToggle: (providerId: string) => void;
+  onVersionChange?: (providerId: string, tag: string) => void;
 };
 
 export class AiProviderGallery extends React.PureComponent<Props> {
-  private getProvider(tool: api.AiToolDefinition): api.AiProviderDefinition | undefined {
-    return this.props.aiProviders.find(p => p.id === tool.providerId);
+  private getProviderDef(providerId: string): api.AiProviderDefinition | undefined {
+    return this.props.aiProviders.find(p => p.id === providerId);
+  }
+
+  private groupByProviderId(): ReturnType<typeof groupToolsByProvider> {
+    return groupToolsByProvider(this.props.providers);
   }
 
   public render(): React.ReactElement {
-    const { providers, selectedProviderIds, providerKeyExists, onToggle } = this.props;
+    const { selectedProviderIds, providerKeyExists, onToggle, onVersionChange } = this.props;
 
-    const sorted = [...providers].sort((a, b) => a.name.localeCompare(b.name));
+    const groups = this.groupByProviderId();
 
     return (
       <Gallery hasGutter={true} minWidths={{ default: '210px' }} maxWidths={{ default: '280px' }}>
-        {sorted.map(provider => {
-          const providerDef = this.getProvider(provider);
+        {groups.map(toolGroup => {
+          const providerId = toolGroup[0].providerId;
+          const providerDef = this.getProviderDef(providerId);
           return (
             <AiProviderEntry
-              key={provider.providerId}
-              provider={provider}
+              key={providerId}
+              toolGroup={toolGroup}
               icon={providerDef?.icon}
               description={providerDef?.description}
               tags={providerDef?.tags}
-              isSelected={selectedProviderIds.includes(provider.providerId)}
-              hasExistingKey={!!providerKeyExists[provider.providerId]}
+              isSelected={selectedProviderIds.includes(providerId)}
+              hasExistingKey={!!providerKeyExists[providerId]}
               onToggle={onToggle}
+              onVersionChange={onVersionChange}
             />
           );
         })}
