@@ -40,6 +40,7 @@ export interface Workspace {
   readonly infrastructureNamespace: string;
   readonly created: number;
   readonly source?: string; // the repository URL or the factory URL
+  readonly devfilePath?: string; // the override.devfileFilename from factory params
   readonly updated: number;
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   readonly ideUrl?: string;
@@ -195,18 +196,16 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
       return undefined;
     }
     // Parse the devfile source annotation to extract the repository URL
-    const devfileSource = load(devfileSourceStr) as {
-      factory?: {
-        params?: string;
-      };
-      scm?: {
-        repo?: string;
-        fileName?: string;
-      };
-      url?: {
-        location?: string;
-      };
+    let devfileSource: {
+      factory?: { params?: string };
+      scm?: { repo?: string; fileName?: string };
+      url?: { location?: string };
     };
+    try {
+      devfileSource = load(devfileSourceStr) as typeof devfileSource;
+    } catch {
+      return undefined;
+    }
     // Check if the devfile source has a factory with parameters.
     // Use URLSearchParams.get() so that '=' characters inside the URL value are
     // handled correctly (the old split('=')[1] approach truncates the value at the
@@ -233,6 +232,24 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
     }
     // If no URL found, return undefined
     return undefined;
+  }
+
+  get devfilePath(): string | undefined {
+    const devfileSourceStr = this.workspace.metadata.annotations?.[DEVWORKSPACE_DEVFILE_SOURCE];
+    if (!devfileSourceStr) {
+      return undefined;
+    }
+    let devfileSource: { factory?: { params?: string } };
+    try {
+      devfileSource = load(devfileSourceStr) as typeof devfileSource;
+    } catch {
+      return undefined;
+    }
+    const rawFactoryParams = devfileSource?.factory?.params;
+    if (!rawFactoryParams) {
+      return undefined;
+    }
+    return new URLSearchParams(rawFactoryParams).get('override.devfileFilename') ?? undefined;
   }
 
   /**

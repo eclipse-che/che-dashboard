@@ -364,4 +364,46 @@ describe('for DevWorkspace', () => {
       expect(workspace.source).toEqual('https://dummy.repo/devfile.yaml');
     });
   });
+
+  describe('devfilePath', () => {
+    it('should return undefined if devfile source is not defined', () => {
+      const devWorkspace = new DevWorkspaceBuilder().build();
+      const workspace = constructWorkspace(devWorkspace);
+      expect(workspace.devfilePath).toBeUndefined();
+    });
+
+    it('should return devfilePath from override.devfileFilename in factory params', () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'test-workspace',
+          annotations: {
+            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+              factory: {
+                params: 'url=https://dummy.repo&override.devfileFilename=apps/appA/devfile.yaml',
+              },
+            }),
+          },
+        })
+        .build();
+      const workspace = constructWorkspace(devWorkspace);
+      expect(workspace.devfilePath).toEqual('apps/appA/devfile.yaml');
+    });
+
+    it('should return undefined when override.devfileFilename is not in factory params', () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'test-workspace',
+          annotations: {
+            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+              factory: {
+                params: 'url=https://dummy.repo',
+              },
+            }),
+          },
+        })
+        .build();
+      const workspace = constructWorkspace(devWorkspace);
+      expect(workspace.devfilePath).toBeUndefined();
+    });
+  });
 });
