@@ -336,6 +336,48 @@ describe('AI Registry API Service', () => {
       expect(result.tools).toContainEqual(toolX86Only);
     });
 
+    it('should match tools using OCI alias "amd64" when cluster reports x86_64', async () => {
+      mockCoreV1Api.listNamespacedConfigMap.mockResolvedValue({
+        items: [
+          {
+            metadata: { name: 'ai-tool-registry' },
+            data: {
+              'registry.json': JSON.stringify({
+                providers: registryData.providers,
+                tools: [{ ...toolX86Only, arch: ['amd64', 'arm64'] }],
+                defaultAiProviders: registryData.defaultAiProviders,
+              }),
+            },
+          } as V1ConfigMap,
+        ],
+      } as V1ConfigMapList);
+
+      const result = await service.get('x86_64');
+
+      expect(result.tools).toHaveLength(1);
+    });
+
+    it('should match tools using OCI alias "aarch64" when cluster reports arm64', async () => {
+      mockCoreV1Api.listNamespacedConfigMap.mockResolvedValue({
+        items: [
+          {
+            metadata: { name: 'ai-tool-registry' },
+            data: {
+              'registry.json': JSON.stringify({
+                providers: registryData.providers,
+                tools: [{ ...toolX86Only, arch: ['aarch64'] }],
+                defaultAiProviders: registryData.defaultAiProviders,
+              }),
+            },
+          } as V1ConfigMap,
+        ],
+      } as V1ConfigMapList);
+
+      const result = await service.get('arm64');
+
+      expect(result.tools).toHaveLength(1);
+    });
+
     it('should treat a non-array arch value as no restriction when filtering', async () => {
       const toolMalformedArch = {
         ...toolX86Only,
