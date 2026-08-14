@@ -14,6 +14,7 @@ import { ClusterConfig } from '@eclipse-che/common';
 import { FastifyInstance } from 'fastify';
 
 import { baseApiPath } from '@/constants/config';
+import { getDeviceAuthClientId } from '@/routes/api/helpers/getDeviceAuthClientId';
 import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
 import { getServiceAccountToken } from '@/routes/api/helpers/getServiceAccountToken';
 import { getSchema } from '@/services/helpers';
@@ -38,6 +39,7 @@ async function buildClusterConfig(): Promise<ClusterConfig> {
   const allWorkspacesLimit = serverConfigApi.getAllWorkspacesLimit(cheCustomResource);
   const dashboardFavicon = serverConfigApi.getDashboardLogo(cheCustomResource);
   const currentArchitecture = await serverConfigApi.getCurrentArchitecture();
+  const clientId = await getDeviceAuthClientId();
 
   return {
     dashboardWarning,
@@ -45,5 +47,6 @@ async function buildClusterConfig(): Promise<ClusterConfig> {
     allWorkspacesLimit,
     runningWorkspacesLimit,
     currentArchitecture,
+    githubDeviceAuthEnabled: clientId !== null,
   };
 }

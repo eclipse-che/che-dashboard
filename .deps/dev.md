@@ -3,7 +3,7 @@
 | Packages | License | Resolved CQs |
 | --- | --- | --- |
 | `@aashutoshrathi/word-wrap@1.2.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@aashutoshrathi/word-wrap/1.2.6) |
-| `@ampproject/remapping@2.2.1` |  |  |
+| `@ampproject/remapping@2.2.1` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@ampproject/remapping/2.2.1) |
 | `@babel/code-frame@7.26.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/code-frame/7.26.2) |
 | `@babel/code-frame@7.27.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/code-frame/7.27.1) |
 | `@babel/compat-data@7.23.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/compat-data/7.23.2) |
@@ -50,12 +50,12 @@
 | `@babel/plugin-syntax-optional-chaining@7.8.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/plugin-syntax-optional-chaining/7.8.3) |
 | `@babel/plugin-syntax-private-property-in-object@7.14.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/plugin-syntax-private-property-in-object/7.14.5) |
 | `@babel/plugin-syntax-top-level-await@7.14.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/plugin-syntax-top-level-await/7.14.5) |
-| `@babel/plugin-syntax-typescript@7.27.1` |  |  |
+| `@babel/plugin-syntax-typescript@7.27.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/plugin-syntax-typescript/7.27.1) |
 | `@babel/template@7.27.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/template/7.27.0) |
-| `@babel/template@7.27.2` |  |  |
+| `@babel/template@7.27.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/template/7.27.2) |
 | `@babel/traverse@7.23.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/traverse/7.23.2) |
 | `@babel/traverse@7.28.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/traverse/7.28.5) |
-| `@babel/types@7.27.0` |  |  |
+| `@babel/types@7.27.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/types/7.27.0) |
 | `@babel/types@7.28.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/types/7.28.5) |
 | `@bcoe/v8-coverage@0.2.3` | ISC AND MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@bcoe/v8-coverage/0.2.3) |
 | `@commitlint/cli@21.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@commitlint/cli/21.0.2) |
@@ -92,7 +92,7 @@
 | `@eslint-community/eslint-utils@4.9.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@eslint-community/eslint-utils/4.9.1) |
 | `@eslint-community/regexpp@4.10.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@eslint-community/regexpp/4.10.0) |
 | `@eslint-community/regexpp@4.12.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@eslint-community/regexpp/4.12.2) |
-| `@eslint/eslintrc@2.1.4` |  |  |
+| `@eslint/eslintrc@2.1.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@eslint/eslintrc/2.1.4) |
 | `@eslint/eslintrc@3.3.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@eslint/eslintrc/3.3.4) |
 | `@eslint/js@8.57.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@eslint/js/8.57.1) |
 | `@humanwhocodes/config-array@0.13.0` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@humanwhocodes/config-array/0.13.0) |
@@ -100,7 +100,7 @@
 | `@humanwhocodes/object-schema@2.0.3` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@humanwhocodes/object-schema/2.0.3) |
 | `@istanbuljs/load-nyc-config@1.1.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@istanbuljs/load-nyc-config/1.1.0) |
 | `@istanbuljs/schema@0.1.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@istanbuljs/schema/0.1.3) |
-| `@jest/console@30.2.0` |  |  |
+| `@jest/console@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/console/30.2.0) |
 | `@jest/core@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/core/30.2.0) |
 | `@jest/diff-sequences@30.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/diff-sequences/30.0.1) |
 | `@jest/environment@29.7.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/environment/29.7.0) |
@@ -119,14 +119,14 @@
 | `@jest/snapshot-utils@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/snapshot-utils/30.2.0) |
 | `@jest/source-map@30.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/source-map/30.0.1) |
 | `@jest/test-result@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/test-result/30.2.0) |
-| `@jest/test-sequencer@30.2.0` |  |  |
+| `@jest/test-sequencer@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/test-sequencer/30.2.0) |
 | `@jest/transform@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/transform/30.2.0) |
 | `@jest/types@29.6.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/types/29.6.3) |
 | `@jest/types@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/types/30.2.0) |
-| `@jridgewell/gen-mapping@0.3.13` |  |  |
+| `@jridgewell/gen-mapping@0.3.13` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jridgewell/gen-mapping/0.3.13) |
 | `@jridgewell/gen-mapping@0.3.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jridgewell/gen-mapping/0.3.3) |
 | `@jridgewell/remapping@2.3.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jridgewell/remapping/2.3.5) |
-| `@jridgewell/resolve-uri@3.1.1` |  |  |
+| `@jridgewell/resolve-uri@3.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jridgewell/resolve-uri/3.1.1) |
 | `@jridgewell/set-array@1.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jridgewell/set-array/1.1.2) |
 | `@jridgewell/source-map@0.3.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jridgewell/source-map/0.3.5) |
 | `@jridgewell/sourcemap-codec@1.4.15` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jridgewell/sourcemap-codec/1.4.15) |

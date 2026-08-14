@@ -18,6 +18,7 @@ import { Location, NavigateFunction } from 'react-router-dom';
 import Head from '@/components/Head';
 import AiProviderKeys from '@/pages/UserPreferences/AiProviderKeys';
 import ContainerRegistries from '@/pages/UserPreferences/ContainerRegistriesTab';
+import DeviceAuthTokens from '@/pages/UserPreferences/DeviceAuthTokens';
 import GitConfig from '@/pages/UserPreferences/GitConfig';
 import GitServices from '@/pages/UserPreferences/GitServices';
 import PersonalAccessTokens from '@/pages/UserPreferences/PersonalAccessTokens';
@@ -45,6 +46,7 @@ class UserPreferences extends React.PureComponent<Props, State> {
     UserPreferencesTab.PERSONAL_ACCESS_TOKENS,
     UserPreferencesTab.GITCONFIG,
     UserPreferencesTab.SSH_KEYS,
+    UserPreferencesTab.DEVICE_AUTH_TOKENS,
   ];
 
   constructor(props: Props) {
@@ -68,6 +70,7 @@ class UserPreferences extends React.PureComponent<Props, State> {
         pathname === ROUTE.USER_PREFERENCES &&
         ((tab === UserPreferencesTab.AI_PROVIDER_KEYS && aiEnabled) ||
           tab === UserPreferencesTab.CONTAINER_REGISTRIES ||
+          tab === UserPreferencesTab.DEVICE_AUTH_TOKENS ||
           tab === UserPreferencesTab.GITCONFIG ||
           tab === UserPreferencesTab.GIT_SERVICES ||
           tab === UserPreferencesTab.PERSONAL_ACCESS_TOKENS ||
@@ -177,6 +180,13 @@ class UserPreferences extends React.PureComponent<Props, State> {
               tabIndex={activeTabKey === UserPreferencesTab.SSH_KEYS ? 0 : -1}
             >
               <SshKeys />
+            </Tab>
+            <Tab
+              eventKey={UserPreferencesTab.DEVICE_AUTH_TOKENS}
+              title="Device Auth Tokens"
+              tabIndex={activeTabKey === UserPreferencesTab.DEVICE_AUTH_TOKENS ? 0 : -1}
+            >
+              <DeviceAuthTokens />
             </Tab>
             {this.props.aiEnabled && (
               <Tab eventKey={UserPreferencesTab.AI_PROVIDER_KEYS} title="AI Providers Keys">
