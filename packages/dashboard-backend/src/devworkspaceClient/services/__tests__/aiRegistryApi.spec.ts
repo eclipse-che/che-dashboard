@@ -81,7 +81,7 @@ describe('AI Registry API Service', () => {
     it('should return parsed registry from ConfigMap data', async () => {
       const registryData = {
         providers: [{ id: 'provider1', name: 'Provider 1' }],
-        tools: [{ id: 'tool1', name: 'Tool 1' }],
+        tools: [{ id: 'tool1', name: 'Tool 1', providerId: 'provider1' }],
         defaultAiProviders: ['provider1'],
       };
 
@@ -133,7 +133,7 @@ describe('AI Registry API Service', () => {
     it('should skip ConfigMaps with undefined data', async () => {
       const registryData = {
         providers: [{ id: 'provider2', name: 'Provider 2' }],
-        tools: [{ id: 'tool2', name: 'Tool 2' }],
+        tools: [{ id: 'tool2', name: 'Tool 2', providerId: 'provider2' }],
         defaultAiProviders: ['provider2'],
       };
 
@@ -206,6 +206,221 @@ describe('AI Registry API Service', () => {
       const result = await service.get();
 
       expect(result).toEqual(EMPTY_REGISTRY);
+    });
+
+    it('should filter out tools without a string providerId', async () => {
+      const registryData = {
+        providers: [],
+        tools: [{ foo: 42 }, { providerId: 123 }, { providerId: 'valid/provider', name: 'Valid' }],
+        defaultAiProviders: [],
+      };
+
+      mockCoreV1Api.listNamespacedConfigMap.mockResolvedValueOnce({
+        items: [
+          {
+            metadata: { name: 'ai-tool-registry' },
+            data: { 'registry.json': JSON.stringify(registryData) },
+          } as V1ConfigMap,
+        ],
+      } as V1ConfigMapList);
+
+      const result = await service.get();
+
+      expect(result.tools).toHaveLength(1);
+      expect(result.tools[0]).toMatchObject({ providerId: 'valid/provider' });
+    });
+  });
+
+  describe('arch filtering', () => {
+    const toolNoArch = {
+      providerId: 'google/gemini',
+      tag: 'latest',
+      name: 'Gemini CLI',
+      url: 'https://example.com',
+      binary: 'gemini',
+      pattern: 'bundle',
+      injectorImage: 'quay.io/test/gemini:latest',
+    };
+    const toolX86Only = {
+      providerId: 'test/x86-only',
+      tag: 'latest',
+      name: 'X86 Only Tool',
+      url: 'https://example.com',
+      binary: 'x86tool',
+      pattern: 'init',
+      injectorImage: 'quay.io/test/x86tool:latest',
+      arch: ['x86_64'],
+    };
+    const toolX86AndArm = {
+      providerId: 'test/multi-arch',
+      tag: 'latest',
+      name: 'Multi Arch Tool',
+      url: 'https://example.com',
+      binary: 'multitool',
+      pattern: 'init',
+      injectorImage: 'quay.io/test/multitool:latest',
+      arch: ['x86_64', 'arm64'],
+    };
+
+    const registryData = {
+      providers: [{ id: 'provider1', name: 'Provider 1', publisher: 'Test' }],
+      tools: [toolNoArch, toolX86Only, toolX86AndArm],
+      defaultAiProviders: ['provider1'],
+    };
+
+    beforeEach(() => {
+      mockCoreV1Api.listNamespacedConfigMap.mockResolvedValue({
+        items: [
+          {
+            metadata: { name: 'ai-tool-registry' },
+            data: {
+              'registry.json': JSON.stringify(registryData),
+            },
+          } as V1ConfigMap,
+        ],
+      } as V1ConfigMapList);
+    });
+
+    it('should return all tools when currentArch is not provided', async () => {
+      const result = await service.get();
+
+      expect(result.tools).toHaveLength(3);
+      expect(result.tools).toEqual(registryData.tools);
+    });
+
+    it('should filter tools by architecture when currentArch is provided', async () => {
+      const result = await service.get('arm64');
+
+      expect(result.tools).toHaveLength(2);
+      expect(result.tools).toContainEqual(toolNoArch);
+      expect(result.tools).toContainEqual(toolX86AndArm);
+      expect(result.tools).not.toContainEqual(toolX86Only);
+    });
+
+    it('should include tools with no arch field on any architecture', async () => {
+      const result = await service.get('s390x');
+
+      expect(result.tools).toHaveLength(1);
+      expect(result.tools).toContainEqual(toolNoArch);
+    });
+
+    it('should return tools matching x86_64 architecture', async () => {
+      const result = await service.get('x86_64');
+
+      expect(result.tools).toHaveLength(3);
+      expect(result.tools).toContainEqual(toolNoArch);
+      expect(result.tools).toContainEqual(toolX86Only);
+      expect(result.tools).toContainEqual(toolX86AndArm);
+    });
+
+    it('should skip null elements in tools and return remaining valid tools', async () => {
+      mockCoreV1Api.listNamespacedConfigMap.mockResolvedValue({
+        items: [
+          {
+            metadata: { name: 'ai-tool-registry' },
+            data: {
+              'registry.json': JSON.stringify({
+                providers: registryData.providers,
+                tools: [null, toolNoArch, null, toolX86Only],
+                defaultAiProviders: registryData.defaultAiProviders,
+              }),
+            },
+          } as V1ConfigMap,
+        ],
+      } as V1ConfigMapList);
+
+      const result = await service.get('x86_64');
+
+      expect(result.tools).toHaveLength(2);
+      expect(result.tools).toContainEqual(toolNoArch);
+      expect(result.tools).toContainEqual(toolX86Only);
+    });
+
+    it('should match tools using OCI alias "amd64" when cluster reports x86_64', async () => {
+      mockCoreV1Api.listNamespacedConfigMap.mockResolvedValue({
+        items: [
+          {
+            metadata: { name: 'ai-tool-registry' },
+            data: {
+              'registry.json': JSON.stringify({
+                providers: registryData.providers,
+                tools: [{ ...toolX86Only, arch: ['amd64', 'arm64'] }],
+                defaultAiProviders: registryData.defaultAiProviders,
+              }),
+            },
+          } as V1ConfigMap,
+        ],
+      } as V1ConfigMapList);
+
+      const result = await service.get('x86_64');
+
+      expect(result.tools).toHaveLength(1);
+    });
+
+    it('should match tools using OCI alias "aarch64" when cluster reports arm64', async () => {
+      mockCoreV1Api.listNamespacedConfigMap.mockResolvedValue({
+        items: [
+          {
+            metadata: { name: 'ai-tool-registry' },
+            data: {
+              'registry.json': JSON.stringify({
+                providers: registryData.providers,
+                tools: [{ ...toolX86Only, arch: ['aarch64'] }],
+                defaultAiProviders: registryData.defaultAiProviders,
+              }),
+            },
+          } as V1ConfigMap,
+        ],
+      } as V1ConfigMapList);
+
+      const result = await service.get('arm64');
+
+      expect(result.tools).toHaveLength(1);
+    });
+
+    it('should match x86_64 tools when currentArch is passed as "amd64"', async () => {
+      const result = await service.get('amd64');
+
+      expect(result.tools).toHaveLength(3);
+      expect(result.tools).toContainEqual(toolNoArch);
+      expect(result.tools).toContainEqual(toolX86Only);
+      expect(result.tools).toContainEqual(toolX86AndArm);
+    });
+
+    it('should match arm64 tools when currentArch is passed as "aarch64"', async () => {
+      const result = await service.get('aarch64');
+
+      expect(result.tools).toHaveLength(2);
+      expect(result.tools).toContainEqual(toolNoArch);
+      expect(result.tools).toContainEqual(toolX86AndArm);
+      expect(result.tools).not.toContainEqual(toolX86Only);
+    });
+
+    it('should treat a non-array arch value as no restriction when filtering', async () => {
+      const toolMalformedArch = {
+        ...toolX86Only,
+        providerId: 'test/malformed',
+        arch: 'x86_64' as unknown as string[],
+      };
+      mockCoreV1Api.listNamespacedConfigMap.mockResolvedValue({
+        items: [
+          {
+            metadata: { name: 'ai-tool-registry' },
+            data: {
+              'registry.json': JSON.stringify({
+                providers: registryData.providers,
+                tools: [toolMalformedArch],
+                defaultAiProviders: registryData.defaultAiProviders,
+              }),
+            },
+          } as V1ConfigMap,
+        ],
+      } as V1ConfigMapList);
+
+      const result = await service.get('arm64');
+
+      expect(result.tools).toHaveLength(1);
+      expect(result.tools[0]).toMatchObject({ providerId: 'test/malformed' });
     });
   });
 });

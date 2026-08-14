@@ -31,6 +31,7 @@ const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
 describe('The WorkspaceEvents component', () => {
   const devworkspaceId = 'devWorkspace';
+  // In real DevSpaces, pods are named <workspaceId>-<replicaset>-<hash>
   const podName = devworkspaceId + '-pod';
 
   let devWorkspaceBuilder: DevWorkspaceBuilder;

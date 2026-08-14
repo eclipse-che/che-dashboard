@@ -44,6 +44,12 @@ const mockProviders: api.AiToolDefinition[] = [
   },
 ];
 
+const geminiV2: api.AiToolDefinition = {
+  ...mockProviders[0],
+  tag: 'v2',
+  injectorImage: 'quay.io/example/gemini-cli:v2',
+};
+
 describe('AiProviderGallery', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -76,12 +82,29 @@ describe('AiProviderGallery', () => {
 
     expect(screen.getByText(/Key configured/i)).toBeInTheDocument();
   });
+
+  test('groups tools with same providerId into a single card', () => {
+    const providers = [...mockProviders, geminiV2];
+    renderComponent(undefined, {}, providers);
+
+    // Only two cards (gemini group + claude), not three
+    const geminiCards = screen.getAllByText(/Gemini/i);
+    expect(geminiCards).toHaveLength(1);
+
+    // Version dropdown is only shown when onVersionChange is provided;
+    // the gallery test fixture does not pass it, so no dropdown buttons expected.
+    expect(screen.queryAllByRole('button', { name: /version options/i })).toHaveLength(0);
+  });
 });
 
-function getComponent(selectedProviderId?: string, providerKeyExists?: Record<string, boolean>) {
+function getComponent(
+  selectedProviderId?: string,
+  providerKeyExists?: Record<string, boolean>,
+  providers?: api.AiToolDefinition[],
+) {
   return (
     <AiProviderGallery
-      providers={mockProviders}
+      providers={providers ?? mockProviders}
       aiProviders={[]}
       selectedProviderIds={selectedProviderId ? [selectedProviderId] : []}
       providerKeyExists={providerKeyExists || {}}

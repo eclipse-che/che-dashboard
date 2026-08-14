@@ -78,7 +78,7 @@ class WorkspaceEvents extends React.PureComponent<Props, State> {
       return;
     }
     const startResourceVersion = startedWorkspaces[workspaceUID!] || '0';
-    const events = eventsFromResourceVersionFn(startResourceVersion);
+    const events = eventsFromResourceVersionFn(startResourceVersion, workspace.id, workspace.name);
     for (const event of events) {
       if (!event.message) {
         continue;
@@ -103,7 +103,11 @@ class WorkspaceEvents extends React.PureComponent<Props, State> {
     }
 
     const startResourceVersion = startedWorkspaces[workspaceUID!] || '0';
-    const events = eventsFromResourceVersionFn(startResourceVersion);
+    const events = eventsFromResourceVersionFn(
+      startResourceVersion,
+      workspace?.id,
+      workspace?.name,
+    );
 
     for (const event of events) {
       if (!event.message) {
@@ -172,7 +176,11 @@ class WorkspaceEvents extends React.PureComponent<Props, State> {
     }
 
     const startResourceVersion = startedWorkspaces[workspaceUID] || '0';
-    const liveEvents = this.props.eventsFromResourceVersionFn(startResourceVersion);
+    const liveEvents = this.props.eventsFromResourceVersionFn(
+      startResourceVersion,
+      workspace?.id,
+      workspace?.name,
+    );
     const visibleEvents = isPaused ? frozenEvents : liveEvents;
 
     const pendingCount = isPaused

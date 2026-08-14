@@ -58,13 +58,49 @@ exports[`AiProviderGallery snapshot 1`] = `
         className="pf-v6-c-card__header-main"
       >
         <div
+          className="pf-v6-c-label-group pf-m-vertical"
+        >
+          <div
+            className="pf-v6-c-label-group__main"
+          >
+            <ul
+              aria-label="Label group category"
+              className="pf-v6-c-label-group__list"
+              role="list"
+            >
+              <li
+                className="pf-v6-c-label-group__list-item"
+              >
+                <span
+                  className="pf-v6-c-label pf-m-blue pf-m-outline label version"
+                >
+                  <span
+                    className="pf-v6-c-label__content"
+                  >
+                    <span
+                      className="pf-v6-c-label__text"
+                    >
+                      latest
+                    </span>
+                  </span>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div
           className="pf-v6-c-card__title"
         >
           <div
-            className="pf-v6-c-card__title-text"
+            className="pf-v6-c-card__title-text cardTitle"
             id="ai-provider-card-anthropic-claude-title"
           >
-            Claude
+            <div>
+              Claude
+            </div>
+            <span
+              className="badgeGroup"
+            />
           </div>
         </div>
       </div>
@@ -118,13 +154,49 @@ exports[`AiProviderGallery snapshot 1`] = `
         className="pf-v6-c-card__header-main"
       >
         <div
+          className="pf-v6-c-label-group pf-m-vertical"
+        >
+          <div
+            className="pf-v6-c-label-group__main"
+          >
+            <ul
+              aria-label="Label group category"
+              className="pf-v6-c-label-group__list"
+              role="list"
+            >
+              <li
+                className="pf-v6-c-label-group__list-item"
+              >
+                <span
+                  className="pf-v6-c-label pf-m-blue pf-m-outline label version"
+                >
+                  <span
+                    className="pf-v6-c-label__content"
+                  >
+                    <span
+                      className="pf-v6-c-label__text"
+                    >
+                      latest
+                    </span>
+                  </span>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div
           className="pf-v6-c-card__title"
         >
           <div
-            className="pf-v6-c-card__title-text"
+            className="pf-v6-c-card__title-text cardTitle"
             id="ai-provider-card-google-gemini-title"
           >
-            Gemini
+            <div>
+              Gemini
+            </div>
+            <span
+              className="badgeGroup"
+            />
           </div>
         </div>
       </div>

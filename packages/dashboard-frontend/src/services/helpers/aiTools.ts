@@ -79,6 +79,40 @@ export function toolCommandIds(slug: string): {
 }
 
 /**
+ * Returns the injected AI tool IDs and their active versions in one pass over
+ * the workspace components. Use this when both values are needed together to
+ * avoid iterating the component list twice.
+ */
+export function getInjectedAiToolInfo(
+  workspace: Workspace,
+  allTools: api.AiToolDefinition[],
+): { ids: string[]; versions: Record<string, string> } {
+  const components: Array<{ name?: string; container?: { image?: string } }> =
+    (workspace.ref.spec?.template?.components as Array<{
+      name?: string;
+      container?: { image?: string };
+    }>) ?? [];
+  const ids: string[] = [];
+  const versions: Record<string, string> = {};
+  for (const comp of components) {
+    const image: string = comp.container?.image ?? '';
+    const tool = allTools.find(t => stripImageTag(t.injectorImage) === stripImageTag(image));
+    if (tool && !ids.includes(tool.providerId)) {
+      ids.push(tool.providerId);
+      // Extract the tag from the actual injected image.
+      // For digest-pinned images (e.g. quay.io/example/claude-code@sha256:abc123) the
+      // regex extracts the hash after "sha256:" as the "version". This means a digest→tag
+      // (or tag→digest) upgrade will always look like a version change and re-enable Save.
+      // That is intentional: the operation is idempotent, and digest versions are treated
+      // opaquely — no attempt is made to normalise them to a canonical form.
+      const tagMatch = image.match(/:([^:@]+)$/);
+      versions[tool.providerId] = tagMatch ? tagMatch[1] : tool.tag;
+    }
+  }
+  return { ids, versions };
+}
+
+/**
  * Returns all toolIds of AI tools injected into this workspace.
  * Detects by matching the injectorImage from any known tool in `allTools`.
  */
@@ -86,20 +120,18 @@ export function getInjectedAiToolIds(
   workspace: Workspace,
   allTools: api.AiToolDefinition[],
 ): string[] {
-  const components: Array<{ name?: string; container?: { image?: string } }> =
-    (workspace.ref.spec?.template?.components as Array<{
-      name?: string;
-      container?: { image?: string };
-    }>) ?? [];
-  const ids: string[] = [];
-  for (const comp of components) {
-    const image: string = comp.container?.image ?? '';
-    const tool = allTools.find(t => stripImageTag(t.injectorImage) === stripImageTag(image));
-    if (tool && !ids.includes(tool.providerId)) {
-      ids.push(tool.providerId);
-    }
-  }
-  return ids;
+  return getInjectedAiToolInfo(workspace, allTools).ids;
+}
+
+/**
+ * Returns a map of providerId → injected tag for all injected AI tools.
+ * Used to detect which version of a tool is currently in the workspace.
+ */
+export function getInjectedAiToolVersions(
+  workspace: Workspace,
+  allTools: api.AiToolDefinition[],
+): Record<string, string> {
+  return getInjectedAiToolInfo(workspace, allTools).versions;
 }
 
 /**
@@ -196,8 +228,11 @@ export function addAiToolToWorkspace(
   workspaceOrDevWorkspace: Workspace | devfileApi.DevWorkspace,
   toolId: string,
   allTools: api.AiToolDefinition[],
+  tag?: string,
 ): devfileApi.DevWorkspace {
-  const tool = allTools.find(t => t.providerId === toolId);
+  const tool =
+    (tag ? allTools.find(t => t.providerId === toolId && t.tag === tag) : undefined) ??
+    allTools.find(t => t.providerId === toolId);
   if (!tool) {
     throw new Error(`Unknown AI tool: ${toolId}`);
   }
@@ -754,6 +789,29 @@ export function updateOutdatedAiTools(
   }
 
   return result;
+}
+
+/**
+ * Groups tools by providerId with deterministic alphabetical ordering.
+ *
+ * Tools are sorted by name before grouping so the gallery and the selector
+ * modal always show providers in the same order. Each group is guaranteed
+ * non-empty by the grouping logic.
+ */
+export function groupToolsByProvider(
+  tools: api.AiToolDefinition[],
+): [api.AiToolDefinition, ...api.AiToolDefinition[]][] {
+  const sorted = [...tools].sort((a, b) => a.name.localeCompare(b.name));
+  const map = new Map<string, [api.AiToolDefinition, ...api.AiToolDefinition[]]>();
+  for (const tool of sorted) {
+    const existing = map.get(tool.providerId);
+    if (existing) {
+      existing.push(tool);
+    } else {
+      map.set(tool.providerId, [tool]);
+    }
+  }
+  return Array.from(map.values());
 }
 
 /**

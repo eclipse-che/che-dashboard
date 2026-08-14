@@ -19,6 +19,7 @@ import { baseApiPath } from '@/constants/config';
 import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
 import { getServiceAccountToken } from '@/routes/api/helpers/getServiceAccountToken';
 import { getSchema } from '@/services/helpers';
+import { logger } from '@/utils/logger';
 
 const tags = ['AI Registry'];
 
@@ -35,8 +36,15 @@ export function registerAiRegistryRoute(isLocalRun: boolean, instance: FastifyIn
         return EMPTY_REGISTRY;
       }
       const token = getServiceAccountToken();
-      const { aiRegistryApi } = getDevWorkspaceClient(token);
-      return aiRegistryApi.get();
+      const { aiRegistryApi, serverConfigApi } = getDevWorkspaceClient(token);
+      const currentArch = await serverConfigApi.getCurrentArchitecture().catch(error => {
+        logger.warn(
+          error,
+          'Failed to detect current architecture; serving all tools without arch filtering',
+        );
+        return undefined;
+      });
+      return aiRegistryApi.get(currentArch);
     });
   });
 }

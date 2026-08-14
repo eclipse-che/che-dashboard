@@ -592,8 +592,11 @@ export interface IAiRegistryApi {
   /**
    * Reads the AI tool registry from a ConfigMap in the cluster.
    * Returns providers, tools, and default provider selections.
+   * When currentArch is provided, tools whose arch list does not include
+   * the current architecture are filtered out. Tools with no arch field
+   * are always returned.
    */
-  get(): Promise<api.IAiRegistry>;
+  get(currentArch?: Architecture): Promise<api.IAiRegistry>;
 }
 
 export interface IAiProviderKeyApi {

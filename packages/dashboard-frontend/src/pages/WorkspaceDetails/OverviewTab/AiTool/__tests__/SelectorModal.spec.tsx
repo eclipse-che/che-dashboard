@@ -42,6 +42,15 @@ const aiTools: api.AiToolDefinition[] = [
   },
 ];
 
+// Claude Code with two tags for version-selection tests
+const claudeLatest: api.AiToolDefinition = aiTools[0];
+const claudeNext: api.AiToolDefinition = {
+  ...claudeLatest,
+  tag: 'next',
+  injectorImage: 'quay.io/test/claude:next',
+};
+const multiVersionTools: api.AiToolDefinition[] = [claudeLatest, claudeNext];
+
 const aiProviders: api.AiProviderDefinition[] = [
   {
     id: 'anthropic/claude',
@@ -72,7 +81,9 @@ function getComponent(
       aiTools={tools}
       aiProviders={providers}
       selected={selected}
+      selectedVersions={{}}
       originSelection={originSelection}
+      originVersions={{}}
       onToggle={mockOnToggle}
       onConfirm={mockOnConfirm}
       onCancel={mockOnCancel}
@@ -145,5 +156,82 @@ describe('AiToolSelectorModal', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(mockOnConfirm).toHaveBeenCalled();
+  });
+
+  describe('version selection', () => {
+    function getVersionComponent(
+      selected: string[],
+      originSelection: string[],
+      selectedVersions: Record<string, string> = {},
+      originVersions: Record<string, string> = {},
+    ): React.ReactElement {
+      return (
+        <AiToolSelectorModal
+          isOpen={true}
+          aiTools={multiVersionTools}
+          aiProviders={aiProviders}
+          selected={selected}
+          selectedVersions={selectedVersions}
+          originSelection={originSelection}
+          originVersions={originVersions}
+          onToggle={mockOnToggle}
+          onConfirm={mockOnConfirm}
+          onCancel={mockOnCancel}
+        />
+      );
+    }
+
+    it('should show version dropdown for multi-version provider', () => {
+      const { renderComponent: render } = getComponentRenderer(getVersionComponent);
+      render(['anthropic/claude'], ['anthropic/claude']);
+
+      expect(
+        screen.getByRole('button', { name: /Claude Code version options/i }),
+      ).toBeInTheDocument();
+    });
+
+    it('should enable Save when only the version changes', () => {
+      const { renderComponent: render } = getComponentRenderer(getVersionComponent);
+      render(
+        ['anthropic/claude'],
+        ['anthropic/claude'],
+        { 'anthropic/claude': 'next' },
+        { 'anthropic/claude': 'latest' },
+      );
+
+      expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+    });
+
+    it('should keep Save disabled when version has not changed', () => {
+      const { renderComponent: render } = getComponentRenderer(getVersionComponent);
+      render(
+        ['anthropic/claude'],
+        ['anthropic/claude'],
+        { 'anthropic/claude': 'latest' },
+        { 'anthropic/claude': 'latest' },
+      );
+
+      expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+    });
+
+    it('should call onToggle when version is selected for an unselected provider', async () => {
+      const { renderComponent: render } = getComponentRenderer(getVersionComponent);
+      render([], []);
+
+      fireEvent.click(screen.getByRole('button', { name: /Claude Code version options/i }));
+      const option = await screen.findByText('next');
+      fireEvent.click(option);
+
+      expect(mockOnToggle).toHaveBeenCalledWith('anthropic/claude');
+    });
+
+    it('should call onConfirm with the correct selectedVersions map', () => {
+      const { renderComponent: render } = getComponentRenderer(getVersionComponent);
+      render(['anthropic/claude'], [], { 'anthropic/claude': 'latest' });
+
+      fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+      expect(mockOnConfirm).toHaveBeenCalledWith({ 'anthropic/claude': 'latest' });
+    });
   });
 });

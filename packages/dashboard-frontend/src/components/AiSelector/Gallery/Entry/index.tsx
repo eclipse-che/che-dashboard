@@ -11,33 +11,69 @@
  */
 
 import { api } from '@eclipse-che/common';
-import { Badge, Card, CardFooter, CardHeader, CardTitle } from '@patternfly/react-core';
-import { CheckCircleIcon } from '@patternfly/react-icons';
+import {
+  Badge,
+  Card,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  LabelGroup,
+  MenuToggle,
+  MenuToggleElement,
+} from '@patternfly/react-core';
+import { CheckIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 import styles from '@/components/AiSelector/Gallery/Entry/index.module.css';
+import { TagLabel } from '@/components/TagLabel';
 
 export type Props = {
-  provider: api.AiToolDefinition;
+  toolGroup: [api.AiToolDefinition, ...api.AiToolDefinition[]];
   icon?: string;
   description?: string;
   tags?: string[];
   isSelected: boolean;
   hasExistingKey: boolean;
   onToggle: (providerId: string) => void;
+  onVersionChange?: (providerId: string, tag: string) => void;
 };
 
-export class AiProviderEntry extends React.PureComponent<Props> {
+type State = {
+  activeTool: api.AiToolDefinition;
+  isKebabOpen: boolean;
+};
+
+export class AiProviderEntry extends React.PureComponent<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      activeTool: props.toolGroup[0],
+      isKebabOpen: false,
+    };
+  }
+
+  public componentDidUpdate(prevProps: Props): void {
+    const prevTags = prevProps.toolGroup.map(t => t.tag).join(',');
+    const nextTags = this.props.toolGroup.map(t => t.tag).join(',');
+    if (prevTags !== nextTags) {
+      const stillActive = this.props.toolGroup.find(t => t.tag === this.state.activeTool.tag);
+      this.setState({ activeTool: stillActive ?? this.props.toolGroup[0] });
+    }
+  }
+
   private get cardId(): string {
-    return `ai-provider-card-${this.props.provider.providerId.replace(/\//g, '-')}`;
+    return `ai-provider-card-${this.state.activeTool.providerId.replace(/\//g, '-')}`;
   }
 
   private get selectableActionId(): string {
-    return `ai-provider-input-${this.props.provider.providerId.replace(/\//g, '-')}`;
+    return `ai-provider-input-${this.state.activeTool.providerId.replace(/\//g, '-')}`;
   }
 
   private handleToggle = (): void => {
-    this.props.onToggle(this.props.provider.providerId);
+    this.props.onToggle(this.state.activeTool.providerId);
   };
 
   private handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): void => {
@@ -72,7 +108,69 @@ export class AiProviderEntry extends React.PureComponent<Props> {
     }
   };
 
-  private getTags(): React.ReactElement[] {
+  private handleDropdownToggle = (event: React.MouseEvent): void => {
+    event.stopPropagation();
+    this.setState(prev => ({ isKebabOpen: !prev.isKebabOpen }));
+  };
+
+  private handleVersionSelect = (
+    event: React.MouseEvent | React.KeyboardEvent,
+    tool: api.AiToolDefinition,
+  ): void => {
+    event.stopPropagation();
+    event.preventDefault();
+
+    const { isSelected, onVersionChange } = this.props;
+    const { activeTool } = this.state;
+
+    this.setState({ activeTool: tool, isKebabOpen: false });
+
+    if (isSelected && activeTool.tag !== tool.tag && onVersionChange) {
+      onVersionChange(tool.providerId, tool.tag);
+    }
+  };
+
+  private buildVersionDropdown(): React.ReactElement | null {
+    const { toolGroup, onVersionChange } = this.props;
+    if (!onVersionChange || toolGroup.length <= 1) {
+      return null;
+    }
+    const { activeTool, isKebabOpen } = this.state;
+
+    const items = toolGroup.map(tool => (
+      <DropdownItem
+        key={tool.tag}
+        onClick={event => this.handleVersionSelect(event, tool)}
+        data-testid="ai-provider-version-option"
+        aria-checked={tool.tag === activeTool.tag}
+        icon={tool.tag === activeTool.tag ? <CheckIcon /> : undefined}
+      >
+        {tool.tag}
+      </DropdownItem>
+    ));
+
+    return (
+      <Dropdown
+        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+          <MenuToggle
+            ref={toggleRef}
+            variant="plain"
+            onClick={this.handleDropdownToggle}
+            isExpanded={isKebabOpen}
+            aria-label={`${activeTool.name} version options`}
+            icon={<EllipsisVIcon />}
+          />
+        )}
+        isOpen={isKebabOpen}
+        onOpenChange={isOpen => this.setState({ isKebabOpen: isOpen })}
+        popperProps={{ position: 'right' }}
+      >
+        <DropdownList>{items}</DropdownList>
+      </Dropdown>
+    );
+  }
+
+  private getTechPreviewBadges(): React.ReactElement[] {
     const { tags } = this.props;
     if (!tags) {
       return [];
@@ -87,10 +185,12 @@ export class AiProviderEntry extends React.PureComponent<Props> {
   }
 
   public render(): React.ReactElement {
-    const { provider, icon, description, isSelected, hasExistingKey } = this.props;
+    const { icon, description, isSelected, hasExistingKey } = this.props;
+    const { activeTool } = this.state;
 
-    const titleClassName = isSelected ? styles.activeCard : '';
-    const tagBadges = this.getTags();
+    const titleClassName = `${styles.cardTitle}${isSelected ? ` ${styles.activeCard}` : ''}`;
+    const techPreviewBadges = this.getTechPreviewBadges();
+    const versionDropdown = this.buildVersionDropdown();
 
     return (
       <Card
@@ -113,25 +213,31 @@ export class AiProviderEntry extends React.PureComponent<Props> {
             hasNoOffset: true,
             isHidden: true,
           }}
-          actions={tagBadges.length > 0 ? { actions: <>{tagBadges}</> } : undefined}
+          actions={{ actions: versionDropdown }}
         >
+          {icon && (
+            <img
+              src={icon}
+              alt={`${activeTool.name} icon`}
+              className={styles.providerIcon}
+              onError={e => {
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
+          )}
+          <LabelGroup isVertical>
+            <TagLabel type="version" text={activeTool.tag} />
+          </LabelGroup>
           <CardTitle className={titleClassName}>
-            {icon && (
-              <img
-                src={icon}
-                alt={`${provider.name} icon`}
-                className={styles.providerIcon}
-                onError={e => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
-              />
-            )}
-            {provider.name}
-            {provider.envVarName && hasExistingKey && (
-              <Badge isRead style={{ whiteSpace: 'nowrap' }}>
-                <CheckCircleIcon /> Key configured
-              </Badge>
-            )}
+            <div>{activeTool.name}</div>
+            <span className={styles.badgeGroup}>
+              {activeTool.envVarName && hasExistingKey && (
+                <Badge isRead style={{ whiteSpace: 'nowrap' }}>
+                  Key configured
+                </Badge>
+              )}
+              {techPreviewBadges}
+            </span>
           </CardTitle>
         </CardHeader>
         {description && (

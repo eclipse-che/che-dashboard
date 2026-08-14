@@ -14,6 +14,8 @@ import { api } from '@eclipse-che/common';
 import { Content, Modal, ModalBody, ModalHeader, ModalVariant } from '@patternfly/react-core';
 import React from 'react';
 
+import { groupToolsByProvider } from '@/services/helpers/aiTools';
+
 type Props = {
   isOpen: boolean;
   aiTools: api.AiToolDefinition[];
@@ -49,7 +51,8 @@ export class AiToolInfoModal extends React.PureComponent<Props> {
                   containers. The selected tool binary is copied to a shared volume and added to{' '}
                   <code>PATH</code>.
                 </Content>
-                {aiTools.map(def => {
+                {groupToolsByProvider(aiTools).map(toolGroup => {
+                  const def = toolGroup[0];
                   const provider = aiProviders.find(p => p.id === def.providerId);
                   return (
                     <Content key={def.providerId} component="p">

@@ -10,7 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-export type Architecture = 'x86_64' | 'arm64' | 's390x' | 'ppc64le';
+// Linux kernel names (uname -m) and OCI/Docker aliases are both accepted.
+export type Architecture =
+  | 'x86_64'
+  | 'amd64'
+  | 'arm64'
+  | 'aarch64'
+  | 's390x'
+  | 'ppc64le';
 
 export interface ClusterConfig {
   dashboardWarning?: string;
