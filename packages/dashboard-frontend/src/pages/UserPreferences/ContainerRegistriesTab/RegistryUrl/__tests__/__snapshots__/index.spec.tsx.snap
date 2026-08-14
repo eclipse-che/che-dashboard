@@ -62,7 +62,7 @@ exports[`Registry Url Input should correctly render the component 1`] = `
           />
         </span>
         <button
-          aria-label="open registry"
+          aria-label="Open container registry"
           className="pf-v6-c-button pf-m-link"
           data-ouia-component-id="OUIA-Generated-Button-link-2"
           data-ouia-component-type="PF6/Button"
