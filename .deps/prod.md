@@ -140,11 +140,11 @@
 | `help-me@4.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/help-me/4.2.0) |
 | `history@4.10.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/history/4.10.1) |
 | `htmlparser2@10.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/htmlparser2/10.1.0) |
-| `http-errors@2.0.1` |  |  |
+| `http-errors@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/http-errors/2.0.1) |
 | `https@1.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/https/1.0.0) |
 | `immer@10.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/immer/10.1.1) |
-| `inherits@2.0.4` |  |  |
-| `inversify-inject-decorators@3.1.0` |  |  |
+| `inherits@2.0.4` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/inherits/2.0.4) |
+| `inversify-inject-decorators@3.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/inversify-inject-decorators/3.1.0) |
 | `inversify-react@1.1.1` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/inversify-react/1.1.1) |
 | `inversify@6.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/inversify/6.0.2) |
 | `inversify@7.5.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/inversify/7.5.1) |
@@ -230,7 +230,7 @@
 | `statuses@2.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/statuses/2.0.2) |
 | `stream-shift@1.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/stream-shift/1.0.3) |
 | `string_decoder@1.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/string_decoder/1.3.0) |
-| `style-mod@4.1.2` |  |  |
+| `style-mod@4.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/style-mod/4.1.2) |
 | `tabbable@6.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/tabbable/6.4.0) |
 | `thread-stream@2.4.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/thread-stream/2.4.1) |
 | `thread-stream@4.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/thread-stream/4.0.0) |
