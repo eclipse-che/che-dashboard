@@ -56,6 +56,10 @@ export default class EditRegistryModal extends React.PureComponent<Props, State>
     };
   }
 
+  public componentDidMount(): void {
+    this.updateCloseButtonAriaLabel();
+  }
+
   public componentDidUpdate(prevProps: Props): void {
     const { isOpen, registry } = this.props;
     if (isOpen !== prevProps.isOpen || registry.url !== prevProps.registry.url) {
@@ -65,6 +69,20 @@ export default class EditRegistryModal extends React.PureComponent<Props, State>
         usernameValid: ValidatedOptions.default,
         passwordValid: ValidatedOptions.default,
       });
+    }
+    if (isOpen && !prevProps.isOpen) {
+      this.updateCloseButtonAriaLabel();
+    }
+  }
+
+  private updateCloseButtonAriaLabel(): void {
+    // PatternFly v6 doesn't expose a prop to customize the close button's aria-label
+    // so we update it directly in the DOM after render
+    const closeButton = document.querySelector(
+      '.pf-v6-c-modal-box .pf-v6-c-modal-box__close button',
+    ) as HTMLButtonElement;
+    if (closeButton) {
+      closeButton.setAttribute('aria-label', 'Close Container Registry form');
     }
   }
 
