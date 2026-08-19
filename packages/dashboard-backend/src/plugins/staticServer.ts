@@ -25,6 +25,7 @@ export function registerStaticServer(publicFolder: string, server: FastifyInstan
     maxAge: 24 * 60 * 60 * 1000,
     lastModified: true,
     prefix: '/',
+    preCompressed: true,
   });
 
   const doNotCache = [

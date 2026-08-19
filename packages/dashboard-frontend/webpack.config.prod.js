@@ -12,6 +12,7 @@
 
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const CleanTerminalPlugin = require('clean-terminal-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const loaderUtils = require('loader-utils');
@@ -59,6 +60,11 @@ const config = {
     ],
   },
   plugins: [
+    new CompressionPlugin({
+      test: /\.(js|css|html|json|svg)$/,
+      threshold: 1024,
+      minRatio: 0.8,
+    }),
     new MiniCssExtractPlugin({
       filename: '[name].[fullhash:8].css',
     }),
