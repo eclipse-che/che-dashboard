@@ -21,6 +21,7 @@ import {
   ModalVariant,
   ValidatedOptions,
 } from '@patternfly/react-core';
+import { TimesIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 import { RegistryPasswordFormGroup } from '@/pages/UserPreferences/ContainerRegistriesTab/RegistryPassword';
@@ -182,10 +183,18 @@ export default class EditRegistryModal extends React.PureComponent<Props, State>
       <Modal
         variant={ModalVariant.small}
         isOpen={isOpen}
-        onClose={onCancel}
+        onEscapePress={onCancel}
         aria-label="edit-registry-info"
         elementToFocus="[data-pf-initial-focus]"
       >
+        <div className="pf-v6-c-modal-box__close">
+          <Button
+            variant="plain"
+            aria-label="Close Container Registry form"
+            onClick={onCancel}
+            icon={<TimesIcon />}
+          />
+        </div>
         <ModalHeader title={modalTitle} />
         <ModalBody>
           <div data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
