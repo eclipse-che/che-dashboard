@@ -112,7 +112,7 @@ export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
           <Button
             variant="link"
             isDisabled={!url || !isUrl}
-            aria-label="open registry"
+            aria-label="Open container registry"
             onClick={() => window.open(url, '_blank')}
           >
             <ExternalLinkAltIcon />
