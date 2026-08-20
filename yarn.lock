@@ -1181,6 +1181,7 @@ __metadata:
     "@uiw/react-codemirror": "npm:4.23.5"
     buffer: "npm:^6.0.3"
     clean-terminal-webpack-plugin: "npm:^3.0.0"
+    compression-webpack-plugin: "npm:^12.0.0"
     copy-webpack-plugin: "npm:^11.0.0"
     cron-parser: "npm:^5.5.0"
     cronstrue: "npm:^3.13.0"
@@ -5313,6 +5314,18 @@ __metadata:
     array-ify: "npm:^1.0.0"
     dot-prop: "npm:^5.1.0"
   checksum: 10/fb71d70632baa1e93283cf9d80f30ac97f003aabee026e0b4426c9716678079ef5fea7519b84d012cbed938c476493866a38a79760564a9e21ae9433e40e6f0d
+  languageName: node
+  linkType: hard
+
+"compression-webpack-plugin@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "compression-webpack-plugin@npm:12.0.0"
+  dependencies:
+    schema-utils: "npm:^4.2.0"
+    serialize-javascript: "npm:^7.0.3"
+  peerDependencies:
+    webpack: ^5.1.0
+  checksum: 10/db4e35b595ded3c99ce84d4c9f3d9202dd28875492c6fb8152999884d118bee3257ea1bd2e3133fe72806d59d5249da54094283ccb8c1d097b2c73283ac8950a
   languageName: node
   linkType: hard
 
@@ -12853,7 +12866,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"schema-utils@npm:^4.0.0, schema-utils@npm:^4.0.1, schema-utils@npm:^4.3.0, schema-utils@npm:^4.3.3":
+"schema-utils@npm:^4.0.0, schema-utils@npm:^4.0.1, schema-utils@npm:^4.2.0, schema-utils@npm:^4.3.0, schema-utils@npm:^4.3.3":
   version: 4.3.3
   resolution: "schema-utils@npm:4.3.3"
   dependencies:
