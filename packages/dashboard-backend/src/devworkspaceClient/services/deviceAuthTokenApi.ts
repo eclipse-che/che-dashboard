@@ -152,41 +152,13 @@ export class GitHubDeviceAuthTokenApiService implements IDeviceAuthTokenApi {
       );
     }
 
-    // Best-effort GitHub token revocation via POST /credentials/revoke.
-    // Authorization: Bearer <token> is required — the endpoint authenticates via
-    // the token being revoked rather than an OAuth app client secret.
-    // The token owner receives a GitHub notification email upon revocation.
-    // See: https://docs.github.com/en/rest/credentials/revoke
-    const rawToken = Buffer.from(secret.data?.['token'] ?? '', 'base64').toString('utf-8');
-    if (rawToken) {
-      try {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), GITHUB_API_TIMEOUT_MS);
-        try {
-          const revokeResponse = await fetch('https://api.github.com/credentials/revoke', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-GitHub-Api-Version': '2022-11-28',
-              Authorization: `Bearer ${rawToken}`,
-            },
-            body: JSON.stringify({ credentials: [rawToken] }),
-            signal: controller.signal,
-          });
-          if (!revokeResponse.ok && revokeResponse.status !== 202) {
-            console.warn(
-              `[device-auth] GitHub token revocation failed (HTTP ${revokeResponse.status}).`,
-            );
-          }
-        } finally {
-          clearTimeout(timer);
-        }
-      } catch (e) {
-        console.warn(
-          `[device-auth] GitHub token revocation error: ${e instanceof Error ? e.message : String(e)}`,
-        );
-      }
-    }
+    // Note: GitHub's DELETE /applications/{client_id}/token endpoint (the only
+    // supported self-revocation API) requires the OAuth app client secret, which
+    // this backend service does not hold. The POST /credentials/revoke endpoint
+    // is for reporting credentials found exposed by third parties and returns 403
+    // when called by the token owner. We therefore only remove the local K8s
+    // secret; the GitHub token remains valid until the user revokes it from
+    // GitHub Settings → Applications → Authorized OAuth Apps.
 
     try {
       await this.coreV1API.deleteNamespacedSecret({

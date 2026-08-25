@@ -179,50 +179,6 @@ describe('DeviceAuthToken API Service', () => {
         `Unable to delete Device Authentication token "${tokenName}" in the namespace "${namespace}"`,
       );
     });
-
-    describe('revocation behavior', () => {
-      const rawToken = 'ghp_test_token';
-      const encodedToken = Buffer.from(rawToken).toString('base64');
-
-      beforeEach(() => {
-        spyReadNamespacedSecret.mockResolvedValue({
-          metadata: {
-            name: tokenName,
-            resourceVersion,
-            labels: { [DEVICE_AUTH_LABEL]: 'true' },
-          },
-          data: { token: encodedToken },
-        } as V1Secret);
-      });
-
-      it('should still delete the K8s secret when GitHub token revocation throws', async () => {
-        mockFetch.mockRejectedValueOnce(new Error('Network error'));
-
-        // Should NOT throw — deleteNamespacedSecret must still be called
-        await expect(service.deleteToken(namespace, tokenName)).resolves.toBeUndefined();
-        expect(spyDeleteNamespacedSecret).toHaveBeenCalled();
-      });
-
-      it('should call GitHub revoke API with correct URL, headers, and body on success', async () => {
-        mockFetch.mockResolvedValueOnce({ ok: true, status: 200 });
-
-        await service.deleteToken(namespace, tokenName);
-
-        expect(mockFetch).toHaveBeenCalledWith(
-          'https://api.github.com/credentials/revoke',
-          expect.objectContaining({
-            method: 'POST',
-            headers: expect.objectContaining({
-              Authorization: `Bearer ${rawToken}`,
-              'Content-Type': 'application/json',
-              'X-GitHub-Api-Version': '2022-11-28',
-            }),
-            body: JSON.stringify({ credentials: [rawToken] }),
-          }),
-        );
-        expect(spyDeleteNamespacedSecret).toHaveBeenCalled();
-      });
-    }); // revocation behavior
   });
 
   describe('initiateDeviceAuth', () => {
