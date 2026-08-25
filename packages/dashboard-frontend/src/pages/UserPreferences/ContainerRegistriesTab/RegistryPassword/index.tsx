@@ -110,7 +110,7 @@ export class RegistryPasswordFormGroup extends React.PureComponent<Props, State>
           />
           <Button
             variant="control"
-            aria-label="show"
+            aria-label="Show password"
             onClick={() => this.setState({ isHidden: !isHidden })}
           >
             {isHidden ? <EyeSlashIcon /> : <EyeIcon />}
