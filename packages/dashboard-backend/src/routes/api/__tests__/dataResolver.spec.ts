@@ -158,9 +158,24 @@ describe('Data Resolver Route', () => {
         'http://10.0.0.1/internal',
         'http://172.16.0.1/internal',
         'http://192.168.1.1/internal',
+        // IPv4-mapped IPv6 — bypass attempt
+        'http://[::ffff:169.254.169.254]/',
+        'http://[::ffff:127.0.0.1]/',
+        'http://[::ffff:10.0.0.1]/',
       ])('blocks %s', async url => {
         const res = await app.inject().post(`${baseApiPath}/data/resolver`).payload({ url });
         expect(res.statusCode).toEqual(403);
+        expect(defaultAxiosInstanceMock).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('invalid URL', () => {
+      test('returns 400 for malformed URL', async () => {
+        const res = await app
+          .inject()
+          .post(`${baseApiPath}/data/resolver`)
+          .payload({ url: 'http://' });
+        expect(res.statusCode).toEqual(400);
         expect(defaultAxiosInstanceMock).not.toHaveBeenCalled();
       });
     });

@@ -29,22 +29,34 @@ const config = {
   maxRedirects: 0,
 };
 
+function isPrivateOctets(a: number, b: number): boolean {
+  return (
+    a === 127 ||
+    a === 10 ||
+    (a === 172 && b >= 16 && b <= 31) ||
+    (a === 192 && b === 168) ||
+    (a === 169 && b === 254)
+  );
+}
+
 function isPrivateHostname(hostname: string): boolean {
   if (hostname === 'localhost' || hostname === '::1' || hostname === '[::1]') {
     return true;
   }
+
+  // IPv4-mapped IPv6: [::ffff:XXXX:YYYY] where each group is a 16-bit hex word.
+  // e.g. [::ffff:a9fe:a9fe] maps to 169.254.169.254.
+  const ipv4Mapped = hostname.match(/^\[::ffff:([0-9a-f]+):([0-9a-f]+)\]$/i);
+  if (ipv4Mapped) {
+    const w1 = parseInt(ipv4Mapped[1], 16);
+    return isPrivateOctets((w1 >> 8) & 0xff, w1 & 0xff);
+  }
+
   const parts = hostname.split('.');
   if (parts.length === 4) {
     const octets = parts.map(Number);
     if (octets.every(o => Number.isInteger(o) && o >= 0 && o <= 255)) {
-      const [a, b] = octets;
-      return (
-        a === 127 ||
-        a === 10 ||
-        (a === 172 && b >= 16 && b <= 31) ||
-        (a === 192 && b === 168) ||
-        (a === 169 && b === 254)
-      );
+      return isPrivateOctets(octets[0], octets[1]);
     }
   }
   return false;
@@ -63,6 +75,9 @@ function isUrlAllowed(url: string, allowedSourceUrls: string[]): boolean {
       if (!pattern.endsWith('*')) {
         pattern = `${pattern}$`;
       }
+      // Intentionally mirrors the frontend isSourceAllowed() pattern logic:
+      // non-wildcard URL chars (including '.') are not regex-escaped.
+      // Allowlist entries come from the operator (trusted input).
       pattern = pattern.replace(/\*/g, '.*');
       if (new RegExp(pattern).test(url)) {
         return true;
