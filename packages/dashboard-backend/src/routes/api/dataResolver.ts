@@ -18,13 +18,63 @@ import { baseApiPath } from '@/constants/config';
 import { dataResolverSchema } from '@/constants/schemas';
 import { restParams } from '@/models';
 import { axiosInstance, axiosInstanceNoCert } from '@/routes/api/helpers/getCertificateAuthority';
+import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
+import { getServiceAccountToken } from '@/routes/api/helpers/getServiceAccountToken';
 import { getSchema } from '@/services/helpers';
 
 const tags = ['Data Resolver'];
 
 const config = {
   headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET' },
+  maxRedirects: 0,
 };
+
+function isPrivateHostname(hostname: string): boolean {
+  if (hostname === 'localhost' || hostname === '::1' || hostname === '[::1]') {
+    return true;
+  }
+  const parts = hostname.split('.');
+  if (parts.length === 4) {
+    const octets = parts.map(Number);
+    if (octets.every(o => Number.isInteger(o) && o >= 0 && o <= 255)) {
+      const [a, b] = octets;
+      return (
+        a === 127 ||
+        a === 10 ||
+        (a === 172 && b >= 16 && b <= 31) ||
+        (a === 192 && b === 168) ||
+        (a === 169 && b === 254)
+      );
+    }
+  }
+  return false;
+}
+
+function isUrlAllowed(url: string, allowedSourceUrls: string[]): boolean {
+  if (allowedSourceUrls.length === 0) {
+    return true;
+  }
+  for (const allowedUrl of allowedSourceUrls) {
+    if (allowedUrl.includes('*')) {
+      let pattern = allowedUrl.trim();
+      if (!pattern.startsWith('*')) {
+        pattern = `^${pattern}`;
+      }
+      if (!pattern.endsWith('*')) {
+        pattern = `${pattern}$`;
+      }
+      pattern = pattern.replace(/\*/g, '.*');
+      if (new RegExp(pattern).test(url)) {
+        return true;
+      }
+    } else {
+      if (allowedUrl.trim() === url) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 export function registerDataResolverRoute(instance: FastifyInstance) {
   instance.register(async server => {
@@ -33,6 +83,28 @@ export function registerDataResolverRoute(instance: FastifyInstance) {
       getSchema({ tags, body: dataResolverSchema }),
       async function (request: FastifyRequest, reply: FastifyReply): Promise<string | void> {
         const { url } = request.body as restParams.IYamlResolverParams;
+
+        let parsedUrl: URL;
+        try {
+          parsedUrl = new URL(url);
+        } catch {
+          reply.code(400).send('Invalid URL');
+          return;
+        }
+
+        if (isPrivateHostname(parsedUrl.hostname)) {
+          reply.code(403).send('Requests to private addresses are not allowed');
+          return;
+        }
+
+        const token = getServiceAccountToken();
+        const { serverConfigApi } = getDevWorkspaceClient(token);
+        const cheCustomResource = await serverConfigApi.fetchCheCustomResource();
+        const allowedSourceUrls = serverConfigApi.getAllowedSourceUrls(cheCustomResource);
+        if (!isUrlAllowed(url, allowedSourceUrls)) {
+          reply.code(403).send('URL is not in the allowed sources list');
+          return;
+        }
 
         try {
           let response: AxiosResponse;

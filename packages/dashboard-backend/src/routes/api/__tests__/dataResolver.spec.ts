@@ -20,6 +20,10 @@ import { setup, teardown } from '@/utils/appBuilder';
 jest.mock('@/routes/api/helpers/getCertificateAuthority');
 jest.mock('../helpers/getDevWorkspaceClient.ts');
 jest.mock('../helpers/getServiceAccountToken.ts');
+
+const { stubAllowedSourceUrls } = jest.requireMock(
+  '../helpers/getDevWorkspaceClient.ts',
+) as typeof import('@/routes/api/helpers/__mocks__/getDevWorkspaceClient');
 const axiosInstanceMock = jest.fn();
 (axiosInstance.get as jest.Mock).mockImplementation(axiosInstanceMock);
 const defaultAxiosInstanceMock = jest.fn();
@@ -38,6 +42,7 @@ describe('Data Resolver Route', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+    stubAllowedSourceUrls.splice(0);
   });
 
   describe('POST ${baseApiPath}/data/resolver', () => {
@@ -140,6 +145,59 @@ describe('Data Resolver Route', () => {
         expect(res.body).toEqual(
           '{"statusCode":404,"code":"ERR_BAD_REQUEST","error":"Not Found","message":"Not Found"}',
         );
+      });
+    });
+  });
+
+  describe('SSRF protection', () => {
+    describe('blocks requests to private addresses', () => {
+      test.each([
+        'http://127.0.0.1/secret',
+        'http://localhost/secret',
+        'http://169.254.169.254/latest/meta-data/',
+        'http://10.0.0.1/internal',
+        'http://172.16.0.1/internal',
+        'http://192.168.1.1/internal',
+      ])('blocks %s', async url => {
+        const res = await app.inject().post(`${baseApiPath}/data/resolver`).payload({ url });
+        expect(res.statusCode).toEqual(403);
+        expect(defaultAxiosInstanceMock).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('allowlist enforcement', () => {
+      beforeEach(() => {
+        stubAllowedSourceUrls.push('https://allowed.example.com/*');
+      });
+
+      test('blocks URL not in allowlist', async () => {
+        const res = await app
+          .inject()
+          .post(`${baseApiPath}/data/resolver`)
+          .payload({ url: 'https://blocked.example.com/devfile.yaml' });
+        expect(res.statusCode).toEqual(403);
+        expect(defaultAxiosInstanceMock).not.toHaveBeenCalled();
+      });
+
+      test('allows URL matching allowlist wildcard', async () => {
+        defaultAxiosInstanceMock.mockResolvedValueOnce({ status: 200, data: 'devfile content' });
+        const res = await app
+          .inject()
+          .post(`${baseApiPath}/data/resolver`)
+          .payload({ url: 'https://allowed.example.com/devfile.yaml' });
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual('devfile content');
+      });
+    });
+
+    describe('empty allowlist', () => {
+      test('allows any public URL when allowlist is not configured', async () => {
+        defaultAxiosInstanceMock.mockResolvedValueOnce({ status: 200, data: 'devfile content' });
+        const res = await app
+          .inject()
+          .post(`${baseApiPath}/data/resolver`)
+          .payload({ url: 'https://github.com/devfile.yaml' });
+        expect(res.statusCode).toEqual(200);
       });
     });
   });
