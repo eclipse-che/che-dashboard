@@ -29,6 +29,7 @@ import { registerBackupRoutes } from '@/routes/api/backup';
 import { registerClusterConfigRoute } from '@/routes/api/clusterConfig';
 import { registerClusterInfoRoute } from '@/routes/api/clusterInfo';
 import { registerDataResolverRoute } from '@/routes/api/dataResolver';
+import { registerDeviceAuthTokenRoutes } from '@/routes/api/deviceAuthToken';
 import { registerDevWorkspaceClusterRoutes } from '@/routes/api/devworkspaceCluster';
 import { registerDevworkspaceResourcesRoute } from '@/routes/api/devworkspaceResources';
 import { registerDevworkspacesRoutes } from '@/routes/api/devworkspaces';
@@ -149,5 +150,7 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
     registerAiConfigRoutes(server),
 
     registerAiRegistryRoute(isLocalRun(), server),
+
+    registerDeviceAuthTokenRoutes(server),
   ]);
 }

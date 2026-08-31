@@ -31,6 +31,7 @@ export const unloadedState: State = {
     runningWorkspacesLimit: 1,
     allWorkspacesLimit: -1,
     currentArchitecture: undefined,
+    githubDeviceAuthEnabled: false,
   },
 };
 
