@@ -39,9 +39,17 @@ export class CreateNewIfExistingField extends React.PureComponent<Props, State> 
   }
 
   public componentDidMount() {
-    Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID] = {
-      isChecked: this.state.createNewIfExisting,
-    };
+    const globalIsChecked = Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID].isChecked;
+    if (globalIsChecked !== undefined && globalIsChecked !== this.state.createNewIfExisting) {
+      // Adopt existing global state (e.g. the toolbar switch was already toggled) without
+      // overwriting it — this prevents the field from resetting the switch to its own default.
+      this.setState({ createNewIfExisting: globalIsChecked });
+      this.props.onChange(globalIsChecked);
+    } else if (globalIsChecked === undefined) {
+      Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID] = {
+        isChecked: this.state.createNewIfExisting,
+      };
+    }
     // Subscribe to the page state when the component is mounted
     Navigation.pageState.subscribe(this.subscribeCallback, CREATE_NEW_IF_EXIST_SWITCH_ID);
   }
