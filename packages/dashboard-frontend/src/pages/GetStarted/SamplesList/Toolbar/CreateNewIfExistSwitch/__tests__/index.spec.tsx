@@ -43,7 +43,7 @@ describe('Create New If Exist Switch', () => {
     expect(switchInput.checked).toBeTruthy();
     expect(mockOnChange).toHaveBeenCalledTimes(1);
     expect(Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID]).toEqual({
-      isChecked: undefined, // Default is true if not set
+      isChecked: true,
     });
     mockOnChange.mockReset();
 
