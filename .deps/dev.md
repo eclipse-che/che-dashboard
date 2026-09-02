@@ -487,7 +487,7 @@
 | `es-set-tostringtag@2.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/es-set-tostringtag/2.0.2) |
 | `es-shim-unscopables@1.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/es-shim-unscopables/1.0.2) |
 | `es-to-primitive@1.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/es-to-primitive/1.2.1) |
-| `es-toolkit@1.47.0` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/es-toolkit/1.47.0) |
+| `es-toolkit@1.47.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/es-toolkit/1.47.0) |
 | `es6-promise@4.2.8` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/es6-promise/4.2.8) |
 | `escalade@3.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/escalade/3.1.1) |
 | `escalade@3.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/escalade/3.2.0) |

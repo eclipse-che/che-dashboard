@@ -12,6 +12,8 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 | `conventional-commits-parser@6.4.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/conventional-commits-parser/6.4.0) |
 | `cosmiconfig-typescript-loader@6.3.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cosmiconfig-typescript-loader/6.3.0) |
 | `compression-webpack-plugin@12.0.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/compression-webpack-plugin/12.0.0) |
-| `es-toolkit@1.47.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/es-toolkit/1.47.0) |
+
+
+
 
 
