@@ -6,5 +6,7 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `cronstrue@3.13.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cronstrue/3.13.0) |
 | `fastify-plugin@5.2.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/5.2.1) |
 | `jsep@1.3.9` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsep/1.3.9) |
-| `launder@1.7.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/launder/1.7.1) |
+
+
+| `sanitize-html@2.17.7` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sanitize-html/2.17.7) |
 
