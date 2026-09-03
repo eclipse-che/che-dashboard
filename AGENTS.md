@@ -8,8 +8,12 @@ Eclipse Che Dashboard is the web-based user interface for Eclipse Che, a Kuberne
 
 - Workspace management (create, start, stop, delete)
 - Factory flow for creating workspaces from Git repositories
-- User preferences and settings
+- User preferences and settings (git config, SSH keys, PATs, container registries, AI provider keys, device auth tokens)
+- AI tools / assistant integration
+- Workspace backup and restore
 - Integration with DevWorkspace API
+
+For a full feature and API reference, see [`openspec/project.md`](openspec/project.md).
 
 ## Technology Stack
 
@@ -159,6 +163,7 @@ Use `run/patch.sh` to update the dashboard image on the cluster after pushing.
 If you push a new build under an existing tag, nodes with `imagePullPolicy: IfNotPresent` (the default) will silently reuse the cached image. Deleting a pod does **not** force a fresh pull from the registry — the node cache persists.
 
 Either:
+
 - Use a fresh unique tag per build (e.g., append a timestamp or iteration counter), **or**
 - Set `imagePullPolicy: Always` in the operator CR before deploying (see below)
 
@@ -184,6 +189,10 @@ Background agents cannot respond to interactive `dangerouslyDisableSandbox` perm
 ## Red Hat Compliance and Responsible AI Rules
 
 See `./redhat-compliance-and-responsible-ai.md`.
+
+## Project Documentation
+
+- **[`openspec/project.md`](openspec/project.md)** — full feature list, frontend/backend architecture, all API endpoints, and security notes. Keep it up to date when adding new routes or features.
 
 ## Project Rules (Claude Code)
 
