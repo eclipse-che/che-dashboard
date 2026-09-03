@@ -51,6 +51,8 @@ yarn build
 yarn test
 ```
 
+**This is mandatory for ALL branches, including pure dependency upgrades.** Dep upgrades routinely cause test suite failures (new API shapes, changed exports, peer dep mismatches) that only appear in CI if not caught locally first. Always run `yarn build && yarn test` before any `git push`.
+
 Follow the Surgical Change Workflow in `AGENTS.md` — targeted test runs before commit, full suite before push.
 
 ### Updating snapshots
@@ -106,7 +108,10 @@ Use typed error classes with status codes instead of string matching:
 
 ```typescript
 export class GitClientError extends Error {
-  constructor(public readonly statusCode: number, message: string) {
+  constructor(
+    public readonly statusCode: number,
+    message: string,
+  ) {
     super(message);
     this.name = 'GitClientError';
   }

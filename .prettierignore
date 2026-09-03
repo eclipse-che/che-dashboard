@@ -1,3 +1,6 @@
 # License dependency files are auto-generated or have a strict format required
 # by the @eclipse-che/license-tool parser — do not reformat.
 .deps/
+
+# Claude Code project files — tables use compact format, do not reformat.
+.claude/

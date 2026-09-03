@@ -75,6 +75,7 @@ yarn license:generate
 | New package our branch added | Check score; add to EXCLUDED if 0 |
 
 Check score:
+
 ```bash
 curl -s --max-time 10 \
   "https://api.clearlydefined.io/definitions/npm/npmjs/-/<package>/<version>" \
@@ -82,6 +83,7 @@ curl -s --max-time 10 \
 ```
 
 Add to EXCLUDED if score = 0:
+
 ```markdown
 | `<package>@<version>` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/<package>/<version>) |
 ```
@@ -94,6 +96,20 @@ git log --oneline -5
 git show --stat HEAD
 ```
 
+### 5.5. Build and test before pushing
+
+**MANDATORY — do not skip even for "pure dependency" rebases:**
+
+```bash
+yarn build           # must exit 0; dep upgrades can break TypeScript compilation
+yarn test            # must exit 0; dep upgrades can cause test suite failures
+```
+
+If `yarn build` fails: investigate compilation errors and fix before continuing.
+If `yarn test` fails: investigate failures — dep upgrades often introduce breaking API changes or new peer dependency requirements that break tests.
+
+**Never force-push with a failing build or failing tests.**
+
 ### 6. Strip forbidden trailers
 
 Check for `Made-with` or `Co-authored-by` in any replayed commit:
@@ -105,6 +121,7 @@ done
 ```
 
 If dirty:
+
 ```bash
 FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch -f --msg-filter \
   'sed "/^Made-with:/d; /^Co-authored-by:/d"' \
@@ -113,6 +130,7 @@ git update-ref -d refs/original/refs/heads/$(git branch --show-current)
 ```
 
 For a single-commit branch, amending is simpler:
+
 ```bash
 git commit --amend -m "$(git log -1 --format='%s')"
 # add trailers manually if needed
@@ -133,6 +151,7 @@ Merge manually: keep all of main's entries, then append ours below them.
 **Pattern 2 — Our branch removed a dep entry that main still has**
 
 Take main's version and let `yarn license:generate` clean it up:
+
 ```bash
 git checkout --ours .deps/prod.md
 git add .deps/prod.md
