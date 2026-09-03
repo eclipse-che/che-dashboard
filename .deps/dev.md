@@ -426,7 +426,6 @@
 | `commander@8.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/commander/8.3.0) |
 | `commondir@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/commondir/1.0.1) |
 | `compare-func@2.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/compare-func/2.0.0) |
-| `compression-webpack-plugin@12.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/compression-webpack-plugin/12.0.0) |
 | `concat-map@0.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/concat-map/0.0.1) |
 | `conventional-changelog-angular@8.3.1` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/conventional-changelog-angular/8.3.1) |
 | `conventional-changelog-conventionalcommits@9.3.1` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/conventional-changelog-conventionalcommits/9.3.1) |
@@ -495,6 +494,7 @@
 | `domhandler@5.0.3` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/domhandler/5.0.3) |
 | `domutils@2.8.0` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/domutils/2.8.0) |
 | `domutils@3.1.0` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/domutils/3.1.0) |
+| `domutils@3.2.2` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/domutils/3.2.2) |
 | `dot-case@3.0.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/dot-case/3.0.4) |
 | `dot-prop@5.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/dot-prop/5.3.0) |
 | `duplexer@0.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/duplexer/0.1.2) |
@@ -514,6 +514,7 @@
 | `enhanced-resolve@5.19.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/enhanced-resolve/5.19.0) |
 | `entities@2.2.0` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/entities/2.2.0) |
 | `entities@4.5.0` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/entities/4.5.0) |
+| `entities@7.0.1` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/entities/7.0.1) |
 | `env-paths@2.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/env-paths/2.2.1) |
 | `envinfo@7.11.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/envinfo/7.11.0) |
 | `environment@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/environment/1.1.0) |
@@ -576,7 +577,7 @@
 | `fast-glob@3.3.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-glob/3.3.3) |
 | `fast-json-stable-stringify@2.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-json-stable-stringify/2.1.0) |
 | `fast-levenshtein@2.0.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-levenshtein/2.0.6) |
-| `fast-uri@3.1.3` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-uri/3.1.3) |
+| `fast-uri@3.1.7` | BSD-3-Clause | transitive dependency |
 | `fastest-levenshtein@1.0.16` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastest-levenshtein/1.0.16) |
 | `fastq@1.15.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastq/1.15.0) |
 | `fb-watchman@2.0.2` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fb-watchman/2.0.2) |
@@ -660,6 +661,7 @@
 | `html-minifier-terser@6.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/html-minifier-terser/6.1.0) |
 | `html-tags@3.3.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/html-tags/3.3.1) |
 | `html-webpack-plugin@5.6.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/html-webpack-plugin/5.6.0) |
+| `htmlparser2@10.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/htmlparser2/10.1.0) |
 | `htmlparser2@6.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/htmlparser2/6.1.0) |
 | `htmlparser2@8.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/htmlparser2/8.0.2) |
 | `http-cache-semantics@4.1.1` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/http-cache-semantics/4.1.1) |
@@ -1052,7 +1054,7 @@
 | `safe-array-concat@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safe-array-concat/1.0.1) |
 | `safe-buffer@5.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safe-buffer/5.2.1) |
 | `safe-regex-test@1.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safe-regex-test/1.0.0) |
-| `safe-regex2@4.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safe-regex2/4.0.0) |
+| `safe-regex2@4.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safe-regex2/4.0.1) |
 | `safer-buffer@2.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safer-buffer/2.1.2) |
 | `sax@1.6.0` | BlueOak-1.0.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sax/1.6.0) |
 | `saxes@6.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/saxes/6.0.0) |
