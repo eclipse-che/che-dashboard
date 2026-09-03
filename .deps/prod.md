@@ -5,14 +5,14 @@
 | `@codemirror/autocomplete@6.18.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/autocomplete/6.18.6) |
 | `@codemirror/commands@6.8.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/commands/6.8.1) |
 | `@codemirror/lang-yaml@6.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/lang-yaml/6.1.2) |
-| `@codemirror/language@6.11.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/language/6.11.3) |
-| `@codemirror/lint@6.8.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/lint/6.8.5) |
+| `@codemirror/language@6.11.3` |  |  |
+| `@codemirror/lint@6.8.5` |  |  |
 | `@codemirror/search@6.5.11` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/search/6.5.11) |
 | `@codemirror/state@6.5.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/state/6.5.2) |
 | `@codemirror/theme-one-dark@6.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/theme-one-dark/6.1.2) |
 | `@codemirror/view@6.37.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/view/6.37.1) |
 | `@devfile/api@2.3.0-1757407014` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@devfile/api/2.3.0-1757407014) |
-| `@eclipse-che/che-devworkspace-generator@7.113.0-next-7b6a101` | Apache-2.0 AND EPL-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@eclipse-che/che-devworkspace-generator/7.113.0-next-7b6a101) |
+| `@eclipse-che/che-devworkspace-generator@7.122.0` |  |  |
 | `@fastify/accept-negotiator@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/accept-negotiator/2.0.1) |
 | `@fastify/ajv-compiler@4.0.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/ajv-compiler/4.0.5) |
 | `@fastify/cookie@11.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/cookie/11.0.2) |
@@ -156,7 +156,7 @@
 | `jsonc-parser@3.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsonc-parser/3.2.0) |
 | `jsonfile@6.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsonfile/6.1.0) |
 | `jsonschema@1.4.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsonschema/1.4.1) |
-| `launder@1.7.1` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/launder/1.7.1) |
+| `launder@1.7.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/launder/1.7.1) |
 | `leven@2.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/leven/2.1.0) |
 | `light-my-request@6.6.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/light-my-request/6.6.0) |
 | `lodash@4.18.1` | CC0-1.0 AND MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lodash/4.18.1) |
