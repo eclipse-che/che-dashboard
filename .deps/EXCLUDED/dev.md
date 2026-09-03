@@ -14,3 +14,5 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 | `compression-webpack-plugin@12.0.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/compression-webpack-plugin/12.0.0) |
 | `baseline-browser-mapping@2.11.14` | transitive dependency |
 | `svgo@3.3.5` | transitive dependency |
+| `fast-uri@3.1.7` | transitive dependency |
+| `find-my-way@9.9.0` | transitive dependency |

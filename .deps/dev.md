@@ -576,7 +576,7 @@
 | `fast-glob@3.3.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-glob/3.3.3) |
 | `fast-json-stable-stringify@2.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-json-stable-stringify/2.1.0) |
 | `fast-levenshtein@2.0.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-levenshtein/2.0.6) |
-| `fast-uri@3.1.3` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-uri/3.1.3) |
+| `fast-uri@3.1.7` | BSD-3-Clause | transitive dependency |
 | `fastest-levenshtein@1.0.16` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastest-levenshtein/1.0.16) |
 | `fastq@1.15.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastq/1.15.0) |
 | `fb-watchman@2.0.2` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fb-watchman/2.0.2) |
@@ -585,7 +585,7 @@
 | `file-loader@6.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/file-loader/6.2.0) |
 | `fill-range@7.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fill-range/7.1.1) |
 | `find-cache-dir@2.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/find-cache-dir/2.1.0) |
-| `find-my-way@9.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/find-my-way/9.0.1) |
+| `find-my-way@9.9.0` | MIT | transitive dependency |
 | `find-root@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/find-root/1.1.0) |
 | `find-up@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/find-up/3.0.0) |
 | `find-up@4.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/find-up/4.1.0) |
@@ -881,7 +881,7 @@
 | `mrmime@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/mrmime/1.0.1) |
 | `ms@2.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ms/2.1.2) |
 | `ms@2.1.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ms/2.1.3) |
-| `nanoid@3.3.12` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/nanoid/3.3.12) |
+| `nanoid@3.3.18` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/nanoid/3.3.18) |
 | `napi-postinstall@0.3.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/napi-postinstall/0.3.4) |
 | `natural-compare@1.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/natural-compare/1.4.0) |
 | `negotiator@0.6.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/negotiator/0.6.3) |
@@ -1052,7 +1052,7 @@
 | `safe-array-concat@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safe-array-concat/1.0.1) |
 | `safe-buffer@5.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safe-buffer/5.2.1) |
 | `safe-regex-test@1.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safe-regex-test/1.0.0) |
-| `safe-regex2@4.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safe-regex2/4.0.0) |
+| `safe-regex2@5.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safe-regex2/5.1.1) |
 | `safer-buffer@2.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safer-buffer/2.1.2) |
 | `sax@1.6.0` | BlueOak-1.0.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sax/1.6.0) |
 | `saxes@6.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/saxes/6.0.0) |
@@ -1195,7 +1195,7 @@
 | `universalify@0.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/universalify/0.2.0) |
 | `unrs-resolver@1.11.1` | Apache-2.0 AND MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/unrs-resolver/1.11.1) |
 | `untildify@4.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/untildify/4.0.0) |
-| `update-browserslist-db@1.3.1` | MIT | transitive dependency |
+| `update-browserslist-db@1.3.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/update-browserslist-db/1.3.1) |
 | `uri-js@4.4.1` | BSD-2-Clause AND BSD-2-Clause-Views | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/uri-js/4.4.1) |
 | `url-parse@1.5.10` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/url-parse/1.5.10) |
 | `util-deprecate@1.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/util-deprecate/1.0.2) |
