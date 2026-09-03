@@ -5,8 +5,8 @@
 | `@codemirror/autocomplete@6.18.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/autocomplete/6.18.6) |
 | `@codemirror/commands@6.8.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/commands/6.8.1) |
 | `@codemirror/lang-yaml@6.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/lang-yaml/6.1.2) |
-| `@codemirror/language@6.11.3` |  |  |
-| `@codemirror/lint@6.8.5` |  |  |
+| `@codemirror/language@6.11.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/language/6.11.3) |
+| `@codemirror/lint@6.8.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/lint/6.8.5) |
 | `@codemirror/search@6.5.11` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/search/6.5.11) |
 | `@codemirror/state@6.5.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/state/6.5.2) |
 | `@codemirror/theme-one-dark@6.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/theme-one-dark/6.1.2) |
@@ -197,7 +197,7 @@
 | `react-pluralize@1.6.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-pluralize/1.6.3) |
 | `react-redux@9.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-redux/9.1.2) |
 | `react-router-dom@6.30.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-router-dom/6.30.3) |
-| `react-router@6.30.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-router/6.30.3) |
+| `react-router@6.30.3` |  |  |
 | `react-side-effect@2.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-side-effect/2.1.2) |
 | `react@18.3.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react/18.3.1) |
 | `readable-stream@3.6.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/readable-stream/3.6.2) |
@@ -205,7 +205,7 @@
 | `real-require@0.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/real-require/0.2.0) |
 | `reconnecting-websocket@4.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/reconnecting-websocket/4.4.0) |
 | `redux-thunk@3.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/redux-thunk/3.1.0) |
-| `redux@5.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/redux/5.0.1) |
+| `redux@5.0.1` |  |  |
 | `reflect-metadata@0.1.13` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/reflect-metadata/0.1.13) |
 | `reflect-metadata@0.1.14` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/reflect-metadata/0.1.14) |
 | `reflect-metadata@0.2.2` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/reflect-metadata/0.2.2) |

@@ -18,7 +18,7 @@
 | `@babel/helper-function-name@7.23.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-function-name/7.23.0) |
 | `@babel/helper-globals@7.28.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-globals/7.28.0) |
 | `@babel/helper-hoist-variables@7.22.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-hoist-variables/7.22.5) |
-| `@babel/helper-module-imports@7.22.15` |  |  |
+| `@babel/helper-module-imports@7.22.15` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-module-imports/7.22.15) |
 | `@babel/helper-module-imports@7.27.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-module-imports/7.27.1) |
 | `@babel/helper-module-transforms@7.23.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-module-transforms/7.23.0) |
 | `@babel/helper-module-transforms@7.28.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-module-transforms/7.28.3) |
@@ -28,21 +28,21 @@
 | `@babel/helper-split-export-declaration@7.22.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-split-export-declaration/7.22.6) |
 | `@babel/helper-string-parser@7.25.9` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-string-parser/7.25.9) |
 | `@babel/helper-string-parser@7.27.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-string-parser/7.27.1) |
-| `@babel/helper-validator-identifier@7.25.9` |  |  |
-| `@babel/helper-validator-identifier@7.28.5` |  |  |
+| `@babel/helper-validator-identifier@7.25.9` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-validator-identifier/7.25.9) |
+| `@babel/helper-validator-identifier@7.28.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-validator-identifier/7.28.5) |
 | `@babel/helper-validator-option@7.22.15` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-validator-option/7.22.15) |
-| `@babel/helper-validator-option@7.27.1` |  |  |
+| `@babel/helper-validator-option@7.27.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-validator-option/7.27.1) |
 | `@babel/parser@7.27.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/parser/7.27.0) |
 | `@babel/parser@7.28.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/parser/7.28.5) |
 | `@babel/plugin-syntax-async-generators@7.8.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/plugin-syntax-async-generators/7.8.4) |
-| `@babel/plugin-syntax-bigint@7.8.3` |  |  |
+| `@babel/plugin-syntax-bigint@7.8.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/plugin-syntax-bigint/7.8.3) |
 | `@babel/plugin-syntax-class-properties@7.12.13` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/plugin-syntax-class-properties/7.12.13) |
 | `@babel/plugin-syntax-class-static-block@7.14.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/plugin-syntax-class-static-block/7.14.5) |
 | `@babel/plugin-syntax-import-attributes@7.27.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/plugin-syntax-import-attributes/7.27.1) |
 | `@babel/plugin-syntax-import-meta@7.10.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/plugin-syntax-import-meta/7.10.4) |
 | `@babel/plugin-syntax-json-strings@7.8.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/plugin-syntax-json-strings/7.8.3) |
 | `@babel/plugin-syntax-jsx@7.27.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/plugin-syntax-jsx/7.27.1) |
-| `@babel/plugin-syntax-logical-assignment-operators@7.10.4` |  |  |
+| `@babel/plugin-syntax-logical-assignment-operators@7.10.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/plugin-syntax-logical-assignment-operators/7.10.4) |
 | `@babel/plugin-syntax-nullish-coalescing-operator@7.8.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/plugin-syntax-nullish-coalescing-operator/7.8.3) |
 | `@babel/plugin-syntax-numeric-separator@7.10.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/plugin-syntax-numeric-separator/7.10.4) |
 | `@babel/plugin-syntax-object-rest-spread@7.8.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/plugin-syntax-object-rest-spread/7.8.3) |
@@ -55,7 +55,7 @@
 | `@babel/template@7.27.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/template/7.27.2) |
 | `@babel/traverse@7.23.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/traverse/7.23.2) |
 | `@babel/traverse@7.28.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/traverse/7.28.5) |
-| `@babel/types@7.27.0` |  |  |
+| `@babel/types@7.27.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/types/7.27.0) |
 | `@babel/types@7.28.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/types/7.28.5) |
 | `@bcoe/v8-coverage@0.2.3` | ISC AND MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@bcoe/v8-coverage/0.2.3) |
 | `@commitlint/cli@21.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@commitlint/cli/21.0.2) |
@@ -943,11 +943,11 @@
 | `redux-logger@3.0.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/redux-logger/3.0.6) |
 | `redux-mock-store@1.5.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/redux-mock-store/1.5.4) |
 | `redux@4.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/redux/4.2.1) |
-| `redux@5.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/redux/5.0.1) |
-| `reflect.getprototypeof@1.0.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/reflect.getprototypeof/1.0.4) |
+| `redux@5.0.1` |  |  |
+| `reflect.getprototypeof@1.0.4` |  |  |
 | `regexp.prototype.flags@1.5.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/regexp.prototype.flags/1.5.1) |
 | `relateurl@0.2.7` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/relateurl/0.2.7) |
-| `renderkid@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/renderkid/3.0.0) |
+| `renderkid@3.0.0` |  |  |
 | `request@2.88.2` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/request/2.88.2) |
 | `require-directory@2.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/require-directory/2.1.1) |
 | `require-from-string@2.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/require-from-string/2.0.2) |
@@ -956,7 +956,7 @@
 | `resolve-from@4.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/resolve-from/4.0.0) |
 | `resolve-from@5.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/resolve-from/5.0.0) |
 | `resolve@1.22.8` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/resolve/1.22.8) |
-| `resolve@2.0.0-next.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/resolve/2.0.0-next.5) |
+| `resolve@2.0.0-next.5` |  |  |
 | `restore-cursor@5.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/restore-cursor/5.1.0) |
 | `retry@0.12.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/retry/0.12.0) |
 | `reusify@1.0.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/reusify/1.0.4) |
