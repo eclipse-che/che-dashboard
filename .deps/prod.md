@@ -118,13 +118,14 @@
 | `fast-copy@3.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-copy/3.0.1) |
 | `fast-decode-uri-component@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-decode-uri-component/1.0.1) |
 | `fast-json-stringify@6.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-json-stringify/6.3.0) |
+| `fast-json-stringify@7.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-json-stringify/7.0.1) |
 | `fast-querystring@1.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-querystring/1.1.2) |
 | `fast-redact@3.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-redact/3.3.0) |
 | `fast-safe-stringify@2.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-safe-stringify/2.1.1) |
 | `fastify-plugin@5.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/5.0.1) |
 | `fastify-plugin@5.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/5.1.0) |
-| `fastify-plugin@6.0.0` | MIT | transitive dependency |
-| `fastify@5.8.5` | BSD-2-Clause AND BSD-3-Clause AND MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/5.8.5) |
+| `fastify-plugin@6.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/6.0.0) |
+| `fastify@5.12.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/5.12.1) |
 | `fastq@1.17.1` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastq/1.17.1) |
 | `file-selector@2.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/file-selector/2.1.2) |
 | `focus-trap@7.6.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/focus-trap/7.6.4) |
@@ -184,6 +185,7 @@
 | `process-warning@2.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/process-warning/2.3.0) |
 | `process-warning@4.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/process-warning/4.0.1) |
 | `process-warning@5.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/process-warning/5.0.0) |
+| `process-warning@5.1.0` | MIT | transitive dependency |
 | `process@0.11.10` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/process/0.11.10) |
 | `public-encrypt@4.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/public-encrypt/4.0.3) |
 | `qs@6.15.2` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/qs/6.15.2) |
