@@ -495,6 +495,7 @@
 | `domhandler@5.0.3` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/domhandler/5.0.3) |
 | `domutils@2.8.0` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/domutils/2.8.0) |
 | `domutils@3.1.0` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/domutils/3.1.0) |
+| `domutils@3.2.2` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/domutils/3.2.2) |
 | `dot-case@3.0.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/dot-case/3.0.4) |
 | `dot-prop@5.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/dot-prop/5.3.0) |
 | `duplexer@0.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/duplexer/0.1.2) |
@@ -514,6 +515,7 @@
 | `enhanced-resolve@5.19.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/enhanced-resolve/5.19.0) |
 | `entities@2.2.0` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/entities/2.2.0) |
 | `entities@4.5.0` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/entities/4.5.0) |
+| `entities@7.0.1` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/entities/7.0.1) |
 | `env-paths@2.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/env-paths/2.2.1) |
 | `envinfo@7.11.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/envinfo/7.11.0) |
 | `environment@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/environment/1.1.0) |
@@ -660,6 +662,7 @@
 | `html-minifier-terser@6.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/html-minifier-terser/6.1.0) |
 | `html-tags@3.3.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/html-tags/3.3.1) |
 | `html-webpack-plugin@5.6.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/html-webpack-plugin/5.6.0) |
+| `htmlparser2@10.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/htmlparser2/10.1.0) |
 | `htmlparser2@6.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/htmlparser2/6.1.0) |
 | `htmlparser2@8.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/htmlparser2/8.0.2) |
 | `http-cache-semantics@4.1.1` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/http-cache-semantics/4.1.1) |
