@@ -150,4 +150,39 @@ describe('changeWorkspaceEditor', () => {
       store.dispatch(changeWorkspaceEditor(workspace, 'che-incubator/unknown-editor/latest')),
     ).rejects.toThrow('not found');
   });
+
+  it('rethrows when patchWorkspace fails', async () => {
+    const store = new MockStoreBuilder()
+      .withDwPlugins({}, {}, false, [intellijDevfile as devfileApi.Devfile])
+      .build();
+    const workspace = buildWorkspace();
+    mockPatchWorkspace.mockRejectedValueOnce(new Error('patch failed'));
+
+    await expect(
+      store.dispatch(changeWorkspaceEditor(workspace, 'che-incubator/che-idea-server/latest')),
+    ).rejects.toThrow('patch failed');
+  });
+
+  it('skips delete when old and new template names are the same', async () => {
+    const store = new MockStoreBuilder()
+      .withDwPlugins({}, {}, false, [intellijDevfile as devfileApi.Devfile])
+      .build();
+    // workspace already points to the target editor
+    const dw = new DevWorkspaceBuilder()
+      .withMetadata({
+        name: 'empty-ido0',
+        namespace: 'test-ns',
+        uid: 'test-uid',
+        annotations: {
+          ...wsAnnotations,
+          'che.eclipse.org/che-editor': 'che-incubator/che-idea-server/latest',
+        },
+      })
+      .withContributions([{ name: 'editor', kubernetes: { name: 'che-idea-server-empty-ido0' } }])
+      .build();
+    const workspace = constructWorkspace(dw);
+    await store.dispatch(changeWorkspaceEditor(workspace, 'che-incubator/che-idea-server/latest'));
+
+    expect(mockDeleteTemplate).not.toHaveBeenCalled();
+  });
 });

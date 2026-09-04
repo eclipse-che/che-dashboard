@@ -190,4 +190,20 @@ describe('EditorSelectorModal', () => {
     expect(screen.getByText('custom-publisher/my-editor/dev')).toBeInTheDocument();
     expect(screen.getByText('custom')).toBeInTheDocument();
   });
+
+  it('resets the filter when the modal is closed then reopened', async () => {
+    const { reRenderComponent } = renderComponent(true, undefined);
+    // apply a filter
+    await userEvent.type(
+      screen.getByRole('searchbox', { name: /Filter editors by/i }),
+      'JetBrains',
+    );
+    expect(screen.queryByRole('checkbox', { name: /VS Code/i })).not.toBeInTheDocument();
+
+    // close
+    reRenderComponent(false, undefined);
+    // reopen — filter must be cleared
+    reRenderComponent(true, undefined);
+    expect(screen.getByRole('checkbox', { name: /VS Code/i })).toBeInTheDocument();
+  });
 });

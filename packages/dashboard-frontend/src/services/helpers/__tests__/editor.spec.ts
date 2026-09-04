@@ -68,6 +68,19 @@ describe('groupEditorsByName', () => {
     expect(groups[0].key).toBe('che-incubator/che-idea-server');
     expect(groups[1].key).toBe('che-incubator/che-code');
   });
+
+  it('falls back to plugin name when displayName is empty', () => {
+    const plugin: che.Plugin = {
+      ...makePlugin('che-incubator', 'che-code', 'latest', ''),
+      displayName: '',
+      icon: '',
+      iconMediatype: '',
+    };
+    const groups = groupEditorsByName([plugin]);
+    expect(groups[0].displayName).toBe('che-code');
+    expect(groups[0].icon).toBe('');
+    expect(groups[0].iconMediatype).toBe('');
+  });
 });
 
 describe('getCurrentEditorId', () => {
@@ -116,5 +129,19 @@ describe('getCurrentEditorLabel', () => {
     const dw = new DevWorkspaceBuilder().build();
     const workspace = constructWorkspace(dw);
     expect(getCurrentEditorLabel(workspace, editors)).toBe('Default');
+  });
+
+  it('falls back to plugin name when found editor has no displayName', () => {
+    const editorWithoutDisplayName: che.Plugin = {
+      ...makePlugin('che-incubator', 'che-code', 'latest', ''),
+      displayName: '',
+    };
+    const dw = new DevWorkspaceBuilder()
+      .withMetadata({
+        annotations: { 'che.eclipse.org/che-editor': 'che-incubator/che-code/latest' },
+      })
+      .build();
+    const workspace = constructWorkspace(dw);
+    expect(getCurrentEditorLabel(workspace, [editorWithoutDisplayName])).toBe('che-code');
   });
 });

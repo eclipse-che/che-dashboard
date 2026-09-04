@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { Architecture } from '@eclipse-che/common';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
@@ -51,6 +52,11 @@ const editors = [
   makePlugin('che-incubator', 'che-idea-server', 'latest', 'JetBrains IntelliJ IDEA'),
 ];
 
+const amd64OnlyEditor: che.Plugin = {
+  ...makePlugin('che-incubator', 'amd64-only', 'latest', 'AMD64 Only Editor'),
+  arch: ['amd64'],
+};
+
 const mockChangeEditor = jest.fn().mockResolvedValue(undefined);
 
 function buildWorkspace(editorId?: string): Workspace {
@@ -61,13 +67,13 @@ function buildWorkspace(editorId?: string): Workspace {
   return constructWorkspace(builder.build());
 }
 
-function getComponent(readonly: boolean, workspace: Workspace): React.ReactElement {
+function getComponent(readonly: boolean, workspace: Workspace, arch?: string): React.ReactElement {
   return (
     <EditorFormGroup
       readonly={readonly}
       workspace={workspace}
       editors={editors}
-      currentArchitecture={undefined}
+      currentArchitecture={arch as Architecture | undefined}
       changeEditor={mockChangeEditor}
     />
   );
@@ -135,6 +141,24 @@ describe('EditorFormGroup', () => {
     expect(mockShowAlert).toHaveBeenCalledWith(
       expect.objectContaining({ variant: 'danger', title: 'patch failed' }),
     );
+  });
+
+  it('filters editors by architecture when currentArchitecture is set', () => {
+    // amd64OnlyEditor should be excluded when architecture is arm64
+    const { renderComponent: render } = getComponentRenderer(
+      (readonly: boolean, workspace: Workspace) => (
+        <EditorFormGroup
+          readonly={readonly}
+          workspace={workspace}
+          editors={[...editors, amd64OnlyEditor]}
+          currentArchitecture={'arm64' as Architecture}
+          changeEditor={mockChangeEditor}
+        />
+      ),
+    );
+    render(false, buildWorkspace('che-incubator/amd64-only/latest'));
+    // label falls back to raw id since amd64-only is filtered out
+    expect(screen.getByText('che-incubator/amd64-only/latest')).toBeInTheDocument();
   });
 
   it('closes the modal without calling changeEditor when Close Modal is clicked', async () => {
