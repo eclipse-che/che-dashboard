@@ -76,3 +76,14 @@ export async function patchTemplate(
     );
   }
 }
+
+export async function deleteTemplate(namespace: string, name: string): Promise<void> {
+  const url = `${dashboardBackendPrefix}/namespace/${namespace}/devworkspacetemplates/${name}`;
+  try {
+    await AxiosWrapper.createToRetryMissedBearerTokenError().delete(url);
+  } catch (e) {
+    throw new Error(
+      `Failed to delete devWorkspaceTemplate '${name}'. ${common.helpers.errors.getMessage(e)}`,
+    );
+  }
+}

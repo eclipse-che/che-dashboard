@@ -12,13 +12,13 @@
 
 .editable {
   position: relative;
-  top: 2px;
+  bottom: 2px;
   color: var(--pf-t--global--text--color--link--default);
 }
 
 .readonly {
   display: inline-block;
-  padding-top: 8px;
+  padding-top: 5px;
 }
 
 .labelHelp {

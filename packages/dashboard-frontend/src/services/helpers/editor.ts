@@ -13,6 +13,9 @@
 import { dump } from 'js-yaml';
 
 import devfileApi from '@/services/devfileApi';
+import { DEVWORKSPACE_CHE_EDITOR } from '@/services/devfileApi/devWorkspace/metadata';
+import { che } from '@/services/models';
+import { Workspace } from '@/services/workspace-adapter';
 
 const sortOrder: Array<keyof devfileApi.Devfile> = [
   'schemaVersion',
@@ -57,4 +60,43 @@ export default function stringify(obj: devfileApi.Devfile | devfileApi.DevWorksp
     return '';
   }
   return dump(obj, { lineWidth, sortKeys });
+}
+
+export type EditorGroup = {
+  key: string;
+  displayName: string;
+  icon: string;
+  iconMediatype: string;
+  versions: che.Plugin[];
+};
+
+export function groupEditorsByName(editors: che.Plugin[]): EditorGroup[] {
+  const map = new Map<string, EditorGroup>();
+  for (const editor of editors) {
+    const key = `${editor.publisher}/${editor.name}`;
+    if (!map.has(key)) {
+      map.set(key, {
+        key,
+        displayName: editor.displayName || editor.name,
+        icon: editor.icon || '',
+        iconMediatype: editor.iconMediatype || '',
+        versions: [],
+      });
+    }
+    map.get(key)!.versions.push(editor);
+  }
+  return Array.from(map.values());
+}
+
+export function getCurrentEditorId(workspace: Workspace): string | undefined {
+  return workspace.ref.metadata?.annotations?.[DEVWORKSPACE_CHE_EDITOR];
+}
+
+export function getCurrentEditorLabel(workspace: Workspace, editors: che.Plugin[]): string {
+  const id = getCurrentEditorId(workspace);
+  if (!id) {
+    return 'Default';
+  }
+  const found = editors.find(e => e.id === id);
+  return found ? found.displayName || found.name : id;
 }
