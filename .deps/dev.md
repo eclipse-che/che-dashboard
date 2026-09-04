@@ -1195,7 +1195,7 @@
 | `universalify@0.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/universalify/0.2.0) |
 | `unrs-resolver@1.11.1` | Apache-2.0 AND MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/unrs-resolver/1.11.1) |
 | `untildify@4.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/untildify/4.0.0) |
-| `update-browserslist-db@1.3.1` | MIT | transitive dependency |
+| `update-browserslist-db@1.3.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/update-browserslist-db/1.3.1) |
 | `uri-js@4.4.1` | BSD-2-Clause AND BSD-2-Clause-Views | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/uri-js/4.4.1) |
 | `url-parse@1.5.10` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/url-parse/1.5.10) |
 | `util-deprecate@1.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/util-deprecate/1.0.2) |
