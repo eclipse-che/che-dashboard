@@ -208,7 +208,7 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
                     placeholder="Filter by"
                     value={filterText}
                     onChange={(_event, value) => this.setState({ filterText: value })}
-                    aria-label="Filter editors by name"
+                    aria-label="Filter editors by"
                     className={styles.filterInput}
                   />
                 </div>

@@ -156,7 +156,7 @@ describe('EditorSelectorModal', () => {
 
   it('filters editors by display name', async () => {
     renderComponent(true, undefined);
-    const filter = screen.getByRole('searchbox', { name: /Filter editors by name/i });
+    const filter = screen.getByRole('searchbox', { name: /Filter editors by/i });
     await userEvent.type(filter, 'JetBrains');
     expect(screen.queryByRole('checkbox', { name: /VS Code/i })).not.toBeInTheDocument();
     expect(screen.getByRole('checkbox', { name: /JetBrains IntelliJ IDEA/i })).toBeInTheDocument();
@@ -164,7 +164,7 @@ describe('EditorSelectorModal', () => {
 
   it('filters editors by version string', async () => {
     renderComponent(true, undefined);
-    const filter = screen.getByRole('searchbox', { name: /Filter editors by name/i });
+    const filter = screen.getByRole('searchbox', { name: /Filter editors by/i });
     await userEvent.type(filter, 'insiders');
     expect(screen.getByRole('checkbox', { name: /VS Code/i })).toBeInTheDocument();
     expect(screen.queryByRole('checkbox', { name: /JetBrains/i })).not.toBeInTheDocument();
@@ -172,7 +172,7 @@ describe('EditorSelectorModal', () => {
 
   it('filters editors by description text', async () => {
     renderComponent(true, undefined);
-    const filter = screen.getByRole('searchbox', { name: /Filter editors by name/i });
+    const filter = screen.getByRole('searchbox', { name: /Filter editors by/i });
     await userEvent.type(filter, 'Open Source IDE');
     expect(screen.getByRole('checkbox', { name: /VS Code/i })).toBeInTheDocument();
     expect(screen.queryByRole('checkbox', { name: /JetBrains/i })).not.toBeInTheDocument();
@@ -180,7 +180,7 @@ describe('EditorSelectorModal', () => {
 
   it('shows "No editors match the filter" when filter yields no results', async () => {
     renderComponent(true, undefined);
-    const filter = screen.getByRole('searchbox', { name: /Filter editors by name/i });
+    const filter = screen.getByRole('searchbox', { name: /Filter editors by/i });
     await userEvent.type(filter, 'NonExistentEditor');
     expect(screen.getByText('No editors match the filter.')).toBeInTheDocument();
   });
