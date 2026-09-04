@@ -98,5 +98,5 @@ export function getCurrentEditorLabel(workspace: Workspace, editors: che.Plugin[
     return 'Default';
   }
   const found = editors.find(e => e.id === id);
-  return found ? `${found.displayName || found.name} · ${found.version}` : id;
+  return found ? found.displayName || found.name : id;
 }

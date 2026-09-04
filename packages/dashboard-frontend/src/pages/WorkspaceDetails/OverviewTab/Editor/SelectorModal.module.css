@@ -10,12 +10,36 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-.radioLabel {
+.editorSelectHeader {
   display: flex;
-  gap: 8px;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.filterInput {
+  max-width: 30%;
+}
+
+.editorList {
+  overflow-y: auto;
+  max-height: 18rem;
+}
+
+.radioLabel {
+  display: inline-flex;
+  gap: 4px;
   align-items: center;
 }
 
 .versionLabel {
-  cursor: default;
+  height: 0.8125rem;
+  margin-left: 0;
+}
+
+.customEditorRow {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  color: var(--pf-t--global--text--color--subtle);
 }

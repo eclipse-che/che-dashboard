@@ -39,7 +39,10 @@ function makePlugin(
 }
 
 const editors: che.Plugin[] = [
-  makePlugin('che-incubator', 'che-code', 'latest', 'VS Code - Open Source'),
+  {
+    ...makePlugin('che-incubator', 'che-code', 'latest', 'VS Code - Open Source'),
+    description: 'Microsoft Visual Studio Code - Open Source IDE for Eclipse Che',
+  },
   makePlugin('che-incubator', 'che-code', 'insiders', 'VS Code - Open Source'),
   makePlugin('che-incubator', 'che-idea-server', 'latest', 'JetBrains IntelliJ IDEA'),
 ];
@@ -75,17 +78,17 @@ describe('EditorSelectorModal', () => {
     expect(screen.getByText('Change Editor')).toBeInTheDocument();
   });
 
-  it('renders one radio per editor group', () => {
+  it('renders one checkbox per editor group', () => {
     renderComponent(true, undefined);
-    const radios = screen.getAllByRole('radio');
+    const checkboxes = screen.getAllByRole('checkbox');
     // 2 groups: che-code, che-idea-server
-    expect(radios).toHaveLength(2);
+    expect(checkboxes).toHaveLength(2);
   });
 
-  it('pre-selects the radio that matches currentEditorId', () => {
+  it('pre-selects the checkbox that matches currentEditorId', () => {
     renderComponent(true, 'che-incubator/che-idea-server/latest');
-    const radio = screen.getByRole('radio', { name: /JetBrains IntelliJ IDEA/i });
-    expect(radio).toBeChecked();
+    const checkbox = screen.getByRole('checkbox', { name: /JetBrains IntelliJ IDEA/i });
+    expect(checkbox).toBeChecked();
   });
 
   it('Save button is disabled when selection has not changed', () => {
@@ -95,13 +98,13 @@ describe('EditorSelectorModal', () => {
 
   it('Save button becomes enabled after selecting a different editor', async () => {
     renderComponent(true, 'che-incubator/che-code/latest');
-    await userEvent.click(screen.getByRole('radio', { name: /JetBrains IntelliJ IDEA/i }));
+    await userEvent.click(screen.getByRole('checkbox', { name: /JetBrains IntelliJ IDEA/i }));
     expect(screen.getByRole('button', { name: /Save/i })).not.toBeDisabled();
   });
 
   it('calls onConfirm with the selected editor id on Save', async () => {
     renderComponent(true, 'che-incubator/che-code/latest');
-    await userEvent.click(screen.getByRole('radio', { name: /JetBrains IntelliJ IDEA/i }));
+    await userEvent.click(screen.getByRole('checkbox', { name: /JetBrains IntelliJ IDEA/i }));
     await userEvent.click(screen.getByRole('button', { name: /Save/i }));
     expect(mockOnConfirm).toHaveBeenCalledWith('che-incubator/che-idea-server/latest');
   });
@@ -112,15 +115,14 @@ describe('EditorSelectorModal', () => {
     expect(mockOnClose).toHaveBeenCalled();
   });
 
-  it('shows a version label for each editor group', () => {
+  it('shows a version label for every editor group', () => {
     renderComponent(true, undefined);
-    // VS Code - Open Source has versions: latest, insiders
-    expect(screen.getByText('latest')).toBeInTheDocument();
+    // VS Code (2 versions) shows 'latest' (active), IntelliJ (1 version) shows 'latest'
+    expect(screen.getAllByText('latest')).toHaveLength(2);
   });
 
   it('shows version dropdown trigger for editors with multiple versions', () => {
     renderComponent(true, undefined);
-    // VS Code has 2 versions → kebab button present
     expect(
       screen.getByRole('button', { name: /VS Code - Open Source version options/i }),
     ).toBeInTheDocument();
@@ -128,7 +130,6 @@ describe('EditorSelectorModal', () => {
 
   it('does NOT show version dropdown for editors with a single version', () => {
     renderComponent(true, undefined);
-    // IntelliJ has 1 version → no kebab
     expect(
       screen.queryByRole('button', { name: /JetBrains IntelliJ IDEA version options/i }),
     ).not.toBeInTheDocument();
@@ -136,23 +137,57 @@ describe('EditorSelectorModal', () => {
 
   it('updates selected version when a version is chosen from the dropdown', async () => {
     renderComponent(true, 'che-incubator/che-code/latest');
-    // open version dropdown
     await userEvent.click(
       screen.getByRole('button', { name: /VS Code - Open Source version options/i }),
     );
     await userEvent.click(screen.getByRole('menuitem', { name: 'insiders' }));
-    // now version label shows insiders
     expect(screen.getByText('insiders')).toBeInTheDocument();
   });
 
   it('calls onConfirm with the correct version when a non-default version is selected then confirmed', async () => {
     renderComponent(true, 'che-incubator/che-code/latest');
-    // switch to insiders version
     await userEvent.click(
       screen.getByRole('button', { name: /VS Code - Open Source version options/i }),
     );
     await userEvent.click(screen.getByRole('menuitem', { name: 'insiders' }));
     await userEvent.click(screen.getByRole('button', { name: /Save/i }));
     expect(mockOnConfirm).toHaveBeenCalledWith('che-incubator/che-code/insiders');
+  });
+
+  it('filters editors by display name', async () => {
+    renderComponent(true, undefined);
+    const filter = screen.getByRole('searchbox', { name: /Filter editors by name/i });
+    await userEvent.type(filter, 'JetBrains');
+    expect(screen.queryByRole('checkbox', { name: /VS Code/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: /JetBrains IntelliJ IDEA/i })).toBeInTheDocument();
+  });
+
+  it('filters editors by version string', async () => {
+    renderComponent(true, undefined);
+    const filter = screen.getByRole('searchbox', { name: /Filter editors by name/i });
+    await userEvent.type(filter, 'insiders');
+    expect(screen.getByRole('checkbox', { name: /VS Code/i })).toBeInTheDocument();
+    expect(screen.queryByRole('checkbox', { name: /JetBrains/i })).not.toBeInTheDocument();
+  });
+
+  it('filters editors by description text', async () => {
+    renderComponent(true, undefined);
+    const filter = screen.getByRole('searchbox', { name: /Filter editors by name/i });
+    await userEvent.type(filter, 'Open Source IDE');
+    expect(screen.getByRole('checkbox', { name: /VS Code/i })).toBeInTheDocument();
+    expect(screen.queryByRole('checkbox', { name: /JetBrains/i })).not.toBeInTheDocument();
+  });
+
+  it('shows "No editors match the filter" when filter yields no results', async () => {
+    renderComponent(true, undefined);
+    const filter = screen.getByRole('searchbox', { name: /Filter editors by name/i });
+    await userEvent.type(filter, 'NonExistentEditor');
+    expect(screen.getByText('No editors match the filter.')).toBeInTheDocument();
+  });
+
+  it('shows a custom label when currentEditorId does not match any known editor', () => {
+    renderComponent(true, 'custom-publisher/my-editor/dev');
+    expect(screen.getByText('custom-publisher/my-editor/dev')).toBeInTheDocument();
+    expect(screen.getByText('custom')).toBeInTheDocument();
   });
 });

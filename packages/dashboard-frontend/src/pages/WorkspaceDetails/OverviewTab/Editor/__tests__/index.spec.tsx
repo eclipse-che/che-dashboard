@@ -13,14 +13,18 @@
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
+import { container } from '@/inversify.config';
 import { EditorFormGroup } from '@/pages/WorkspaceDetails/OverviewTab/Editor';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
+import { AppAlerts } from '@/services/alerts/appAlerts';
+import { AlertItem } from '@/services/helpers/types';
 import { che } from '@/services/models';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 
 jest.mock('@/pages/WorkspaceDetails/OverviewTab/Editor/SelectorModal');
 
+const mockShowAlert = jest.fn();
 const { renderComponent } = getComponentRenderer(getComponent);
 
 function makePlugin(
@@ -69,7 +73,20 @@ function getComponent(readonly: boolean, workspace: Workspace): React.ReactEleme
   );
 }
 
-beforeEach(() => jest.clearAllMocks());
+beforeEach(() => {
+  class MockAppAlerts extends AppAlerts {
+    showAlert(alert: AlertItem): void {
+      mockShowAlert(alert);
+    }
+  }
+  container.snapshot();
+  container.rebind(AppAlerts).to(MockAppAlerts).inSingletonScope();
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
+  container.restore();
+});
 
 describe('EditorFormGroup', () => {
   it('shows "Default" when no editor annotation is set', () => {
@@ -77,17 +94,17 @@ describe('EditorFormGroup', () => {
     expect(screen.getByText('Default')).toBeInTheDocument();
   });
 
-  it('shows the editor display name and version', () => {
+  it('shows the editor display name without version', () => {
     renderComponent(false, buildWorkspace('che-incubator/che-code/latest'));
-    expect(screen.getByText('VS Code - Open Source · latest')).toBeInTheDocument();
+    expect(screen.getByText('VS Code - Open Source')).toBeInTheDocument();
   });
 
-  it('pencil button is disabled when readonly is true', () => {
+  it('pencil button is not rendered when readonly is true', () => {
     renderComponent(true, buildWorkspace('che-incubator/che-code/latest'));
-    expect(screen.getByRole('button', { name: /Change editor/i })).toBeDisabled();
+    expect(screen.queryByRole('button', { name: /Change editor/i })).not.toBeInTheDocument();
   });
 
-  it('pencil button is enabled when readonly is false', () => {
+  it('pencil button is rendered and enabled when readonly is false', () => {
     renderComponent(false, buildWorkspace('che-incubator/che-code/latest'));
     expect(screen.getByRole('button', { name: /Change editor/i })).not.toBeDisabled();
   });
@@ -99,13 +116,25 @@ describe('EditorFormGroup', () => {
     expect(screen.getByTestId('mock-editor-selector-modal')).toBeInTheDocument();
   });
 
-  it('calls changeEditor with the selected editor id when confirm is clicked', async () => {
+  it('calls changeEditor and shows success alert on confirm', async () => {
     const workspace = buildWorkspace('che-incubator/che-code/latest');
     renderComponent(false, workspace);
     await userEvent.click(screen.getByRole('button', { name: /Change editor/i }));
     await userEvent.click(screen.getByRole('button', { name: /Confirm Editor/i }));
-    expect(mockChangeEditor).toHaveBeenCalledTimes(1);
     expect(mockChangeEditor).toHaveBeenCalledWith(workspace, 'che-incubator/che-code/latest');
+    expect(mockShowAlert).toHaveBeenCalledWith(
+      expect.objectContaining({ variant: 'success', title: 'Workspace has been updated' }),
+    );
+  });
+
+  it('shows danger alert when changeEditor throws', async () => {
+    mockChangeEditor.mockRejectedValueOnce(new Error('patch failed'));
+    renderComponent(false, buildWorkspace('che-incubator/che-code/latest'));
+    await userEvent.click(screen.getByRole('button', { name: /Change editor/i }));
+    await userEvent.click(screen.getByRole('button', { name: /Confirm Editor/i }));
+    expect(mockShowAlert).toHaveBeenCalledWith(
+      expect.objectContaining({ variant: 'danger', title: 'patch failed' }),
+    );
   });
 
   it('closes the modal without calling changeEditor when Close Modal is clicked', async () => {

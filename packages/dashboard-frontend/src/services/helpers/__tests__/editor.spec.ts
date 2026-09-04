@@ -94,14 +94,14 @@ describe('getCurrentEditorLabel', () => {
     makePlugin('che-incubator', 'che-idea-server', 'latest', 'JetBrains IntelliJ IDEA'),
   ];
 
-  it('returns "displayName · version" when the editor is found in the list', () => {
+  it('returns displayName when the editor is found in the list', () => {
     const dw = new DevWorkspaceBuilder()
       .withMetadata({
         annotations: { 'che.eclipse.org/che-editor': 'che-incubator/che-code/latest' },
       })
       .build();
     const workspace = constructWorkspace(dw);
-    expect(getCurrentEditorLabel(workspace, editors)).toBe('VS Code - Open Source · latest');
+    expect(getCurrentEditorLabel(workspace, editors)).toBe('VS Code - Open Source');
   });
 
   it('returns the raw id when the editor is not in the list', () => {

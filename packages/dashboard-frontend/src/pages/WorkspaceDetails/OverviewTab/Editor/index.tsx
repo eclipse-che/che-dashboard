@@ -10,15 +10,24 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Architecture } from '@eclipse-che/common';
-import { Button, FormGroup } from '@patternfly/react-core';
+import common, { Architecture } from '@eclipse-che/common';
+import {
+  AlertVariant,
+  Button,
+  FormGroup,
+  FormGroupLabelHelp,
+  Popover,
+} from '@patternfly/react-core';
 import { PencilAltIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { lazyInject } from '@/inversify.config';
 import { EditorSelectorModal } from '@/pages/WorkspaceDetails/OverviewTab/Editor/SelectorModal';
 import overviewStyles from '@/pages/WorkspaceDetails/OverviewTab/index.module.css';
+import { AppAlerts } from '@/services/alerts/appAlerts';
 import { getCurrentEditorId, getCurrentEditorLabel } from '@/services/helpers/editor';
+import getRandomString from '@/services/helpers/random';
 import { che } from '@/services/models';
 import { Workspace } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
@@ -36,6 +45,9 @@ type State = {
 };
 
 export class EditorFormGroup extends React.PureComponent<Props, State> {
+  @lazyInject(AppAlerts)
+  private appAlerts: AppAlerts;
+
   state: State = { isSelectorOpen: false };
 
   private get filteredEditors(): che.Plugin[] {
@@ -48,7 +60,20 @@ export class EditorFormGroup extends React.PureComponent<Props, State> {
   private async handleConfirm(newEditorId: string): Promise<void> {
     const { workspace, changeEditor } = this.props;
     this.setState({ isSelectorOpen: false });
-    await changeEditor(workspace, newEditorId);
+    try {
+      await changeEditor(workspace, newEditorId);
+      this.appAlerts.showAlert({
+        key: 'editor-change-' + getRandomString(4),
+        title: 'Workspace has been updated',
+        variant: AlertVariant.success,
+      });
+    } catch (e) {
+      this.appAlerts.showAlert({
+        key: 'editor-change-error-' + getRandomString(4),
+        title: common.helpers.errors.getMessage(e),
+        variant: AlertVariant.danger,
+      });
+    }
   }
 
   public render(): React.ReactNode {
@@ -59,20 +84,30 @@ export class EditorFormGroup extends React.PureComponent<Props, State> {
     const currentEditorId = getCurrentEditorId(workspace);
 
     return (
-      <FormGroup label="Editor" fieldId="editor">
-        <span className={readonly ? overviewStyles.readonly : overviewStyles.editable}>
-          {label}
-          <Button
-            data-testid="overview-editor-edit-toggle"
-            variant="plain"
-            onClick={() => this.setState({ isSelectorOpen: true })}
-            aria-label="Change editor"
-            title="Change editor"
-            isDisabled={readonly}
-          >
-            <PencilAltIcon />
-          </Button>
-        </span>
+      <FormGroup
+        label="Editor"
+        fieldId="editor"
+        labelHelp={
+          <Popover bodyContent="The IDE used to open this workspace. You can change it when the workspace is stopped.">
+            <FormGroupLabelHelp aria-label="More info for Editor" />
+          </Popover>
+        }
+      >
+        {readonly && <span className={overviewStyles.readonly}>{label}</span>}
+        {!readonly && (
+          <span className={overviewStyles.editable}>
+            {label}
+            <Button
+              data-testid="overview-editor-edit-toggle"
+              variant="plain"
+              onClick={() => this.setState({ isSelectorOpen: true })}
+              aria-label="Change editor"
+              title="Change editor"
+            >
+              <PencilAltIcon />
+            </Button>
+          </span>
+        )}
         <EditorSelectorModal
           isOpen={isSelectorOpen}
           currentEditorId={currentEditorId}

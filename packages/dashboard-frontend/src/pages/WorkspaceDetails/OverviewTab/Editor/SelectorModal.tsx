@@ -12,6 +12,7 @@
 
 import {
   Button,
+  Checkbox,
   Content,
   ContentVariants,
   Dropdown,
@@ -25,7 +26,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalVariant,
-  Radio,
+  TextInput,
 } from '@patternfly/react-core';
 import { CheckIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import React from 'react';
@@ -46,6 +47,7 @@ type State = {
   selectedGroupKey: string;
   selectedVersion: string;
   openDropdownId: string | null;
+  filterText: string;
 };
 
 function resolveInitialState(currentEditorId: string | undefined, groups: EditorGroup[]): State {
@@ -55,13 +57,13 @@ function resolveInitialState(currentEditorId: string | undefined, groups: Editor
       selectedGroupKey: first?.key ?? '',
       selectedVersion: first?.versions[0]?.version ?? '',
       openDropdownId: null,
+      filterText: '',
     };
   }
-  // currentEditorId is "publisher/name/version"
   const parts = currentEditorId.split('/');
   const version = parts[parts.length - 1];
   const key = parts.slice(0, -1).join('/');
-  return { selectedGroupKey: key, selectedVersion: version, openDropdownId: null };
+  return { selectedGroupKey: key, selectedVersion: version, openDropdownId: null, filterText: '' };
 }
 
 export class EditorSelectorModal extends React.PureComponent<Props, State> {
@@ -78,6 +80,10 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
     ) {
       const groups = groupEditorsByName(this.props.editors);
       this.setState(resolveInitialState(this.props.currentEditorId, groups));
+    }
+    // Reset filter when modal closes
+    if (prevProps.isOpen && !this.props.isOpen) {
+      this.setState({ filterText: '' });
     }
   }
 
@@ -155,10 +161,29 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactNode {
-    const { isOpen, editors, onConfirm, onClose } = this.props;
-    const { selectedGroupKey, selectedVersion } = this.state;
+    const { isOpen, currentEditorId, editors, onConfirm, onClose } = this.props;
+    const { selectedGroupKey, selectedVersion, filterText } = this.state;
 
     const groups = groupEditorsByName(editors);
+
+    const currentGroupKey = currentEditorId
+      ? currentEditorId.split('/').slice(0, -1).join('/')
+      : undefined;
+    const isCustomEditor =
+      currentGroupKey !== undefined && !groups.some(g => g.key === currentGroupKey);
+
+    const lowerFilter = filterText.toLowerCase();
+    const filteredGroups = filterText
+      ? groups.filter(
+          g =>
+            g.displayName.toLowerCase().includes(lowerFilter) ||
+            g.versions.some(
+              v =>
+                v.version.toLowerCase().includes(lowerFilter) ||
+                (v.description ?? '').toLowerCase().includes(lowerFilter),
+            ),
+        )
+      : groups;
 
     return (
       <Modal
@@ -169,47 +194,72 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
       >
         <ModalHeader title="Change Editor" />
         <ModalBody>
-          <Content data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
+          <div data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
             {groups.length === 0 ? (
               <Content component="p">No editors are available.</Content>
             ) : (
               <>
-                <Content component={ContentVariants.h6}>Select editor</Content>
-                {groups.map(group => {
-                  const isGroupSelected = selectedGroupKey === group.key;
-                  const activeVersion = isGroupSelected
-                    ? selectedVersion
-                    : group.versions[0].version;
-                  const versionDropdown = this.buildVersionDropdown(group);
-
-                  const radioLabel = (
-                    <span className={styles.radioLabel}>
-                      {group.displayName}
-                      {isGroupSelected && (
-                        <Label variant="outline" color="blue" className={styles.versionLabel}>
-                          {activeVersion}
+                <div className={styles.editorSelectHeader}>
+                  <Content component={ContentVariants.h6} style={{ marginBottom: 0 }}>
+                    Select editor
+                  </Content>
+                  <TextInput
+                    type="search"
+                    placeholder="Filter by"
+                    value={filterText}
+                    onChange={(_event, value) => this.setState({ filterText: value })}
+                    aria-label="Filter editors by name"
+                    className={styles.filterInput}
+                  />
+                </div>
+                <div className={styles.editorList}>
+                  {isCustomEditor && (
+                    <Content component={ContentVariants.h6}>
+                      <div className={styles.customEditorRow}>
+                        <span>{currentEditorId}</span>
+                        <Label variant="outline" color="orange" className={styles.versionLabel}>
+                          custom
                         </Label>
-                      )}
-                      {versionDropdown}
-                    </span>
-                  );
-
-                  return (
-                    <Content key={group.key} component={ContentVariants.h6}>
-                      <Radio
-                        label={radioLabel}
-                        id={`editor-${group.key.replace(/\//g, '-')}`}
-                        name="editor-selector"
-                        description={group.versions[0].description}
-                        isChecked={isGroupSelected}
-                        onChange={() => this.handleSelectGroup(group)}
-                      />
+                      </div>
                     </Content>
-                  );
-                })}
+                  )}
+                  {filteredGroups.length === 0 ? (
+                    <Content component="p">No editors match the filter.</Content>
+                  ) : (
+                    filteredGroups.map(group => {
+                      const isGroupSelected = selectedGroupKey === group.key;
+                      const activeVersion = isGroupSelected
+                        ? selectedVersion
+                        : group.versions[0].version;
+                      const versionDropdown = this.buildVersionDropdown(group);
+
+                      const radioLabel = (
+                        <span className={styles.radioLabel}>
+                          {group.displayName}
+                          <Label variant="outline" color="blue" className={styles.versionLabel}>
+                            {activeVersion}
+                          </Label>
+                          {versionDropdown}
+                        </span>
+                      );
+
+                      return (
+                        <Content key={group.key} component={ContentVariants.h6}>
+                          <Checkbox
+                            label={radioLabel}
+                            id={`editor-${group.key.replace(/\//g, '-')}`}
+                            description={group.versions[0].description}
+                            isChecked={isGroupSelected}
+                            onChange={() => this.handleSelectGroup(group)}
+                          />
+                        </Content>
+                      );
+                    })
+                  )}
+                </div>
               </>
             )}
-          </Content>
+          </div>
         </ModalBody>
         <ModalFooter>
           <Button
