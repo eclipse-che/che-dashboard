@@ -31,12 +31,17 @@ describe('CreateNewIfExistingField', () => {
     jest.clearAllMocks();
   });
 
-  it('should adopt global state=true on mount and propagate it when local default is false', () => {
+  it('should silently adopt global state=true on mount without calling onChange', async () => {
     Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID] = { isChecked: true };
-    renderComponent(undefined);
+    await act(async () => {
+      renderComponent(undefined);
+    });
 
-    // props.onChange is called synchronously inside handleChange during componentDidMount
-    expect(mockOnChange).toHaveBeenCalledWith(true);
+    // The switch shows ON (global state adopted) but onChange is NOT called —
+    // ImportFromGit.startFactory() adds policies.create=perclick at click-time instead.
+    const switchInput = screen.getByRole('switch') as HTMLInputElement;
+    expect(switchInput.checked).toBeTruthy();
+    expect(mockOnChange).not.toHaveBeenCalled();
   });
 
   it('should not call onChange when global state matches local state', () => {
