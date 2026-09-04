@@ -39,6 +39,7 @@ import {
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { findTargetWorkspace } from '@/services/helpers/factoryFlow/findTargetWorkspace';
 import { buildIdeLoaderLocation, toHref } from '@/services/helpers/location';
+import sanitizeName from '@/services/helpers/sanitizeName';
 import { AlertItem } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { Workspace } from '@/services/workspace-adapter';
@@ -228,7 +229,10 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
     // test the devfile name to see if a suffix should be added
     // K8s names are namespace-scoped, so only check within the current user namespace
     // when factoryParams.name is provided, check against that name since it will override the devfile name
-    const effectiveName = factoryParams.name || devfile.metadata.name;
+    // Sanitize before comparison: devfile metadata.name may contain uppercase or other characters that
+    // sanitizeName() will normalise (e.g. "Devspaces-Public-repo" → "devspaces-public-repo"), so a
+    // case-sensitive string comparison against already-created workspace names would miss the conflict.
+    const effectiveName = sanitizeName(factoryParams.name || devfile.metadata.name);
     const nameConflict = allWorkspaces.some(
       w =>
         w.namespace === defaultNamespace.name &&
