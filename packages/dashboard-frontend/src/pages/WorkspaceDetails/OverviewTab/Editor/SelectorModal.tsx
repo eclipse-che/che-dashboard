@@ -12,7 +12,6 @@
 
 import {
   Button,
-  Checkbox,
   Content,
   ContentVariants,
   Dropdown,
@@ -26,6 +25,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalVariant,
+  Radio,
   TextInput,
 } from '@patternfly/react-core';
 import { CheckIcon, EllipsisVIcon } from '@patternfly/react-icons';
@@ -245,12 +245,14 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
 
                       return (
                         <Content key={group.key} component={ContentVariants.h6}>
-                          <Checkbox
+                          <Radio
                             label={radioLabel}
                             id={`editor-${group.key.replace(/\//g, '-')}`}
+                            name="editor-selector"
                             description={group.versions[0].description}
                             isChecked={isGroupSelected}
                             onChange={() => this.handleSelectGroup(group)}
+                            value={group.key}
                           />
                         </Content>
                       );

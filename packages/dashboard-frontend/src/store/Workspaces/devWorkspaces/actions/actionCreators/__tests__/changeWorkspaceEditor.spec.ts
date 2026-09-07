@@ -133,6 +133,95 @@ describe('changeWorkspaceEditor', () => {
     );
   });
 
+  it('patches the correct contributions index when editor is not at index 0', async () => {
+    const store = new MockStoreBuilder()
+      .withDwPlugins({}, {}, false, [intellijDevfile as devfileApi.Devfile])
+      .build();
+    const dw = new DevWorkspaceBuilder()
+      .withMetadata({
+        name: 'empty-ido0',
+        namespace: 'test-ns',
+        uid: 'test-uid',
+        annotations: wsAnnotations,
+      })
+      .withContributions([
+        { name: 'ai-tool', kubernetes: { name: 'ai-tool-empty-ido0' } },
+        { name: 'editor', kubernetes: { name: 'che-code-empty-ido0' } },
+      ])
+      .build();
+    const workspace = constructWorkspace(dw);
+    await store.dispatch(changeWorkspaceEditor(workspace, 'che-incubator/che-idea-server/latest'));
+
+    expect(mockPatchWorkspace).toHaveBeenCalledWith(
+      'test-ns',
+      'empty-ido0',
+      expect.arrayContaining([
+        expect.objectContaining({
+          path: '/spec/contributions/1/kubernetes/name',
+          value: 'che-idea-server-empty-ido0',
+        }),
+      ]),
+    );
+  });
+
+  it('throws when editor contribution is absent from the workspace', async () => {
+    const store = new MockStoreBuilder()
+      .withDwPlugins({}, {}, false, [intellijDevfile as devfileApi.Devfile])
+      .build();
+    const dw = new DevWorkspaceBuilder()
+      .withMetadata({ name: 'empty-ido0', namespace: 'test-ns', uid: 'test-uid' })
+      .withContributions([{ name: 'ai-tool', kubernetes: { name: 'ai-tool-empty-ido0' } }])
+      .build();
+    const workspace = constructWorkspace(dw);
+
+    await expect(
+      store.dispatch(changeWorkspaceEditor(workspace, 'che-incubator/che-idea-server/latest')),
+    ).rejects.toThrow('Editor contribution not found');
+  });
+
+  it('succeeds even when deleteTemplate throws', async () => {
+    const store = new MockStoreBuilder()
+      .withDwPlugins({}, {}, false, [intellijDevfile as devfileApi.Devfile])
+      .build();
+    const workspace = buildWorkspace();
+    mockDeleteTemplate.mockRejectedValueOnce(new Error('already gone'));
+
+    await expect(
+      store.dispatch(changeWorkspaceEditor(workspace, 'che-incubator/che-idea-server/latest')),
+    ).resolves.not.toThrow();
+    expect(mockPatchWorkspace).toHaveBeenCalledTimes(1);
+  });
+
+  it('leaves devfile-source unchanged when che-editor= is absent', async () => {
+    const store = new MockStoreBuilder()
+      .withDwPlugins({}, {}, false, [intellijDevfile as devfileApi.Devfile])
+      .build();
+    const devfileSourceWithoutEditor = 'url:\n  location: https://example.com\n';
+    const dw = new DevWorkspaceBuilder()
+      .withMetadata({
+        name: 'empty-ido0',
+        namespace: 'test-ns',
+        uid: 'test-uid',
+        annotations: {
+          'che.eclipse.org/che-editor': 'che-incubator/che-code/latest',
+          'che.eclipse.org/devfile-source': devfileSourceWithoutEditor,
+        },
+      })
+      .withContributions([{ name: 'editor', kubernetes: { name: 'che-code-empty-ido0' } }])
+      .build();
+    const workspace = constructWorkspace(dw);
+    await store.dispatch(changeWorkspaceEditor(workspace, 'che-incubator/che-idea-server/latest'));
+
+    const patches = mockPatchWorkspace.mock.calls[0][2] as Array<{
+      path: string;
+      value: Record<string, string>;
+    }>;
+    const annotationsPatch = patches.find(p => p.path === '/metadata/annotations');
+    expect(annotationsPatch?.value['che.eclipse.org/devfile-source']).toBe(
+      devfileSourceWithoutEditor,
+    );
+  });
+
   it('deletes the old template', async () => {
     const store = new MockStoreBuilder()
       .withDwPlugins({}, {}, false, [intellijDevfile as devfileApi.Devfile])

@@ -114,24 +114,39 @@ export const changeWorkspaceEditor =
       );
 
       // Step 2: patch workspace — annotations + spec.contributions
+      const editorIndex = (dw.spec?.contributions ?? []).findIndex(c => c.name === 'editor');
+      if (editorIndex === -1) {
+        throw new Error(`Editor contribution not found in workspace ${workspaceName}`);
+      }
+
       const annotations = { ...(dw.metadata.annotations ?? {}) };
       annotations[DEVWORKSPACE_CHE_EDITOR] = newEditorId;
       const devfileSource = annotations[DEVWORKSPACE_DEVFILE_SOURCE] ?? '';
-      annotations[DEVWORKSPACE_DEVFILE_SOURCE] = devfileSource.replace(
-        /che-editor=[^&\n]+/,
-        `che-editor=${newEditorId}`,
-      );
+      if (devfileSource.includes('che-editor=')) {
+        annotations[DEVWORKSPACE_DEVFILE_SOURCE] = devfileSource.replace(
+          /che-editor=[^&\n]+/,
+          `che-editor=${newEditorId}`,
+        );
+      }
 
       const { devWorkspace: updatedDw } = await DwApi.patchWorkspace(namespace, workspaceName, [
         { op: 'replace', path: '/metadata/annotations', value: annotations },
-        { op: 'replace', path: '/spec/contributions/0/kubernetes/name', value: newTemplateName },
+        {
+          op: 'replace',
+          path: `/spec/contributions/${editorIndex}/kubernetes/name`,
+          value: newTemplateName,
+        },
       ]);
       dispatch(devWorkspacesUpdateAction(updatedDw));
 
       // Step 3: delete old template (ownerRef also GC-s it on workspace delete — explicit for cleanliness)
       const oldTemplateName = getEditorName(dw);
       if (oldTemplateName && oldTemplateName !== newTemplateName) {
-        await DwtApi.deleteTemplate(namespace, oldTemplateName);
+        try {
+          await DwtApi.deleteTemplate(namespace, oldTemplateName);
+        } catch {
+          // Old template may already be gone — ownerRef GC handles it
+        }
       }
     } catch (e) {
       const errorMessage =

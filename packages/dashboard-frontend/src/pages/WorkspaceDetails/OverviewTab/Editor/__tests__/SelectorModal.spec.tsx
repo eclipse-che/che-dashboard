@@ -78,17 +78,17 @@ describe('EditorSelectorModal', () => {
     expect(screen.getByText('Change Editor')).toBeInTheDocument();
   });
 
-  it('renders one checkbox per editor group', () => {
+  it('renders one radio per editor group', () => {
     renderComponent(true, undefined);
-    const checkboxes = screen.getAllByRole('checkbox');
+    const radios = screen.getAllByRole('radio');
     // 2 groups: che-code, che-idea-server
-    expect(checkboxes).toHaveLength(2);
+    expect(radios).toHaveLength(2);
   });
 
-  it('pre-selects the checkbox that matches currentEditorId', () => {
+  it('pre-selects the radio that matches currentEditorId', () => {
     renderComponent(true, 'che-incubator/che-idea-server/latest');
-    const checkbox = screen.getByRole('checkbox', { name: /JetBrains IntelliJ IDEA/i });
-    expect(checkbox).toBeChecked();
+    const radio = screen.getByRole('radio', { name: /JetBrains IntelliJ IDEA/i });
+    expect(radio).toBeChecked();
   });
 
   it('Save button is disabled when selection has not changed', () => {
@@ -98,13 +98,13 @@ describe('EditorSelectorModal', () => {
 
   it('Save button becomes enabled after selecting a different editor', async () => {
     renderComponent(true, 'che-incubator/che-code/latest');
-    await userEvent.click(screen.getByRole('checkbox', { name: /JetBrains IntelliJ IDEA/i }));
+    await userEvent.click(screen.getByRole('radio', { name: /JetBrains IntelliJ IDEA/i }));
     expect(screen.getByRole('button', { name: /Save/i })).not.toBeDisabled();
   });
 
   it('calls onConfirm with the selected editor id on Save', async () => {
     renderComponent(true, 'che-incubator/che-code/latest');
-    await userEvent.click(screen.getByRole('checkbox', { name: /JetBrains IntelliJ IDEA/i }));
+    await userEvent.click(screen.getByRole('radio', { name: /JetBrains IntelliJ IDEA/i }));
     await userEvent.click(screen.getByRole('button', { name: /Save/i }));
     expect(mockOnConfirm).toHaveBeenCalledWith('che-incubator/che-idea-server/latest');
   });
@@ -158,24 +158,24 @@ describe('EditorSelectorModal', () => {
     renderComponent(true, undefined);
     const filter = screen.getByRole('searchbox', { name: /Filter editors by/i });
     await userEvent.type(filter, 'JetBrains');
-    expect(screen.queryByRole('checkbox', { name: /VS Code/i })).not.toBeInTheDocument();
-    expect(screen.getByRole('checkbox', { name: /JetBrains IntelliJ IDEA/i })).toBeInTheDocument();
+    expect(screen.queryByRole('radio', { name: /VS Code/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: /JetBrains IntelliJ IDEA/i })).toBeInTheDocument();
   });
 
   it('filters editors by version string', async () => {
     renderComponent(true, undefined);
     const filter = screen.getByRole('searchbox', { name: /Filter editors by/i });
     await userEvent.type(filter, 'insiders');
-    expect(screen.getByRole('checkbox', { name: /VS Code/i })).toBeInTheDocument();
-    expect(screen.queryByRole('checkbox', { name: /JetBrains/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: /VS Code/i })).toBeInTheDocument();
+    expect(screen.queryByRole('radio', { name: /JetBrains/i })).not.toBeInTheDocument();
   });
 
   it('filters editors by description text', async () => {
     renderComponent(true, undefined);
     const filter = screen.getByRole('searchbox', { name: /Filter editors by/i });
     await userEvent.type(filter, 'Open Source IDE');
-    expect(screen.getByRole('checkbox', { name: /VS Code/i })).toBeInTheDocument();
-    expect(screen.queryByRole('checkbox', { name: /JetBrains/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: /VS Code/i })).toBeInTheDocument();
+    expect(screen.queryByRole('radio', { name: /JetBrains/i })).not.toBeInTheDocument();
   });
 
   it('shows "No editors match the filter" when filter yields no results', async () => {
@@ -198,12 +198,12 @@ describe('EditorSelectorModal', () => {
       screen.getByRole('searchbox', { name: /Filter editors by/i }),
       'JetBrains',
     );
-    expect(screen.queryByRole('checkbox', { name: /VS Code/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('radio', { name: /VS Code/i })).not.toBeInTheDocument();
 
     // close
     reRenderComponent(false, undefined);
     // reopen — filter must be cleared
     reRenderComponent(true, undefined);
-    expect(screen.getByRole('checkbox', { name: /VS Code/i })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: /VS Code/i })).toBeInTheDocument();
   });
 });
