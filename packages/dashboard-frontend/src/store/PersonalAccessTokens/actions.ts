@@ -14,6 +14,7 @@ import { api, helpers } from '@eclipse-che/common';
 import { createAction } from '@reduxjs/toolkit';
 
 import { provisionKubernetesNamespace } from '@/services/backend-client/kubernetesNamespaceApi';
+import { refreshOAuthToken } from '@/services/backend-client/oAuthApi';
 import {
   addToken,
   fetchTokens,
@@ -29,6 +30,7 @@ export const tokenReceiveAction = createAction<api.PersonalAccessToken[]>('token
 export const tokenAddAction = createAction<api.PersonalAccessToken>('token/add');
 export const tokenUpdateAction = createAction<api.PersonalAccessToken>('token/update');
 export const tokenRemoveAction = createAction<api.PersonalAccessToken>('token/remove');
+export const tokenRefreshAction = createAction('token/refresh-oauth');
 export const tokenErrorAction = createAction<string>('token/error');
 
 export const actionCreators = {
@@ -119,6 +121,23 @@ export const actionCreators = {
 
         await removeToken(namespace, token);
         dispatch(tokenRemoveAction(token));
+      } catch (e) {
+        const errorMessage = helpers.errors.getMessage(e);
+        dispatch(tokenErrorAction(errorMessage));
+        throw e;
+      }
+    },
+
+  refreshToken:
+    (token: api.PersonalAccessToken): AppThunk =>
+    async (dispatch, getState): Promise<void> => {
+      try {
+        await verifyAuthorized(dispatch, getState);
+
+        dispatch(tokenRequestAction());
+
+        await refreshOAuthToken(token.gitProvider);
+        dispatch(tokenRefreshAction());
       } catch (e) {
         const errorMessage = helpers.errors.getMessage(e);
         dispatch(tokenErrorAction(errorMessage));

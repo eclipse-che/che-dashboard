@@ -32,6 +32,7 @@ import { personalAccessTokenActionCreators } from '@/store/PersonalAccessTokens'
 
 jest.mock('@/pages/UserPreferences/PersonalAccessTokens/AddEditModal');
 jest.mock('@/pages/UserPreferences/PersonalAccessTokens/DeleteModal');
+jest.mock('@/pages/UserPreferences/PersonalAccessTokens/RefreshTokenModal');
 jest.mock('@/pages/UserPreferences/PersonalAccessTokens/List');
 
 // mute console.error
@@ -43,6 +44,7 @@ const mockRequestTokens = jest.fn();
 const mockAddToken = jest.fn();
 const mockUpdateToken = jest.fn();
 const mockRemoveToken = jest.fn();
+const mockRefreshToken = jest.fn();
 jest.mock('@/store/PersonalAccessTokens', () => ({
   ...jest.requireActual('@/store/PersonalAccessTokens'),
   personalAccessTokenActionCreators: {
@@ -62,6 +64,10 @@ jest.mock('@/store/PersonalAccessTokens', () => ({
       (...args): AppThunk =>
       async () =>
         mockRemoveToken(...args),
+    refreshToken:
+      (...args): AppThunk =>
+      async () =>
+        mockRefreshToken(...args),
   } as typeof personalAccessTokenActionCreators,
 }));
 
@@ -332,6 +338,74 @@ describe('PersonalAccessTokens', () => {
     });
   });
 
+  describe('refresh modal', () => {
+    it('should close the modal', () => {
+      const store = storeBuilder.withPersonalAccessTokens({ tokens: [token1, token2] }).build();
+      localState = { isRefreshOpen: true, refreshToken: token1 };
+      renderComponent(store, localState);
+
+      // modal should be open
+      expect(screen.queryByRole('heading', { name: 'Refresh oAuth token Modal' })).not.toBeNull();
+
+      const modal = screen.getByTestId('modal-refresh');
+      const closeButton = within(modal).getByTestId('close-modal');
+      fireEvent.click(closeButton);
+
+      // modal should be closed
+      expect(screen.queryByRole('heading', { name: 'Refresh oAuth token Modal' })).toBeNull();
+    });
+
+    it('should refresh the token, close modal and show a success notification', async () => {
+      const store = storeBuilder.withPersonalAccessTokens({ tokens: [token1, token2] }).build();
+      localState = { isRefreshOpen: true, refreshToken: token1 };
+      renderComponent(store, localState);
+
+      // modal should be open
+      expect(screen.queryByRole('heading', { name: 'Refresh oAuth token Modal' })).not.toBeNull();
+
+      const modal = screen.getByTestId('modal-refresh');
+      const refreshButton = within(modal).getByTestId('refresh-token');
+      fireEvent.click(refreshButton);
+
+      // mock refreshToken should be called with the selected token
+      await waitFor(() => expect(mockRefreshToken).toHaveBeenCalledWith(token1));
+
+      // modal should be closed
+      expect(screen.queryByRole('heading', { name: 'Refresh oAuth token Modal' })).toBeNull();
+
+      // success alert should be shown
+      await waitFor(() =>
+        expect(mockShowAlert).toHaveBeenCalledWith({
+          key: 'refresh-token-success',
+          title: 'oAuth token refreshed successfully.',
+          variant: 'success',
+        } as AlertItem),
+      );
+    });
+
+    it('should show an error notification when refresh fails', async () => {
+      mockRefreshToken.mockRejectedValueOnce(new Error('refresh-error'));
+
+      const store = storeBuilder.withPersonalAccessTokens({ tokens: [token1, token2] }).build();
+      localState = { isRefreshOpen: true, refreshToken: token1 };
+      renderComponent(store, localState);
+
+      const modal = screen.getByTestId('modal-refresh');
+      const refreshButton = within(modal).getByTestId('refresh-token');
+      fireEvent.click(refreshButton);
+
+      await waitFor(() => expect(mockRefreshToken).toHaveBeenCalledWith(token1));
+
+      // modal should be closed
+      expect(screen.queryByRole('heading', { name: 'Refresh oAuth token Modal' })).toBeNull();
+
+      // success alert should NOT be shown
+      expect(mockShowAlert).not.toHaveBeenCalledWith(
+        expect.objectContaining({ key: 'refresh-token-success' }),
+      );
+    });
+  });
+
   describe('list', () => {
     it('should handle add token from the list', () => {
       const store = storeBuilder.withPersonalAccessTokens({ tokens: [token1, token2] }).build();
@@ -376,6 +450,19 @@ describe('PersonalAccessTokens', () => {
       expect(
         screen.queryByRole('heading', { name: 'Delete Personal Access Token Modal' }),
       ).not.toBeNull();
+    });
+
+    it('should handle refresh token from the list', () => {
+      const store = storeBuilder.withPersonalAccessTokens({ tokens: [token1, token2] }).build();
+      renderComponent(store);
+
+      const rows = screen.getAllByTestId('token-row');
+
+      const refreshTokenButton = within(rows[0]).getByRole('button', { name: 'Refresh Token' });
+      fireEvent.click(refreshTokenButton);
+
+      // modal should be open
+      expect(screen.queryByRole('heading', { name: 'Refresh oAuth token Modal' })).not.toBeNull();
     });
 
     it('should propagate isDisabled to the list when isLoading is true', () => {

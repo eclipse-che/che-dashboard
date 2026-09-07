@@ -16,12 +16,14 @@ import {
   deleteOAuthToken,
   getOAuthProviders,
   getOAuthToken,
+  refreshOAuthToken,
 } from '@/services/backend-client/oAuthApi';
 import { IGitOauth } from '@/store/GitOauthConfig';
 
 describe('Open Authorization API', () => {
   const mockGet = mockAxios.get as jest.Mock;
   const mockDelete = mockAxios.delete as jest.Mock;
+  const mockPost = mockAxios.post as jest.Mock;
 
   const oAuthProvider = { name: 'github', endpointUrl: 'https://github.com' } as IGitOauth;
   const oAuthProviderToken = { token: 'dummy_token' };
@@ -92,6 +94,26 @@ describe('Open Authorization API', () => {
       const res = await deleteOAuthToken(oAuthProvider.name);
 
       expect(mockGet).not.toHaveBeenCalled();
+      expect(res).toBeUndefined();
+    });
+  });
+
+  describe('refresh OAuthToken', () => {
+    it('should call "/api/oauth/refresh?oauth_provider=github"', async () => {
+      mockPost.mockResolvedValueOnce(undefined);
+
+      await refreshOAuthToken(oAuthProvider.name);
+
+      expect(mockGet).not.toHaveBeenCalled();
+      expect(mockDelete).not.toHaveBeenCalled();
+      expect(mockPost).toHaveBeenCalledWith('/api/oauth/refresh?oauth_provider=github');
+    });
+
+    it('should return undefined', async () => {
+      mockPost.mockResolvedValueOnce(undefined);
+
+      const res = await refreshOAuthToken(oAuthProvider.name);
+
       expect(res).toBeUndefined();
     });
   });

@@ -31,3 +31,7 @@ export async function getOAuthToken(provider: api.GitOauthProvider): Promise<{ t
 export async function deleteOAuthToken(provider: api.GitOauthProvider): Promise<void> {
   await axios.delete(`${cheServerPrefix}/oauth/token?oauth_provider=${provider}`);
 }
+
+export async function refreshOAuthToken(provider: api.GitOauthProvider): Promise<void> {
+  await axios.post(`${cheServerPrefix}/oauth/refresh?oauth_provider=${provider}`);
+}

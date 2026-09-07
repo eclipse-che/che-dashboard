@@ -29,6 +29,7 @@ const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 const mockOnAddToken = jest.fn();
 const mockOnEditToken = jest.fn();
 const mockOnDeleteToken = jest.fn();
+const mockOnRefreshToken = jest.fn();
 
 describe('PersonalAccessTokenList', () => {
   let tokens: api.PersonalAccessToken[];
@@ -235,6 +236,29 @@ describe('PersonalAccessTokenList', () => {
 
       expect(mockOnDeleteToken).toHaveBeenCalledWith([tokens[0]]);
     });
+
+    test('refresh token', async () => {
+      renderComponent(tokens);
+
+      expect(mockOnRefreshToken).not.toHaveBeenCalled();
+
+      const token1Row = screen.getByRole('row', { name: new RegExp(tokens[0].tokenName) });
+      // PatternFly 6 ActionsColumn uses "Kebab toggle" as aria-label
+      const actionsButton = within(token1Row).getByRole('button', { name: 'Kebab toggle' });
+
+      // open actions menu
+      fireEvent.click(actionsButton);
+
+      // wait for menu to appear
+      const token1RefreshButton = await waitFor(() => {
+        return screen.getByRole('menuitem', { name: 'Refresh Token' });
+      });
+
+      // refresh token 1
+      fireEvent.click(token1RefreshButton);
+
+      expect(mockOnRefreshToken).toHaveBeenCalledWith(tokens[0]);
+    });
   });
 });
 
@@ -246,6 +270,7 @@ function getComponent(tokens: api.PersonalAccessToken[], isDisabled = false): Re
       onAddToken={mockOnAddToken}
       onEditToken={mockOnEditToken}
       onDeleteTokens={mockOnDeleteToken}
+      onRefreshToken={mockOnRefreshToken}
     />
   );
 }

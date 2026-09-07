@@ -42,6 +42,7 @@ export type Props = {
   onAddToken: () => void;
   onEditToken: (token: api.PersonalAccessToken) => void;
   onDeleteTokens: (tokens: api.PersonalAccessToken[]) => void;
+  onRefreshToken: (token: api.PersonalAccessToken) => void;
 };
 export type State = {
   selectedTokens: api.PersonalAccessToken[];
@@ -100,6 +101,10 @@ export class PersonalAccessTokenList extends React.PureComponent<Props, State> {
     this.props.onDeleteTokens([token]);
   }
 
+  private handleRefreshToken(token: api.PersonalAccessToken): void {
+    this.props.onRefreshToken(token);
+  }
+
   private buildHeadRow(): React.ReactElement {
     const { isDisabled, tokens } = this.props;
     const { selectedTokens } = this.state;
@@ -133,6 +138,10 @@ export class PersonalAccessTokenList extends React.PureComponent<Props, State> {
       {
         title: 'Delete Token',
         onClick: () => this.handleDeleteToken(token),
+      },
+      {
+        title: 'Refresh Token',
+        onClick: () => this.handleRefreshToken(token),
       },
     ];
   }
