@@ -191,6 +191,74 @@ describe('EditorSelectorModal', () => {
     expect(screen.getByText('custom')).toBeInTheDocument();
   });
 
+  it('preserves preselected version when switching editor group and back', async () => {
+    // When insiders is listed first but current editor is latest, switching away and back
+    // must NOT reset the version to insiders (the first/default in the list).
+    const editorsInsidersFirst: che.Plugin[] = [
+      makePlugin('che-incubator', 'che-code', 'insiders', 'VS Code - Open Source'),
+      makePlugin('che-incubator', 'che-code', 'latest', 'VS Code - Open Source'),
+      makePlugin('che-incubator', 'che-idea-server', 'latest', 'JetBrains IntelliJ IDEA'),
+    ];
+    function localGetComponent(isOpen: boolean, currentEditorId: string | undefined) {
+      return (
+        <EditorSelectorModal
+          isOpen={isOpen}
+          currentEditorId={currentEditorId}
+          editors={editorsInsidersFirst}
+          onConfirm={mockOnConfirm}
+          onClose={mockOnClose}
+        />
+      );
+    }
+    const { renderComponent: renderLocal } = getComponentRenderer(localGetComponent);
+    renderLocal(true, 'che-incubator/che-code/latest');
+
+    // Switch to IntelliJ
+    await userEvent.click(screen.getByRole('radio', { name: /JetBrains IntelliJ IDEA/i }));
+    // Switch back to VS Code
+    await userEvent.click(screen.getByRole('radio', { name: /VS Code - Open Source/i }));
+
+    // Save is disabled because we're back to the original selection (latest, not insiders)
+    expect(screen.getByRole('button', { name: /Save/i })).toBeDisabled();
+  });
+
+  it('preserves explicitly chosen version when switching away and back', async () => {
+    // Start with latest, change to insiders, switch to IntelliJ, switch back → still insiders
+    renderComponent(true, 'che-incubator/che-code/latest');
+
+    // Change version to insiders via dropdown
+    await userEvent.click(
+      screen.getByRole('button', { name: /VS Code - Open Source version options/i }),
+    );
+    await userEvent.click(screen.getByRole('menuitem', { name: 'insiders' }));
+
+    // Switch to IntelliJ
+    await userEvent.click(screen.getByRole('radio', { name: /JetBrains IntelliJ IDEA/i }));
+
+    // Switch back to VS Code
+    await userEvent.click(screen.getByRole('radio', { name: /VS Code - Open Source/i }));
+
+    // Should confirm with insiders, not latest
+    await userEvent.click(screen.getByRole('button', { name: /Save/i }));
+    expect(mockOnConfirm).toHaveBeenCalledWith('che-incubator/che-code/insiders');
+  });
+
+  it('resets version selection when modal is reopened', async () => {
+    const { reRenderComponent } = renderComponent(true, 'che-incubator/che-code/latest');
+
+    // Change version to insiders — Save becomes enabled
+    await userEvent.click(
+      screen.getByRole('button', { name: /VS Code - Open Source version options/i }),
+    );
+    await userEvent.click(screen.getByRole('menuitem', { name: 'insiders' }));
+    expect(screen.getByRole('button', { name: /Save/i })).not.toBeDisabled();
+
+    // Close and reopen modal — selection must reset to current editor (latest), Save disabled
+    reRenderComponent(false, 'che-incubator/che-code/latest');
+    reRenderComponent(true, 'che-incubator/che-code/latest');
+    expect(screen.getByRole('button', { name: /Save/i })).toBeDisabled();
+  });
+
   it('resets the filter when the modal is closed then reopened', async () => {
     const { reRenderComponent } = renderComponent(true, undefined);
     // apply a filter

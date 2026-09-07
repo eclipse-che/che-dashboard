@@ -45,17 +45,21 @@ export type Props = {
 
 type State = {
   selectedGroupKey: string;
-  selectedVersion: string;
+  versionsByGroup: Record<string, string>;
   openDropdownId: string | null;
   filterText: string;
 };
 
 function resolveInitialState(currentEditorId: string | undefined, groups: EditorGroup[]): State {
+  const versionsByGroup: Record<string, string> = {};
   if (!currentEditorId) {
     const first = groups[0];
+    if (first) {
+      versionsByGroup[first.key] = first.versions[0]?.version ?? '';
+    }
     return {
       selectedGroupKey: first?.key ?? '',
-      selectedVersion: first?.versions[0]?.version ?? '',
+      versionsByGroup,
       openDropdownId: null,
       filterText: '',
     };
@@ -63,7 +67,8 @@ function resolveInitialState(currentEditorId: string | undefined, groups: Editor
   const parts = currentEditorId.split('/');
   const version = parts[parts.length - 1];
   const key = parts.slice(0, -1).join('/');
-  return { selectedGroupKey: key, selectedVersion: version, openDropdownId: null, filterText: '' };
+  versionsByGroup[key] = version;
+  return { selectedGroupKey: key, versionsByGroup, openDropdownId: null, filterText: '' };
 }
 
 export class EditorSelectorModal extends React.PureComponent<Props, State> {
@@ -76,7 +81,8 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
   public componentDidUpdate(prevProps: Props): void {
     if (
       prevProps.currentEditorId !== this.props.currentEditorId ||
-      prevProps.editors !== this.props.editors
+      prevProps.editors !== this.props.editors ||
+      (!prevProps.isOpen && this.props.isOpen)
     ) {
       const groups = groupEditorsByName(this.props.editors);
       this.setState(resolveInitialState(this.props.currentEditorId, groups));
@@ -88,7 +94,8 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
   }
 
   private get selectedEditorId(): string {
-    return `${this.state.selectedGroupKey}/${this.state.selectedVersion}`;
+    const version = this.state.versionsByGroup[this.state.selectedGroupKey] ?? '';
+    return `${this.state.selectedGroupKey}/${version}`;
   }
 
   private get hasChanged(): boolean {
@@ -96,11 +103,14 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
   }
 
   private handleSelectGroup(group: EditorGroup): void {
-    this.setState({
+    this.setState(prevState => ({
       selectedGroupKey: group.key,
-      selectedVersion: group.versions[0].version,
       openDropdownId: null,
-    });
+      versionsByGroup:
+        prevState.versionsByGroup[group.key] !== undefined
+          ? prevState.versionsByGroup
+          : { ...prevState.versionsByGroup, [group.key]: group.versions[0].version },
+    }));
   }
 
   private handleVersionSelect(
@@ -110,17 +120,20 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
   ): void {
     event.stopPropagation();
     event.preventDefault();
-    this.setState({ selectedVersion: version, openDropdownId: null, selectedGroupKey: groupKey });
+    this.setState(prevState => ({
+      versionsByGroup: { ...prevState.versionsByGroup, [groupKey]: version },
+      openDropdownId: null,
+      selectedGroupKey: groupKey,
+    }));
   }
 
   private buildVersionDropdown(group: EditorGroup): React.ReactElement | null {
     if (group.versions.length <= 1) {
       return null;
     }
-    const { openDropdownId, selectedVersion, selectedGroupKey } = this.state;
+    const { openDropdownId, versionsByGroup } = this.state;
     const isOpen = openDropdownId === group.key;
-    const activeVersion =
-      selectedGroupKey === group.key ? selectedVersion : group.versions[0].version;
+    const activeVersion = versionsByGroup[group.key] ?? group.versions[0].version;
 
     return (
       <Dropdown
@@ -162,7 +175,7 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
 
   public render(): React.ReactNode {
     const { isOpen, currentEditorId, editors, onConfirm, onClose } = this.props;
-    const { selectedGroupKey, selectedVersion, filterText } = this.state;
+    const { selectedGroupKey, versionsByGroup, filterText } = this.state;
 
     const groups = groupEditorsByName(editors);
 
@@ -228,9 +241,7 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
                   ) : (
                     filteredGroups.map(group => {
                       const isGroupSelected = selectedGroupKey === group.key;
-                      const activeVersion = isGroupSelected
-                        ? selectedVersion
-                        : group.versions[0].version;
+                      const activeVersion = versionsByGroup[group.key] ?? group.versions[0].version;
                       const versionDropdown = this.buildVersionDropdown(group);
 
                       const radioLabel = (
