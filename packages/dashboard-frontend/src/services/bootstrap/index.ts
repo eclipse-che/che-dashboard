@@ -354,27 +354,25 @@ export default class Bootstrap {
       undefined,
     );
 
-    const isInternalRegistryDisabled = devfileRegistry?.disableInternalRegistry === true;
+    // Both sample endpoints are fetched unconditionally, regardless of disableInternalRegistry:
+    // getting-started-sample serves user-provided ConfigMap samples, and airgap-sample provides
+    // the built-in samples that getting-started-sample depends on.
+    const gettingStartedSampleURL = new URL(
+      '/dashboard/api/getting-started-sample',
+      window.location.origin,
+    ).href;
+    await requestRegistriesMetadata(gettingStartedSampleURL, false)(
+      this.store.dispatch,
+      this.store.getState,
+      undefined,
+    );
 
-    if (!isInternalRegistryDisabled) {
-      const gettingStartedSampleURL = new URL(
-        '/dashboard/api/getting-started-sample',
-        window.location.origin,
-      ).href;
-      await requestRegistriesMetadata(gettingStartedSampleURL, false)(
-        this.store.dispatch,
-        this.store.getState,
-        undefined,
-      );
-
-      const airGapedSampleURL = new URL('/dashboard/api/airgap-sample', window.location.origin)
-        .href;
-      await requestRegistriesMetadata(airGapedSampleURL, false)(
-        this.store.dispatch,
-        this.store.getState,
-        undefined,
-      );
-    }
+    const airGapedSampleURL = new URL('/dashboard/api/airgap-sample', window.location.origin).href;
+    await requestRegistriesMetadata(airGapedSampleURL, false)(
+      this.store.dispatch,
+      this.store.getState,
+      undefined,
+    );
 
     const externalRegistries = (devfileRegistry?.externalDevfileRegistries ?? []).map(
       registry => registry?.url,
