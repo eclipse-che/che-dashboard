@@ -21,6 +21,7 @@ import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
+jest.mock('@/pages/WorkspaceDetails/OverviewTab/Editor');
 jest.mock('@/pages/WorkspaceDetails/OverviewTab/InfrastructureNamespace');
 jest.mock('@/pages/WorkspaceDetails/OverviewTab/Projects');
 jest.mock('@/pages/WorkspaceDetails/OverviewTab/StorageType');
@@ -184,6 +185,12 @@ describe('OverviewTab', () => {
       // proving the rename path is fully wired.
       expect(mockOnSave).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('renders EditorFormGroup', async () => {
+    const workspace = constructWorkspace(new DevWorkspaceBuilder().build());
+    renderComponent(workspace);
+    expect(screen.getByRole('button', { name: 'Change editor' })).toBeInTheDocument();
   });
 });
 

@@ -15,6 +15,7 @@ import mockAxios from 'axios';
 
 import {
   createTemplate,
+  deleteTemplate,
   getTemplateByName,
   getTemplates,
   patchTemplate,
@@ -25,6 +26,7 @@ describe('DevWorkspaceTemplate API', () => {
   const mockGet = mockAxios.get as jest.Mock;
   const mockPost = mockAxios.post as jest.Mock;
   const mockPatch = mockAxios.patch as jest.Mock;
+  const mockDelete = mockAxios.delete as jest.Mock;
 
   const namespace = 'test-name';
   const devWorkspaceTemplateName = 'che-code';
@@ -141,6 +143,25 @@ describe('DevWorkspaceTemplate API', () => {
       );
 
       expect(res).toEqual(devWorkspaceTemplate);
+    });
+  });
+
+  describe('delete a DevWorkspaceTemplate', () => {
+    it('should call the correct URL on success', async () => {
+      mockDelete.mockResolvedValueOnce(new Promise(resolve => resolve({ data: undefined })));
+      await deleteTemplate(namespace, devWorkspaceTemplateName);
+
+      expect(mockDelete).toHaveBeenCalledWith(
+        '/dashboard/api/namespace/test-name/devworkspacetemplates/che-code',
+        undefined,
+      );
+    });
+
+    it('should throw a wrapped error when the request fails', async () => {
+      mockDelete.mockRejectedValueOnce(new Error('network failure'));
+      await expect(deleteTemplate(namespace, devWorkspaceTemplateName)).rejects.toThrow(
+        "Failed to delete devWorkspaceTemplate 'che-code'",
+      );
     });
   });
 });

@@ -15,6 +15,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import React from 'react';
 
 import AiToolFormGroup from '@/pages/WorkspaceDetails/OverviewTab/AiTool';
+import EditorFormGroup from '@/pages/WorkspaceDetails/OverviewTab/Editor';
 import GitRepoFormGroup from '@/pages/WorkspaceDetails/OverviewTab/GitRepo';
 import { InfrastructureNamespaceFormGroup } from '@/pages/WorkspaceDetails/OverviewTab/InfrastructureNamespace';
 import { ProjectsFormGroup } from '@/pages/WorkspaceDetails/OverviewTab/Projects';
@@ -119,6 +120,7 @@ export class OverviewTab extends React.Component<Props, State> {
               parentStorageType={parentStorageType}
               onSave={storageType => this.handleStorageSave(storageType)}
             />
+            <EditorFormGroup readonly={isReadonly} workspace={workspace} />
             <AiToolFormGroup
               readonly={
                 isDeprecated ||
