@@ -12,6 +12,6 @@
 
 export const MIN_STEP_DURATION_MS = 200;
 export const TIMEOUT_TO_CREATE_SEC = 20;
-export const TIMEOUT_TO_GET_URL_SEC = 20;
+export const TIMEOUT_TO_GET_URL_SEC = 40;
 export const TIMEOUT_TO_RESOLVE_SEC = 20;
 export const TIMEOUT_TO_STOP_SEC = 60;
