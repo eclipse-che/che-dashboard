@@ -42,6 +42,7 @@ export type Props = {
   onAddToken: () => void;
   onEditToken: (token: api.PersonalAccessToken) => void;
   onDeleteTokens: (tokens: api.PersonalAccessToken[]) => void;
+  onRefreshToken: (token: api.PersonalAccessToken) => void;
 };
 export type State = {
   selectedTokens: api.PersonalAccessToken[];
@@ -100,6 +101,10 @@ export class PersonalAccessTokenList extends React.PureComponent<Props, State> {
     this.props.onDeleteTokens([token]);
   }
 
+  private handleRefreshToken(token: api.PersonalAccessToken): void {
+    this.props.onRefreshToken(token);
+  }
+
   private buildHeadRow(): React.ReactElement {
     const { isDisabled, tokens } = this.props;
     const { selectedTokens } = this.state;
@@ -125,7 +130,7 @@ export class PersonalAccessTokenList extends React.PureComponent<Props, State> {
   }
 
   private buildRowAction(token: api.PersonalAccessToken): IAction[] {
-    return [
+    const actions: IAction[] = [
       {
         title: 'Edit Token',
         onClick: () => this.handleEditToken(token),
@@ -135,6 +140,16 @@ export class PersonalAccessTokenList extends React.PureComponent<Props, State> {
         onClick: () => this.handleDeleteToken(token),
       },
     ];
+
+    // only oAuth tokens can be refreshed, manually created tokens have no oAuth provider to refresh from
+    if (token.isOauth) {
+      actions.push({
+        title: 'Refresh Token',
+        onClick: () => this.handleRefreshToken(token),
+      });
+    }
+
+    return actions;
   }
 
   private buildBodyRows(): React.ReactElement[] {

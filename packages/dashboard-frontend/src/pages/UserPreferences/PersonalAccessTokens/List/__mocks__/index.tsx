@@ -16,7 +16,8 @@ import { Props } from '..';
 
 export class PersonalAccessTokenList extends React.Component<Props> {
   render() {
-    const { isDisabled, tokens, onAddToken, onEditToken, onDeleteTokens } = this.props;
+    const { isDisabled, tokens, onAddToken, onEditToken, onDeleteTokens, onRefreshToken } =
+      this.props;
     return (
       <div data-testid="token-list">
         {tokens.map(token => (
@@ -36,6 +37,15 @@ export class PersonalAccessTokenList extends React.Component<Props> {
             >
               Delete Token
             </button>
+            {token.isOauth && (
+              <button
+                data-testid="refresh-token"
+                disabled={isDisabled}
+                onClick={() => onRefreshToken(token)}
+              >
+                Refresh Token
+              </button>
+            )}
           </div>
         ))}
         <button

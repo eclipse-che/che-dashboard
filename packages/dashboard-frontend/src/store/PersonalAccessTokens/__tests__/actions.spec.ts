@@ -13,6 +13,7 @@
 import { api, helpers } from '@eclipse-che/common';
 
 import { provisionKubernetesNamespace } from '@/services/backend-client/kubernetesNamespaceApi';
+import { refreshOAuthToken } from '@/services/backend-client/oAuthApi';
 import {
   addToken,
   fetchTokens,
@@ -26,6 +27,7 @@ import {
   tokenAddAction,
   tokenErrorAction,
   tokenReceiveAction,
+  tokenRefreshAction,
   tokenRemoveAction,
   tokenRequestAction,
   tokenUpdateAction,
@@ -34,6 +36,7 @@ import { verifyAuthorized } from '@/store/SanityCheck';
 
 jest.mock('@/services/backend-client/personalAccessTokenApi');
 jest.mock('@/services/backend-client/kubernetesNamespaceApi');
+jest.mock('@/services/backend-client/oAuthApi');
 jest.mock('@/store/SanityCheck');
 jest.mock('@eclipse-che/common');
 
@@ -203,6 +206,50 @@ describe('PersonalAccessTokens, actions', () => {
       );
 
       const actions = store.getActions();
+      expect(actions[0]).toEqual(tokenRequestAction());
+      expect(actions[1]).toEqual(tokenErrorAction(errorMessage));
+    });
+  });
+
+  describe('refreshToken', () => {
+    it('should request che-server to refresh the oAuth token', async () => {
+      const mockToken = {
+        tokenName: 'token1',
+        gitProvider: 'github',
+        gitProviderEndpoint: 'https://github.com',
+      } as api.PersonalAccessToken;
+
+      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+      (refreshOAuthToken as jest.Mock).mockResolvedValue(undefined);
+
+      await store.dispatch(actionCreators.refreshToken(mockToken));
+
+      expect(refreshOAuthToken).toHaveBeenCalledWith('https://github.com');
+
+      const actions = store.getActions();
+      expect(actions).toHaveLength(2);
+      expect(actions[0]).toEqual(tokenRequestAction());
+      expect(actions[1]).toEqual(tokenRefreshAction());
+    });
+
+    it('should dispatch error action on failed refresh', async () => {
+      const mockToken = {
+        tokenName: 'token1',
+        gitProvider: 'github',
+        gitProviderEndpoint: 'https://github.com',
+      } as api.PersonalAccessToken;
+      const errorMessage = 'Network error';
+
+      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+      (refreshOAuthToken as jest.Mock).mockRejectedValue(new Error(errorMessage));
+      (helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
+
+      await expect(store.dispatch(actionCreators.refreshToken(mockToken))).rejects.toThrow(
+        errorMessage,
+      );
+
+      const actions = store.getActions();
+      expect(actions).toHaveLength(2);
       expect(actions[0]).toEqual(tokenRequestAction());
       expect(actions[1]).toEqual(tokenErrorAction(errorMessage));
     });

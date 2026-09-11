@@ -21,6 +21,7 @@ import { PersonalAccessTokenAddEditModal } from '@/pages/UserPreferences/Persona
 import { PersonalAccessTokenDeleteModal } from '@/pages/UserPreferences/PersonalAccessTokens/DeleteModal';
 import { PersonalAccessTokenEmptyState } from '@/pages/UserPreferences/PersonalAccessTokens/EmptyState';
 import { PersonalAccessTokenList } from '@/pages/UserPreferences/PersonalAccessTokens/List';
+import { PersonalAccessTokenRefreshModal } from '@/pages/UserPreferences/PersonalAccessTokens/RefreshTokenModal';
 import { EditTokenProps } from '@/pages/UserPreferences/PersonalAccessTokens/types';
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import { RootState } from '@/store';
@@ -44,6 +45,8 @@ export type State = {
   isDeleteOpen: boolean;
   deleteTokens: api.PersonalAccessToken[];
   isDeleting: boolean;
+  isRefreshOpen: boolean;
+  refreshToken: api.PersonalAccessToken | undefined;
 };
 
 class PersonalAccessTokens extends React.PureComponent<Props, State> {
@@ -59,6 +62,8 @@ class PersonalAccessTokens extends React.PureComponent<Props, State> {
       isDeleteOpen: false,
       deleteTokens: [],
       isDeleting: false,
+      isRefreshOpen: false,
+      refreshToken: undefined,
     };
   }
 
@@ -124,6 +129,39 @@ class PersonalAccessTokens extends React.PureComponent<Props, State> {
     this.setState({
       isDeleteOpen: false,
     });
+  }
+
+  private handleShowRefreshModal(refreshToken: api.PersonalAccessToken): void {
+    this.setState({
+      isRefreshOpen: true,
+      refreshToken,
+    });
+  }
+
+  private handleCloseRefreshModal(): void {
+    this.setState({
+      isRefreshOpen: false,
+      refreshToken: undefined,
+    });
+  }
+
+  private async handleRefreshToken(token: api.PersonalAccessToken): Promise<void> {
+    this.setState({
+      isRefreshOpen: false,
+      refreshToken: undefined,
+    });
+
+    try {
+      await this.props.refreshToken(token);
+
+      this.appAlerts.showAlert({
+        key: 'refresh-token-success',
+        title: 'oAuth token refreshed successfully.',
+        variant: AlertVariant.success,
+      });
+    } catch (error) {
+      console.error('Failed to refresh oAuth token. ', error);
+    }
   }
 
   private async handleSaveToken(personalAccessToken: api.PersonalAccessToken): Promise<void> {
@@ -207,7 +245,15 @@ class PersonalAccessTokens extends React.PureComponent<Props, State> {
       personalAccessTokens,
       personalAccessTokensIsLoading,
     } = this.props;
-    const { isAddEditOpen, isDeleteOpen, editToken, deleteTokens, isDeleting } = this.state;
+    const {
+      isAddEditOpen,
+      isDeleteOpen,
+      editToken,
+      deleteTokens,
+      isDeleting,
+      isRefreshOpen,
+      refreshToken,
+    } = this.state;
 
     const isLoading = cheUserIdIsLoading || personalAccessTokensIsLoading;
     const isEdit = editToken !== undefined;
@@ -239,6 +285,12 @@ class PersonalAccessTokens extends React.PureComponent<Props, State> {
           onCloseModal={() => this.handleCloseDeleteModal()}
           onDelete={(...args) => this.handleDeleteTokens(...args)}
         />
+        <PersonalAccessTokenRefreshModal
+          isOpen={isRefreshOpen}
+          token={refreshToken}
+          onCloseModal={() => this.handleCloseRefreshModal()}
+          onRefresh={(...args) => this.handleRefreshToken(...args)}
+        />
         {personalAccessTokens.length === 0 ? (
           <PersonalAccessTokenEmptyState
             isDisabled={isDisabled}
@@ -251,6 +303,7 @@ class PersonalAccessTokens extends React.PureComponent<Props, State> {
             onAddToken={(...args) => this.handleShowAddEditModal(...args)}
             onEditToken={(...args) => this.handleShowAddEditModal(...args)}
             onDeleteTokens={(...args) => this.handleShowDeleteModal(...args)}
+            onRefreshToken={(...args) => this.handleShowRefreshModal(...args)}
           />
         )}
       </React.Fragment>
