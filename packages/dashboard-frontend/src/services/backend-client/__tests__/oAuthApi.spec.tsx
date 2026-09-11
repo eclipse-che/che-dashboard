@@ -99,20 +99,32 @@ describe('Open Authorization API', () => {
   });
 
   describe('refresh OAuthToken', () => {
-    it('should call "/api/oauth/refresh?oauth_provider=github"', async () => {
+    it('should call "/api/oauth/refresh?provider_url=https%3A%2F%2Fgithub.com"', async () => {
       mockPost.mockResolvedValueOnce(undefined);
 
-      await refreshOAuthToken(oAuthProvider.name);
+      await refreshOAuthToken(oAuthProvider.endpointUrl);
 
       expect(mockGet).not.toHaveBeenCalled();
       expect(mockDelete).not.toHaveBeenCalled();
-      expect(mockPost).toHaveBeenCalledWith('/api/oauth/refresh?oauth_provider=github');
+      expect(mockPost).toHaveBeenCalledWith(
+        '/api/oauth/refresh?provider_url=https%3A%2F%2Fgithub.com',
+      );
+    });
+
+    it('should encode a provider url that carries a path and query', async () => {
+      mockPost.mockResolvedValueOnce(undefined);
+
+      await refreshOAuthToken('https://gitlab.example.com/sub path?a=b&c=d');
+
+      expect(mockPost).toHaveBeenCalledWith(
+        '/api/oauth/refresh?provider_url=https%3A%2F%2Fgitlab.example.com%2Fsub%20path%3Fa%3Db%26c%3Dd',
+      );
     });
 
     it('should return undefined', async () => {
       mockPost.mockResolvedValueOnce(undefined);
 
-      const res = await refreshOAuthToken(oAuthProvider.name);
+      const res = await refreshOAuthToken(oAuthProvider.endpointUrl);
 
       expect(res).toBeUndefined();
     });

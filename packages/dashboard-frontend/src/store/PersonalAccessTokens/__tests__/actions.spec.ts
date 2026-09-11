@@ -216,6 +216,7 @@ describe('PersonalAccessTokens, actions', () => {
       const mockToken = {
         tokenName: 'token1',
         gitProvider: 'github',
+        gitProviderEndpoint: 'https://github.com',
       } as api.PersonalAccessToken;
 
       (verifyAuthorized as jest.Mock).mockResolvedValue(true);
@@ -223,7 +224,7 @@ describe('PersonalAccessTokens, actions', () => {
 
       await store.dispatch(actionCreators.refreshToken(mockToken));
 
-      expect(refreshOAuthToken).toHaveBeenCalledWith('github');
+      expect(refreshOAuthToken).toHaveBeenCalledWith('https://github.com');
 
       const actions = store.getActions();
       expect(actions).toHaveLength(2);
@@ -235,6 +236,7 @@ describe('PersonalAccessTokens, actions', () => {
       const mockToken = {
         tokenName: 'token1',
         gitProvider: 'github',
+        gitProviderEndpoint: 'https://github.com',
       } as api.PersonalAccessToken;
       const errorMessage = 'Network error';
 

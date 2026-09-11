@@ -136,7 +136,7 @@ export const actionCreators = {
 
         dispatch(tokenRequestAction());
 
-        await refreshOAuthToken(token.gitProvider);
+        await refreshOAuthToken(token.gitProviderEndpoint);
         dispatch(tokenRefreshAction());
       } catch (e) {
         const errorMessage = helpers.errors.getMessage(e);
