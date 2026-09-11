@@ -388,11 +388,12 @@ describe('PersonalAccessTokens', () => {
     });
 
     it('should show an error notification when refresh fails', async () => {
-      mockRefreshToken.mockRejectedValueOnce(new Error('refresh-error'));
+      const errorMessage = 'refresh-error';
+      mockRefreshToken.mockRejectedValueOnce(new Error(errorMessage));
 
       const store = storeBuilder.withPersonalAccessTokens({ tokens: [token1, token2] }).build();
       localState = { isRefreshOpen: true, refreshToken: token1 };
-      renderComponent(store, localState);
+      const { reRenderComponent } = renderComponent(store, localState);
 
       const modal = screen.getByTestId('modal-refresh');
       const refreshButton = within(modal).getByTestId('refresh-token');
@@ -403,9 +404,32 @@ describe('PersonalAccessTokens', () => {
       // modal should be closed
       expect(screen.queryByRole('heading', { name: 'Refresh oAuth token Modal' })).toBeNull();
 
+      // the failure should be logged
+      await waitFor(() =>
+        expect(console.error).toHaveBeenCalledWith(
+          'Failed to refresh oAuth token. ',
+          expect.any(Error),
+        ),
+      );
+
       // success alert should NOT be shown
       expect(mockShowAlert).not.toHaveBeenCalledWith(
         expect.objectContaining({ key: 'refresh-token-success' }),
+      );
+
+      // the refreshToken thunk stores the error, which surfaces as a danger alert
+      const nextStore = new MockStoreBuilder()
+        .withPersonalAccessTokens({ tokens: [token1, token2], error: errorMessage }, false)
+        .build();
+      // keep the same tree shape so the component updates instead of remounting
+      reRenderComponent(nextStore, localState);
+
+      await waitFor(() =>
+        expect(mockShowAlert).toHaveBeenCalledWith({
+          key: 'personal-access-tokens-error',
+          title: errorMessage,
+          variant: 'danger',
+        } as AlertItem),
       );
     });
   });
