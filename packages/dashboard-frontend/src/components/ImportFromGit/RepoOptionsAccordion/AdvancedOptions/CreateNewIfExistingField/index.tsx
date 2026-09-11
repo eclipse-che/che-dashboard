@@ -39,9 +39,20 @@ export class CreateNewIfExistingField extends React.PureComponent<Props, State> 
   }
 
   public componentDidMount() {
-    Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID] = {
-      isChecked: this.state.createNewIfExisting,
-    };
+    const globalIsChecked = Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID].isChecked;
+    if (globalIsChecked !== undefined) {
+      // Silently adopt the global switch state without calling onChange — calling onChange here
+      // would encode ?new into the parent URL before any user interaction, causing the input
+      // field to display "url?new" and breaking E2E tests that compare input vs factory URL.
+      // The factory URL gets policies.create=perclick via ImportFromGit.startFactory() instead.
+      if (globalIsChecked !== this.state.createNewIfExisting) {
+        this.setState({ createNewIfExisting: globalIsChecked });
+      }
+    } else {
+      Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID] = {
+        isChecked: this.state.createNewIfExisting,
+      };
+    }
     // Subscribe to the page state when the component is mounted
     Navigation.pageState.subscribe(this.subscribeCallback, CREATE_NEW_IF_EXIST_SWITCH_ID);
   }
@@ -52,8 +63,8 @@ export class CreateNewIfExistingField extends React.PureComponent<Props, State> 
   }
 
   public componentDidUpdate(prevProps: Readonly<Props>): void {
-    const createNewIfExisting = this.props.createNewIfExisting || false;
-    if (prevProps.createNewIfExisting !== createNewIfExisting) {
+    if (prevProps.createNewIfExisting !== this.props.createNewIfExisting) {
+      const createNewIfExisting = this.props.createNewIfExisting || false;
       this.setState({ createNewIfExisting });
       if (Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID].isChecked !== createNewIfExisting) {
         Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID] = { isChecked: createNewIfExisting };

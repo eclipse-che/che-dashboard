@@ -42,8 +42,10 @@ describe('Create New If Exist Switch', () => {
     const switchInput = screen.getByRole('switch') as HTMLInputElement;
     expect(switchInput.checked).toBeTruthy();
     expect(mockOnChange).toHaveBeenCalledTimes(1);
+    // The switch writes its initial value to pageState on mount so that
+    // CreateNewIfExistingField can adopt it without resetting it to false.
     expect(Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID]).toEqual({
-      isChecked: undefined, // Default is true if not set
+      isChecked: true,
     });
     mockOnChange.mockReset();
 

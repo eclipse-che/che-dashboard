@@ -45,6 +45,9 @@ export class CreateNewIfExistSwitch extends React.PureComponent<Props, State> {
 
   componentDidMount() {
     this.handleChange(this.state.isChecked);
+    if (Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID].isChecked === undefined) {
+      Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID] = { isChecked: this.state.isChecked };
+    }
     Navigation.pageState.subscribe(this.subscribeCallback, CREATE_NEW_IF_EXIST_SWITCH_ID);
   }
 

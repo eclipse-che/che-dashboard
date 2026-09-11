@@ -228,7 +228,7 @@ describe('Dashboard bootstrap', () => {
     expect(mockDetector.getWorkspaceStoppedError).toHaveBeenCalled();
   });
 
-  test('fetches embedded registry when disableInternalRegistry is true', async () => {
+  test('fetches both sample endpoints even when disableInternalRegistry is true', async () => {
     const store = new MockStoreBuilder()
       .withDwServerConfig({
         devfileRegistry: {
@@ -241,8 +241,17 @@ describe('Dashboard bootstrap', () => {
 
     await expect(bootstrap.init()).resolves.toBeUndefined();
 
-    // DEFAULT_REGISTRY (embedded, always available) + external registry = 2 calls.
-    // getting-started-sample and airgap-sample are skipped when internal registry is disabled.
-    expect(devfileRegistriesActionCreators.requestRegistriesMetadata).toHaveBeenCalledTimes(2);
+    // DEFAULT_REGISTRY + getting-started-sample + airgap-sample + external = 4 calls.
+    expect(devfileRegistriesActionCreators.requestRegistriesMetadata).toHaveBeenCalledTimes(4);
+
+    const calls = (
+      devfileRegistriesActionCreators.requestRegistriesMetadata as jest.Mock
+    ).mock.calls.map(call => call[0]);
+    expect(calls).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('/dashboard/api/getting-started-sample'),
+        expect.stringContaining('/dashboard/api/airgap-sample'),
+      ]),
+    );
   });
 });

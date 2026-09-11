@@ -36,6 +36,8 @@ import { NavigateFunction } from 'react-router-dom';
 import { getRepoLocation, validateLocation } from '@/components/ImportFromGit/helpers';
 import RepoOptionsAccordion from '@/components/ImportFromGit/RepoOptionsAccordion';
 import UntrustedSourceModal from '@/components/UntrustedSourceModal';
+import { Navigation } from '@/Layout/Navigation';
+import { CREATE_NEW_IF_EXIST_SWITCH_ID } from '@/pages/GetStarted/SamplesList/Toolbar/CreateNewIfExistSwitch';
 import { buildFactoryLoaderPath } from '@/preload/main';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import {
@@ -113,6 +115,13 @@ class ImportFromGit extends React.PureComponent<Props, State> {
   private startFactory(): void {
     const { editorDefinition, editorImage, aiProviders } = this.props;
     const factory = new FactoryLocationAdapter(this.state.location);
+
+    // Apply the "Create New" switch state at click-time rather than encoding ?new in the
+    // location URL eagerly (which would make the input field display "url?new" unexpectedly).
+    const createNew = Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID].isChecked;
+    if (createNew && !factory.searchParams.has('new')) {
+      factory.searchParams.set('new', '');
+    }
 
     // add the editor definition and editor image to the URL
     // if they are not already there

@@ -10,57 +10,72 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { act, screen } from '@testing-library/react';
 import React from 'react';
 
-import { TemporaryStorageField } from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/TemporaryStorageField';
-import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
+import { CreateNewIfExistingField } from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/CreateNewIfExistingField';
+import { Navigation } from '@/Layout/Navigation';
+import { CREATE_NEW_IF_EXIST_SWITCH_ID } from '@/pages/GetStarted/SamplesList/Toolbar/CreateNewIfExistSwitch';
+import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 
-const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
+const { renderComponent } = getComponentRenderer(getComponent);
 
 const mockOnChange = jest.fn();
 
-describe('TemporaryStorageField', () => {
+describe('CreateNewIfExistingField', () => {
+  beforeEach(() => {
+    Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID] = { isChecked: undefined };
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  test('switched off snapshot', () => {
-    const snapshot = createSnapshot(false);
-    expect(snapshot.toJSON()).toMatchSnapshot();
-  });
+  it('should silently adopt global state=true on mount without calling onChange', async () => {
+    Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID] = { isChecked: true };
+    await act(async () => {
+      renderComponent(undefined);
+    });
 
-  test('switched on snapshot', () => {
-    const snapshot = createSnapshot(true);
-    expect(snapshot.toJSON()).toMatchSnapshot();
-  });
-
-  it('should be initially switched off', () => {
-    renderComponent(undefined);
+    // The switch shows ON (global state adopted) but onChange is NOT called —
+    // ImportFromGit.startFactory() adds policies.create=perclick at click-time instead.
     const switchInput = screen.getByRole('switch') as HTMLInputElement;
-    expect(switchInput.checked).toBeFalsy();
+    expect(switchInput.checked).toBeTruthy();
+    expect(mockOnChange).not.toHaveBeenCalled();
   });
 
-  it('should be switched off', () => {
+  it('should not call onChange when global state matches local state', () => {
+    Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID] = { isChecked: false };
     renderComponent(false);
+
     const switchInput = screen.getByRole('switch') as HTMLInputElement;
     expect(switchInput.checked).toBeFalsy();
-
-    switchInput.click();
-    expect(switchInput.checked).toBeTruthy();
-    expect(mockOnChange).toHaveBeenCalledTimes(1);
+    expect(mockOnChange).not.toHaveBeenCalled();
   });
 
-  it('should be initially switched on', () => {
-    renderComponent(true);
+  it('should write local state to global and not call onChange when global is undefined', () => {
+    renderComponent(false);
+
+    expect(mockOnChange).not.toHaveBeenCalled();
+    expect(Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID]).toEqual({ isChecked: false });
+  });
+
+  it('should respond to future global state changes via subscription', () => {
+    renderComponent(false);
+    jest.clearAllMocks();
+
+    act(() => {
+      Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID] = { isChecked: true };
+    });
+
+    expect(mockOnChange).toHaveBeenCalledWith(true);
     const switchInput = screen.getByRole('switch') as HTMLInputElement;
     expect(switchInput.checked).toBeTruthy();
-
-    switchInput.click();
-    expect(switchInput.checked).toBeFalsy();
-    expect(mockOnChange).toHaveBeenCalledTimes(1);
   });
 });
 
-function getComponent(isTemporary: boolean | undefined) {
-  return <TemporaryStorageField isTemporary={isTemporary} onChange={mockOnChange} />;
+function getComponent(createNewIfExisting: boolean | undefined) {
+  return (
+    <CreateNewIfExistingField createNewIfExisting={createNewIfExisting} onChange={mockOnChange} />
+  );
 }
