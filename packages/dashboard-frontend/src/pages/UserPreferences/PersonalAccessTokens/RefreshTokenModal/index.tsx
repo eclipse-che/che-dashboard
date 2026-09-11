@@ -23,6 +23,8 @@ import {
 } from '@patternfly/react-core';
 import React from 'react';
 
+import { GIT_PROVIDERS } from '@/pages/UserPreferences/const';
+
 export type Props = {
   isOpen: boolean;
   token: api.PersonalAccessToken | undefined;
@@ -43,8 +45,12 @@ export class PersonalAccessTokenRefreshModal extends React.PureComponent<Props> 
   }
 
   public render(): React.ReactElement {
-    const { isOpen } = this.props;
+    const { isOpen, token } = this.props;
     const modalTitle = 'Refresh oAuth token';
+    const body =
+      token !== undefined
+        ? `Request a new oAuth token for ${GIT_PROVIDERS[token.gitProvider]}`
+        : 'Request a new oAuth token';
 
     return (
       <Modal
@@ -57,7 +63,7 @@ export class PersonalAccessTokenRefreshModal extends React.PureComponent<Props> 
         <ModalHeader title={modalTitle} />
         <ModalBody>
           <Content data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
-            <Content component="p">Request a new oAuth token</Content>
+            <Content component="p">{body}</Content>
           </Content>
         </ModalBody>
         <ModalFooter>

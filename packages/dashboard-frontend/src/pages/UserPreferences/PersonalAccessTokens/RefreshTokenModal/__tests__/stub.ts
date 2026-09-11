@@ -20,3 +20,13 @@ export const token1: api.PersonalAccessToken = {
   tokenName: 'token-name-1',
   isOauth: true,
 };
+
+export const token2: api.PersonalAccessToken = {
+  cheUserId: 'che-user',
+  gitProvider: 'azure-devops',
+  gitProviderEndpoint: 'https://dev.azure.com',
+  gitProviderOrganization: 'dev-azure-org',
+  tokenData: 'token-data-2',
+  tokenName: 'token-name-2',
+  isOauth: true,
+};

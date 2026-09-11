@@ -16,7 +16,10 @@ import { api } from '@eclipse-che/common';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
-import { token1 } from '@/pages/UserPreferences/PersonalAccessTokens/RefreshTokenModal/__tests__/stub';
+import {
+  token1,
+  token2,
+} from '@/pages/UserPreferences/PersonalAccessTokens/RefreshTokenModal/__tests__/stub';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 
 import { PersonalAccessTokenRefreshModal } from '..';
@@ -42,6 +45,19 @@ describe('RefreshTokenModal', () => {
 
     expect(screen.queryByRole('dialog')).toBeTruthy();
     expect(screen.queryAllByText('Refresh oAuth token').length).toBeGreaterThan(0);
+    expect(screen.queryByText('Request a new oAuth token for GitHub')).toBeTruthy();
+  });
+
+  test('modal names the git provider of the token', () => {
+    renderComponent(true, token2);
+
+    expect(screen.queryByText('Request a new oAuth token for Microsoft Azure DevOps')).toBeTruthy();
+    expect(screen.queryByText('Request a new oAuth token for GitHub')).toBeFalsy();
+  });
+
+  test('modal falls back to the generic message without a token', () => {
+    renderComponent(true, undefined);
+
     expect(screen.queryByText('Request a new oAuth token')).toBeTruthy();
   });
 
