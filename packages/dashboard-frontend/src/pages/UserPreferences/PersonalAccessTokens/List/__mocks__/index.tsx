@@ -37,13 +37,15 @@ export class PersonalAccessTokenList extends React.Component<Props> {
             >
               Delete Token
             </button>
-            <button
-              data-testid="refresh-token"
-              disabled={isDisabled}
-              onClick={() => onRefreshToken(token)}
-            >
-              Refresh Token
-            </button>
+            {token.isOauth && (
+              <button
+                data-testid="refresh-token"
+                disabled={isDisabled}
+                onClick={() => onRefreshToken(token)}
+              >
+                Refresh Token
+              </button>
+            )}
           </div>
         ))}
         <button

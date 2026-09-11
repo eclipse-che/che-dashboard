@@ -29,3 +29,12 @@ export const token2: api.PersonalAccessToken = {
   tokenName: 'token-name-2',
   isOauth: false,
 };
+
+export const oauthToken: api.PersonalAccessToken = {
+  cheUserId: 'che-user',
+  gitProvider: 'github',
+  gitProviderEndpoint: 'https://github.com',
+  tokenData: 'token-data-3',
+  tokenName: 'token-name-3',
+  isOauth: true,
+};

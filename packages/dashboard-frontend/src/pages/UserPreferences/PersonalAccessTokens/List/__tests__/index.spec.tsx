@@ -42,6 +42,7 @@ describe('PersonalAccessTokenList', () => {
         gitProviderEndpoint: 'https://github.com',
         tokenData: 'token-data-1',
         tokenName: 'token-name-1',
+        isOauth: true,
       } as api.PersonalAccessToken,
       {
         cheUserId: 'che-user',
@@ -50,6 +51,7 @@ describe('PersonalAccessTokenList', () => {
         gitProviderOrganization: 'dev-azure-org',
         tokenData: 'token-data-2',
         tokenName: 'token-name-2',
+        isOauth: false,
       } as api.PersonalAccessToken,
     ];
   });
@@ -258,6 +260,24 @@ describe('PersonalAccessTokenList', () => {
       fireEvent.click(token1RefreshButton);
 
       expect(mockOnRefreshToken).toHaveBeenCalledWith(tokens[0]);
+    });
+
+    test('no refresh action for a non-oAuth token', async () => {
+      renderComponent(tokens);
+
+      const token2Row = screen.getByRole('row', { name: new RegExp(tokens[1].tokenName) });
+      // PatternFly 6 ActionsColumn uses "Kebab toggle" as aria-label
+      const actionsButton = within(token2Row).getByRole('button', { name: 'Kebab toggle' });
+
+      // open actions menu
+      fireEvent.click(actionsButton);
+
+      // wait for menu to appear
+      await waitFor(() => {
+        return screen.getByRole('menuitem', { name: 'Edit Token' });
+      });
+
+      expect(screen.queryByRole('menuitem', { name: 'Refresh Token' })).toBeNull();
     });
   });
 });

@@ -17,7 +17,11 @@ import { Store } from 'redux';
 
 import { container } from '@/inversify.config';
 import PersonalAccessTokens, { State } from '@/pages/UserPreferences/PersonalAccessTokens';
-import { token1, token2 } from '@/pages/UserPreferences/PersonalAccessTokens/__tests__/stub';
+import {
+  oauthToken,
+  token1,
+  token2,
+} from '@/pages/UserPreferences/PersonalAccessTokens/__tests__/stub';
 import getComponentRenderer, {
   fireEvent,
   screen,
@@ -453,7 +457,7 @@ describe('PersonalAccessTokens', () => {
     });
 
     it('should handle refresh token from the list', () => {
-      const store = storeBuilder.withPersonalAccessTokens({ tokens: [token1, token2] }).build();
+      const store = storeBuilder.withPersonalAccessTokens({ tokens: [oauthToken, token2] }).build();
       renderComponent(store);
 
       const rows = screen.getAllByTestId('token-row');

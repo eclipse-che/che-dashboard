@@ -130,7 +130,7 @@ export class PersonalAccessTokenList extends React.PureComponent<Props, State> {
   }
 
   private buildRowAction(token: api.PersonalAccessToken): IAction[] {
-    return [
+    const actions: IAction[] = [
       {
         title: 'Edit Token',
         onClick: () => this.handleEditToken(token),
@@ -139,11 +139,17 @@ export class PersonalAccessTokenList extends React.PureComponent<Props, State> {
         title: 'Delete Token',
         onClick: () => this.handleDeleteToken(token),
       },
-      {
+    ];
+
+    // only oAuth tokens can be refreshed, manually created tokens have no oAuth provider to refresh from
+    if (token.isOauth) {
+      actions.push({
         title: 'Refresh Token',
         onClick: () => this.handleRefreshToken(token),
-      },
-    ];
+      });
+    }
+
+    return actions;
   }
 
   private buildBodyRows(): React.ReactElement[] {

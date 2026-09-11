@@ -121,13 +121,6 @@ exports[`PersonalAccessTokens should match the snapshot with tokens 1`] = `
       >
         Delete Token
       </button>
-      <button
-        data-testid="refresh-token"
-        disabled={false}
-        onClick={[Function]}
-      >
-        Refresh Token
-      </button>
     </div>
     <div
       data-testid="token-row"
@@ -148,13 +141,6 @@ exports[`PersonalAccessTokens should match the snapshot with tokens 1`] = `
         onClick={[Function]}
       >
         Delete Token
-      </button>
-      <button
-        data-testid="refresh-token"
-        disabled={false}
-        onClick={[Function]}
-      >
-        Refresh Token
       </button>
     </div>
     <button
