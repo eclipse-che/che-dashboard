@@ -16,12 +16,14 @@ import {
   deleteOAuthToken,
   getOAuthProviders,
   getOAuthToken,
+  refreshOAuthToken,
 } from '@/services/backend-client/oAuthApi';
 import { IGitOauth } from '@/store/GitOauthConfig';
 
 describe('Open Authorization API', () => {
   const mockGet = mockAxios.get as jest.Mock;
   const mockDelete = mockAxios.delete as jest.Mock;
+  const mockPost = mockAxios.post as jest.Mock;
 
   const oAuthProvider = { name: 'github', endpointUrl: 'https://github.com' } as IGitOauth;
   const oAuthProviderToken = { token: 'dummy_token' };
@@ -92,6 +94,38 @@ describe('Open Authorization API', () => {
       const res = await deleteOAuthToken(oAuthProvider.name);
 
       expect(mockGet).not.toHaveBeenCalled();
+      expect(res).toBeUndefined();
+    });
+  });
+
+  describe('refresh OAuthToken', () => {
+    it('should call "/api/oauth/refresh?provider_url=https%3A%2F%2Fgithub.com"', async () => {
+      mockPost.mockResolvedValueOnce(undefined);
+
+      await refreshOAuthToken(oAuthProvider.endpointUrl);
+
+      expect(mockGet).not.toHaveBeenCalled();
+      expect(mockDelete).not.toHaveBeenCalled();
+      expect(mockPost).toHaveBeenCalledWith(
+        '/api/oauth/refresh?provider_url=https%3A%2F%2Fgithub.com',
+      );
+    });
+
+    it('should encode a provider url that carries a path and query', async () => {
+      mockPost.mockResolvedValueOnce(undefined);
+
+      await refreshOAuthToken('https://gitlab.example.com/sub path?a=b&c=d');
+
+      expect(mockPost).toHaveBeenCalledWith(
+        '/api/oauth/refresh?provider_url=https%3A%2F%2Fgitlab.example.com%2Fsub%20path%3Fa%3Db%26c%3Dd',
+      );
+    });
+
+    it('should return undefined', async () => {
+      mockPost.mockResolvedValueOnce(undefined);
+
+      const res = await refreshOAuthToken(oAuthProvider.endpointUrl);
+
       expect(res).toBeUndefined();
     });
   });

@@ -17,6 +17,7 @@ import {
   tokenAddAction,
   tokenErrorAction,
   tokenReceiveAction,
+  tokenRefreshAction,
   tokenRemoveAction,
   tokenRequestAction,
   tokenUpdateAction,
@@ -55,6 +56,9 @@ export const reducer = createReducer(unloadedState, builder =>
     .addCase(tokenRemoveAction, (state, action) => {
       state.isLoading = false;
       state.tokens = state.tokens.filter(token => token.tokenName !== action.payload.tokenName);
+    })
+    .addCase(tokenRefreshAction, state => {
+      state.isLoading = false;
     })
     .addCase(tokenErrorAction, (state, action) => {
       state.isLoading = false;
