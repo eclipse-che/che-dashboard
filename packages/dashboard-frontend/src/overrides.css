@@ -65,9 +65,10 @@ html.pf-v6-theme-dark .pf-m-info {
     var(--pf-t--global--border--color--default);
 }
 
-/* Helper text error color */
+/* Helper text error color — use the text-specific danger token, not the icon token,
+   so PF6 dark-mode remapping provides WCAG 2.2 AA contrast (4.5:1 min) */
 .pf-m-error > span.pf-v6-c-helper-text__item-text {
-  color: var(--pf-v6-c-helper-text__item-icon--m-error--Color);
+  color: var(--pf-t--global--text--color--status--danger--default);
 }
 
 /* Menu item icon max height */
