@@ -98,34 +98,6 @@ describe('DevWorkspaceTemplates Routes', () => {
         .inject()
         .delete(`${baseApiPath}/namespace/${namespace}/devworkspacetemplates/${templateName}`);
 
-      expect(res.statusCode).toEqual(404);
-    });
-  });
-
-  describe('LocalRun only', () => {
-    beforeAll(async () => {
-      const env = {
-        OPENSHIFT_CONSOLE_URL: clusterConsoleUrl,
-        LOCAL_RUN: 'true',
-        CHE_API_PROXY_UPSTREAM: 'http://127.0.0.1:80',
-      };
-      app = await setup({ env });
-    });
-
-    afterAll(() => {
-      teardown(app);
-    });
-
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-
-    test('DELETE ${baseApiPath}/namespace/:namespace/devworkspacetemplates/:templateName', async () => {
-      const templateName = 'tmpl';
-      const res = await app
-        .inject()
-        .delete(`${baseApiPath}/namespace/${namespace}/devworkspacetemplates/${templateName}`);
-
       expect(res.statusCode).toEqual(204);
     });
   });

@@ -47,6 +47,14 @@ exports[`OverviewTab With parent screenshot 1`] = `
         </span>
       </div>
       <div>
+        Mock Editor Form Group
+        <button
+          disabled={false}
+        >
+          Change editor
+        </button>
+      </div>
+      <div>
         Mock Projects Form
       </div>
       <div>
@@ -102,6 +110,14 @@ exports[`OverviewTab Without parent screenshot 1`] = `
         <span>
           StorageType: 
         </span>
+      </div>
+      <div>
+        Mock Editor Form Group
+        <button
+          disabled={false}
+        >
+          Change editor
+        </button>
       </div>
       <div>
         Mock Projects Form
