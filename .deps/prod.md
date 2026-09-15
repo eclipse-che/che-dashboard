@@ -54,7 +54,7 @@
 | `@patternfly/react-tokens@6.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-tokens/6.4.0) |
 | `@pinojs/redact@0.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@pinojs/redact/0.4.0) |
 | `@reduxjs/toolkit@2.2.7` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@reduxjs/toolkit/2.2.7) |
-| `@remix-run/router@1.23.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@remix-run/router/1.23.2) |
+| `@remix-run/router@1.23.4` | MIT | transitive dependency |
 | `@sideway/address@4.1.5` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sideway/address/4.1.5) |
 | `@sideway/formula@3.0.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sideway/formula/3.0.1) |
 | `@sideway/pinpoint@2.0.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sideway/pinpoint/2.0.0) |
@@ -196,8 +196,8 @@
 | `react-helmet@6.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-helmet/6.1.0) |
 | `react-pluralize@1.6.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-pluralize/1.6.3) |
 | `react-redux@9.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-redux/9.1.2) |
-| `react-router-dom@6.30.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-router-dom/6.30.3) |
-| `react-router@6.30.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-router/6.30.3) |
+| `react-router-dom@6.30.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-router-dom/6.30.6) |
+| `react-router@6.30.6` | MIT | transitive dependency |
 | `react-side-effect@2.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-side-effect/2.1.2) |
 | `react@18.3.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react/18.3.1) |
 | `readable-stream@3.6.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/readable-stream/3.6.2) |
