@@ -9,3 +9,4 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `fastify@5.12.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/5.12.1) |
 | `qs@6.16.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/qs/6.16.0) |
 | `sanitize-html@2.17.7` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sanitize-html/2.17.7) |
+| `joi@17.13.7` | transitive dependency |

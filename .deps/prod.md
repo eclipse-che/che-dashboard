@@ -148,7 +148,7 @@
 | `inversify@6.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/inversify/6.0.2) |
 | `inversify@7.5.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/inversify/7.5.1) |
 | `ipaddr.js@2.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ipaddr.js/2.3.0) |
-| `joi@17.13.4` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/joi/17.13.4) |
+| `joi@17.13.7` | BSD-3-Clause | transitive dependency |
 | `joycon@3.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/joycon/3.1.1) |
 | `json-schema-ref-resolver@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-schema-ref-resolver/3.0.0) |
 | `json-schema-resolver@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-schema-resolver/3.0.0) |
