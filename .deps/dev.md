@@ -416,7 +416,7 @@
 | `color-convert@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/color-convert/2.0.1) |
 | `color-name@1.1.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/color-name/1.1.3) |
 | `color-name@1.1.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/color-name/1.1.4) |
-| `colord@2.9.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/colord/2.9.3) |
+| `colord@2.10.0` | MIT | transitive dependency |
 | `colorette@2.0.20` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/colorette/2.0.20) |
 | `combined-stream@1.0.8` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/combined-stream/1.0.8) |
 | `commander@10.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/commander/10.0.1) |
