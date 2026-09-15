@@ -26,10 +26,6 @@
   max-height: 20rem;
 }
 
-.editorList > * {
-  margin: 0;
-}
-
 .radioLabel {
   display: inline-flex;
   gap: 4px;

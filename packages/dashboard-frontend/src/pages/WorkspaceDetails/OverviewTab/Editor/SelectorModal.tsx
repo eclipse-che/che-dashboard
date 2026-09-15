@@ -228,12 +228,10 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
                 </div>
                 <div className={styles.editorList}>
                   {isCustomEditor && (
-                    <Content component={ContentVariants.h6}>
-                      <div className={styles.customEditorRow}>
-                        <span>{currentEditorId}</span>
-                        <TagLabel type="tag" text="custom" />
-                      </div>
-                    </Content>
+                    <div className={styles.customEditorRow}>
+                      <span>{currentEditorId}</span>
+                      <TagLabel type="tag" text="custom" />
+                    </div>
                   )}
                   {filteredGroups.length === 0 ? (
                     <Content component="p">No editors match the filter.</Content>
@@ -266,16 +264,15 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
                       );
 
                       return (
-                        <Content key={group.key} component={ContentVariants.h6}>
-                          <Radio
-                            label={radioLabel}
-                            id={`editor-${group.key.replace(/\//g, '-')}`}
-                            name="editor-selector"
-                            isChecked={isGroupSelected}
-                            onChange={() => this.handleSelectGroup(group)}
-                            value={group.key}
-                          />
-                        </Content>
+                        <Radio
+                          key={group.key}
+                          label={radioLabel}
+                          id={`editor-${group.key.replace(/\//g, '-')}`}
+                          name="editor-selector"
+                          isChecked={isGroupSelected}
+                          onChange={() => this.handleSelectGroup(group)}
+                          value={group.key}
+                        />
                       );
                     })
                   )}
