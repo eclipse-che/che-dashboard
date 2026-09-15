@@ -117,8 +117,9 @@ describe('EditorSelectorModal', () => {
 
   it('shows a version label for every editor group', () => {
     renderComponent(true, undefined);
-    // VS Code (2 versions) shows 'latest' (active), IntelliJ (1 version) shows 'latest'
-    expect(screen.getAllByText('latest')).toHaveLength(2);
+    // VS Code (2 versions) defaults to 'insiders' (highest priority), IntelliJ shows 'latest'
+    expect(screen.getByText('insiders')).toBeInTheDocument();
+    expect(screen.getByText('latest')).toBeInTheDocument();
   });
 
   it('shows version dropdown trigger for editors with multiple versions', () => {

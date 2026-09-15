@@ -17,7 +17,6 @@ import {
   Dropdown,
   DropdownItem,
   DropdownList,
-  Label,
   MenuToggle,
   MenuToggleElement,
   Modal,
@@ -27,10 +26,12 @@ import {
   ModalVariant,
   Radio,
   TextInput,
+  Tooltip,
 } from '@patternfly/react-core';
 import { CheckIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import React from 'react';
 
+import { TagLabel } from '@/components/TagLabel';
 import styles from '@/pages/WorkspaceDetails/OverviewTab/Editor/SelectorModal.module.css';
 import { EditorGroup, groupEditorsByName } from '@/services/helpers/editor';
 import { che } from '@/services/models';
@@ -230,9 +231,7 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
                     <Content component={ContentVariants.h6}>
                       <div className={styles.customEditorRow}>
                         <span>{currentEditorId}</span>
-                        <Label variant="outline" color="orange" className={styles.versionLabel}>
-                          custom
-                        </Label>
+                        <TagLabel type="tag" text="custom" />
                       </div>
                     </Content>
                   )}
@@ -243,13 +242,25 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
                       const isGroupSelected = selectedGroupKey === group.key;
                       const activeVersion = versionsByGroup[group.key] ?? group.versions[0].version;
                       const versionDropdown = this.buildVersionDropdown(group);
+                      const activeVersionEntry = group.versions.find(
+                        v => v.version === activeVersion,
+                      );
+                      const description =
+                        activeVersionEntry?.description ??
+                        group.versions.find(v => v.description)?.description;
+
+                      const editorName = description ? (
+                        <Tooltip content={description}>
+                          <span className={styles.editorName}>{group.displayName}</span>
+                        </Tooltip>
+                      ) : (
+                        <span>{group.displayName}</span>
+                      );
 
                       const radioLabel = (
                         <span className={styles.radioLabel}>
-                          {group.displayName}
-                          <Label variant="outline" color="blue" className={styles.versionLabel}>
-                            {activeVersion}
-                          </Label>
+                          {editorName}
+                          <TagLabel type="version" text={activeVersion} />
                           {versionDropdown}
                         </span>
                       );
@@ -260,7 +271,6 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
                             label={radioLabel}
                             id={`editor-${group.key.replace(/\//g, '-')}`}
                             name="editor-selector"
-                            description={group.versions[0].description}
                             isChecked={isGroupSelected}
                             onChange={() => this.handleSelectGroup(group)}
                             value={group.key}

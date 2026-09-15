@@ -32,9 +32,11 @@
   align-items: center;
 }
 
-.versionLabel {
-  height: 0.8125rem;
-  margin-left: 0;
+.editorName {
+  cursor: default;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 2px;
 }
 
 .customEditorRow {

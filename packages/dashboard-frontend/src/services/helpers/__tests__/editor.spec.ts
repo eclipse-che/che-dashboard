@@ -59,14 +59,37 @@ describe('groupEditorsByName', () => {
     expect(groupEditorsByName([])).toEqual([]);
   });
 
-  it('preserves insertion order of groups', () => {
+  it('sorts che-code groups first, then alphabetical', () => {
     const plugins = [
       makePlugin('che-incubator', 'che-idea-server', 'latest', 'IntelliJ IDEA'),
       makePlugin('che-incubator', 'che-code', 'latest', 'VS Code'),
     ];
     const groups = groupEditorsByName(plugins);
-    expect(groups[0].key).toBe('che-incubator/che-idea-server');
-    expect(groups[1].key).toBe('che-incubator/che-code');
+    expect(groups[0].key).toBe('che-incubator/che-code');
+    expect(groups[1].key).toBe('che-incubator/che-idea-server');
+  });
+
+  it('sorts versions within a group by priority: insiders, next, latest', () => {
+    const plugins = [
+      makePlugin('che-incubator', 'che-code', 'latest', 'VS Code'),
+      makePlugin('che-incubator', 'che-code', 'next', 'VS Code'),
+      makePlugin('che-incubator', 'che-code', 'insiders', 'VS Code'),
+    ];
+    const groups = groupEditorsByName(plugins);
+    expect(groups[0].versions.map(v => v.version)).toEqual(['insiders', 'next', 'latest']);
+  });
+
+  it('sorts deprecated versions to the end within a group', () => {
+    const plugins = [
+      {
+        ...makePlugin('che-incubator', 'che-code', 'latest', 'VS Code'),
+        tags: ['Deprecated'],
+      },
+      makePlugin('che-incubator', 'che-code', 'next', 'VS Code'),
+    ];
+    const groups = groupEditorsByName(plugins);
+    expect(groups[0].versions[0].version).toBe('next');
+    expect(groups[0].versions[1].version).toBe('latest');
   });
 
   it('falls back to plugin name when displayName is empty', () => {

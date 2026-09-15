@@ -70,9 +70,32 @@ export type EditorGroup = {
   versions: che.Plugin[];
 };
 
+const VERSION_PRIORITY: ReadonlyArray<string> = ['insiders', 'next', 'latest'];
+const DEPRECATED_TAG = 'Deprecated';
+const GROUP_PRIORITY = 'che-code';
+
 export function groupEditorsByName(editors: che.Plugin[]): EditorGroup[] {
+  const sorted = [...editors].sort((a, b) => {
+    if (a.name === b.name) {
+      const aDeprecated = a.tags?.includes(DEPRECATED_TAG) ? 1 : 0;
+      const bDeprecated = b.tags?.includes(DEPRECATED_TAG) ? 1 : 0;
+      if (aDeprecated !== bDeprecated) {
+        return aDeprecated - bDeprecated;
+      }
+
+      const aPriority = VERSION_PRIORITY.indexOf(a.version);
+      const bPriority = VERSION_PRIORITY.indexOf(b.version);
+      if (aPriority !== -1 && bPriority !== -1) {
+        return aPriority - bPriority;
+      }
+      if (aPriority !== -1) return -1;
+      if (bPriority !== -1) return 1;
+    }
+    return a.id.localeCompare(b.id);
+  });
+
   const map = new Map<string, EditorGroup>();
-  for (const editor of editors) {
+  for (const editor of sorted) {
     const key = `${editor.publisher}/${editor.name}`;
     if (!map.has(key)) {
       map.set(key, {
@@ -85,7 +108,22 @@ export function groupEditorsByName(editors: che.Plugin[]): EditorGroup[] {
     }
     map.get(key)!.versions.push(editor);
   }
-  return Array.from(map.values());
+
+  return Array.from(map.values()).sort((a, b) => {
+    const aName = a.key.split('/').pop() ?? '';
+    const bName = b.key.split('/').pop() ?? '';
+    if (aName.startsWith(GROUP_PRIORITY) && !bName.startsWith(GROUP_PRIORITY)) {
+      return -1;
+    }
+    if (bName.startsWith(GROUP_PRIORITY) && !aName.startsWith(GROUP_PRIORITY)) {
+      return 1;
+    }
+    if (aName.startsWith(GROUP_PRIORITY) && bName.startsWith(GROUP_PRIORITY)) {
+      if (aName === GROUP_PRIORITY) return -1;
+      if (bName === GROUP_PRIORITY) return 1;
+    }
+    return a.displayName.localeCompare(b.displayName);
+  });
 }
 
 export function getCurrentEditorId(workspace: Workspace): string | undefined {
