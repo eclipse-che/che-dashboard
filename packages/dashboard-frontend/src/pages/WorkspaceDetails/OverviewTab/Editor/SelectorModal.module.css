@@ -23,20 +23,17 @@
 
 .editorList {
   overflow-y: auto;
-  max-height: 18rem;
+  max-height: 20rem;
+}
+
+.editorList > * {
+  margin: 0;
 }
 
 .radioLabel {
   display: inline-flex;
   gap: 4px;
   align-items: center;
-}
-
-.editorName {
-  cursor: default;
-  text-decoration-line: underline;
-  text-decoration-style: dotted;
-  text-underline-offset: 2px;
 }
 
 .customEditorRow {

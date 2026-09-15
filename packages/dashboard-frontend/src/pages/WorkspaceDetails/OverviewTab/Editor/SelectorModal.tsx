@@ -251,7 +251,7 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
 
                       const editorName = description ? (
                         <Tooltip content={description}>
-                          <span className={styles.editorName}>{group.displayName}</span>
+                          <span>{group.displayName}</span>
                         </Tooltip>
                       ) : (
                         <span>{group.displayName}</span>
