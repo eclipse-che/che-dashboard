@@ -16,6 +16,7 @@ import {
   tokenAddAction,
   tokenErrorAction,
   tokenReceiveAction,
+  tokenRefreshAction,
   tokenRemoveAction,
   tokenRequestAction,
   tokenUpdateAction,
@@ -97,6 +98,20 @@ describe('PersonalAccessTokens, reducer', () => {
       tokens: [],
     };
     expect(reducer(initialStateWithTokens, action)).toEqual(expectedState);
+  });
+
+  it('should handle tokenRefreshAction', () => {
+    const initialStateLoading: State = {
+      ...initialState,
+      isLoading: true,
+    };
+    const action = tokenRefreshAction();
+    const expectedState: State = {
+      ...initialStateLoading,
+      isLoading: false,
+    };
+
+    expect(reducer(initialStateLoading, action)).toEqual(expectedState);
   });
 
   it('should handle tokenErrorAction', () => {
