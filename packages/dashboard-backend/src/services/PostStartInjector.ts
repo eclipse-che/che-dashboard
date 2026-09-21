@@ -225,6 +225,8 @@ export class PostStartInjector {
         const devworkspaceId = dw.status?.devworkspaceId;
         if (phase === DevWorkspaceStatus.RUNNING && devworkspaceId) {
           await handleRunning(devworkspaceId, 'initial-check');
+        } else if (phase && isTerminalPhase(phase)) {
+          handleTerminal(phase, 'initial-check');
         }
       })
       .catch((e: unknown) => {
