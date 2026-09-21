@@ -107,7 +107,7 @@ describe('PostStartInjector', () => {
   }
 
   async function flushMicrotasks(): Promise<void> {
-    await Promise.resolve().then(() => Promise.resolve());
+    await jest.advanceTimersByTimeAsync(0);
   }
 
   // ── subscribe / setup ─────────────────────────────────────────────────────
@@ -220,6 +220,18 @@ describe('PostStartInjector', () => {
     expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
   });
 
+  test('cleans up when workspace is already in terminal phase at startup', async () => {
+    (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({
+      status: { phase: 'Failed' },
+    });
+
+    invoke();
+    await flushMicrotasks();
+
+    expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
+    expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
+  });
+
   test('does not double-inject when watch fires before initial check resolves', async () => {
     (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({
       status: { phase: 'Running', devworkspaceId: 'ws-race-id' },
@@ -239,7 +251,11 @@ describe('PostStartInjector', () => {
     test('polls every 2 s alongside the watch', () => {
       invoke();
 
-      jest.advanceTimersByTime(2000);
+      // Nothing before the first interval elapses
+      jest.advanceTimersByTime(1999);
+      expect(devworkspaceApi.getByName).toHaveBeenCalledTimes(1); // only initial check
+
+      jest.advanceTimersByTime(1);
       // Initial check + first poll
       expect(devworkspaceApi.getByName).toHaveBeenCalledTimes(2);
 
