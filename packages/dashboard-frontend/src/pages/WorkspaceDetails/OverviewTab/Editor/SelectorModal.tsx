@@ -26,7 +26,6 @@ import {
   ModalVariant,
   Radio,
   TextInput,
-  Tooltip,
 } from '@patternfly/react-core';
 import { CheckIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import React from 'react';
@@ -240,24 +239,10 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
                       const isGroupSelected = selectedGroupKey === group.key;
                       const activeVersion = versionsByGroup[group.key] ?? group.versions[0].version;
                       const versionDropdown = this.buildVersionDropdown(group);
-                      const activeVersionEntry = group.versions.find(
-                        v => v.version === activeVersion,
-                      );
-                      const description =
-                        activeVersionEntry?.description ??
-                        group.versions.find(v => v.description)?.description;
-
-                      const editorName = description ? (
-                        <Tooltip content={description}>
-                          <span>{group.displayName}</span>
-                        </Tooltip>
-                      ) : (
-                        <span>{group.displayName}</span>
-                      );
 
                       const radioLabel = (
                         <span className={styles.radioLabel}>
-                          {editorName}
+                          <span>{group.displayName}</span>
                           <TagLabel type="version" text={activeVersion} />
                           {versionDropdown}
                         </span>

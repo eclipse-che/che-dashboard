@@ -18,6 +18,7 @@ import * as DwApi from '@/services/backend-client/devWorkspaceApi';
 import * as DwtApi from '@/services/backend-client/devWorkspaceTemplateApi';
 import devfileApi from '@/services/devfileApi';
 import { DEVWORKSPACE_CHE_EDITOR } from '@/services/devfileApi/devWorkspace/metadata';
+import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
 import { Workspace } from '@/services/workspace-adapter';
 import {
   COMPONENT_UPDATE_POLICY,
@@ -148,6 +149,10 @@ export const changeWorkspaceEditor =
           // Old template may already be gone — ownerRef GC handles it
         }
       }
+
+      // Step 4: clear the stored IDE page path so the dashboard does not
+      // redirect to the previous editor's landing page on next workspace start
+      SessionStorageService.remove(SessionStorageKey.ORIGINAL_LOCATION_PATH);
     } catch (e) {
       const errorMessage =
         `Failed to change editor for workspace ${workspaceName}, reason: ` +

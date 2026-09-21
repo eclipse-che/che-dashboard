@@ -11,6 +11,7 @@
  */
 
 import devfileApi from '@/services/devfileApi';
+import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
 import { constructWorkspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
@@ -273,5 +274,17 @@ describe('changeWorkspaceEditor', () => {
     await store.dispatch(changeWorkspaceEditor(workspace, 'che-incubator/che-idea-server/latest'));
 
     expect(mockDeleteTemplate).not.toHaveBeenCalled();
+  });
+
+  it('clears ORIGINAL_LOCATION_PATH from session storage after changing editor', async () => {
+    const removeSpy = jest.spyOn(SessionStorageService, 'remove');
+    const store = new MockStoreBuilder()
+      .withDwPlugins({}, {}, false, [intellijDevfile as devfileApi.Devfile])
+      .build();
+    const workspace = buildWorkspace();
+    await store.dispatch(changeWorkspaceEditor(workspace, 'che-incubator/che-idea-server/latest'));
+
+    expect(removeSpy).toHaveBeenCalledWith(SessionStorageKey.ORIGINAL_LOCATION_PATH);
+    removeSpy.mockRestore();
   });
 });
