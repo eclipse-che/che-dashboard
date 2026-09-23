@@ -248,12 +248,47 @@ describe('PostStartInjector', () => {
   // ── polling fallback (only after watch failure) ───────────────────────────
 
   describe('polling fallback', () => {
-    test('does not poll while watch is healthy', () => {
+    test('does not poll before grace period expires', () => {
       invoke();
 
-      jest.advanceTimersByTime(10000);
-      // Only the initial check, no polling
+      jest.advanceTimersByTime(9999);
+      // Only the initial check, no polling yet
       expect(devworkspaceApi.getByName).toHaveBeenCalledTimes(1);
+    });
+
+    test('starts polling after grace period when watch is silent', async () => {
+      (devworkspaceApi.getByName as jest.Mock)
+        .mockResolvedValueOnce({ status: { phase: 'Starting' } }) // initial check
+        .mockResolvedValueOnce({ status: { phase: 'Starting' } }) // poll #1
+        .mockResolvedValue({ status: { phase: 'Running', devworkspaceId: 'ws-silent' } });
+
+      invoke();
+      await flushMicrotasks();
+
+      // No watch events — watch is silently dropped
+      jest.advanceTimersByTime(10000);
+      await flushMicrotasks();
+      expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('watch grace timeout'));
+
+      // First poll: Starting
+      jest.advanceTimersByTime(2000);
+      await flushMicrotasks();
+      expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
+
+      // Second poll: Running
+      jest.advanceTimersByTime(2000);
+      await flushMicrotasks();
+      expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-silent');
+      expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
+    });
+
+    test('does not start polling after grace period if watch already resolved', async () => {
+      invoke();
+      await capturedListener(dwMessage('Running', 'ws-fast'));
+
+      // Grace period fires but watch already handled it
+      jest.advanceTimersByTime(10000);
+      expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledTimes(1);
     });
 
     test('starts polling after watch ERROR and injects via poll', async () => {

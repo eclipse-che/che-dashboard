@@ -22,6 +22,9 @@ import { logger } from '@/utils/logger';
 // ServerConfig/reducer.ts), so 600 s gives 2× that window before cleanup.
 const OVERALL_TIMEOUT_MS = 600000;
 const POLL_INTERVAL_MS = 2000;
+// If the watch stream has not reported a decisive phase (Running or terminal)
+// within this window, assume the stream was silently dropped and start polling.
+const WATCH_GRACE_MS = 10000;
 
 function isTerminalPhase(phase: string): boolean {
   return (
@@ -39,8 +42,9 @@ function isTerminalPhase(phase: string): boolean {
  *
  * Detection strategy:
  *   1. K8s Watch — primary path, near-instant when healthy.
- *   2. Polling fallback (GET every 2 s) — starts only when the
- *      watch subscription fails (ERROR event or rejection).
+ *   2. Polling fallback (GET every 2 s) — starts when the watch
+ *      fails explicitly (ERROR event or rejection) or when the
+ *      watch grace period expires without a decisive phase.
  *   3. Immediate initial GET — catches workspaces that reached
  *      Running before the watch stream opened (LIST→STREAM race).
  *
@@ -75,6 +79,7 @@ export class PostStartInjector {
 
     const startedAt = Date.now();
     let pollHandle: ReturnType<typeof setInterval> | undefined;
+    let watchGraceHandle: ReturnType<typeof setTimeout> | undefined;
 
     // Identity guard: prevents a stale callback from an older invocation
     // from tearing down a newer one that reuses the same key.
@@ -89,6 +94,10 @@ export class PostStartInjector {
         `PostStartInjector: unsubscribing for ${key} — ${reason} (${elapsedSec}s elapsed)`,
       );
       devworkspaceApi.stopWatching();
+      if (watchGraceHandle !== undefined) {
+        clearTimeout(watchGraceHandle);
+        watchGraceHandle = undefined;
+      }
       if (pollHandle !== undefined) {
         clearInterval(pollHandle);
         pollHandle = undefined;
@@ -138,14 +147,14 @@ export class PostStartInjector {
       cleanupAll(`terminal phase ${phase} via ${source}`);
     };
 
-    // ── polling fallback (starts only when the watch fails) ──────────────
+    // ── polling fallback ─────────────────────────────────────────────────
 
-    const startPolling = (): void => {
+    const startPolling = (reason: string): void => {
       if (pollHandle !== undefined || !isOwner()) {
         return;
       }
       logger.info(
-        `PostStartInjector: watch failed for ${key}, falling back to polling every ${POLL_INTERVAL_MS / 1000}s`,
+        `PostStartInjector: ${reason} for ${key}, falling back to polling every ${POLL_INTERVAL_MS / 1000}s`,
       );
       pollHandle = setInterval(() => {
         if (!isOwner()) {
@@ -174,13 +183,20 @@ export class PostStartInjector {
       }, POLL_INTERVAL_MS);
     };
 
+    // A silently dropped watch stream emits no ERROR event.
+    // If nothing decisive arrives within the grace window, start polling.
+    watchGraceHandle = setTimeout(() => {
+      watchGraceHandle = undefined;
+      startPolling('watch grace timeout');
+    }, WATCH_GRACE_MS);
+
     // ── 1. K8s Watch (fast path) ───────────────────────────────────────────
 
     const listener: MessageListener = async message => {
       if (message.eventPhase === api.webSocket.EventPhase.ERROR) {
         logger.warn(`PostStartInjector: watch ERROR for ${key} — falling back to polling`);
         devworkspaceApi.stopWatching();
-        startPolling();
+        startPolling('watch error');
         return;
       }
 
@@ -213,7 +229,7 @@ export class PostStartInjector {
           error,
           `PostStartInjector: watchInNamespace rejected for ${key} — falling back to polling`,
         );
-        startPolling();
+        startPolling('watch rejected');
       });
 
     // ── 2. Immediate initial check (LIST→STREAM race) ───────────────────────
