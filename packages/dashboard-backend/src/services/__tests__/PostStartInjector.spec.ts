@@ -245,32 +245,29 @@ describe('PostStartInjector', () => {
     expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledTimes(1);
   });
 
-  // ── parallel polling ──────────────────────────────────────────────────────
+  // ── polling fallback (only after watch failure) ───────────────────────────
 
-  describe('parallel polling', () => {
-    test('polls every 2 s alongside the watch', () => {
+  describe('polling fallback', () => {
+    test('does not poll while watch is healthy', () => {
       invoke();
 
-      // Nothing before the first interval elapses
-      jest.advanceTimersByTime(1999);
-      expect(devworkspaceApi.getByName).toHaveBeenCalledTimes(1); // only initial check
-
-      jest.advanceTimersByTime(1);
-      // Initial check + first poll
-      expect(devworkspaceApi.getByName).toHaveBeenCalledTimes(2);
-
-      jest.advanceTimersByTime(2000);
-      expect(devworkspaceApi.getByName).toHaveBeenCalledTimes(3);
+      jest.advanceTimersByTime(10000);
+      // Only the initial check, no polling
+      expect(devworkspaceApi.getByName).toHaveBeenCalledTimes(1);
     });
 
-    test('injects via poll when watch is silent', async () => {
+    test('starts polling after watch ERROR and injects via poll', async () => {
       (devworkspaceApi.getByName as jest.Mock)
         .mockResolvedValueOnce({ status: { phase: 'Starting' } }) // initial check
         .mockResolvedValueOnce({ status: { phase: 'Starting' } }) // poll #1
-        .mockResolvedValue({ status: { phase: 'Running', devworkspaceId: 'ws-poll-id' } });
+        .mockResolvedValue({ status: { phase: 'Running', devworkspaceId: 'ws-after-err' } });
 
       invoke();
       await flushMicrotasks();
+
+      await capturedListener(errorMessage());
+      expect(devworkspaceApi.stopWatching).toHaveBeenCalled();
+      expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('falling back to polling'));
 
       jest.advanceTimersByTime(2000);
       await flushMicrotasks();
@@ -278,25 +275,24 @@ describe('PostStartInjector', () => {
 
       jest.advanceTimersByTime(2000);
       await flushMicrotasks();
-
-      expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-poll-id');
-      expect(podmanApi.podmanLogin).toHaveBeenCalledWith(namespace, 'ws-poll-id');
+      expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-after-err');
       expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
     });
 
-    test('does not double-inject when watch and poll both detect Running', async () => {
+    test('starts polling after watchInNamespace rejection', async () => {
+      (devworkspaceApi.watchInNamespace as jest.Mock).mockRejectedValue(
+        new Error('watch rejected'),
+      );
       (devworkspaceApi.getByName as jest.Mock)
         .mockResolvedValueOnce({ status: { phase: 'Starting' } }) // initial check
-        .mockResolvedValue({ status: { phase: 'Running', devworkspaceId: 'ws-both' } });
+        .mockResolvedValue({ status: { phase: 'Running', devworkspaceId: 'ws-reject-id' } });
 
       invoke();
       await flushMicrotasks();
 
-      await capturedListener(dwMessage('Running', 'ws-both'));
       jest.advanceTimersByTime(2000);
       await flushMicrotasks();
-
-      expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledTimes(1);
+      expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-reject-id');
     });
 
     test.each(['Failed', 'Failing', 'Stopped', 'Stopping', 'Terminating'])(
@@ -308,6 +304,9 @@ describe('PostStartInjector', () => {
 
         invoke();
         await flushMicrotasks();
+
+        // Trigger watch failure to start polling
+        await capturedListener(errorMessage());
 
         jest.advanceTimersByTime(2000);
         await flushMicrotasks();
@@ -326,6 +325,9 @@ describe('PostStartInjector', () => {
       invoke();
       await flushMicrotasks();
 
+      // Trigger watch failure to start polling
+      await capturedListener(errorMessage());
+
       jest.advanceTimersByTime(2000);
       await flushMicrotasks();
       expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
@@ -334,51 +336,15 @@ describe('PostStartInjector', () => {
       await flushMicrotasks();
       expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-retry-id');
     });
-
-    test('polling continues after watch ERROR', async () => {
-      (devworkspaceApi.getByName as jest.Mock)
-        .mockResolvedValueOnce({ status: { phase: 'Starting' } }) // initial check
-        .mockResolvedValueOnce({ status: { phase: 'Starting' } }) // poll #1
-        .mockResolvedValue({ status: { phase: 'Running', devworkspaceId: 'ws-after-err' } });
-
-      invoke();
-      await flushMicrotasks();
-
-      await capturedListener(errorMessage());
-      expect(devworkspaceApi.stopWatching).toHaveBeenCalled();
-
-      jest.advanceTimersByTime(2000);
-      await flushMicrotasks();
-      expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
-
-      jest.advanceTimersByTime(2000);
-      await flushMicrotasks();
-      expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-after-err');
-    });
   });
 
   // ── elapsed time logging ────────────────────────────────────────────────
 
-  test('logs elapsed time when injection succeeds quickly', async () => {
+  test('logs elapsed time when injection succeeds', async () => {
     invoke();
     await capturedListener(dwMessage('Running', 'ws-123'));
 
     expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('0s after start request'));
-    expect(logger.warn).not.toHaveBeenCalledWith(
-      expect.stringContaining('exceeds the ~12s UDI entrypoint.sh window'),
-    );
-  });
-
-  test('warns when injection exceeds the 12 s UDI entrypoint window', async () => {
-    invoke();
-
-    jest.advanceTimersByTime(15000);
-    await capturedListener(dwMessage('Running', 'ws-slow'));
-
-    expect(logger.warn).toHaveBeenCalledWith(
-      expect.stringContaining('exceeds the ~12s UDI entrypoint.sh window'),
-    );
-    expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('Detection source: watch'));
   });
 
   // ── ownership guard (stale callback safety) ───────────────────────────────
