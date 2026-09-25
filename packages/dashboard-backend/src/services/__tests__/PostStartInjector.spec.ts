@@ -172,12 +172,39 @@ describe('PostStartInjector', () => {
     expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
   });
 
-  // ── terminal phases ───────────────────────────────────────────────────────
+  // ── terminal phases (failure — always decisive) ──────────────────────────
 
-  test.each(['Failed', 'Failing', 'Stopped', 'Stopping', 'Terminating'])(
-    'stops everything and logs unsubscribe on %s phase via watch',
+  test.each(['Failed', 'Failing'])(
+    'stops everything on %s phase via watch (always decisive)',
     async phase => {
       invoke();
+      await capturedListener(dwMessageNoId(phase));
+
+      expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
+      expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('unsubscribing for'));
+      expect(devworkspaceApi.stopWatching).toHaveBeenCalled();
+      expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
+    },
+  );
+
+  // ── stale-phase guard (shutdown phases before reconciliation) ─────────────
+
+  test.each(['Stopped', 'Stopping', 'Terminating'])(
+    'ignores stale %s phase via watch before reconciliation',
+    async phase => {
+      invoke();
+      await capturedListener(dwMessageNoId(phase));
+
+      expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
+      expect((PostStartInjector as any).activeWatches.has(key)).toBe(true);
+    },
+  );
+
+  test.each(['Stopped', 'Stopping', 'Terminating'])(
+    'stops on %s phase via watch after reconciliation (Starting was seen)',
+    async phase => {
+      invoke();
+      await capturedListener(dwMessage('Starting', 'ws-123'));
       await capturedListener(dwMessageNoId(phase));
 
       expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
@@ -220,7 +247,7 @@ describe('PostStartInjector', () => {
     expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
   });
 
-  test('cleans up when workspace is already in terminal phase at startup', async () => {
+  test('cleans up when workspace is already in Failed phase at startup', async () => {
     (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({
       status: { phase: 'Failed' },
     });
@@ -231,6 +258,21 @@ describe('PostStartInjector', () => {
     expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
     expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
   });
+
+  test.each(['Stopped', 'Stopping', 'Terminating'])(
+    'ignores stale %s phase in initial check (pre-reconcile)',
+    async phase => {
+      (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({
+        status: { phase },
+      });
+
+      invoke();
+      await flushMicrotasks();
+
+      expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
+      expect((PostStartInjector as any).activeWatches.has(key)).toBe(true);
+    },
+  );
 
   test('does not double-inject when watch fires before initial check resolves', async () => {
     (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({
@@ -243,6 +285,29 @@ describe('PostStartInjector', () => {
     await flushMicrotasks();
 
     expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledTimes(1);
+  });
+
+  // ── key retention during injection ────────────────────────────────────────
+
+  test('keeps key in registry during injection to block duplicate invocations', async () => {
+    let injectResolve: () => void;
+    const injectPromise = new Promise<void>(resolve => {
+      injectResolve = resolve;
+    });
+    (kubeConfigApi.injectKubeConfig as jest.Mock).mockReturnValue(injectPromise);
+
+    invoke();
+    const runningPromise = capturedListener(dwMessage('Running', 'ws-123'));
+
+    expect((PostStartInjector as any).activeWatches.has(key)).toBe(true);
+
+    invoke();
+    expect(devworkspaceApi.watchInNamespace).toHaveBeenCalledTimes(1);
+
+    injectResolve!();
+    await runningPromise;
+
+    expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
   });
 
   // ── polling fallback (only after watch failure) ───────────────────────────
@@ -268,7 +333,9 @@ describe('PostStartInjector', () => {
       // No watch events — watch is silently dropped
       jest.advanceTimersByTime(10000);
       await flushMicrotasks();
-      expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('watch grace timeout'));
+      expect(logger.info).toHaveBeenCalledWith(
+        expect.stringContaining('no decisive phase within grace period'),
+      );
 
       // First poll: Starting
       jest.advanceTimersByTime(2000);
@@ -314,23 +381,7 @@ describe('PostStartInjector', () => {
       expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
     });
 
-    test('starts polling after watchInNamespace rejection', async () => {
-      (devworkspaceApi.watchInNamespace as jest.Mock).mockRejectedValue(
-        new Error('watch rejected'),
-      );
-      (devworkspaceApi.getByName as jest.Mock)
-        .mockResolvedValueOnce({ status: { phase: 'Starting' } }) // initial check
-        .mockResolvedValue({ status: { phase: 'Running', devworkspaceId: 'ws-reject-id' } });
-
-      invoke();
-      await flushMicrotasks();
-
-      jest.advanceTimersByTime(2000);
-      await flushMicrotasks();
-      expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-reject-id');
-    });
-
-    test.each(['Failed', 'Failing', 'Stopped', 'Stopping', 'Terminating'])(
+    test.each(['Failed', 'Failing'])(
       'stops polling without injection when poll detects %s phase',
       async phase => {
         (devworkspaceApi.getByName as jest.Mock)
@@ -341,6 +392,46 @@ describe('PostStartInjector', () => {
         await flushMicrotasks();
 
         // Trigger watch failure to start polling
+        await capturedListener(errorMessage());
+
+        jest.advanceTimersByTime(2000);
+        await flushMicrotasks();
+
+        expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
+        expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
+      },
+    );
+
+    test.each(['Stopped', 'Stopping', 'Terminating'])(
+      'ignores stale %s during polling before reconciliation',
+      async phase => {
+        (devworkspaceApi.getByName as jest.Mock)
+          .mockResolvedValueOnce({ status: { phase: 'Stopped' } }) // initial check — stale
+          .mockResolvedValue({ status: { phase } }); // poll — also stale
+
+        invoke();
+        await flushMicrotasks();
+
+        await capturedListener(errorMessage());
+
+        jest.advanceTimersByTime(2000);
+        await flushMicrotasks();
+
+        expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
+        expect((PostStartInjector as any).activeWatches.has(key)).toBe(true);
+      },
+    );
+
+    test.each(['Stopped', 'Stopping', 'Terminating'])(
+      'stops polling on %s after reconciliation (Starting was seen)',
+      async phase => {
+        (devworkspaceApi.getByName as jest.Mock)
+          .mockResolvedValueOnce({ status: { phase: 'Starting' } }) // initial check — sets flag
+          .mockResolvedValue({ status: { phase } }); // poll
+
+        invoke();
+        await flushMicrotasks();
+
         await capturedListener(errorMessage());
 
         jest.advanceTimersByTime(2000);
@@ -385,22 +476,17 @@ describe('PostStartInjector', () => {
   // ── ownership guard (stale callback safety) ───────────────────────────────
 
   test('stale poll from old invocation does not tear down new invocation', async () => {
-    // Simulate: start → terminal phase → restart → old poll resolves
     let oldPollResolve: (value: unknown) => void;
     const oldPollPromise = new Promise(resolve => {
       oldPollResolve = resolve;
     });
 
-    // First invocation: getByName returns a deferred promise for the initial check,
-    // and immediate Starting for poll setup
-    (devworkspaceApi.getByName as jest.Mock).mockReturnValueOnce(oldPollPromise); // initial check — will resolve late
+    (devworkspaceApi.getByName as jest.Mock).mockReturnValueOnce(oldPollPromise);
 
     invoke();
-    // Terminal phase tears down first invocation
     await capturedListener(dwMessageNoId('Failed'));
     expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
 
-    // Second invocation with fresh mocks
     const devworkspaceApi2 = {
       watchInNamespace: jest.fn().mockImplementation((listener: MessageListener) => {
         capturedListener = listener;
@@ -419,15 +505,12 @@ describe('PostStartInjector', () => {
     );
     expect((PostStartInjector as any).activeWatches.has(key)).toBe(true);
 
-    // Old poll resolves with Running — must NOT affect the new invocation
     oldPollResolve!({
       status: { phase: 'Running', devworkspaceId: 'ws-stale' },
     });
     await flushMicrotasks();
 
-    // New invocation must still be active
     expect((PostStartInjector as any).activeWatches.has(key)).toBe(true);
-    // No injection from the stale callback
     expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
   });
 

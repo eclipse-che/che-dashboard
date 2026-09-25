@@ -23,13 +23,15 @@ import { logger } from '@/utils/logger';
 const OVERALL_TIMEOUT_MS = 600000;
 const POLL_INTERVAL_MS = 2000;
 // If the watch stream has not reported a decisive phase (Running or terminal)
-// within this window, assume the stream was silently dropped and start polling.
+// within this window, activate polling as an additional safety net.
 const WATCH_GRACE_MS = 10000;
 
-function isTerminalPhase(phase: string): boolean {
+function isFailurePhase(phase: string): boolean {
+  return phase === DevWorkspaceStatus.FAILED || phase === DevWorkspaceStatus.FAILING;
+}
+
+function isShutdownPhase(phase: string): boolean {
   return (
-    phase === DevWorkspaceStatus.FAILED ||
-    phase === DevWorkspaceStatus.FAILING ||
     phase === DevWorkspaceStatus.STOPPED ||
     phase === DevWorkspaceStatus.STOPPING ||
     phase === DevWorkspaceStatus.TERMINATING
@@ -43,16 +45,25 @@ function isTerminalPhase(phase: string): boolean {
  * Detection strategy:
  *   1. K8s Watch — primary path, near-instant when healthy.
  *   2. Polling fallback (GET every 2 s) — starts when the watch
- *      fails explicitly (ERROR event or rejection) or when the
- *      watch grace period expires without a decisive phase.
+ *      fails explicitly (ERROR event) or when the watch grace
+ *      period expires without a decisive phase.
  *   3. Immediate initial GET — catches workspaces that reached
  *      Running before the watch stream opened (LIST→STREAM race).
  *
+ * Stale-phase guard:
+ *   watchAndInject runs right after PATCH started=true, before the
+ *   controller reconciles. The first watch event or initial GET may
+ *   still carry the pre-reconcile phase (Stopped/Stopping/Terminating).
+ *   Shutdown phases are only treated as decisive after a non-shutdown
+ *   phase (Starting) has been observed, indicating reconciliation began.
+ *   Failure phases (Failed/Failing) are always decisive.
+ *
  * Guards:
  * - Only one session per workspace (keyed by namespace/name).
+ * - The key stays in the registry during credential injection to
+ *   prevent a duplicate PATCH from starting a second session.
  * - Cleanup uses function identity (`isOwner`) to prevent a stale
  *   in-flight callback from tearing down a newer invocation.
- * - On: success, terminal phase, or overall timeout — everything is cleaned up.
  */
 export class PostStartInjector {
   private static activeWatches = new Map<string, () => void>();
@@ -80,12 +91,13 @@ export class PostStartInjector {
     const startedAt = Date.now();
     let pollHandle: ReturnType<typeof setInterval> | undefined;
     let watchGraceHandle: ReturnType<typeof setTimeout> | undefined;
+    let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+    let seenNonTerminal = false;
+    let injecting = false;
 
-    // Identity guard: prevents a stale callback from an older invocation
-    // from tearing down a newer one that reuses the same key.
     const isOwner = (): boolean => PostStartInjector.activeWatches.get(key) === cleanup;
 
-    const cleanup = (reason = 'external'): void => {
+    const cleanup = (reason = 'external', deleteKey = true): void => {
       if (!isOwner()) {
         return;
       }
@@ -94,6 +106,10 @@ export class PostStartInjector {
         `PostStartInjector: unsubscribing for ${key} — ${reason} (${elapsedSec}s elapsed)`,
       );
       devworkspaceApi.stopWatching();
+      if (timeoutHandle !== undefined) {
+        clearTimeout(timeoutHandle);
+        timeoutHandle = undefined;
+      }
       if (watchGraceHandle !== undefined) {
         clearTimeout(watchGraceHandle);
         watchGraceHandle = undefined;
@@ -102,12 +118,14 @@ export class PostStartInjector {
         clearInterval(pollHandle);
         pollHandle = undefined;
       }
-      PostStartInjector.activeWatches.delete(key);
+      if (deleteKey) {
+        PostStartInjector.activeWatches.delete(key);
+      }
     };
 
     PostStartInjector.activeWatches.set(key, cleanup);
 
-    const timeoutHandle = setTimeout(() => {
+    timeoutHandle = setTimeout(() => {
       logger.warn(
         `PostStartInjector: overall ${OVERALL_TIMEOUT_MS / 1000}s timeout for ${key} — ` +
           `workspace may have started without kubeconfig injection. ` +
@@ -116,19 +134,22 @@ export class PostStartInjector {
       cleanup('timeout');
     }, OVERALL_TIMEOUT_MS);
 
-    const cleanupAll = (reason: string): void => {
-      clearTimeout(timeoutHandle);
-      cleanup(reason);
-    };
-
     // ── shared handlers ────────────────────────────────────────────────────
 
+    const isDecisiveTerminal = (phase: string): boolean => {
+      if (isFailurePhase(phase)) {
+        return true;
+      }
+      return isShutdownPhase(phase) && seenNonTerminal;
+    };
+
     const handleRunning = async (devworkspaceId: string, source: string): Promise<void> => {
-      if (!isOwner()) {
+      if (!isOwner() || injecting) {
         return;
       }
+      injecting = true;
       const elapsedMs = Date.now() - startedAt;
-      cleanupAll(`Running detected via ${source}`);
+      cleanup(`Running detected via ${source}`, false);
       await PostStartInjector.injectCredentials(
         namespace,
         devworkspaceId,
@@ -138,13 +159,14 @@ export class PostStartInjector {
         source,
         elapsedMs,
       );
+      PostStartInjector.activeWatches.delete(key);
     };
 
     const handleTerminal = (phase: string, source: string): void => {
-      if (!isOwner()) {
+      if (!isOwner() || injecting) {
         return;
       }
-      cleanupAll(`terminal phase ${phase} via ${source}`);
+      cleanup(`terminal phase ${phase} via ${source}`);
     };
 
     // ── polling fallback ─────────────────────────────────────────────────
@@ -171,9 +193,13 @@ export class PostStartInjector {
             const phase = dw.status?.phase;
             const devworkspaceId = dw.status?.devworkspaceId;
 
+            if (phase === DevWorkspaceStatus.STARTING) {
+              seenNonTerminal = true;
+            }
+
             if (phase === DevWorkspaceStatus.RUNNING && devworkspaceId) {
               await handleRunning(devworkspaceId, 'poll');
-            } else if (phase && isTerminalPhase(phase)) {
+            } else if (phase && isDecisiveTerminal(phase)) {
               handleTerminal(phase, 'poll');
             }
           })
@@ -183,11 +209,9 @@ export class PostStartInjector {
       }, POLL_INTERVAL_MS);
     };
 
-    // A silently dropped watch stream emits no ERROR event.
-    // If nothing decisive arrives within the grace window, start polling.
     watchGraceHandle = setTimeout(() => {
       watchGraceHandle = undefined;
-      startPolling('watch grace timeout');
+      startPolling('no decisive phase within grace period');
     }, WATCH_GRACE_MS);
 
     // ── 1. K8s Watch (fast path) ───────────────────────────────────────────
@@ -212,7 +236,11 @@ export class PostStartInjector {
       const phase = devWorkspace.status?.phase;
       const devworkspaceId = devWorkspace.status?.devworkspaceId;
 
-      if (phase && isTerminalPhase(phase)) {
+      if (phase === DevWorkspaceStatus.STARTING) {
+        seenNonTerminal = true;
+      }
+
+      if (phase && isDecisiveTerminal(phase)) {
         handleTerminal(phase, 'watch');
         return;
       }
@@ -222,15 +250,7 @@ export class PostStartInjector {
       }
     };
 
-    devworkspaceApi
-      .watchInNamespace(listener, { namespace, resourceVersion: '' })
-      .catch((error: unknown) => {
-        logger.warn(
-          error,
-          `PostStartInjector: watchInNamespace rejected for ${key} — falling back to polling`,
-        );
-        startPolling('watch rejected');
-      });
+    devworkspaceApi.watchInNamespace(listener, { namespace, resourceVersion: '' });
 
     // ── 2. Immediate initial check (LIST→STREAM race) ───────────────────────
 
@@ -242,9 +262,14 @@ export class PostStartInjector {
         }
         const phase = dw.status?.phase;
         const devworkspaceId = dw.status?.devworkspaceId;
+
+        if (phase === DevWorkspaceStatus.STARTING) {
+          seenNonTerminal = true;
+        }
+
         if (phase === DevWorkspaceStatus.RUNNING && devworkspaceId) {
           await handleRunning(devworkspaceId, 'initial-check');
-        } else if (phase && isTerminalPhase(phase)) {
+        } else if (phase && isFailurePhase(phase)) {
           handleTerminal(phase, 'initial-check');
         }
       })
