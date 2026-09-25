@@ -18,7 +18,7 @@ import {
   getOAuthProviders,
   getOAuthToken,
 } from '@/services/backend-client/oAuthApi';
-import { fetchTokens } from '@/services/backend-client/personalAccessTokenApi';
+import { fetchTokens, removeToken } from '@/services/backend-client/personalAccessTokenApi';
 import {
   deleteSkipOauthProvider,
   getWorkspacePreferences,
@@ -238,6 +238,79 @@ describe('GitOauthConfig', () => {
         (common.helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
 
         await expect(store.dispatch(actionCreators.revokeOauth(mockProvider))).rejects.toThrow(
+          errorMessage,
+        );
+
+        const actions = store.getActions();
+        expect(actions).toHaveLength(2);
+        expect(actions[0]).toEqual(gitOauthRequestAction());
+        expect(actions[1]).toEqual(gitOauthErrorAction(errorMessage));
+      });
+    });
+
+    describe('deleteOauthToken', () => {
+      const mockGitOauth = {
+        name: 'github',
+        endpointUrl: 'https://github.com/',
+      } as IGitOauth;
+      const mockOauthToken = {
+        cheUserId: 'test-user',
+        gitProvider: 'github',
+        gitProviderEndpoint: 'https://github.com',
+        tokenData: 'test-token-data',
+        tokenName: 'oauth2-token',
+        isOauth: true,
+      } as api.PersonalAccessToken;
+
+      beforeEach(() => {
+        jest
+          .spyOn(infrastructureNamespaces, 'selectDefaultNamespace')
+          .mockReturnValue({ name: mockNamespace, attributes: { phase: 'Active' } });
+      });
+
+      it('should dispatch delete action on successful delete', async () => {
+        (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+        (fetchTokens as jest.Mock).mockResolvedValue([mockOauthToken]);
+        (removeToken as jest.Mock).mockResolvedValue(mockOauthToken);
+
+        await store.dispatch(actionCreators.deleteOauthToken(mockGitOauth));
+
+        expect(removeToken).toHaveBeenCalledWith(mockNamespace, mockOauthToken);
+
+        const actions = store.getActions();
+        expect(actions).toHaveLength(2);
+        expect(actions[0]).toEqual(gitOauthRequestAction());
+        expect(actions[1]).toEqual(gitOauthDeleteAction('github'));
+      });
+
+      it('should dispatch error action if the OAuth token is not found', async () => {
+        const errorMessage = 'OAuth token for "github" was not found';
+
+        (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+        (fetchTokens as jest.Mock).mockResolvedValue([{ ...mockOauthToken, isOauth: false }]);
+        (common.helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
+
+        await expect(store.dispatch(actionCreators.deleteOauthToken(mockGitOauth))).rejects.toThrow(
+          errorMessage,
+        );
+
+        expect(removeToken).not.toHaveBeenCalled();
+
+        const actions = store.getActions();
+        expect(actions).toHaveLength(2);
+        expect(actions[0]).toEqual(gitOauthRequestAction());
+        expect(actions[1]).toEqual(gitOauthErrorAction(errorMessage));
+      });
+
+      it('should dispatch error action on failed delete', async () => {
+        const errorMessage = 'Network error';
+
+        (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+        (fetchTokens as jest.Mock).mockResolvedValue([mockOauthToken]);
+        (removeToken as jest.Mock).mockRejectedValue(new Error(errorMessage));
+        (common.helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
+
+        await expect(store.dispatch(actionCreators.deleteOauthToken(mockGitOauth))).rejects.toThrow(
           errorMessage,
         );
 

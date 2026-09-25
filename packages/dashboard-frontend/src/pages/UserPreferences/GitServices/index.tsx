@@ -17,6 +17,8 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import ProgressIndicator from '@/components/Progress';
 import { lazyInject } from '@/inversify.config';
+import { GIT_OAUTH_PROVIDERS } from '@/pages/UserPreferences/const';
+import { GitServicesDeleteModal } from '@/pages/UserPreferences/GitServices/DeleteModal';
 import { GitServicesEmptyState } from '@/pages/UserPreferences/GitServices/EmptyState';
 import { GitServicesList } from '@/pages/UserPreferences/GitServices/List';
 import { GitServicesRevokeModal } from '@/pages/UserPreferences/GitServices/RevokeModal';
@@ -30,12 +32,15 @@ import {
   selectSkipOauthProviders,
 } from '@/store/GitOauthConfig/selectors';
 import { personalAccessTokenActionCreators } from '@/store/PersonalAccessTokens';
+import { selectOauthTokens } from '@/store/PersonalAccessTokens/selectors';
 
 type Props = MappedProps;
 
 type State = {
   isModalOpen: boolean;
   selectedServices: IGitOauth[];
+  isDeleteModalOpen: boolean;
+  deleteService: IGitOauth | undefined;
 };
 
 export class GitServices extends React.PureComponent<Props, State> {
@@ -48,13 +53,15 @@ export class GitServices extends React.PureComponent<Props, State> {
     this.state = {
       isModalOpen: false,
       selectedServices: [],
+      isDeleteModalOpen: false,
+      deleteService: undefined,
     };
   }
 
   public async componentDidMount(): Promise<void> {
     const { isLoading } = this.props;
     if (!isLoading) {
-      await this.requestGitServices();
+      await Promise.allSettled([this.requestGitServices(), this.props.requestTokens()]);
     }
   }
 
@@ -89,6 +96,65 @@ export class GitServices extends React.PureComponent<Props, State> {
         title: helpers.errors.getMessage(e),
       });
     }
+  }
+
+  private async deleteToken(service: IGitOauth): Promise<void> {
+    const { deleteOauthToken } = this.props;
+    const serviceName = GIT_OAUTH_PROVIDERS[service.name];
+
+    try {
+      await deleteOauthToken(service);
+
+      this.appAlerts.showAlert({
+        key: 'delete-oauth-token-' + service.name,
+        variant: AlertVariant.success,
+        title: `OAuth token for "${serviceName}" has been deleted`,
+      });
+    } catch (e) {
+      this.appAlerts.showAlert({
+        key: 'delete-oauth-token-' + service.name,
+        variant: AlertVariant.danger,
+        title: helpers.errors.getMessage(e),
+      });
+    }
+  }
+
+  private async handleDeleteModalConfirm(): Promise<void> {
+    const { deleteService } = this.state;
+
+    this.setState({
+      isDeleteModalOpen: false,
+      deleteService: undefined,
+    });
+
+    /* c8 ignore next 3 */
+    if (deleteService === undefined) {
+      return;
+    }
+
+    await this.deleteToken(deleteService);
+
+    await Promise.allSettled([
+      // refresh the Git services authentication status
+      this.requestGitServices(),
+
+      // refresh the personal access tokens
+      this.props.requestTokens(),
+    ]);
+  }
+
+  private handleDeleteModalClose(): void {
+    this.setState({
+      isDeleteModalOpen: false,
+      deleteService: undefined,
+    });
+  }
+
+  private handleDeleteService(deleteService: IGitOauth): void {
+    this.setState({
+      deleteService,
+      isDeleteModalOpen: true,
+    });
   }
 
   private async handleModalRevoke(): Promise<void> {
@@ -133,8 +199,8 @@ export class GitServices extends React.PureComponent<Props, State> {
   }
 
   render(): React.ReactNode {
-    const { gitOauth, isLoading, providersWithToken, skipOauthProviders } = this.props;
-    const { isModalOpen, selectedServices } = this.state;
+    const { gitOauth, isLoading, oauthTokens, providersWithToken, skipOauthProviders } = this.props;
+    const { isModalOpen, selectedServices, isDeleteModalOpen, deleteService } = this.state;
 
     return (
       <React.Fragment>
@@ -145,16 +211,24 @@ export class GitServices extends React.PureComponent<Props, State> {
           onCancel={() => this.handleModalClose()}
           onRevoke={() => this.handleModalRevoke()}
         />
+        <GitServicesDeleteModal
+          isOpen={isDeleteModalOpen}
+          deleteItem={deleteService}
+          onCloseModal={() => this.handleDeleteModalClose()}
+          onDelete={() => this.handleDeleteModalConfirm()}
+        />
         {gitOauth.length === 0 ? (
           <GitServicesEmptyState text="No Git Services" />
         ) : (
           <GitServicesList
             gitOauth={gitOauth}
             isDisabled={isLoading}
+            oauthTokens={oauthTokens}
             providersWithToken={providersWithToken}
             skipOauthProviders={skipOauthProviders}
             onRevokeServices={services => this.handleRevokeServices(services)}
             onClearService={service => this.handleClearServices(service)}
+            onDeleteService={service => this.handleDeleteService(service)}
           />
         )}
       </React.Fragment>
@@ -165,6 +239,7 @@ export class GitServices extends React.PureComponent<Props, State> {
 const mapStateToProps = (state: RootState) => ({
   gitOauth: selectGitOauth(state),
   isLoading: selectIsLoading(state),
+  oauthTokens: selectOauthTokens(state),
   providersWithToken: selectProvidersWithToken(state),
   skipOauthProviders: selectSkipOauthProviders(state),
 });

@@ -15,13 +15,14 @@ import { createAction } from '@reduxjs/toolkit';
 
 import { provisionKubernetesNamespace } from '@/services/backend-client/kubernetesNamespaceApi';
 import { deleteOAuthToken, getOAuthProviders } from '@/services/backend-client/oAuthApi';
-import { fetchTokens } from '@/services/backend-client/personalAccessTokenApi';
+import { fetchTokens, removeToken } from '@/services/backend-client/personalAccessTokenApi';
 import {
   deleteSkipOauthProvider,
   getWorkspacePreferences,
 } from '@/services/backend-client/workspacePreferencesApi';
 import { AppThunk } from '@/store';
 import { IGitOauth } from '@/store/GitOauthConfig';
+import { findOauthTokenSecret } from '@/store/GitOauthConfig/helpers';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
 import { verifyAuthorized } from '@/store/SanityCheck';
 
@@ -122,6 +123,35 @@ export const actionCreators = {
           dispatch(gitOauthErrorAction(errorMessage));
           throw e;
         }
+      }
+    },
+
+  /**
+   * Deletes the Kubernetes Secret which stores the OAuth token for the given Git service.
+   * Unlike `revokeOauth`, it does not revoke the authorization on the Git provider side.
+   */
+  deleteOauthToken:
+    (gitOauth: IGitOauth): AppThunk =>
+    async (dispatch, getState): Promise<void> => {
+      const defaultKubernetesNamespace = selectDefaultNamespace(getState());
+      try {
+        await verifyAuthorized(dispatch, getState);
+
+        dispatch(gitOauthRequestAction());
+
+        const tokens = await fetchTokens(defaultKubernetesNamespace.name);
+        const oauthToken = findOauthTokenSecret(gitOauth, tokens);
+        if (oauthToken === undefined) {
+          throw new Error(`OAuth token for "${gitOauth.name}" was not found`);
+        }
+
+        await removeToken(defaultKubernetesNamespace.name, oauthToken);
+
+        dispatch(gitOauthDeleteAction(gitOauth.name));
+      } catch (e) {
+        const errorMessage = common.helpers.errors.getMessage(e);
+        dispatch(gitOauthErrorAction(errorMessage));
+        throw e;
       }
     },
 
