@@ -16,17 +16,26 @@ import { Props } from '@/pages/UserPreferences/GitServices/List';
 
 export class GitServicesList extends React.PureComponent<Props> {
   render(): React.ReactNode {
-    const { isDisabled, gitOauth, providersWithToken, skipOauthProviders, onRevokeServices } =
-      this.props;
+    const {
+      isDisabled,
+      gitOauth,
+      oauthTokens,
+      providersWithToken,
+      skipOauthProviders,
+      onRevokeServices,
+      onDeleteService,
+    } = this.props;
 
     return (
       <div data-testid="git-services-list">
         <div>GitServicesList</div>
         <div data-testid="number-of-git-services">{gitOauth.length}</div>
+        <div data-testid="oauth-token-names">{oauthTokens.map(t => t.tokenName).join()}</div>
         <div data-testid="providers-with-token">{providersWithToken.join()}</div>
         <div data-testid="skip-oauth-providers">{skipOauthProviders.join()}</div>
         <div data-testid="list-is-disabled">{isDisabled ? 'true' : 'false'}</div>
         <button onClick={() => onRevokeServices(gitOauth)}>Revoke</button>
+        <button onClick={() => onDeleteService(gitOauth[0])}>Delete OAuth token</button>
       </div>
     );
   }

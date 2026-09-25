@@ -31,6 +31,7 @@ import { gitOauthConfigActionCreators } from '@/store/GitOauthConfig';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
+jest.mock('@/pages/UserPreferences/GitServices/DeleteModal');
 jest.mock('@/pages/UserPreferences/GitServices/EmptyState');
 jest.mock('@/pages/UserPreferences/GitServices/RevokeModal');
 jest.mock('@/pages/UserPreferences/GitServices/List');
@@ -38,6 +39,7 @@ jest.mock('@/pages/UserPreferences/GitServices/List');
 const mockRequestGitOauthConfig = jest.fn().mockImplementation(() => Promise.resolve());
 const mockRequestSkipAuthorizationProviders = jest.fn().mockImplementation(() => Promise.resolve());
 const mockRevokeOauth = jest.fn().mockImplementation(() => Promise.resolve());
+const mockDeleteOauthToken = jest.fn().mockImplementation(() => Promise.resolve());
 const mockDeleteSkipOauth = jest.fn().mockImplementation(() => Promise.resolve());
 jest.mock('@/store/GitOauthConfig', () => {
   return {
@@ -49,6 +51,12 @@ jest.mock('@/store/GitOauthConfig', () => {
         (...args: Parameters<(typeof gitOauthConfigActionCreators)['revokeOauth']>): AppThunk =>
         async () =>
           mockRevokeOauth(...args),
+      deleteOauthToken:
+        (
+          ...args: Parameters<(typeof gitOauthConfigActionCreators)['deleteOauthToken']>
+        ): AppThunk =>
+        async () =>
+          mockDeleteOauthToken(...args),
       deleteSkipOauth: () => async () => mockDeleteSkipOauth,
     },
   };
@@ -87,6 +95,26 @@ describe('GitServices', () => {
         ['github', 'gitlab'],
         ['azure-devops'],
       )
+      .withPersonalAccessTokens({
+        tokens: [
+          {
+            cheUserId: 'user-id',
+            gitProvider: 'github',
+            gitProviderEndpoint: 'https://github.com',
+            tokenData: 'token-data',
+            tokenName: 'oauth2-github-token',
+            isOauth: true,
+          },
+          {
+            cheUserId: 'user-id',
+            gitProvider: 'gitlab',
+            gitProviderEndpoint: 'https://gitlab.com',
+            tokenData: 'token-data',
+            tokenName: 'personal-gitlab-token',
+            isOauth: false,
+          },
+        ],
+      })
       .build();
 
     class MockAppAlerts extends AppAlerts {
@@ -125,11 +153,17 @@ describe('GitServices', () => {
     // providers with token
     expect(screen.getByTestId('providers-with-token')).toHaveTextContent('github,gitlab');
 
+    // only OAuth tokens are passed to the list
+    expect(screen.getByTestId('oauth-token-names')).toHaveTextContent('oauth2-github-token');
+
     // providers declined
     expect(screen.getByTestId('skip-oauth-providers')).toHaveTextContent('azure-devops');
 
     // modal is closed
     expect(screen.getByTestId('revoke-modal-is-open')).toHaveTextContent('closed');
+
+    // delete modal is closed
+    expect(screen.getByTestId('delete-modal-is-open')).toHaveTextContent('closed');
   });
 
   it('should show alert warning when requestGitOauthConfig fails', async () => {
@@ -229,6 +263,73 @@ describe('GitServices', () => {
       title: errorMessage,
       variant: 'danger',
     });
+  });
+
+  test('open delete modal and cancel', async () => {
+    renderComponent(store);
+
+    const list = screen.getByTestId('git-services-list');
+    await userEvent.click(within(list).getByRole('button', { name: 'Delete OAuth token' }));
+
+    // modal is open for the first service in the list
+    expect(screen.getByTestId('delete-modal-is-open')).toHaveTextContent('open');
+    expect(screen.getByTestId('delete-modal-item')).toHaveTextContent('bitbucket');
+
+    const modal = screen.getByTestId('git-services-delete-modal');
+    await userEvent.click(within(modal).getByRole('button', { name: 'Cancel Delete' }));
+
+    // modal is closed
+    expect(screen.getByTestId('delete-modal-is-open')).toHaveTextContent('closed');
+    expect(mockDeleteOauthToken).not.toHaveBeenCalled();
+  });
+
+  test('open delete modal and confirm', async () => {
+    renderComponent(store);
+
+    const list = screen.getByTestId('git-services-list');
+    await userEvent.click(within(list).getByRole('button', { name: 'Delete OAuth token' }));
+
+    const modal = screen.getByTestId('git-services-delete-modal');
+    await userEvent.click(within(modal).getByRole('button', { name: 'Delete' }));
+
+    // modal is closed
+    expect(screen.getByTestId('delete-modal-is-open')).toHaveTextContent('closed');
+
+    // the token is deleted
+    await waitFor(() =>
+      expect(mockDeleteOauthToken).toHaveBeenCalledWith({
+        name: 'bitbucket',
+        endpointUrl: 'https://bitbucket.org',
+      }),
+    );
+
+    // success alert is shown
+    expect(mockShowAlert).toHaveBeenCalledWith({
+      key: 'delete-oauth-token-bitbucket',
+      title: 'OAuth token for "Bitbucket" has been deleted',
+      variant: 'success',
+    });
+  });
+
+  it('should show alert warning when the OAuth token deletion fails', async () => {
+    const errorMessage = 'failure reason';
+    mockDeleteOauthToken.mockRejectedValueOnce(new Error(errorMessage));
+
+    renderComponent(store);
+
+    const list = screen.getByTestId('git-services-list');
+    await userEvent.click(within(list).getByRole('button', { name: 'Delete OAuth token' }));
+
+    const modal = screen.getByTestId('git-services-delete-modal');
+    await userEvent.click(within(modal).getByRole('button', { name: 'Delete' }));
+
+    await waitFor(() =>
+      expect(mockShowAlert).toHaveBeenCalledWith({
+        key: 'delete-oauth-token-bitbucket',
+        title: errorMessage,
+        variant: 'danger',
+      }),
+    );
   });
 });
 

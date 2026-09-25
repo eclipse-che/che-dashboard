@@ -12,6 +12,7 @@
 
 import { RootState } from '@/store';
 import {
+  selectOauthTokens,
   selectPersonalAccessTokens,
   selectPersonalAccessTokensError,
   selectPersonalAccessTokensIsLoading,
@@ -21,7 +22,11 @@ describe('PersonalAccessTokens, selectors', () => {
   const mockState = {
     personalAccessToken: {
       isLoading: true,
-      tokens: [{ tokenName: 'token1' }, { tokenName: 'token2' }],
+      tokens: [
+        { tokenName: 'token1', isOauth: false },
+        { tokenName: 'token2', isOauth: false },
+        { tokenName: 'oauth-token', isOauth: true },
+      ],
       error: 'Something went wrong',
     },
   } as RootState;
@@ -31,9 +36,17 @@ describe('PersonalAccessTokens, selectors', () => {
     expect(result).toBe(true);
   });
 
-  it('should select personal access tokens', () => {
+  it('should select personal access tokens without OAuth tokens', () => {
     const result = selectPersonalAccessTokens(mockState);
-    expect(result).toEqual([{ tokenName: 'token1' }, { tokenName: 'token2' }]);
+    expect(result).toEqual([
+      { tokenName: 'token1', isOauth: false },
+      { tokenName: 'token2', isOauth: false },
+    ]);
+  });
+
+  it('should select OAuth tokens only', () => {
+    const result = selectOauthTokens(mockState);
+    expect(result).toEqual([{ tokenName: 'oauth-token', isOauth: true }]);
   });
 
   it('should select error', () => {

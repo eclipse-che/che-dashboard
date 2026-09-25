@@ -99,6 +99,16 @@ exports[`GitServicesList snapshot 1`] = `
             scope="col"
             tabIndex={-1}
           >
+            Token Name
+          </th>
+          <th
+            className="pf-v6-c-table__th"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            scope="col"
+            tabIndex={-1}
+          >
             Status
           </th>
           <td
@@ -194,6 +204,21 @@ exports[`GitServicesList snapshot 1`] = `
               </span>
             </a>
           </td>
+          <td
+            className="pf-v6-c-table__td"
+            data-label="Token Name"
+            data-testid="bitbucket-token-name"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            style={
+              {
+                "overflowWrap": "anywhere",
+                "wordBreak": "break-word",
+              }
+            }
+            tabIndex={-1}
+          />
           <td
             className="pf-v6-c-table__td"
             data-label="Status"
@@ -331,6 +356,23 @@ exports[`GitServicesList snapshot 1`] = `
           </td>
           <td
             className="pf-v6-c-table__td"
+            data-label="Token Name"
+            data-testid="github-token-name"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            style={
+              {
+                "overflowWrap": "anywhere",
+                "wordBreak": "break-word",
+              }
+            }
+            tabIndex={-1}
+          >
+            oauth2-github-token
+          </td>
+          <td
+            className="pf-v6-c-table__td"
             data-label="Status"
             onBlur={[Function]}
             onFocus={[Function]}
@@ -463,6 +505,23 @@ exports[`GitServicesList snapshot 1`] = `
                 https://gitlab.com
               </span>
             </a>
+          </td>
+          <td
+            className="pf-v6-c-table__td"
+            data-label="Token Name"
+            data-testid="gitlab-token-name"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseEnter={[Function]}
+            style={
+              {
+                "overflowWrap": "anywhere",
+                "wordBreak": "break-word",
+              }
+            }
+            tabIndex={-1}
+          >
+            oauth2-gitlab-token
           </td>
           <td
             className="pf-v6-c-table__td"
