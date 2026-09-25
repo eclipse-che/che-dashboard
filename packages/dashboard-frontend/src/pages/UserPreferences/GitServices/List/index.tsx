@@ -31,6 +31,7 @@ import { GitServiceStatusIcon } from '@/pages/UserPreferences/GitServices/List/S
 import { GitServiceTooltip } from '@/pages/UserPreferences/GitServices/List/Tooltip';
 import { GitServicesToolbar } from '@/pages/UserPreferences/GitServices/Toolbar';
 import { IGitOauth } from '@/store/GitOauthConfig';
+import { findOauthTokenSecret } from '@/store/GitOauthConfig/helpers';
 
 export const CAN_REVOKE_FROM_DASHBOARD: ReadonlyArray<api.GitOauthProvider> = [
   'github',
@@ -42,16 +43,19 @@ export const CAN_REVOKE_FROM_DASHBOARD: ReadonlyArray<api.GitOauthProvider> = [
 const COLUMN_NAMES = {
   provider: 'Provider',
   endpoint: 'Endpoint',
+  tokenName: 'Token Name',
   status: 'Status',
 };
 
 export type Props = {
   isDisabled: boolean;
   gitOauth: IGitOauth[];
+  oauthTokens: api.PersonalAccessToken[];
   providersWithToken: api.GitOauthProvider[];
   skipOauthProviders: api.GitOauthProvider[];
   onRevokeServices: (services: IGitOauth[]) => void;
   onClearService: (service: api.GitOauthProvider) => void;
+  onDeleteService: (service: IGitOauth) => void;
 };
 
 type State = {
@@ -138,6 +142,11 @@ export class GitServicesList extends React.PureComponent<Props, State> {
     }
   }
 
+  private handleDeleteService(service: IGitOauth): void {
+    this.props.onDeleteService(service);
+    this.deselectServices([service]);
+  }
+
   private async handleRevokeSelectedServices(): Promise<void> {
     const { selectedItems } = this.state;
     this.props.onRevokeServices(selectedItems);
@@ -163,13 +172,14 @@ export class GitServicesList extends React.PureComponent<Props, State> {
         />
         <Th style={{ minWidth: '8rem' }}>{COLUMN_NAMES.provider}</Th>
         <Th>{COLUMN_NAMES.endpoint}</Th>
+        <Th>{COLUMN_NAMES.tokenName}</Th>
         <Th>{COLUMN_NAMES.status}</Th>
         <Td />
       </Tr>
     );
   }
 
-  private buildRowAction(service: IGitOauth): IAction[] {
+  private buildRowActions(service: IGitOauth): IAction[] {
     const canRevoke = this.isRevokeEnabled(service.name);
     const canClear = this.hasSkipOauth(service.name);
     const hasToken = this.hasOauthToken(service.name);
@@ -180,20 +190,28 @@ export class GitServicesList extends React.PureComponent<Props, State> {
       ? () => this.handleClearService(service)
       : () => this.handleRevokeService(service);
 
-    return [{ title: actionLabel, onClick: handleAction, isDisabled: actionDisabled }];
+    return [
+      { title: actionLabel, onClick: handleAction, isDisabled: actionDisabled },
+      {
+        title: 'Delete OAuth token',
+        onClick: () => this.handleDeleteService(service),
+        isDisabled: isDisabled || !hasToken,
+      },
+    ];
   }
 
   private buildBodyRows(): React.ReactElement[] {
-    const { isDisabled, providersWithToken, skipOauthProviders } = this.props;
+    const { isDisabled, oauthTokens, providersWithToken, skipOauthProviders } = this.props;
     const { selectedItems, sortedGitOauth } = this.state;
 
     return sortedGitOauth.map((service, rowIndex) => {
+      const tokenName = findOauthTokenSecret(service, oauthTokens)?.tokenName;
       const hasWarningMessage =
         !this.isRevokeEnabled(service.name) && this.hasOauthToken(service.name);
       const canRevoke = this.isRevokeEnabled(service.name);
-      const canClear = this.hasSkipOauth(service.name);
       const hasToken = this.hasOauthToken(service.name);
       const checkDisabled = isDisabled || !canRevoke || !hasToken;
+      const rowActions = this.buildRowActions(service);
 
       return (
         <Tr key={service.name} data-testid={service.name}>
@@ -224,6 +242,13 @@ export class GitServicesList extends React.PureComponent<Props, State> {
               {service.endpointUrl}
             </Button>
           </Td>
+          <Td
+            dataLabel={COLUMN_NAMES.tokenName}
+            data-testid={`${service.name}-token-name`}
+            style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
+          >
+            {tokenName}
+          </Td>
           <Td dataLabel={COLUMN_NAMES.status}>
             <GitServiceStatusIcon
               gitProvider={service.name}
@@ -233,8 +258,8 @@ export class GitServicesList extends React.PureComponent<Props, State> {
           </Td>
           <Td isActionCell>
             <ActionsColumn
-              isDisabled={(isDisabled || !canRevoke || !hasToken) && !canClear}
-              items={this.buildRowAction(service)}
+              isDisabled={rowActions.every(action => action.isDisabled === true)}
+              items={rowActions}
             />
           </Td>
         </Tr>

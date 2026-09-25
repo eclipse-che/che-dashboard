@@ -21,6 +21,19 @@ export const selectPersonalAccessTokensIsLoading = createSelector(
   state => state.isLoading,
 );
 
-export const selectPersonalAccessTokens = createSelector(selectState, state => state.tokens);
+/**
+ * Returns personal access tokens only. Tokens provisioned by the Git OAuth flow are managed
+ * from the Git Services tab and are filtered out here.
+ */
+export const selectPersonalAccessTokens = createSelector(selectState, state =>
+  state.tokens.filter(token => !token.isOauth),
+);
+
+/**
+ * Returns tokens provisioned by the Git OAuth flow only.
+ */
+export const selectOauthTokens = createSelector(selectState, state =>
+  state.tokens.filter(token => token.isOauth),
+);
 
 export const selectPersonalAccessTokensError = createSelector(selectState, state => state.error);

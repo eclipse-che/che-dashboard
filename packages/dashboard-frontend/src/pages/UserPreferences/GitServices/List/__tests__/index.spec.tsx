@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { api } from '@eclipse-che/common';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
@@ -22,6 +23,21 @@ jest.mock('@/pages/UserPreferences/GitServices/Toolbar');
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
+function buildOauthToken(
+  gitProvider: Exclude<api.GitProvider, 'azure-devops'>,
+  gitProviderEndpoint: string,
+  tokenName: string,
+): api.PersonalAccessToken {
+  return {
+    cheUserId: 'test-user',
+    gitProvider,
+    gitProviderEndpoint,
+    tokenData: 'test-token-data',
+    tokenName,
+    isOauth: true,
+  };
+}
+
 describe('GitServicesList', () => {
   let props: Props;
 
@@ -33,8 +49,13 @@ describe('GitServicesList', () => {
         { name: 'bitbucket', endpointUrl: 'https://bitbucket.com' },
       ],
       isDisabled: false,
+      oauthTokens: [
+        buildOauthToken('github', 'https://github.com', 'oauth2-github-token'),
+        buildOauthToken('gitlab', 'https://gitlab.com', 'oauth2-gitlab-token'),
+      ],
       onRevokeServices: jest.fn(),
       onClearService: jest.fn(),
+      onDeleteService: jest.fn(),
       providersWithToken: ['github', 'gitlab'],
       skipOauthProviders: [],
     };
@@ -73,6 +94,18 @@ describe('GitServicesList', () => {
     expect(within(gitlabRow).getByRole('button', { name: 'Kebab toggle' })).toBeEnabled();
   });
 
+  test('token name column', () => {
+    renderComponent(props);
+
+    expect(screen.getByRole('columnheader', { name: 'Token Name' })).toBeTruthy();
+
+    expect(screen.getByTestId('github-token-name')).toHaveTextContent('oauth2-github-token');
+    expect(screen.getByTestId('gitlab-token-name')).toHaveTextContent('oauth2-gitlab-token');
+
+    // no OAuth token secret for Bitbucket, the cell is empty
+    expect(screen.getByTestId('bitbucket-token-name')).toBeEmptyDOMElement();
+  });
+
   test('service revocable (gitlab)', () => {
     renderComponent(props);
 
@@ -109,12 +142,51 @@ describe('GitServicesList', () => {
     ]);
   });
 
+  test('delete the OAuth token (github)', async () => {
+    renderComponent(props);
+
+    const githubRow = screen.getByTestId('github');
+    const githubKebab = within(githubRow).getByRole('button', { name: 'Kebab toggle' });
+
+    await userEvent.click(githubKebab);
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Delete OAuth token' }));
+
+    expect(props.onDeleteService).toHaveBeenCalledTimes(1);
+    expect(props.onDeleteService).toHaveBeenCalledWith({
+      name: 'github',
+      endpointUrl: 'https://github.com',
+    });
+  });
+
+  test('delete the OAuth token is available for a non-revocable service (bitbucket)', async () => {
+    renderComponent({ ...props, providersWithToken: ['bitbucket'] });
+
+    const bitbucketRow = screen.getByTestId('bitbucket');
+    const bitbucketKebab = within(bitbucketRow).getByRole('button', { name: 'Kebab toggle' });
+
+    // the service can not be revoked from the Dashboard, but the token can be deleted
+    expect(bitbucketKebab).toBeEnabled();
+
+    await userEvent.click(bitbucketKebab);
+
+    expect(screen.getByRole('menuitem', { name: 'Revoke' })).toBeDisabled();
+
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Delete OAuth token' }));
+
+    expect(props.onDeleteService).toHaveBeenCalledWith({
+      name: 'bitbucket',
+      endpointUrl: 'https://bitbucket.com',
+    });
+  });
+
   test('can clear opt-out (github)', async () => {
     props = {
       gitOauth: [{ name: 'github', endpointUrl: 'https://github.com' }],
       isDisabled: false,
+      oauthTokens: [],
       onRevokeServices: jest.fn(),
       onClearService: jest.fn(),
+      onDeleteService: jest.fn(),
       providersWithToken: [],
       skipOauthProviders: ['github'],
     };
@@ -183,8 +255,10 @@ function getComponent(props: Props): React.ReactElement<Props> {
     <GitServicesList
       gitOauth={props.gitOauth}
       isDisabled={props.isDisabled}
+      oauthTokens={props.oauthTokens}
       onRevokeServices={props.onRevokeServices}
       onClearService={props.onClearService}
+      onDeleteService={props.onDeleteService}
       providersWithToken={props.providersWithToken}
       skipOauthProviders={props.skipOauthProviders}
     />
