@@ -310,6 +310,36 @@ describe('PostStartInjector', () => {
     expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
   });
 
+  // ── watch teardown when registration completes late ────────────────────────
+
+  test('stops watch after watchInNamespace resolves if cleanup already ran', async () => {
+    let watchResolve: () => void;
+    (devworkspaceApi.watchInNamespace as jest.Mock).mockImplementation(
+      (listener: MessageListener) => {
+        capturedListener = listener;
+        return new Promise<void>(resolve => {
+          watchResolve = resolve;
+        });
+      },
+    );
+    (devworkspaceApi.getByName as jest.Mock).mockResolvedValue({
+      status: { phase: 'Running', devworkspaceId: 'ws-early' },
+    });
+
+    invoke();
+    await flushMicrotasks();
+
+    // Initial check found Running — cleanup already ran
+    expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-early');
+
+    // watchInNamespace finishes setup — should call stopWatching again
+    (devworkspaceApi.stopWatching as jest.Mock).mockClear();
+    watchResolve!();
+    await flushMicrotasks();
+
+    expect(devworkspaceApi.stopWatching).toHaveBeenCalled();
+  });
+
   // ── polling fallback (only after watch failure) ───────────────────────────
 
   describe('polling fallback', () => {
@@ -441,6 +471,39 @@ describe('PostStartInjector', () => {
         expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
       },
     );
+
+    test('rejects out-of-order Stopped from a GET started before Starting was observed', async () => {
+      let earlyGetResolve: (value: unknown) => void;
+      const earlyGetPromise = new Promise(resolve => {
+        earlyGetResolve = resolve;
+      });
+
+      (devworkspaceApi.getByName as jest.Mock)
+        .mockResolvedValueOnce({ status: { phase: 'Stopped' } }) // initial check — stale
+        .mockReturnValueOnce(earlyGetPromise) // poll #1 — deferred, will resolve late with Stopped
+        .mockResolvedValue({ status: { phase: 'Starting' } }); // poll #2 — sets seenNonTerminal
+
+      invoke();
+      await flushMicrotasks();
+
+      await capturedListener(errorMessage());
+
+      // Poll tick 1: GET issued (seenNonTerminal=false), response deferred
+      jest.advanceTimersByTime(2000);
+      await flushMicrotasks();
+
+      // Poll tick 2: GET issued (seenNonTerminal=false), returns Starting → sets flag
+      jest.advanceTimersByTime(2000);
+      await flushMicrotasks();
+
+      // Now poll #1 resolves late with Stopped — must NOT trigger terminal
+      // because seenNonTerminal was false when the GET was issued
+      earlyGetResolve!({ status: { phase: 'Stopped' } });
+      await flushMicrotasks();
+
+      expect(kubeConfigApi.injectKubeConfig).not.toHaveBeenCalled();
+      expect((PostStartInjector as any).activeWatches.has(key)).toBe(true);
+    });
 
     test('retries after a GET error during polling', async () => {
       (devworkspaceApi.getByName as jest.Mock)

@@ -74,7 +74,7 @@ export class KubeConfigApiService implements IKubeConfigApi {
           podName,
           namespace,
           containerName,
-          ['sh', '-c', `mkdir -p ${kubeConfigDirectory}`],
+          ['sh', '-c', `mkdir -p '${kubeConfigDirectory}'`],
           this.getServerConfig(),
         );
 
@@ -92,7 +92,7 @@ export class KubeConfigApiService implements IKubeConfigApi {
           podName,
           namespace,
           containerName,
-          ['sh', '-c', `cat ${kubeConfigDirectory}/config`],
+          ['sh', '-c', `cat '${kubeConfigDirectory}/config'`],
           this.getServerConfig(),
         );
 
@@ -109,7 +109,7 @@ export class KubeConfigApiService implements IKubeConfigApi {
           podName,
           namespace,
           containerName,
-          ['sh', '-c', `echo '${kubeConfig}' > ${kubeConfigDirectory}/config`],
+          ['sh', '-c', `echo '${kubeConfig}' > '${kubeConfigDirectory}/config'`],
           this.getServerConfig(),
         );
 
@@ -184,7 +184,13 @@ export class KubeConfigApiService implements IKubeConfigApi {
       );
 
       if (kubeConfigEnvResolver.stdOut) {
-        return kubeConfigEnvResolver.stdOut.replace(new RegExp('/config$'), '');
+        const raw = kubeConfigEnvResolver.stdOut.trim();
+        const firstPath = raw.split(':')[0];
+        const lastSlash = firstPath.lastIndexOf('/');
+        if (lastSlash > 0) {
+          return firstPath.substring(0, lastSlash);
+        }
+        return firstPath;
       }
     } catch (e) {
       logger.error(
@@ -204,11 +210,11 @@ export class KubeConfigApiService implements IKubeConfigApi {
       );
 
       if (homeEnvResolution.stdOut) {
-        if (homeEnvResolution.stdOut.substr(-1) === '/') {
-          return homeEnvResolution.stdOut + '.kube';
-        } else {
-          return homeEnvResolution.stdOut + '/.kube';
+        const home = homeEnvResolution.stdOut.trim();
+        if (home.endsWith('/')) {
+          return home + '.kube';
         }
+        return home + '/.kube';
       }
     } catch (e) {
       logger.error(

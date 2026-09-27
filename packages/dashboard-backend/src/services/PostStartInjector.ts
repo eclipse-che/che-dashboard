@@ -94,6 +94,7 @@ export class PostStartInjector {
     let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
     let seenNonTerminal = false;
     let injecting = false;
+    let cleanedUp = false;
 
     const isOwner = (): boolean => PostStartInjector.activeWatches.get(key) === cleanup;
 
@@ -101,6 +102,7 @@ export class PostStartInjector {
       if (!isOwner()) {
         return;
       }
+      cleanedUp = true;
       const elapsedSec = Math.round((Date.now() - startedAt) / 1000);
       logger.info(
         `PostStartInjector: unsubscribing for ${key} — ${reason} (${elapsedSec}s elapsed)`,
@@ -187,6 +189,8 @@ export class PostStartInjector {
           return;
         }
 
+        const seenNonTerminalSnapshot = seenNonTerminal;
+
         devworkspaceApi
           .getByName(namespace, workspaceName)
           .then(async dw => {
@@ -199,7 +203,9 @@ export class PostStartInjector {
 
             if (phase === DevWorkspaceStatus.RUNNING && devworkspaceId) {
               await handleRunning(devworkspaceId, 'poll');
-            } else if (phase && isDecisiveTerminal(phase)) {
+            } else if (phase && isFailurePhase(phase)) {
+              handleTerminal(phase, 'poll');
+            } else if (phase && isShutdownPhase(phase) && seenNonTerminalSnapshot) {
               handleTerminal(phase, 'poll');
             }
           })
@@ -250,7 +256,11 @@ export class PostStartInjector {
       }
     };
 
-    devworkspaceApi.watchInNamespace(listener, { namespace, resourceVersion: '' });
+    devworkspaceApi.watchInNamespace(listener, { namespace, resourceVersion: '' }).then(() => {
+      if (cleanedUp) {
+        devworkspaceApi.stopWatching();
+      }
+    });
 
     // ── 2. Immediate initial check (LIST→STREAM race) ───────────────────────
 
