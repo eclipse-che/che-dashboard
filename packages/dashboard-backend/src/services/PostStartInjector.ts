@@ -195,6 +195,8 @@ export class PostStartInjector {
           return;
         }
 
+        // Snapshot before the async GET so an out-of-order stale Stopped
+        // from an earlier request cannot trigger cleanup after Starting is seen.
         const seenNonTerminalSnapshot = seenNonTerminal;
 
         devworkspaceApi
@@ -286,7 +288,6 @@ export class PostStartInjector {
       })
       .catch((e: unknown) => {
         logger.warn(e, `PostStartInjector: watchInNamespace rejected for ${key}`);
-        startPolling('watchInNamespace rejection');
       });
 
     // ── 2. Immediate initial check (LIST→STREAM race) ───────────────────────

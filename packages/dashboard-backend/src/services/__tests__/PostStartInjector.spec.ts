@@ -340,6 +340,32 @@ describe('PostStartInjector', () => {
     expect(devworkspaceApi.stopWatching).toHaveBeenCalled();
   });
 
+  test('falls back to polling via grace timer when watchInNamespace rejects', async () => {
+    (devworkspaceApi.watchInNamespace as jest.Mock).mockRejectedValue(
+      new Error('watch setup failed'),
+    );
+    (devworkspaceApi.getByName as jest.Mock)
+      .mockResolvedValueOnce({ status: { phase: 'Starting' } }) // initial check
+      .mockResolvedValue({ status: { phase: 'Running', devworkspaceId: 'ws-reject' } });
+
+    invoke();
+    await flushMicrotasks();
+
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.stringContaining('watchInNamespace rejected'),
+    );
+
+    // Grace timer fires after 10s and starts polling
+    jest.advanceTimersByTime(10000);
+    await flushMicrotasks();
+
+    jest.advanceTimersByTime(2000);
+    await flushMicrotasks();
+
+    expect(kubeConfigApi.injectKubeConfig).toHaveBeenCalledWith(namespace, 'ws-reject');
+  });
+
   // ── polling fallback (only after watch failure) ───────────────────────────
 
   describe('polling fallback', () => {
@@ -553,16 +579,20 @@ describe('PostStartInjector', () => {
 
   // ── grace timer re-arms on watch events ─────────────────────────────────
 
-  test('cancels grace timer polling when watch delivers events for this workspace', async () => {
+  test('re-arms grace timer when watch delivers events, suppressing the original', async () => {
     invoke();
     await capturedListener(dwMessage('Starting', 'ws-123'));
 
-    jest.advanceTimersByTime(10000);
+    // At 9999ms the re-armed timer has not yet fired
+    jest.advanceTimersByTime(9999);
     await flushMicrotasks();
 
     expect(devworkspaceApi.getByName).toHaveBeenCalledTimes(1);
     expect(logger.info).not.toHaveBeenCalledWith(
       expect.stringContaining('no decisive phase within grace period'),
+    );
+    expect(logger.info).not.toHaveBeenCalledWith(
+      expect.stringContaining('no watch activity within grace period'),
     );
   });
 
