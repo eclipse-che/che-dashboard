@@ -208,8 +208,8 @@ export class KubeConfigApiService implements IKubeConfigApi {
         this.getServerConfig(),
       );
 
-      if (homeEnvResolution.stdOut) {
-        const home = homeEnvResolution.stdOut.trim();
+      const home = homeEnvResolution.stdOut.trim();
+      if (home) {
         if (home.endsWith('/')) {
           return home + '.kube';
         }

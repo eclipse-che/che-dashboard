@@ -254,7 +254,10 @@ export class PostStartInjector {
 
       if (watchGraceHandle !== undefined) {
         clearTimeout(watchGraceHandle);
-        watchGraceHandle = undefined;
+        watchGraceHandle = setTimeout(() => {
+          watchGraceHandle = undefined;
+          startPolling('no watch activity within grace period');
+        }, WATCH_GRACE_MS);
       }
 
       const phase = devWorkspace.status?.phase;
@@ -283,6 +286,7 @@ export class PostStartInjector {
       })
       .catch((e: unknown) => {
         logger.warn(e, `PostStartInjector: watchInNamespace rejected for ${key}`);
+        startPolling('watchInNamespace rejection');
       });
 
     // ── 2. Immediate initial check (LIST→STREAM race) ───────────────────────

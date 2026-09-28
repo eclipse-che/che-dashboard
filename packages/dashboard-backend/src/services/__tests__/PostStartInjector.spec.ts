@@ -527,6 +527,91 @@ describe('PostStartInjector', () => {
     });
   });
 
+  // ── overall timeout releases key during hung injection ──────────────────
+
+  test('overall timeout releases key if injection is still running', async () => {
+    let injectResolve: () => void;
+    (kubeConfigApi.injectKubeConfig as jest.Mock).mockReturnValue(
+      new Promise<void>(resolve => {
+        injectResolve = resolve;
+      }),
+    );
+
+    invoke();
+    const runningPromise = capturedListener(dwMessage('Running', 'ws-hung'));
+
+    expect((PostStartInjector as any).activeWatches.has(key)).toBe(true);
+
+    jest.advanceTimersByTime(600000);
+    expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
+
+    injectResolve!();
+    await runningPromise;
+
+    expect((PostStartInjector as any).activeWatches.has(key)).toBe(false);
+  });
+
+  // ── grace timer re-arms on watch events ─────────────────────────────────
+
+  test('cancels grace timer polling when watch delivers events for this workspace', async () => {
+    invoke();
+    await capturedListener(dwMessage('Starting', 'ws-123'));
+
+    jest.advanceTimersByTime(10000);
+    await flushMicrotasks();
+
+    expect(devworkspaceApi.getByName).toHaveBeenCalledTimes(1);
+    expect(logger.info).not.toHaveBeenCalledWith(
+      expect.stringContaining('no decisive phase within grace period'),
+    );
+  });
+
+  test('re-arms grace timer so a later silent drop triggers polling', async () => {
+    invoke();
+
+    // At t=5s deliver a watch event — re-arms grace timer to fire at t=15s
+    jest.advanceTimersByTime(5000);
+    await capturedListener(dwMessage('Starting', 'ws-123'));
+
+    // At t=10s the original timer would have fired, but was re-armed
+    jest.advanceTimersByTime(5000);
+    await flushMicrotasks();
+
+    expect(logger.info).not.toHaveBeenCalledWith(
+      expect.stringContaining('no watch activity within grace period'),
+    );
+
+    // At t=15s the re-armed timer fires
+    jest.advanceTimersByTime(5000);
+    await flushMicrotasks();
+
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringContaining('no watch activity within grace period'),
+    );
+  });
+
+  // ── watch ERROR during injection is ignored ─────────────────────────────
+
+  test('watch ERROR during injection does not start polling', async () => {
+    let injectResolve: () => void;
+    (kubeConfigApi.injectKubeConfig as jest.Mock).mockReturnValue(
+      new Promise<void>(resolve => {
+        injectResolve = resolve;
+      }),
+    );
+
+    invoke();
+    const runningPromise = capturedListener(dwMessage('Running', 'ws-123'));
+
+    await capturedListener(errorMessage());
+    expect(logger.info).not.toHaveBeenCalledWith(
+      expect.stringContaining('falling back to polling'),
+    );
+
+    injectResolve!();
+    await runningPromise;
+  });
+
   // ── elapsed time logging ────────────────────────────────────────────────
 
   test('logs elapsed time when injection succeeds', async () => {
