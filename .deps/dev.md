@@ -420,7 +420,7 @@
 | `color-convert@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/color-convert/2.0.1) |
 | `color-name@1.1.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/color-name/1.1.3) |
 | `color-name@1.1.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/color-name/1.1.4) |
-| `colord@2.9.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/colord/2.9.3) |
+| `colord@2.10.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/colord/2.10.0) |
 | `colorette@2.0.20` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/colorette/2.0.20) |
 | `combined-stream@1.0.8` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/combined-stream/1.0.8) |
 | `commander@10.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/commander/10.0.1) |
@@ -1158,7 +1158,7 @@
 | `supports-hyperlinks@3.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/supports-hyperlinks/3.2.0) |
 | `supports-preserve-symlinks-flag@1.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/supports-preserve-symlinks-flag/1.0.0) |
 | `svg-tags@1.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/svg-tags/1.0.0) |
-| `svgo@3.3.5` | MIT | transitive dependency |
+| `svgo@3.3.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/svgo/3.3.5) |
 | `symbol-tree@3.2.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/symbol-tree/3.2.4) |
 | `synckit@0.11.11` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/synckit/0.11.11) |
 | `synckit@0.8.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/synckit/0.8.5) |
@@ -1213,7 +1213,7 @@
 | `undefsafe@2.0.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undefsafe/2.0.5) |
 | `undici-types@5.26.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici-types/5.26.5) |
 | `undici-types@7.16.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici-types/7.16.0) |
-| `undici@7.29.1` | MIT | transitive dependency |
+| `undici@7.29.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici/7.29.1) |
 | `unique-filename@3.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/unique-filename/3.0.0) |
 | `unique-slug@4.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/unique-slug/4.0.0) |
 | `universalify@0.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/universalify/0.2.0) |

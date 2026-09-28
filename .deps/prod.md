@@ -20,7 +20,7 @@
 | `@fastify/error@4.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/error/4.2.0) |
 | `@fastify/fast-json-stringify-compiler@5.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/fast-json-stringify-compiler/5.0.3) |
 | `@fastify/forwarded@3.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/forwarded/3.0.1) |
-| `@fastify/http-proxy@11.4.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/http-proxy/11.4.4) |
+| `@fastify/http-proxy@11.6.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/http-proxy/11.6.3) |
 | `@fastify/merge-json-schemas@0.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/merge-json-schemas/0.2.1) |
 | `@fastify/oauth2@8.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/oauth2/8.2.0) |
 | `@fastify/proxy-addr@5.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/proxy-addr/5.1.0) |
@@ -54,7 +54,7 @@
 | `@patternfly/react-tokens@6.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-tokens/6.4.0) |
 | `@pinojs/redact@0.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@pinojs/redact/0.4.0) |
 | `@reduxjs/toolkit@2.2.7` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@reduxjs/toolkit/2.2.7) |
-| `@remix-run/router@1.23.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@remix-run/router/1.23.2) |
+| `@remix-run/router@1.23.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@remix-run/router/1.23.4) |
 | `@sideway/address@4.1.5` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sideway/address/4.1.5) |
 | `@sideway/formula@3.0.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sideway/formula/3.0.1) |
 | `@sideway/pinpoint@2.0.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sideway/pinpoint/2.0.0) |
@@ -133,7 +133,7 @@
 | `inversify@6.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/inversify/6.0.2) |
 | `inversify@7.5.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/inversify/7.5.1) |
 | `ipaddr.js@2.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ipaddr.js/2.3.0) |
-| `joi@17.13.4` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/joi/17.13.4) |
+| `joi@17.13.7` | BSD-3-Clause | transitive dependency |
 | `joycon@3.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/joycon/3.1.1) |
 | `json-schema-ref-resolver@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-schema-ref-resolver/3.0.0) |
 | `json-schema-resolver@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-schema-resolver/3.0.0) |
@@ -165,7 +165,7 @@
 | `process-warning@2.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/process-warning/2.3.0) |
 | `process-warning@4.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/process-warning/4.0.1) |
 | `process-warning@5.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/process-warning/5.0.0) |
-| `process-warning@5.1.0` | MIT | transitive dependency |
+| `process-warning@5.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/process-warning/5.1.0) |
 | `process@0.11.10` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/process/0.11.10) |
 | `public-encrypt@4.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/public-encrypt/4.0.3) |
 | `querystring@0.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/querystring/0.2.1) |
@@ -178,8 +178,8 @@
 | `react-helmet@6.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-helmet/6.1.0) |
 | `react-pluralize@1.6.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-pluralize/1.6.3) |
 | `react-redux@9.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-redux/9.1.2) |
-| `react-router-dom@6.30.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-router-dom/6.30.3) |
-| `react-router@6.30.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-router/6.30.3) |
+| `react-router-dom@6.30.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-router-dom/6.30.6) |
+| `react-router@6.30.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-router/6.30.6) |
 | `react-side-effect@2.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-side-effect/2.1.2) |
 | `react@18.3.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react/18.3.1) |
 | `readable-stream@3.6.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/readable-stream/3.6.2) |
