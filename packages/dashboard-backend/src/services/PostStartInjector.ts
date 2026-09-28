@@ -108,7 +108,7 @@ export class PostStartInjector {
         `PostStartInjector: unsubscribing for ${key} — ${reason} (${elapsedSec}s elapsed)`,
       );
       devworkspaceApi.stopWatching();
-      if (timeoutHandle !== undefined) {
+      if (deleteKey && timeoutHandle !== undefined) {
         clearTimeout(timeoutHandle);
         timeoutHandle = undefined;
       }
@@ -161,7 +161,13 @@ export class PostStartInjector {
         source,
         elapsedMs,
       );
-      PostStartInjector.activeWatches.delete(key);
+      if (isOwner()) {
+        if (timeoutHandle !== undefined) {
+          clearTimeout(timeoutHandle);
+          timeoutHandle = undefined;
+        }
+        PostStartInjector.activeWatches.delete(key);
+      }
     };
 
     const handleTerminal = (phase: string, source: string): void => {
@@ -224,8 +230,15 @@ export class PostStartInjector {
 
     const listener: MessageListener = async message => {
       if (message.eventPhase === api.webSocket.EventPhase.ERROR) {
+        if (!isOwner() || injecting) {
+          return;
+        }
         logger.warn(`PostStartInjector: watch ERROR for ${key} — falling back to polling`);
         devworkspaceApi.stopWatching();
+        if (watchGraceHandle !== undefined) {
+          clearTimeout(watchGraceHandle);
+          watchGraceHandle = undefined;
+        }
         startPolling('watch error');
         return;
       }
@@ -237,6 +250,11 @@ export class PostStartInjector {
       const { devWorkspace } = message;
       if (devWorkspace.metadata?.name !== workspaceName) {
         return;
+      }
+
+      if (watchGraceHandle !== undefined) {
+        clearTimeout(watchGraceHandle);
+        watchGraceHandle = undefined;
       }
 
       const phase = devWorkspace.status?.phase;
@@ -256,11 +274,16 @@ export class PostStartInjector {
       }
     };
 
-    devworkspaceApi.watchInNamespace(listener, { namespace, resourceVersion: '' }).then(() => {
-      if (cleanedUp) {
-        devworkspaceApi.stopWatching();
-      }
-    });
+    devworkspaceApi
+      .watchInNamespace(listener, { namespace, resourceVersion: '' })
+      .then(() => {
+        if (cleanedUp) {
+          devworkspaceApi.stopWatching();
+        }
+      })
+      .catch((e: unknown) => {
+        logger.warn(e, `PostStartInjector: watchInNamespace rejected for ${key}`);
+      });
 
     // ── 2. Immediate initial check (LIST→STREAM race) ───────────────────────
 
