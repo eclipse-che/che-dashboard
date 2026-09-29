@@ -12,6 +12,7 @@
 
 import { helpers } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
+import path from 'path';
 import { parse, stringify } from 'yaml';
 
 import { exec, ServerConfig } from '@/devworkspaceClient/services/helpers/exec';
@@ -74,7 +75,7 @@ export class KubeConfigApiService implements IKubeConfigApi {
           podName,
           namespace,
           containerName,
-          ['sh', '-c', `mkdir -p ${kubeConfigDirectory}`],
+          ['sh', '-c', `mkdir -p '${kubeConfigDirectory}'`],
           this.getServerConfig(),
         );
 
@@ -92,7 +93,7 @@ export class KubeConfigApiService implements IKubeConfigApi {
           podName,
           namespace,
           containerName,
-          ['sh', '-c', `cat ${kubeConfigDirectory}/config`],
+          ['sh', '-c', `cat '${kubeConfigDirectory}/config'`],
           this.getServerConfig(),
         );
 
@@ -109,7 +110,7 @@ export class KubeConfigApiService implements IKubeConfigApi {
           podName,
           namespace,
           containerName,
-          ['sh', '-c', `echo '${kubeConfig}' > ${kubeConfigDirectory}/config`],
+          ['sh', '-c', `echo '${kubeConfig}' > '${kubeConfigDirectory}/config'`],
           this.getServerConfig(),
         );
 
@@ -183,8 +184,12 @@ export class KubeConfigApiService implements IKubeConfigApi {
         this.getServerConfig(),
       );
 
-      if (kubeConfigEnvResolver.stdOut) {
-        return kubeConfigEnvResolver.stdOut.replace(new RegExp('/config$'), '');
+      const raw = kubeConfigEnvResolver.stdOut.trim();
+      if (raw) {
+        const firstPath = raw.split(':').filter(Boolean)[0];
+        if (firstPath) {
+          return path.posix.dirname(firstPath);
+        }
       }
     } catch (e) {
       logger.error(
@@ -203,12 +208,12 @@ export class KubeConfigApiService implements IKubeConfigApi {
         this.getServerConfig(),
       );
 
-      if (homeEnvResolution.stdOut) {
-        if (homeEnvResolution.stdOut.substr(-1) === '/') {
-          return homeEnvResolution.stdOut + '.kube';
-        } else {
-          return homeEnvResolution.stdOut + '/.kube';
+      const home = homeEnvResolution.stdOut.trim();
+      if (home) {
+        if (home.endsWith('/')) {
+          return home + '.kube';
         }
+        return home + '/.kube';
       }
     } catch (e) {
       logger.error(

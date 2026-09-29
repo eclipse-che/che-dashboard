@@ -15,7 +15,6 @@
 import * as mockClient from '@kubernetes/client-node';
 import { CoreV1Api, V1PodList } from '@kubernetes/client-node';
 import fs from 'fs';
-import { parse, stringify } from 'yaml';
 
 import * as helper from '@/devworkspaceClient/services/helpers/exec';
 import { KubeConfigApiService } from '@/devworkspaceClient/services/kubeConfigApi';
@@ -30,28 +29,35 @@ const mockExecPrintenvHome = jest.fn().mockReturnValue({
   stdError: '',
 });
 
+let mockExecPrintenvKubeConfig = jest.fn().mockRejectedValue({
+  stdOut: '',
+  stdError: 'not set',
+});
+
 let mockExecCatKubeConfig = jest.fn().mockReturnValue({
   stdOut: '',
   stdError: '',
 });
 
+let resolvedKubeConfigDir = kubeConfigDir;
+
 const spyExec = jest
   .spyOn(helper, 'exec')
   .mockImplementation((...args: Parameters<typeof helper.exec>) => {
     const [, , , command] = args;
-    if (command.some(c => c === 'printenv HOME')) {
-      // directory where to create the kubeconfig
+    if (command.some(c => c === 'printenv KUBECONFIG')) {
+      return mockExecPrintenvKubeConfig();
+    } else if (command.some(c => c === 'printenv HOME')) {
       return mockExecPrintenvHome();
-    } else if (command.some(c => c.startsWith(`cat ${kubeConfigDir}/config`))) {
-      // file empty
+    } else if (command.some(c => c.startsWith(`cat '${resolvedKubeConfigDir}/config`))) {
       return mockExecCatKubeConfig();
     } else if (command.some(c => c.startsWith('mkdir -p'))) {
-      // create the directory
       return Promise.resolve({ stdOut: '', stdError: '' });
     } else if (
-      command.some(c => c.startsWith(`echo '`) && c.endsWith(`' > ${kubeConfigDir}/config`))
+      command.some(
+        c => c.startsWith(`echo '`) && c.endsWith(`' > '${resolvedKubeConfigDir}/config'`),
+      )
     ) {
-      // sync config
       return Promise.resolve({ stdOut: '', stdError: '' });
     }
     return Promise.reject({
@@ -106,6 +112,12 @@ describe('Kubernetes Config API Service', () => {
     kubeConfig.applyToHTTPSOptions = jest.fn();
 
     kubeConfigService = new KubeConfigApiService(kubeConfig);
+
+    mockExecPrintenvKubeConfig = jest.fn().mockRejectedValue({
+      stdOut: '',
+      stdError: 'not set',
+    });
+    resolvedKubeConfigDir = kubeConfigDir;
   });
 
   afterEach(() => {
@@ -143,7 +155,7 @@ describe('Kubernetes Config API Service', () => {
       workspaceName,
       namespace,
       containerName,
-      ['sh', '-c', `mkdir -p ${kubeConfigDir}`],
+      ['sh', '-c', `mkdir -p '${kubeConfigDir}'`],
       expect.anything(),
     );
 
@@ -153,7 +165,7 @@ describe('Kubernetes Config API Service', () => {
       workspaceName,
       namespace,
       containerName,
-      ['sh', '-c', `cat ${kubeConfigDir}/config`],
+      ['sh', '-c', `cat '${kubeConfigDir}/config'`],
       expect.anything(),
     );
 
@@ -163,7 +175,7 @@ describe('Kubernetes Config API Service', () => {
       workspaceName,
       namespace,
       containerName,
-      ['sh', '-c', `echo '${configContent}' > ${kubeConfigDir}/config`],
+      ['sh', '-c', `echo '${configContent}' > '${kubeConfigDir}/config'`],
       expect.anything(),
     );
   });
@@ -188,9 +200,87 @@ describe('Kubernetes Config API Service', () => {
       workspaceName,
       namespace,
       containerName,
-      ['sh', '-c', `echo '${mergedConfigContent}' > ${kubeConfigDir}/config`],
+      ['sh', '-c', `echo '${mergedConfigContent}' > '${kubeConfigDir}/config'`],
       expect.anything(),
     );
+  });
+
+  describe('KUBECONFIG env variable resolution', () => {
+    test('resolves directory from single standard KUBECONFIG path', async () => {
+      mockExecPrintenvKubeConfig = jest.fn().mockResolvedValue({
+        stdOut: '/home/user/.kube/config',
+        stdError: '',
+      });
+      resolvedKubeConfigDir = kubeConfigDir;
+
+      await kubeConfigService.injectKubeConfig(namespace, 'wksp-id');
+
+      expect(spyExec).toHaveBeenNthCalledWith(
+        2,
+        workspaceName,
+        namespace,
+        containerName,
+        ['sh', '-c', `mkdir -p '${kubeConfigDir}'`],
+        expect.anything(),
+      );
+    });
+
+    test('splits colon-separated KUBECONFIG and uses the first path', async () => {
+      mockExecPrintenvKubeConfig = jest.fn().mockResolvedValue({
+        stdOut: '/home/user/.kube/config:/etc/ocp-home/kubeconfig',
+        stdError: '',
+      });
+      resolvedKubeConfigDir = kubeConfigDir;
+
+      await kubeConfigService.injectKubeConfig(namespace, 'wksp-id');
+
+      expect(spyExec).toHaveBeenNthCalledWith(
+        2,
+        workspaceName,
+        namespace,
+        containerName,
+        ['sh', '-c', `mkdir -p '${kubeConfigDir}'`],
+        expect.anything(),
+      );
+    });
+
+    test('handles custom filename in KUBECONFIG using dirname', async () => {
+      mockExecPrintenvKubeConfig = jest.fn().mockResolvedValue({
+        stdOut: '/home/user/.kube/dev.yaml',
+        stdError: '',
+      });
+      resolvedKubeConfigDir = kubeConfigDir;
+
+      await kubeConfigService.injectKubeConfig(namespace, 'wksp-id');
+
+      expect(spyExec).toHaveBeenNthCalledWith(
+        2,
+        workspaceName,
+        namespace,
+        containerName,
+        ['sh', '-c', `mkdir -p '${kubeConfigDir}'`],
+        expect.anything(),
+      );
+    });
+
+    test('trims trailing newline from KUBECONFIG value', async () => {
+      mockExecPrintenvKubeConfig = jest.fn().mockResolvedValue({
+        stdOut: '/home/user/.kube/config\n',
+        stdError: '',
+      });
+      resolvedKubeConfigDir = kubeConfigDir;
+
+      await kubeConfigService.injectKubeConfig(namespace, 'wksp-id');
+
+      expect(spyExec).toHaveBeenNthCalledWith(
+        2,
+        workspaceName,
+        namespace,
+        containerName,
+        ['sh', '-c', `mkdir -p '${kubeConfigDir}'`],
+        expect.anything(),
+      );
+    });
   });
 });
 
