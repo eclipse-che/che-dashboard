@@ -881,7 +881,6 @@
 | `mini-css-extract-plugin@2.9.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/mini-css-extract-plugin/2.9.0) |
 | `minimalistic-crypto-utils@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/minimalistic-crypto-utils/1.0.1) |
 | `minimatch@10.2.5` | BlueOak-1.0.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/minimatch/10.2.5) |
-| `minimatch@3.1.2` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/minimatch/3.1.2) |
 | `minimatch@3.1.5` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/minimatch/3.1.5) |
 | `minimist@1.2.8` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/minimist/1.2.8) |
 | `minipass-collect@2.0.1` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/minipass-collect/2.0.1) |
