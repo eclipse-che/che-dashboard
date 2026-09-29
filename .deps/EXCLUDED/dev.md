@@ -9,7 +9,4 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 | `@simple-libs/stream-utils@1.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@simple-libs/stream-utils/1.2.0) |
 | `conventional-changelog-conventionalcommits@9.3.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/conventional-changelog-conventionalcommits/9.3.1) |
 | `baseline-browser-mapping@2.11.14` | transitive dependency |
-| `svgo@3.3.5` | transitive dependency |
 | `find-my-way@9.9.0` | transitive dependency |
-| `js-yaml@4.3.2` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/js-yaml/4.3.2) |
-| `undici@7.29.1` | transitive dependency |

@@ -30,7 +30,7 @@
     "@eclipse-che/che-devworkspace-generator": "7.113.0-next-7b6a101",
     "@fastify/cors": "^11.2.0",
     "@fastify/error": "^4.2.0",
-    "@fastify/http-proxy": "^11.4.4",
+    "@fastify/http-proxy": "^11.6.2",
     "@fastify/oauth2": "^8.2.0",
     "@fastify/rate-limit": "^10.3.0",
     "@fastify/static": "^10.1.2",
