@@ -60,9 +60,11 @@ export class GitServices extends React.PureComponent<Props, State> {
 
   public async componentDidMount(): Promise<void> {
     const { isLoading } = this.props;
+    const requests = [this.props.requestTokens()];
     if (!isLoading) {
-      await Promise.allSettled([this.requestGitServices(), this.props.requestTokens()]);
+      requests.push(this.requestGitServices());
     }
+    await Promise.allSettled(requests);
   }
 
   private async requestGitServices(): Promise<void> {
