@@ -296,6 +296,17 @@ function getFactoryParamsFromLocation(
     searchParams.delete('override.devfileFilename');
   }
 
+  // normalize devfilepath (lowercase) to devfilePath (camelCase)
+  if (searchParams.has('devfilepath') && !searchParams.has('devfilePath')) {
+    const val = searchParams.get('devfilepath');
+    if (val && val !== 'true') {
+      searchParams.set('devfilePath', val);
+    }
+    searchParams.delete('devfilepath');
+  } else if (searchParams.has('devfilepath')) {
+    searchParams.delete('devfilepath');
+  }
+
   return { path, searchParams };
 }
 
@@ -307,7 +318,7 @@ export function getGitRepoOptionsFromLocation(location: string): {
   hasSupportedGitService: boolean;
 } {
   const { path, searchParams } = getFactoryParamsFromLocation(location);
-  let devfilePath = searchParams.get('devfilePath') || undefined;
+  let devfilePath = searchParams.get('devfilePath') || searchParams.get('devfilepath') || undefined;
 
   if (
     !devfilePath &&
@@ -457,6 +468,9 @@ export function setGitRepoOptionsToLocation(
   }
   if (searchParams.has('df')) {
     searchParams.delete('df');
+  }
+  if (searchParams.has('devfilepath')) {
+    searchParams.delete('devfilepath');
   }
   if (newOptions.devfilePath) {
     searchParams.set('devfilePath', newOptions.devfilePath);

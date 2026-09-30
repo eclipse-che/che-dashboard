@@ -77,7 +77,9 @@ export function buildFactoryLoaderPath(location: string, appendUrl = true): stri
   }).filter(([, paramValue]) => paramValue);
 
   const devfilePath =
-    extractUrlParam(repoParams, 'devfilePath') || extractUrlParam(repoParams, 'df');
+    extractUrlParam(repoParams, 'devfilePath') ||
+    extractUrlParam(repoParams, 'devfilepath') ||
+    extractUrlParam(repoParams, 'df');
   if (devfilePath) {
     initParams.push(['override.devfileFilename', devfilePath]);
   }

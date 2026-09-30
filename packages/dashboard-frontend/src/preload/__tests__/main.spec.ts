@@ -60,6 +60,24 @@ describe('test buildFactoryLoaderPath()', () => {
       );
     });
 
+    test('devfilepath parameter (lowercase)', () => {
+      const result = buildFactoryLoaderPath(
+        'git@github.com:eclipse-che/che-dashboard.git?devfilepath=devfilev2.yaml',
+      );
+      expect(result).toEqual(
+        '/f?override.devfileFilename=devfilev2.yaml&url=git%2540github.com%253Aeclipse-che%252Fche-dashboard.git',
+      );
+    });
+
+    test('new policy with devfilepath (lowercase)', () => {
+      const result = buildFactoryLoaderPath(
+        'git@github.com:eclipse-che/che-dashboard.git?new&devfilepath=custom/devfile.yaml',
+      );
+      expect(result).toEqual(
+        '/f?override.devfileFilename=custom%2Fdevfile.yaml&policies.create=perclick&url=git%2540github.com%253Aeclipse-che%252Fche-dashboard.git',
+      );
+    });
+
     test('devWorkspace parameter', () => {
       const result = buildFactoryLoaderPath(
         'git@github.com:eclipse-che/che-dashboard.git?devWorkspace=/devfiles/devworkspace-che-theia-latest.yaml',
@@ -122,6 +140,24 @@ describe('test buildFactoryLoaderPath()', () => {
       );
       expect(result).toEqual(
         '/f?override.devfileFilename=devfilev2.yaml&url=https%253A%252F%252Fgithub.com%252Fche-samples%252Fjava-spring-petclinic%252Ftree%252Fdevfilev2',
+      );
+    });
+
+    test('devfilepath parameter (lowercase)', () => {
+      const result = buildFactoryLoaderPath(
+        'https://github.com/che-samples/java-spring-petclinic/tree/devfilev2?devfilepath=devfilev2.yaml',
+      );
+      expect(result).toEqual(
+        '/f?override.devfileFilename=devfilev2.yaml&url=https%253A%252F%252Fgithub.com%252Fche-samples%252Fjava-spring-petclinic%252Ftree%252Fdevfilev2',
+      );
+    });
+
+    test('new policy with devfilepath (lowercase)', () => {
+      const result = buildFactoryLoaderPath(
+        'https://github.com/batleforc/weebodevimage?new&devfilepath=che-mise-webkit/devfile.yaml',
+      );
+      expect(result).toEqual(
+        '/f?override.devfileFilename=che-mise-webkit%2Fdevfile.yaml&policies.create=perclick&url=https%253A%252F%252Fgithub.com%252Fbatleforc%252Fweebodevimage',
       );
     });
 
