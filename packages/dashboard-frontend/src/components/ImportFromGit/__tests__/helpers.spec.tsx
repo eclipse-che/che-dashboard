@@ -458,6 +458,19 @@ describe('helpers', () => {
             devfilePath: 'devfile2.yaml',
           });
         });
+        test('should normalize devfilepath (lowercase) to devfilePath', () => {
+          const location =
+            'https://github.com/eclipse-che/che-dashboard.git?devfilepath=custom/devfile.yaml';
+          const options = helpers.getGitRepoOptionsFromLocation(location);
+          expect(options).toEqual({
+            location:
+              'https://github.com/eclipse-che/che-dashboard.git?devfilePath=custom%2Fdevfile.yaml',
+            hasSupportedGitService: true,
+            gitBranch: undefined,
+            remotes: [],
+            devfilePath: 'custom/devfile.yaml',
+          });
+        });
       });
       describe('SSH', () => {
         test('should return options from location without parameters', () => {
@@ -482,6 +495,19 @@ describe('helpers', () => {
             gitBranch: undefined,
             remotes: [{ name: 'test-1', url: 'http://test-1.git' }],
             devfilePath: 'devfile2.yaml',
+          });
+        });
+        test('should normalize devfilepath (lowercase) to devfilePath', () => {
+          const location =
+            'git@github.com:eclipse-che/che-dashboard.git?devfilepath=custom/devfile.yaml';
+          const options = helpers.getGitRepoOptionsFromLocation(location);
+          expect(options).toEqual({
+            location:
+              'git@github.com:eclipse-che/che-dashboard.git?devfilePath=custom%2Fdevfile.yaml',
+            hasSupportedGitService: false,
+            gitBranch: undefined,
+            remotes: [],
+            devfilePath: 'custom/devfile.yaml',
           });
         });
       });
@@ -671,6 +697,28 @@ describe('helpers', () => {
             gitBranch: undefined,
             remotes: [{ name: 'test-2', url: 'http://test-2.git' }],
             devfilePath: 'devfile3.yaml',
+          });
+        });
+      });
+      describe('lowercase devfilepath cleanup', () => {
+        test('should replace devfilepath with devfilePath in location', () => {
+          const newOptions = {
+            gitBranch: undefined,
+            remotes: undefined,
+            devfilePath: 'new-devfile.yaml',
+          };
+          const currentOptions = {
+            location:
+              'https://github.com/eclipse-che/che-dashboard.git?devfilepath=old-devfile.yaml',
+            gitBranch: undefined,
+            remotes: undefined,
+            devfilePath: 'old-devfile.yaml',
+          };
+          const options = helpers.setGitRepoOptionsToLocation(newOptions, currentOptions);
+          expect(options).toEqual({
+            location:
+              'https://github.com/eclipse-che/che-dashboard.git?devfilePath=new-devfile.yaml',
+            devfilePath: 'new-devfile.yaml',
           });
         });
       });
