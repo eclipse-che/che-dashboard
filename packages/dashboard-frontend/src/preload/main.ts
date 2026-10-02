@@ -76,8 +76,13 @@ export function buildFactoryLoaderPath(location: string, appendUrl = true): stri
     return [paramName, paramValue];
   }).filter(([, paramValue]) => paramValue);
 
-  const devfilePath =
-    extractUrlParam(repoParams, 'devfilePath') || extractUrlParam(repoParams, 'df');
+  // a bare parameter is extracted as 'true', which is not a devfile path,
+  // so skip it and let the next alias provide the value
+  const devfilePath = [
+    extractUrlParam(repoParams, 'devfilePath'),
+    extractUrlParam(repoParams, 'devfilepath'),
+    extractUrlParam(repoParams, 'df'),
+  ].find(value => value !== '' && value !== 'true');
   if (devfilePath) {
     initParams.push(['override.devfileFilename', devfilePath]);
   }
