@@ -78,6 +78,22 @@ describe('test buildFactoryLoaderPath()', () => {
       );
     });
 
+    test('bare devfilepath falls back to df', () => {
+      const result = buildFactoryLoaderPath(
+        'git@github.com:eclipse-che/che-dashboard.git?devfilepath&df=custom/devfile.yaml',
+      );
+      expect(result).toEqual(
+        '/f?override.devfileFilename=custom%2Fdevfile.yaml&url=git%2540github.com%253Aeclipse-che%252Fche-dashboard.git',
+      );
+    });
+
+    test('bare devfilepath without any alias', () => {
+      const result = buildFactoryLoaderPath(
+        'git@github.com:eclipse-che/che-dashboard.git?devfilepath',
+      );
+      expect(result).toEqual('/f?url=git%2540github.com%253Aeclipse-che%252Fche-dashboard.git');
+    });
+
     test('devWorkspace parameter', () => {
       const result = buildFactoryLoaderPath(
         'git@github.com:eclipse-che/che-dashboard.git?devWorkspace=/devfiles/devworkspace-che-theia-latest.yaml',
