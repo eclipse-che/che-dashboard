@@ -345,7 +345,7 @@
 | `aws-sign2@0.7.0` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/aws-sign2/0.7.0) |
 | `aws4@1.13.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/aws4/1.13.2) |
 | `axios-mock-adapter@1.22.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios-mock-adapter/1.22.0) |
-| `axios@1.19.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios/1.19.0) |
+| `axios@1.20.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/axios/1.20.0) |
 | `b4a@1.7.3` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/b4a/1.7.3) |
 | `babel-jest@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/babel-jest/30.2.0) |
 | `babel-plugin-istanbul@7.0.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/babel-plugin-istanbul/7.0.1) |

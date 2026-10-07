@@ -1064,7 +1064,7 @@ __metadata:
     "@types/jest": "npm:^29.5.3"
     "@typescript-eslint/eslint-plugin": "npm:^6.3.0"
     "@typescript-eslint/parser": "npm:^6.3.0"
-    axios: "npm:^1.19.0"
+    axios: "npm:^1.20.0"
     axios-mock-adapter: "npm:^1.22.0"
     eslint: "npm:^8.57.1"
     eslint-config-prettier: "npm:^9.0.0"
@@ -1104,7 +1104,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:^6.3.0"
     any-signal: "npm:^4.2.0"
     args: "npm:^5.0.3"
-    axios: "npm:^1.19.0"
+    axios: "npm:^1.20.0"
     copy-webpack-plugin: "npm:^11.0.0"
     cron-parser: "npm:^5.5.0"
     eslint: "npm:^8.57.1"
@@ -1114,7 +1114,7 @@ __metadata:
     eslint-plugin-prettier: "npm:^5.0.0"
     eslint-plugin-simple-import-sort: "npm:^10.0.0"
     eslint-webpack-plugin: "npm:^4.0.1"
-    fastify: "npm:^5.12.2"
+    fastify: "npm:^5.12.5"
     file-loader: "npm:^6.2.0"
     fs-extra: "npm:^11.1.1"
     https: "npm:^1.0.0"
@@ -4390,15 +4390,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.19.0":
-  version: 1.19.0
-  resolution: "axios@npm:1.19.0"
+"axios@npm:1.20.0":
+  version: 1.20.0
+  resolution: "axios@npm:1.20.0"
   dependencies:
     follow-redirects: "npm:^1.16.0"
     form-data: "npm:^4.0.6"
     https-proxy-agent: "npm:^5.0.1"
     proxy-from-env: "npm:^2.1.0"
-  checksum: 10/d27e263b003f2dc1e6d0e2ab062dbc7c2b15668c25723e1e2072f139505c1fbd1f8cffef77d5ec05bb8e3cefa6fc5325c6446e747669fd95d85519529fa0db0b
+  checksum: 10/0376b6178baecbe0f5d36088f5b5f6c21362ce301e0731f77172f9c89be740bdee20d8ae6ab186340d7cb752020c6a4f1381290e5a5cd10f6f9003941615ac77
   languageName: node
   linkType: hard
 
@@ -7234,9 +7234,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fastify@npm:^5.12.2":
-  version: 5.12.4
-  resolution: "fastify@npm:5.12.4"
+"fastify@npm:^5.12.5":
+  version: 5.12.5
+  resolution: "fastify@npm:5.12.5"
   dependencies:
     "@fastify/ajv-compiler": "npm:^4.0.5"
     "@fastify/error": "npm:^4.0.0"
@@ -7253,7 +7253,7 @@ __metadata:
     secure-json-parse: "npm:^4.0.0"
     semver: "npm:^7.6.0"
     toad-cache: "npm:^3.7.0"
-  checksum: 10/bcba0c9291fce0710bc10b4d692be48d106b425257986f92b3041ec7f5dc439c914c5e071b416e4b84817a393b8fc922dd19a044c52faea41b94ff80c71a68eb
+  checksum: 10/282ec56b8bc153b9b0048409ebd060fc20372284589aaac35e5f2b45f0f84a85bd1b5199caed10cbc7cfc7b5cf406d3188c544f3e3f5f59c602eed2c37b645b9
   languageName: node
   linkType: hard
 
