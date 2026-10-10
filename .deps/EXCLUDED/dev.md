@@ -10,3 +10,4 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 | `conventional-changelog-conventionalcommits@9.3.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/conventional-changelog-conventionalcommits/9.3.1) |
 | `baseline-browser-mapping@2.11.14` | transitive dependency |
 | `find-my-way@9.9.0` | transitive dependency |
+| `source-map-js@1.2.2` | transitive dependency |
