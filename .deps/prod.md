@@ -105,7 +105,7 @@
 | `event-target-shim@5.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/event-target-shim/5.0.1) |
 | `evp_bytestokey@1.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/evp_bytestokey/1.0.3) |
 | `fast-content-type-parse@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-content-type-parse/3.0.0) |
-| `fast-copy@3.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-copy/3.0.1) |
+| `fast-copy@3.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-copy/3.1.0) |
 | `fast-decode-uri-component@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-decode-uri-component/1.0.1) |
 | `fast-json-stringify@6.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-json-stringify/6.3.0) |
 | `fast-json-stringify@7.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-json-stringify/7.0.1) |
