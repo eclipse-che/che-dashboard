@@ -28,6 +28,7 @@ describe('quantity helpers', () => {
       ['10Gi', 10 * GI],
       ['2Ti', 2 * TI],
       ['1.5Gi', 1.5 * GI],
+      ['1Ei', 1024 * 1024 * TI],
     ])('should parse binary suffix %s', (quantity, expected) => {
       expect(parseQuantity(quantity)).toEqual(expected);
     });
@@ -37,6 +38,8 @@ describe('quantity helpers', () => {
       ['500M', 500e6],
       ['10G', 10e9],
       ['1T', 1e12],
+      ['1E', 1e18],
+      ['1500m', 2],
     ])('should parse decimal suffix %s', (quantity, expected) => {
       expect(parseQuantity(quantity)).toEqual(expected);
     });
@@ -48,6 +51,15 @@ describe('quantity helpers', () => {
       expect(parseQuantity(quantity)).toEqual(expected);
     });
 
+    it.each([
+      ['5e9', 5e9],
+      ['1E3', 1e3],
+      ['12e+6', 12e6],
+      ['15e-1', 2],
+    ])('should parse decimal exponent %s', (quantity, expected) => {
+      expect(parseQuantity(quantity)).toEqual(expected);
+    });
+
     it('should round fractional bytes up', () => {
       expect(parseQuantity('1.5')).toEqual(2);
     });
@@ -56,7 +68,7 @@ describe('quantity helpers', () => {
       expect(parseQuantity(' 5Gi ')).toEqual(5 * GI);
     });
 
-    it.each(['abc', '-5Gi', '', '5 Gi', '5gi', '5Gb', 'Gi', '1e3'])(
+    it.each(['abc', '-5Gi', '', '5 Gi', '5gi', '5Gb', 'Gi', '1e', '1e3Gi'])(
       'should throw on invalid input "%s"',
       quantity => {
         expect(() => parseQuantity(quantity)).toThrow(

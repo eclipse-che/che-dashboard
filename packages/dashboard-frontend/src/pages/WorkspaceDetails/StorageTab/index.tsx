@@ -29,6 +29,7 @@ import {
 } from '@patternfly/react-core';
 import React from 'react';
 
+import { lazyInject } from '@/inversify.config';
 import {
   formatQuantity,
   isResizePending,
@@ -37,10 +38,12 @@ import {
 import styles from '@/pages/WorkspaceDetails/StorageTab/index.module.css';
 import { ResizeModal } from '@/pages/WorkspaceDetails/StorageTab/ResizeModal';
 import { UsageDonut, UsageState } from '@/pages/WorkspaceDetails/StorageTab/UsageDonut';
+import { AppAlerts } from '@/services/alerts/appAlerts';
 import {
   getWorkspaceStorage,
   getWorkspaceStorageUsage,
 } from '@/services/backend-client/workspaceStorageApi';
+import getRandomString from '@/services/helpers/random';
 import { Workspace } from '@/services/workspace-adapter';
 
 export const POLLING_INTERVAL_MS = 5000;
@@ -60,6 +63,9 @@ export type State = {
 };
 
 export class StorageTab extends React.PureComponent<Props, State> {
+  @lazyInject(AppAlerts)
+  private readonly appAlerts: AppAlerts;
+
   private pollTimer: ReturnType<typeof setTimeout> | undefined;
   private isUnmounted = false;
 
@@ -125,7 +131,16 @@ export class StorageTab extends React.PureComponent<Props, State> {
     if (this.isUnmounted) {
       return;
     }
+    const wasPending = this.state.info !== undefined && isResizePending(this.state.info);
     this.setState({ info, infoError: undefined, isLoadingInfo: false });
+    if (wasPending && !isResizePending(info)) {
+      this.appAlerts.showAlert({
+        key: 'storage-tab-resized-' + getRandomString(4),
+        title: 'Storage resized',
+        variant: AlertVariant.success,
+        children: `The volume of ${this.props.workspace.name} is now ${formatQuantity(info.capacity ?? info.requested)}.`,
+      });
+    }
     if (isResizePending(info) && this.props.isActive) {
       this.schedulePoll();
     } else {

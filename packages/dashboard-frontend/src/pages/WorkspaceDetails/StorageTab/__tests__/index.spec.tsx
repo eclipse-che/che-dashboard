@@ -11,16 +11,20 @@
  */
 
 import { WorkspaceStorageInfo } from '@eclipse-che/common';
+import { AlertVariant } from '@patternfly/react-core';
 import { act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
+import { container } from '@/inversify.config';
 import { Props as ResizeModalProps } from '@/pages/WorkspaceDetails/StorageTab/ResizeModal';
 import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
+import { AppAlerts } from '@/services/alerts/appAlerts';
 import {
   getWorkspaceStorage,
   getWorkspaceStorageUsage,
 } from '@/services/backend-client/workspaceStorageApi';
+import { AlertItem } from '@/services/helpers/types';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 
@@ -49,6 +53,7 @@ jest.mock('@/pages/WorkspaceDetails/StorageTab/ResizeModal', () => ({
   ),
 }));
 
+const mockShowAlert = jest.fn();
 const mockGetStorage = getWorkspaceStorage as jest.Mock;
 const mockGetUsage = getWorkspaceStorageUsage as jest.Mock;
 
@@ -86,6 +91,14 @@ describe('StorageTab', () => {
   let stoppedWorkspace: Workspace;
 
   beforeEach(() => {
+    class MockAppAlerts extends AppAlerts {
+      showAlert(alert: AlertItem): void {
+        mockShowAlert(alert);
+      }
+    }
+    container.snapshot();
+    container.rebind(AppAlerts).to(MockAppAlerts).inSingletonScope();
+
     runningWorkspace = buildWorkspace('RUNNING');
     stoppedWorkspace = buildWorkspace('STOPPED');
     mockGetStorage.mockResolvedValue(perWorkspaceInfo);
@@ -93,6 +106,7 @@ describe('StorageTab', () => {
   });
 
   afterEach(() => {
+    container.restore();
     // don't reset all mocks: it would reset the global Tooltip mock as well
     mockGetStorage.mockReset();
     mockGetUsage.mockReset();
@@ -201,6 +215,7 @@ describe('StorageTab', () => {
     );
     expect(screen.getByTestId('storage-capacity')).toHaveTextContent('Resizing');
     expect(mockGetStorage).toHaveBeenCalledTimes(1);
+    expect(mockShowAlert).not.toHaveBeenCalled();
 
     await act(async () => {
       jest.advanceTimersByTime(POLLING_INTERVAL_MS);
@@ -214,6 +229,14 @@ describe('StorageTab', () => {
       expect(screen.getByTestId('storage-capacity')).toHaveTextContent(/^15 Gi$/),
     );
     expect(mockGetStorage).toHaveBeenCalledTimes(3);
+    expect(mockShowAlert).toHaveBeenCalledTimes(1);
+    expect(mockShowAlert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Storage resized',
+        variant: AlertVariant.success,
+        children: 'The volume of my-workspace is now 15 Gi.',
+      }),
+    );
 
     // polling stops once the resize is done
     await act(async () => {

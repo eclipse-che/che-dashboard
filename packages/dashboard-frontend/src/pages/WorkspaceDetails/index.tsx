@@ -178,6 +178,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
             </Tab>
             <Tab eventKey={WorkspaceDetailsTab.STORAGE} title={WorkspaceDetailsTab.STORAGE}>
               <StorageTab
+                key={workspace.uid}
                 workspace={workspace}
                 isActive={WorkspaceDetailsTab.STORAGE === this.state.activeTabKey}
               />

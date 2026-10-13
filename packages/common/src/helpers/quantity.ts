@@ -17,23 +17,29 @@ export const TI = GI * 1024;
 
 const MULTIPLIERS: Record<string, number> = {
   '': 1,
+  m: 1e-3,
   Ki: KI,
   Mi: MI,
   Gi: GI,
   Ti: TI,
   Pi: TI * 1024,
+  Ei: TI * 1024 * 1024,
   k: 1e3,
   M: 1e6,
   G: 1e9,
   T: 1e12,
   P: 1e15,
+  E: 1e18,
 };
 
-const QUANTITY_REGEX = /^(\d+(?:\.\d+)?|\.\d+)(Ki|Mi|Gi|Ti|Pi|k|M|G|T|P)?$/;
+// `1E` is exa, `1E3` is an exponent: the exponent needs digits, so it is tried first
+const QUANTITY_REGEX =
+  /^(\d+(?:\.\d+)?|\.\d+)(?:[eE]([+-]?\d+)|(m|Ki|Mi|Gi|Ti|Pi|Ei|k|M|G|T|P|E))?$/;
 
 /**
- * Parses a Kubernetes storage quantity (e.g. `10Gi`, `500M`, `1073741824`) into bytes.
- * Binary (`Ki Mi Gi Ti Pi`) and decimal (`k M G T P`) suffixes are supported.
+ * Parses a Kubernetes storage quantity (e.g. `10Gi`, `500M`, `1073741824`, `5e9`) into bytes.
+ * Binary (`Ki Mi Gi Ti Pi Ei`) and decimal (`m k M G T P E`) suffixes, and decimal exponents
+ * (`e3`, `E-2`) are supported.
  * Fractional byte values are rounded up, as Kubernetes does.
  * @throws Error if the quantity is empty, negative or malformed
  */
@@ -42,8 +48,10 @@ export function parseQuantity(quantity: string): number {
   if (match === null) {
     throw new Error(`Invalid quantity: "${quantity}"`);
   }
-  const [, value, suffix = ''] = match;
-  return Math.ceil(parseFloat(value) * MULTIPLIERS[suffix]);
+  const [, value, exponent, suffix = ''] = match;
+  const multiplier =
+    exponent !== undefined ? 10 ** Number(exponent) : MULTIPLIERS[suffix];
+  return Math.ceil(parseFloat(value) * multiplier);
 }
 
 /**
