@@ -7,3 +7,4 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 | `@commitlint/config-conventional@21.0.2` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@commitlint/config-conventional/21.0.2) |
 | `baseline-browser-mapping@2.11.14` | transitive dependency |
 | `find-my-way@9.9.0` | transitive dependency |
+| `source-map-js@1.2.2` | transitive dependency |

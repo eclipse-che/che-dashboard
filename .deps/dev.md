@@ -1112,8 +1112,7 @@
 | `socks@2.8.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/socks/2.8.3) |
 | `sort-keys@2.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sort-keys/2.0.0) |
 | `source-list-map@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/source-list-map/2.0.1) |
-| `source-map-js@1.0.2` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/source-map-js/1.0.2) |
-| `source-map-js@1.2.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/source-map-js/1.2.1) |
+| `source-map-js@1.2.2` | BSD-3-Clause | transitive dependency |
 | `source-map-loader@4.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/source-map-loader/4.0.1) |
 | `source-map-loader@5.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/source-map-loader/5.0.0) |
 | `source-map-support@0.5.13` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/source-map-support/0.5.13) |
