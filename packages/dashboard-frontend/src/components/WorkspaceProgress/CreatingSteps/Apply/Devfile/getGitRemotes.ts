@@ -16,6 +16,7 @@ import common from '@eclipse-che/common';
 import { getProjectFromLocation } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/getProjectFromLocation';
 import devfileApi from '@/services/devfileApi';
 import { getProjectName } from '@/services/helpers/getProjectName';
+import { normalizeGitUrl } from '@/services/helpers/git-url';
 
 export interface GitRemote {
   name: string;
@@ -136,31 +137,55 @@ export function configureProjectRemotes(
   remotes: string | undefined,
   isDefaultDevfile: boolean,
   revision: string,
+  sourceUrl?: string,
 ): void {
   const parsedRemotes = getGitRemotes(remotes);
 
-  // Determine the remote to set `checkoutFrom.remote` to
-  let checkoutRemote = parsedRemotes.find(remote => remote.name === 'origin');
-  if (!checkoutRemote) {
-    checkoutRemote = parsedRemotes[0];
-  }
-
   // Find the Git project in the devfile to configure remotes for
-  let gitProject = getGitProjectForConfiguringRemotes(devfile.projects);
+  const projectMatch = getGitProjectForConfiguringRemotes(
+    devfile.projects,
+    sourceUrl,
+    parsedRemotes.length > 0,
+  );
+  let gitProject = projectMatch?.git;
+
+  // Determine the remote to set `checkoutFrom.remote` to
+  let checkoutRemote: GitRemote | undefined =
+    parsedRemotes.find(remote => remote.name === 'origin') || parsedRemotes[0];
+
   if (gitProject === undefined) {
+    if (checkoutRemote === undefined) {
+      // No project to configure and no remote to build one from. This happens when only
+      // `revision` was given and the devfile declares no Git project at all.
+      return;
+    }
     if (!devfile.projects) {
       devfile.projects = [];
     }
     devfile.projects[0] = getProjectFromLocation(checkoutRemote.url, checkoutRemote.name);
     gitProject = devfile.projects[0].git;
-  } else if (Object.keys(gitProject.remotes).includes('origin')) {
-    checkoutRemote = { name: 'origin', url: gitProject.remotes.origin };
-  }
-  if (gitProject) {
-    addRemotesToProject(gitProject, checkoutRemote, parsedRemotes, revision);
   } else {
-    console.warn('Failed to configure the project remotes.');
+    const projectRemotes = gitProject.remotes || {};
+    const matchedRemote = projectMatch?.remoteName;
+    if (matchedRemote !== undefined && projectRemotes[matchedRemote] !== undefined) {
+      // The factory URL points at this remote, so the revision has to be resolved
+      // against it — `origin` may well be a different repository
+      checkoutRemote = { name: matchedRemote, url: projectRemotes[matchedRemote] };
+    } else if (projectRemotes.origin !== undefined) {
+      checkoutRemote = { name: 'origin', url: projectRemotes.origin };
+    } else if (checkoutRemote === undefined) {
+      // The project has no `origin`; check out from whichever remote it does declare
+      const [name, url] = Object.entries(projectRemotes)[0] || [];
+      checkoutRemote = name && url ? { name, url } : undefined;
+    }
   }
+
+  if (gitProject === undefined || checkoutRemote === undefined) {
+    console.warn('Failed to configure the project remotes.');
+    return;
+  }
+
+  addRemotesToProject(gitProject, checkoutRemote, parsedRemotes, revision);
 
   if (isDefaultDevfile) {
     const projectName = getProjectName(checkoutRemote.url);
@@ -169,25 +194,70 @@ export function configureProjectRemotes(
   }
 }
 
+interface GitProjectMatch {
+  git: V230DevfileProjectsItemsGit;
+  /**
+   * The remote whose URL equals the factory URL. Only set when the project was picked by
+   * matching, so that the caller can check out from that remote rather than from `origin`.
+   */
+  remoteName?: string;
+}
+
 /**
- * Returns the Git project to replace remotes for
+ * Returns the Git project to replace remotes for.
+ *
+ * The `remotes` and `revision` factory parameters describe the repository the factory URL
+ * points at, not every project the devfile happens to clone alongside it. So when the
+ * devfile declares several Git projects, the one whose remote matches the factory URL is
+ * configured and the others are left untouched.
+ *
+ * @param projects the devfile projects
+ * @param sourceUrl the factory source URL, used to pick a project among several
+ * @param hasExplicitRemotes whether the user passed the `remotes` factory parameter
  */
-function getGitProjectForConfiguringRemotes(projects: V230DevfileProjects[] | undefined) {
-  if (!projects) {
+function getGitProjectForConfiguringRemotes(
+  projects: V230DevfileProjects[] | undefined,
+  sourceUrl: string | undefined,
+  hasExplicitRemotes: boolean,
+): GitProjectMatch | undefined {
+  const gitProjects = (projects || []).filter(
+    (project): project is V230DevfileProjects & { git: V230DevfileProjectsItemsGit } =>
+      project.git !== undefined,
+  );
+  if (gitProjects.length === 0) {
     return undefined;
   }
+  if (gitProjects.length === 1) {
+    return { git: gitProjects[0].git };
+  }
 
-  const gitProjects = projects.filter(project => project.git);
-  if (gitProjects.length > 1) {
+  const targetUrl = normalizeGitUrl(sourceUrl);
+  if (targetUrl) {
+    for (const project of gitProjects) {
+      const matchedRemote = Object.entries(project.git.remotes || {}).find(
+        ([, remoteUrl]) => normalizeGitUrl(remoteUrl) === targetUrl,
+      );
+      if (matchedRemote) {
+        return { git: project.git, remoteName: matchedRemote[0] };
+      }
+    }
+  }
+
+  // `sourceUrl` is optional and may be blank, so do not quote an empty value into the message
+  const sourceUrlLabel = sourceUrl?.trim() ? `'${sourceUrl.trim()}'` : 'the factory URL';
+
+  if (hasExplicitRemotes) {
+    // The user asked for remotes we cannot place on any project — keep failing loudly
     throw new Error(
-      'Configuring remotes is not supported when multiple Git projects found in Devfile.',
+      `Unable to configure remotes: no project in the Devfile has a remote matching ${sourceUrlLabel}.`,
     );
   }
 
-  if (gitProjects.length === 1) {
-    return gitProjects[0].git;
-  }
-
+  // The revision was only inferred from the factory URL, so this is not worth
+  // blocking the workspace creation over
+  console.warn(
+    `No Devfile project matches ${sourceUrlLabel}. Skipping the Git remotes configuration.`,
+  );
   return undefined;
 }
 
@@ -209,7 +279,7 @@ function addRemotesToProject(
     return map;
   }, {});
 
-  gitProject.remotes = Object.assign(gitProject.remotes, gitRemotes);
+  gitProject.remotes = Object.assign(gitProject.remotes || {}, gitRemotes);
   gitProject.checkoutFrom = Object.assign(gitProject.checkoutFrom || {}, {
     remote: checkoutRemote.name,
     revision,
