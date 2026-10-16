@@ -337,6 +337,48 @@ describe('StorageTab', () => {
     expect(screen.getByTestId('storage-capacity')).toHaveTextContent('10 Gi → 15 Gi');
   });
 
+  test('keeps polling after a refresh failure until the resize is done', async () => {
+    jest.useFakeTimers();
+    mockGetStorage
+      .mockResolvedValueOnce({ ...perWorkspaceInfo, requested: '15Gi', resizing: true })
+      .mockRejectedValueOnce(new Error('API unreachable'))
+      .mockResolvedValue({ ...perWorkspaceInfo, requested: '15Gi', capacity: '15Gi' });
+
+    renderComponent(runningWorkspace);
+    await waitFor(() => expect(screen.getByTestId('storage-capacity')).toBeTruthy());
+
+    await act(async () => {
+      jest.advanceTimersByTime(POLLING_INTERVAL_MS);
+    });
+    expect(await screen.findByText('Failed to refresh storage information')).toBeTruthy();
+
+    await act(async () => {
+      jest.advanceTimersByTime(POLLING_INTERVAL_MS);
+    });
+    await waitFor(() =>
+      expect(screen.getByTestId('storage-capacity')).toHaveTextContent(/^15 Gi$/),
+    );
+    expect(screen.queryByText('Failed to refresh storage information')).toBeNull();
+    expect(mockShowAlert).toHaveBeenCalledTimes(1);
+  });
+
+  test('ignores a refresh started before the resize response', async () => {
+    const { reRenderComponent } = renderComponent(runningWorkspace);
+    await userEvent.click(await screen.findByRole('button', { name: 'Resize…' }));
+
+    // the workspace stops while the modal is open: the refresh is still pending when the PATCH returns
+    let resolveInfo: (info: WorkspaceStorageInfo) => void = () => undefined;
+    mockGetStorage.mockReturnValueOnce(new Promise(resolve => (resolveInfo = resolve)));
+    reRenderComponent(stoppedWorkspace);
+    await waitFor(() => expect(mockGetStorage).toHaveBeenCalledTimes(2));
+    await userEvent.click(screen.getByRole('button', { name: 'Resize completed' }));
+
+    await act(async () => resolveInfo(perWorkspaceInfo));
+
+    expect(screen.getByTestId('storage-capacity')).toHaveTextContent(/^15 Gi$/);
+    expect(mockShowAlert).toHaveBeenCalledTimes(1);
+  });
+
   test('ignores the storage info resolved after unmount', async () => {
     let resolveInfo: (info: WorkspaceStorageInfo) => void = () => undefined;
     mockGetStorage.mockReturnValue(new Promise(resolve => (resolveInfo = resolve)));

@@ -73,6 +73,9 @@ export class StorageTab extends React.PureComponent<Props, State> {
 
   private pollTimer: ReturnType<typeof setTimeout> | undefined;
   private isUnmounted = false;
+  // a newer load, or a resize response, makes the pending requests stale
+  private loadRequest = 0;
+  private usageRequest = 0;
 
   constructor(props: Props) {
     super(props);
@@ -116,25 +119,33 @@ export class StorageTab extends React.PureComponent<Props, State> {
   }
 
   private async load(): Promise<void> {
-    const info = await this.fetchInfo();
+    const request = ++this.loadRequest;
+    const info = await this.fetchInfo(request);
+    if (request !== this.loadRequest) {
+      return;
+    }
     // an ephemeral volume has no usage of its own, `df` would report the node filesystem
     if (info?.strategy !== 'ephemeral') {
       await this.fetchUsage();
     }
   }
 
-  private async fetchInfo(): Promise<WorkspaceStorageInfo | undefined> {
+  private async fetchInfo(request: number): Promise<WorkspaceStorageInfo | undefined> {
     const { namespace, resourceName, uid } = this.props.workspace;
     this.setState({ isLoadingInfo: true });
     try {
       const info = await getWorkspaceStorage(namespace, resourceName);
-      if (this.isCurrent(uid)) {
+      if (this.isCurrent(uid) && request === this.loadRequest) {
         this.setInfo(info);
       }
       return info;
     } catch (e) {
-      if (this.isCurrent(uid)) {
+      if (this.isCurrent(uid) && request === this.loadRequest) {
         this.setState({ infoError: helpers.errors.getMessage(e), isLoadingInfo: false });
+        // keep polling through a transient error, until the resize is done
+        if (this.state.info && isResizePending(this.state.info) && this.props.isActive) {
+          this.schedulePoll();
+        }
       }
       return undefined;
     }
@@ -167,6 +178,7 @@ export class StorageTab extends React.PureComponent<Props, State> {
 
   private async fetchUsage(): Promise<void> {
     const { workspace } = this.props;
+    const request = ++this.usageRequest;
     if (!workspace.isRunning) {
       this.setState({ usage: undefined, usageState: 'stopped' });
       return;
@@ -174,12 +186,12 @@ export class StorageTab extends React.PureComponent<Props, State> {
     this.setState({ usageState: 'loading' });
     try {
       const usage = await getWorkspaceStorageUsage(workspace.namespace, workspace.resourceName);
-      if (this.isCurrent(workspace.uid)) {
+      if (this.isCurrent(workspace.uid) && request === this.usageRequest) {
         this.setState({ usage, usageState: 'loaded' });
       }
     } catch {
       // the usage is optional, the tab remains usable without it
-      if (this.isCurrent(workspace.uid)) {
+      if (this.isCurrent(workspace.uid) && request === this.usageRequest) {
         this.setState({ usage: undefined, usageState: 'unavailable' });
       }
     }
@@ -202,6 +214,8 @@ export class StorageTab extends React.PureComponent<Props, State> {
 
   private handleResized(info: WorkspaceStorageInfo): void {
     this.setState({ isModalOpen: false });
+    // a pending load would replace this information with the one from before the PATCH
+    this.loadRequest++;
     this.setInfo(info);
     // the expansion may be complete before the PATCH returns
     if (!isResizePending(info)) {
