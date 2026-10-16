@@ -174,6 +174,14 @@ describe('ResizeModal', () => {
     expect(getSizeInput().value).toEqual('11');
   });
 
+  test('falls back to the requested size while the capacity is unknown', async () => {
+    renderComponent({ ...perWorkspaceInfo, capacity: undefined });
+    await flushQuotaCheck();
+
+    expect(getSizeInput().value).toEqual('15');
+    expect(screen.getByText('10 Gi')).toBeTruthy();
+  });
+
   test('[Resize] is disabled while the typed size is too small', async () => {
     renderComponent(perWorkspaceInfo);
     await flushQuotaCheck();
@@ -246,6 +254,29 @@ describe('ResizeModal', () => {
     expect(entry).toHaveTextContent('max.storage');
     expect(entry).toHaveTextContent('15 Gi / 12 Gi');
     expect(entry).toHaveTextContent('Exceeds the maximum volume size by 3 Gi.');
+  });
+
+  test('an excess below the display precision is not shown as 0 Gi', async () => {
+    mockCheckQuota.mockResolvedValue({
+      status: 'exceeded',
+      entries: [
+        {
+          source: 'ResourceQuota',
+          name: 'storage',
+          key: 'requests.storage',
+          used: '45Gi',
+          hard: '50Gi',
+          projected: '50Gi',
+          ok: false,
+        },
+      ],
+    });
+    renderComponent(perWorkspaceInfo);
+    await flushQuotaCheck();
+
+    expect(screen.getByTestId('quota-entry')).toHaveTextContent(
+      'Exceeds namespace quota by less than 0.1 Gi.',
+    );
   });
 
   test('quota unavailable → info line, [Resize] enabled', async () => {
@@ -345,6 +376,15 @@ describe('ResizeModal', () => {
 
     await waitFor(() => expect(mockOnResized).toHaveBeenCalledWith(newInfo));
     expect(mockResize).toHaveBeenCalledWith(namespace, workspaceName, '16Gi');
+  });
+
+  test('the close button closes the modal', async () => {
+    renderComponent(perWorkspaceInfo);
+    await flushQuotaCheck();
+
+    await user.click(screen.getByRole('button', { name: 'Close' }));
+
+    expect(mockOnClose).toHaveBeenCalled();
   });
 
   test('Cancel closes the modal', async () => {

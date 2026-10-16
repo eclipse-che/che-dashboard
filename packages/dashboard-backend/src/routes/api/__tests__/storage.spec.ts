@@ -19,6 +19,7 @@ import { StorageApiError } from '@/devworkspaceClient/services/storageApi/errors
 import { stubToken as stubSaToken } from '@/routes/api/helpers/__mocks__/getServiceAccountToken';
 import { stubToken as stubUserToken } from '@/routes/api/helpers/__mocks__/getToken';
 import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
+import { clearDefaultStrategyCache } from '@/routes/api/storage';
 import { setup, teardown } from '@/utils/appBuilder';
 
 jest.mock('@/routes/api/helpers/getServiceAccountToken');
@@ -76,6 +77,7 @@ describe('Workspace Storage Routes', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    clearDefaultStrategyCache();
   });
 
   function expectTokensForwarded() {
@@ -115,6 +117,15 @@ describe('Workspace Storage Routes', () => {
       await app.inject().get(path);
 
       expect(mockGetInfo).toHaveBeenCalledWith(namespace, workspaceName, 'per-workspace');
+    });
+
+    test('caches the CheCluster default strategy', async () => {
+      mockGetInfo.mockResolvedValue(info);
+
+      await app.inject().get(path);
+      await app.inject().get(path);
+
+      expect(getDevWorkspaceClient).toHaveBeenCalledTimes(1);
     });
 
     test('ignores CheCluster read errors', async () => {

@@ -111,13 +111,13 @@ describe('StorageUsageService', () => {
       ).rejects.toMatchObject({ statusCode: 409 });
     });
 
-    it('should return 500 if no container mounts /projects', async () => {
+    it('should return 409 if no container mounts /projects', async () => {
       const pod = buildPod();
       pod.spec!.containers = [pod.spec!.containers[0]];
 
       await expect(
         service.getUsage(buildDevWorkspace({ phase: 'Running' }), pod),
-      ).rejects.toMatchObject({ statusCode: 500, message: 'No container mounts /projects' });
+      ).rejects.toMatchObject({ statusCode: 409, message: 'No container mounts /projects' });
     });
 
     it('should return 500 on unparseable output', async () => {
@@ -129,6 +129,29 @@ describe('StorageUsageService', () => {
         statusCode: 500,
         message: expect.stringMatching(/Unable to parse the disk usage output.*df: not found/),
       });
+    });
+
+    it('should return 500 on unparseable output without stderr', async () => {
+      spyExec.mockResolvedValue({ stdOut: '', stdError: '' });
+
+      await expect(
+        service.getUsage(buildDevWorkspace({ phase: 'Running' }), buildPod()),
+      ).rejects.toMatchObject({
+        statusCode: 500,
+        message: 'Unable to parse the disk usage output: ""',
+      });
+    });
+
+    it('should fall back to the DevWorkspace namespace', async () => {
+      const pod = buildPod();
+      delete pod.metadata!.namespace;
+      await service.getUsage(buildDevWorkspace({ phase: 'Running' }), pod);
+
+      const devWorkspace = buildDevWorkspace({ phase: 'Running' });
+      delete devWorkspace.metadata!.namespace;
+      await service.getUsage(devWorkspace, pod);
+
+      expect(spyExec.mock.calls.map(call => call[1])).toEqual([namespace, '']);
     });
 
     it('should return 500 if exec fails', async () => {

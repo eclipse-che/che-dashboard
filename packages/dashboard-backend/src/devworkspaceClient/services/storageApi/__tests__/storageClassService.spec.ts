@@ -111,12 +111,13 @@ describe('StorageClassService', () => {
     expect(userReadStorageClass).toHaveBeenCalledTimes(2);
   });
 
-  it('should not cache unknown results', async () => {
+  it('should cache unknown results', async () => {
     userReadStorageClass.mockRejectedValueOnce(buildApiException(500, 'error'));
     userReadStorageClass.mockResolvedValueOnce({ allowVolumeExpansion: true });
 
     const service = new StorageClassService(userKc, saKc);
     await expect(service.getExpandability('standard')).resolves.toEqual('unknown');
-    await expect(service.getExpandability('standard')).resolves.toEqual('allowed');
+    await expect(service.getExpandability('standard')).resolves.toEqual('unknown');
+    expect(userReadStorageClass).toHaveBeenCalledTimes(1);
   });
 });

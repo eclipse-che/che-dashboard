@@ -19,8 +19,17 @@ import {
   namespace,
 } from '@/devworkspaceClient/services/storageApi/__tests__/fixtures';
 import { PvcResolution } from '@/devworkspaceClient/services/storageApi/pvcResolver';
-import { PvcService } from '@/devworkspaceClient/services/storageApi/pvcService';
+import { getRequestedSize, PvcService } from '@/devworkspaceClient/services/storageApi/pvcService';
 import { StorageClassService } from '@/devworkspaceClient/services/storageApi/storageClassService';
+
+describe('getRequestedSize', () => {
+  it('should fall back to the capacity when no size is requested', () => {
+    const pvc = buildPvc({ capacity: '10Gi' });
+    delete pvc.spec!.resources;
+
+    expect(getRequestedSize(pvc)).toEqual('10Gi');
+  });
+});
 
 describe('PvcService', () => {
   const mockReadPvc = jest.fn();
@@ -134,6 +143,15 @@ describe('PvcService', () => {
       await expect(service.getInfo(namespace, perUser)).rejects.toMatchObject({
         statusCode: 403,
         message: expect.stringContaining('pvc is forbidden'),
+      });
+    });
+
+    it('should return 500 on unexpected read errors', async () => {
+      mockReadPvc.mockRejectedValue(new Error('connection reset'));
+
+      await expect(service.getInfo(namespace, perUser)).rejects.toMatchObject({
+        statusCode: 500,
+        message: expect.stringContaining('connection reset'),
       });
     });
   });

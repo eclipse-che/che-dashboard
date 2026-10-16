@@ -62,7 +62,8 @@ export class StorageUsageService {
     }
     const container = findProjectsContainer(pod);
     if (!container) {
-      throw new StorageApiError(`No container mounts ${PROJECTS_MOUNT_PATH}`, 500);
+      // e.g. a custom `sourceMapping`: a workspace configuration, not a server error
+      throw new StorageApiError(`No container mounts ${PROJECTS_MOUNT_PATH}`, 409);
     }
 
     let stdOut: string;

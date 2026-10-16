@@ -36,6 +36,22 @@ export function getRequestedSize(pvc: k8s.V1PersistentVolumeClaim): string | und
 }
 
 /**
+ * Returns the current size of the PVC in bytes.
+ * @throws StorageApiError if the new size is not larger, as volumes can't shrink
+ */
+export function assertGrows(pvc: k8s.V1PersistentVolumeClaim, newBytes: number): number {
+  const currentSize = getRequestedSize(pvc);
+  const currentBytes = currentSize ? helpers.quantity.parseQuantity(currentSize) : 0;
+  if (newBytes <= currentBytes) {
+    throw new StorageApiError(
+      `Shrinking or no-op resize is not supported: the current size is ${currentSize}`,
+      400,
+    );
+  }
+  return currentBytes;
+}
+
+/**
  * Reads and resizes workspace PVCs. All calls are made with the user token.
  */
 export class PvcService {
@@ -73,10 +89,10 @@ export class PvcService {
       };
     }
     const pvc = await this.readPvc(namespace, pvcName);
-    return this.toStorageInfo(resolution, pvc);
+    return this.buildStorageInfo(resolution, pvc);
   }
 
-  async toStorageInfo(
+  private async buildStorageInfo(
     { strategy, pvcName, shared }: PvcResolution,
     pvc: k8s.V1PersistentVolumeClaim,
   ): Promise<WorkspaceStorageInfo> {
@@ -112,13 +128,7 @@ export class PvcService {
     }
 
     const pvc = await this.readPvc(namespace, pvcName);
-    const currentSize = getRequestedSize(pvc);
-    if (currentSize && newBytes <= helpers.quantity.parseQuantity(currentSize)) {
-      throw new StorageApiError(
-        `Shrinking or no-op resize is not supported: the current size is ${currentSize}`,
-        400,
-      );
-    }
+    assertGrows(pvc, newBytes);
 
     const expandability = await this.storageClassService.getExpandability(
       pvc.spec?.storageClassName,
@@ -140,7 +150,7 @@ export class PvcService {
     } catch (e) {
       throw toResizeError(e, pvcName);
     }
-    return this.toStorageInfo(resolution, patched);
+    return this.buildStorageInfo(resolution, patched);
   }
 }
 

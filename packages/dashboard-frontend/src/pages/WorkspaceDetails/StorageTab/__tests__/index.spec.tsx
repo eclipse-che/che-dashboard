@@ -12,7 +12,7 @@
 
 import { WorkspaceStorageInfo } from '@eclipse-che/common';
 import { AlertVariant } from '@patternfly/react-core';
-import { act } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
@@ -49,6 +49,11 @@ jest.mock('@/pages/WorkspaceDetails/StorageTab/ResizeModal', () => ({
       <span>Modal for {props.info.pvcName}</span>
       <button onClick={() => props.onClose()}>Close modal</button>
       <button onClick={() => props.onResized(resizedInfo)}>Resize done</button>
+      <button
+        onClick={() => props.onResized({ ...resizedInfo, capacity: '15Gi', resizing: false })}
+      >
+        Resize completed
+      </button>
     </div>
   ),
 }));
@@ -126,7 +131,7 @@ describe('StorageTab', () => {
       'storage-workspace1af2f1d9f3b745f6',
     );
     expect(screen.getByTestId('storage-capacity')).toHaveTextContent(/^10 Gi$/);
-    expect(screen.getByRole('button', { name: '+5 Gi' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Resize…' })).toBeEnabled();
     expect(screen.queryByText('Shared')).toBeNull();
     expect(screen.queryByTestId('tooltip-content')).toBeNull();
   });
@@ -156,6 +161,22 @@ describe('StorageTab', () => {
       expect(screen.getByTestId('storage-pvc-name')).toHaveTextContent('claim-devworkspace'),
     );
     expect(screen.getByText('Shared')).toBeTruthy();
+    expect(screen.getByTestId('storage-usage-shared')).toHaveTextContent(
+      'the usage includes all workspaces in this namespace',
+    );
+  });
+
+  test('falls back to the requested size and a dash when capacity and name are unknown', async () => {
+    mockGetStorage.mockResolvedValue({
+      ...perWorkspaceInfo,
+      pvcName: undefined,
+      capacity: undefined,
+    });
+
+    renderComponent(runningWorkspace);
+
+    await waitFor(() => expect(screen.getByTestId('storage-pvc-name')).toHaveTextContent('—'));
+    expect(screen.getByTestId('storage-capacity')).toHaveTextContent(/^10 Gi$/);
   });
 
   test('stopped workspace: asks to start it, resize remains possible', async () => {
@@ -164,7 +185,7 @@ describe('StorageTab', () => {
     await waitFor(() => expect(screen.getByTestId('storage-pvc-name')).toBeTruthy());
     expect(mockGetUsage).not.toHaveBeenCalled();
     expect(screen.getByTestId('storage-usage-donut')).toHaveTextContent('Start the');
-    expect(screen.getByRole('button', { name: '+5 Gi' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Resize…' })).toBeEnabled();
   });
 
   test('forbidden expansion: button disabled with a tooltip', async () => {
@@ -172,7 +193,7 @@ describe('StorageTab', () => {
 
     renderComponent(runningWorkspace);
 
-    const button = await screen.findByRole('button', { name: '+5 Gi' });
+    const button = await screen.findByRole('button', { name: 'Resize…' });
     expect(button).toHaveAttribute('aria-disabled', 'true');
     // Tooltip is mocked globally and renders its content
     expect(screen.getByTestId('tooltip-content')).toHaveTextContent(
@@ -197,8 +218,9 @@ describe('StorageTab', () => {
     expect(await screen.findByTestId('storage-ephemeral')).toHaveTextContent(
       'There is no volume to manage',
     );
-    expect(screen.queryByRole('button', { name: '+5 Gi' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Resize…' })).toBeNull();
     expect(screen.queryByTestId('storage-usage-donut')).toBeNull();
+    expect(mockGetUsage).not.toHaveBeenCalled();
   });
 
   test('resizing: shows the target size and polls until done', async () => {
@@ -285,7 +307,7 @@ describe('StorageTab', () => {
       expect(screen.getByTestId('storage-usage-donut')).toHaveTextContent('unavailable'),
     );
     expect(screen.getByTestId('storage-pvc-name')).toBeTruthy();
-    expect(screen.getByRole('button', { name: '+5 Gi' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Resize…' })).toBeEnabled();
   });
 
   test('storage info fetch failure shows an error', async () => {
@@ -295,6 +317,38 @@ describe('StorageTab', () => {
 
     expect(await screen.findByText('Failed to load storage information')).toBeTruthy();
     expect(screen.getByText('PVC not found')).toBeTruthy();
+  });
+
+  test('refresh failure keeps the storage info and shows a warning', async () => {
+    jest.useFakeTimers();
+    mockGetStorage
+      .mockResolvedValueOnce({ ...perWorkspaceInfo, requested: '15Gi', resizing: true })
+      .mockRejectedValue(new Error('API unreachable'));
+
+    renderComponent(runningWorkspace);
+    await waitFor(() => expect(screen.getByTestId('storage-capacity')).toBeTruthy());
+
+    await act(async () => {
+      jest.advanceTimersByTime(POLLING_INTERVAL_MS);
+    });
+
+    expect(await screen.findByText('Failed to refresh storage information')).toBeTruthy();
+    expect(screen.getByText('API unreachable')).toBeTruthy();
+    expect(screen.getByTestId('storage-capacity')).toHaveTextContent('10 Gi → 15 Gi');
+  });
+
+  test('ignores the storage info resolved after unmount', async () => {
+    let resolveInfo: (info: WorkspaceStorageInfo) => void = () => undefined;
+    mockGetStorage.mockReturnValue(new Promise(resolve => (resolveInfo = resolve)));
+
+    const { unmount } = render(getComponent(runningWorkspace));
+    await waitFor(() => expect(mockGetStorage).toHaveBeenCalledTimes(1));
+    unmount();
+
+    await act(async () => resolveInfo(perWorkspaceInfo));
+
+    expect(screen.queryByTestId('storage-pvc-name')).toBeNull();
+    expect(mockShowAlert).not.toHaveBeenCalled();
   });
 
   test('reloads when the workspace starts', async () => {
@@ -310,7 +364,7 @@ describe('StorageTab', () => {
   test('opens the resize modal and closes it', async () => {
     renderComponent(runningWorkspace);
 
-    await userEvent.click(await screen.findByRole('button', { name: '+5 Gi' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Resize…' }));
     expect(screen.getByTestId('resize-modal')).toHaveTextContent(
       'Modal for storage-workspace1af2f1d9f3b745f6',
     );
@@ -322,13 +376,62 @@ describe('StorageTab', () => {
   test('a successful resize closes the modal and refreshes the storage info', async () => {
     renderComponent(runningWorkspace);
 
-    await userEvent.click(await screen.findByRole('button', { name: '+5 Gi' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Resize…' }));
     mockGetStorage.mockResolvedValue({ ...perWorkspaceInfo, requested: '15Gi', resizing: true });
     await userEvent.click(screen.getByRole('button', { name: 'Resize done' }));
 
     expect(screen.queryByTestId('resize-modal')).toBeNull();
     expect(screen.getByTestId('storage-capacity')).toHaveTextContent('10 Gi → 15 Gi');
-    await waitFor(() => expect(mockGetStorage).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(mockGetUsage).toHaveBeenCalledTimes(2));
+    // the PATCH response is used as is, no extra GET
+    expect(mockGetStorage).toHaveBeenCalledTimes(1);
+    expect(mockShowAlert).not.toHaveBeenCalled();
+  });
+
+  test('a resize completed before the PATCH returns shows the success alert', async () => {
+    renderComponent(runningWorkspace);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Resize…' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Resize completed' }));
+
+    expect(screen.getByTestId('storage-capacity')).toHaveTextContent(/^15 Gi$/);
+    expect(mockShowAlert).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Storage resized', variant: AlertVariant.success }),
+    );
+  });
+
+  test('switching workspaces drops the storage info of the previous one', async () => {
+    const { reRenderComponent } = renderComponent(runningWorkspace);
+    await waitFor(() =>
+      expect(screen.getByTestId('storage-pvc-name')).toHaveTextContent(
+        'storage-workspace1af2f1d9f3b745f6',
+      ),
+    );
+
+    let resolveInfo: (info: WorkspaceStorageInfo) => void = () => undefined;
+    mockGetStorage.mockReturnValue(new Promise(resolve => (resolveInfo = resolve)));
+    reRenderComponent(buildWorkspace('RUNNING', 'uid-2'));
+
+    expect(screen.queryByTestId('storage-pvc-name')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Resize…' })).toBeNull();
+
+    await act(async () => resolveInfo({ ...perWorkspaceInfo, pvcName: 'storage-other' }));
+    expect(screen.getByTestId('storage-pvc-name')).toHaveTextContent('storage-other');
+  });
+
+  test('ignores a response of the previous workspace', async () => {
+    let resolveInfo: (info: WorkspaceStorageInfo) => void = () => undefined;
+    mockGetStorage.mockReturnValueOnce(new Promise(resolve => (resolveInfo = resolve)));
+    const { reRenderComponent } = renderComponent(runningWorkspace);
+
+    mockGetStorage.mockResolvedValue({ ...perWorkspaceInfo, pvcName: 'storage-other' });
+    reRenderComponent(buildWorkspace('RUNNING', 'uid-2'));
+    await waitFor(() =>
+      expect(screen.getByTestId('storage-pvc-name')).toHaveTextContent('storage-other'),
+    );
+
+    await act(async () => resolveInfo(perWorkspaceInfo));
+    expect(screen.getByTestId('storage-pvc-name')).toHaveTextContent('storage-other');
   });
 });
 

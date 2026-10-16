@@ -13,7 +13,7 @@
 import { WorkspaceStorageInfo } from '@eclipse-che/common';
 
 import {
-  formatBytes,
+  formatGiB,
   formatQuantity,
   getCurrentBytes,
   getDefaultResizeGi,
@@ -36,8 +36,8 @@ function buildInfo(info: Partial<WorkspaceStorageInfo>): WorkspaceStorageInfo {
 }
 
 describe('StorageTab helpers', () => {
-  test('formatBytes', () => {
-    expect(formatBytes(4.7 * GI)).toEqual('4.7 Gi');
+  test('formatGiB', () => {
+    expect(formatGiB(4.7 * GI)).toEqual('4.7 Gi');
   });
 
   test('formatQuantity', () => {

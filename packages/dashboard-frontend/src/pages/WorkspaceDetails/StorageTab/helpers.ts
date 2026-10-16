@@ -19,7 +19,7 @@ export const RESIZE_STEP_GI = 5;
 /**
  * Formats bytes for display, e.g. `4.7 Gi`.
  */
-export function formatBytes(bytes: number): string {
+export function formatGiB(bytes: number): string {
   return formatGi(bytes).replace(/Gi$/, ' Gi');
 }
 
@@ -32,7 +32,7 @@ export function formatQuantity(quantity: string | undefined): string {
     return '—';
   }
   try {
-    return formatBytes(parseQuantity(quantity));
+    return formatGiB(parseQuantity(quantity));
   } catch {
     return quantity;
   }

@@ -13,13 +13,13 @@
 import { WorkspaceStorageUsage } from '@eclipse-che/common';
 import React from 'react';
 
-import { formatBytes } from '@/pages/WorkspaceDetails/StorageTab/helpers';
+import { formatGiB } from '@/pages/WorkspaceDetails/StorageTab/helpers';
 import styles from '@/pages/WorkspaceDetails/StorageTab/UsageDonut/index.module.css';
 
 export type UsageState = 'loading' | 'loaded' | 'stopped' | 'unavailable';
 
 export type Props = {
-  state: UsageState;
+  status: UsageState;
   usage?: WorkspaceStorageUsage;
 };
 
@@ -36,23 +36,23 @@ const DANGER_THRESHOLD = 0.9;
  */
 export class UsageDonut extends React.PureComponent<Props> {
   private getLabels(): { title: string; subtitle: string[] } {
-    const { state, usage } = this.props;
-    if (state === 'loaded' && usage) {
-      return { title: formatBytes(usage.availableBytes), subtitle: ['Available'] };
+    const { status, usage } = this.props;
+    if (status === 'loaded' && usage) {
+      return { title: formatGiB(usage.availableBytes), subtitle: ['Available'] };
     }
-    if (state === 'stopped') {
+    if (status === 'stopped') {
       return { title: '—', subtitle: ['Start the', 'workspace'] };
     }
-    if (state === 'loading') {
+    if (status === 'loading') {
       return { title: '…', subtitle: ['Loading'] };
     }
     return { title: '—', subtitle: ['Usage', 'unavailable'] };
   }
 
   public render(): React.ReactElement {
-    const { state, usage } = this.props;
+    const { status, usage } = this.props;
     const ratio =
-      state === 'loaded' && usage && usage.totalBytes > 0
+      status === 'loaded' && usage && usage.totalBytes > 0
         ? Math.min(1, usage.usedBytes / usage.totalBytes)
         : 0;
     const usedLength = ratio * CIRCUMFERENCE;
@@ -66,8 +66,9 @@ export class UsageDonut extends React.PureComponent<Props> {
 
     const { title, subtitle } = this.getLabels();
     const ariaLabel =
-      state === 'loaded' && usage
-        ? `${formatBytes(usage.usedBytes)} used of ${formatBytes(usage.totalBytes)}, ${formatBytes(usage.availableBytes)} available`
+      status === 'loaded' && usage
+        ? // `df` excludes reserved blocks: its total doesn't match the PVC capacity
+          `${formatGiB(usage.usedBytes)} used, ${formatGiB(usage.availableBytes)} available`
         : `Storage usage: ${[title, ...subtitle].join(' ')}`;
 
     const center = SIZE / 2;

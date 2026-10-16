@@ -194,6 +194,45 @@ describe('QuotaService', () => {
     );
   });
 
+  it('should tolerate sparse objects', async () => {
+    const sparsePvc: k8s.V1PersistentVolumeClaim = { metadata: { name: 'claim' } };
+    mockListQuotas.mockResolvedValue({
+      items: [{}, { spec: { hard: { 'requests.storage': '20Gi' } } }],
+    });
+    mockListLimitRanges.mockResolvedValue({
+      items: [
+        {},
+        { spec: { limits: [{ type: 'PersistentVolumeClaim', max: { storage: '30Gi' } }] } },
+      ],
+    });
+
+    const result = await service.check(namespace, sparsePvc, '15Gi');
+
+    expect(result).toEqual({
+      status: 'ok',
+      entries: [
+        {
+          source: 'ResourceQuota',
+          name: '',
+          key: 'requests.storage',
+          used: '0Gi',
+          hard: '20Gi',
+          projected: '15Gi',
+          ok: true,
+        },
+        {
+          source: 'LimitRange',
+          name: '',
+          key: 'max.storage',
+          hard: '30Gi',
+          projected: '15Gi',
+          ok: true,
+        },
+      ],
+      maxAllowedSize: '20Gi',
+    });
+  });
+
   it.each([
     ['ResourceQuota', mockListQuotas],
     ['LimitRange', mockListLimitRanges],
@@ -204,5 +243,26 @@ describe('QuotaService', () => {
       status: 'unavailable',
       entries: [],
     });
+  });
+
+  it.each([
+    ['ResourceQuota hard', 'lots', '20Gi', '30Gi'],
+    ['ResourceQuota used', '50Gi', 'lots', '30Gi'],
+    ['LimitRange max', '50Gi', '20Gi', 'lots'],
+  ])('should return unavailable on an unparseable %s', async (_kind, hard, used, max) => {
+    mockListQuotas.mockResolvedValue({
+      items: [buildQuota('storage', { 'requests.storage': hard }, { 'requests.storage': used })],
+    });
+    mockListLimitRanges.mockResolvedValue({ items: [buildLimitRange('limits', max)] });
+
+    await expect(service.check(namespace, pvc, '15Gi')).resolves.toEqual({
+      status: 'unavailable',
+      entries: [],
+    });
+  });
+
+  it.each(['10Gi', '5Gi'])('should return 400 for a new size of %s, not larger', async size => {
+    await expect(service.check(namespace, pvc, size)).rejects.toMatchObject({ statusCode: 400 });
+    expect(mockListQuotas).not.toHaveBeenCalled();
   });
 });

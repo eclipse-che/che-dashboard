@@ -30,11 +30,7 @@ import {
 import React from 'react';
 
 import { lazyInject } from '@/inversify.config';
-import {
-  formatQuantity,
-  isResizePending,
-  RESIZE_STEP_GI,
-} from '@/pages/WorkspaceDetails/StorageTab/helpers';
+import { formatQuantity, isResizePending } from '@/pages/WorkspaceDetails/StorageTab/helpers';
 import styles from '@/pages/WorkspaceDetails/StorageTab/index.module.css';
 import { ResizeModal } from '@/pages/WorkspaceDetails/StorageTab/ResizeModal';
 import { UsageDonut, UsageState } from '@/pages/WorkspaceDetails/StorageTab/UsageDonut';
@@ -62,6 +58,15 @@ export type State = {
   isModalOpen: boolean;
 };
 
+const INITIAL_STATE: State = {
+  info: undefined,
+  infoError: undefined,
+  isLoadingInfo: false,
+  usage: undefined,
+  usageState: 'loading',
+  isModalOpen: false,
+};
+
 export class StorageTab extends React.PureComponent<Props, State> {
   @lazyInject(AppAlerts)
   private readonly appAlerts: AppAlerts;
@@ -71,19 +76,12 @@ export class StorageTab extends React.PureComponent<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.state = {
-      info: undefined,
-      infoError: undefined,
-      isLoadingInfo: false,
-      usage: undefined,
-      usageState: 'loading',
-      isModalOpen: false,
-    };
+    this.state = INITIAL_STATE;
   }
 
   public componentDidMount(): void {
     if (this.props.isActive) {
-      this.load();
+      void this.load();
     }
   }
 
@@ -95,12 +93,13 @@ export class StorageTab extends React.PureComponent<Props, State> {
       }
       return;
     }
-    if (
-      !prevProps.isActive ||
-      prevProps.workspace.uid !== workspace.uid ||
-      prevProps.workspace.isRunning !== workspace.isRunning
-    ) {
-      this.load();
+    if (prevProps.workspace.uid !== workspace.uid) {
+      // never show, nor resize, the volume of the previous workspace
+      this.stopPolling();
+      this.setState(INITIAL_STATE);
+      void this.load();
+    } else if (!prevProps.isActive || prevProps.workspace.isRunning !== workspace.isRunning) {
+      void this.load();
     }
   }
 
@@ -109,21 +108,35 @@ export class StorageTab extends React.PureComponent<Props, State> {
     this.stopPolling();
   }
 
-  private load(): void {
-    void this.fetchInfo();
-    void this.fetchUsage();
+  /**
+   * `false` once unmounted or switched to another workspace: the response is stale.
+   */
+  private isCurrent(uid: string): boolean {
+    return !this.isUnmounted && uid === this.props.workspace.uid;
   }
 
-  private async fetchInfo(): Promise<void> {
-    const { namespace, resourceName } = this.props.workspace;
+  private async load(): Promise<void> {
+    const info = await this.fetchInfo();
+    // an ephemeral volume has no usage of its own, `df` would report the node filesystem
+    if (info?.strategy !== 'ephemeral') {
+      await this.fetchUsage();
+    }
+  }
+
+  private async fetchInfo(): Promise<WorkspaceStorageInfo | undefined> {
+    const { namespace, resourceName, uid } = this.props.workspace;
     this.setState({ isLoadingInfo: true });
     try {
       const info = await getWorkspaceStorage(namespace, resourceName);
-      this.setInfo(info);
+      if (this.isCurrent(uid)) {
+        this.setInfo(info);
+      }
+      return info;
     } catch (e) {
-      if (!this.isUnmounted) {
+      if (this.isCurrent(uid)) {
         this.setState({ infoError: helpers.errors.getMessage(e), isLoadingInfo: false });
       }
+      return undefined;
     }
   }
 
@@ -134,18 +147,22 @@ export class StorageTab extends React.PureComponent<Props, State> {
     const wasPending = this.state.info !== undefined && isResizePending(this.state.info);
     this.setState({ info, infoError: undefined, isLoadingInfo: false });
     if (wasPending && !isResizePending(info)) {
-      this.appAlerts.showAlert({
-        key: 'storage-tab-resized-' + getRandomString(4),
-        title: 'Storage resized',
-        variant: AlertVariant.success,
-        children: `The volume of ${this.props.workspace.name} is now ${formatQuantity(info.capacity ?? info.requested)}.`,
-      });
+      this.showResizedAlert(info);
     }
     if (isResizePending(info) && this.props.isActive) {
       this.schedulePoll();
     } else {
       this.stopPolling();
     }
+  }
+
+  private showResizedAlert(info: WorkspaceStorageInfo): void {
+    this.appAlerts.showAlert({
+      key: 'storage-tab-resized-' + getRandomString(4),
+      title: 'Storage resized',
+      variant: AlertVariant.success,
+      children: `The volume of ${this.props.workspace.name} is now ${formatQuantity(info.capacity ?? info.requested)}.`,
+    });
   }
 
   private async fetchUsage(): Promise<void> {
@@ -157,12 +174,12 @@ export class StorageTab extends React.PureComponent<Props, State> {
     this.setState({ usageState: 'loading' });
     try {
       const usage = await getWorkspaceStorageUsage(workspace.namespace, workspace.resourceName);
-      if (!this.isUnmounted) {
+      if (this.isCurrent(workspace.uid)) {
         this.setState({ usage, usageState: 'loaded' });
       }
     } catch {
       // the usage is optional, the tab remains usable without it
-      if (!this.isUnmounted) {
+      if (this.isCurrent(workspace.uid)) {
         this.setState({ usage: undefined, usageState: 'unavailable' });
       }
     }
@@ -172,7 +189,7 @@ export class StorageTab extends React.PureComponent<Props, State> {
     this.stopPolling();
     this.pollTimer = setTimeout(() => {
       this.pollTimer = undefined;
-      this.load();
+      void this.load();
     }, POLLING_INTERVAL_MS);
   }
 
@@ -186,7 +203,11 @@ export class StorageTab extends React.PureComponent<Props, State> {
   private handleResized(info: WorkspaceStorageInfo): void {
     this.setState({ isModalOpen: false });
     this.setInfo(info);
-    this.load();
+    // the expansion may be complete before the PATCH returns
+    if (!isResizePending(info)) {
+      this.showResizedAlert(info);
+    }
+    void this.fetchUsage();
   }
 
   private renderResizeButton(info: WorkspaceStorageInfo): React.ReactElement {
@@ -197,7 +218,7 @@ export class StorageTab extends React.PureComponent<Props, State> {
         isAriaDisabled={isForbidden}
         onClick={() => this.setState({ isModalOpen: true })}
       >
-        +{RESIZE_STEP_GI} Gi
+        Resize…
       </Button>
     );
     return (
@@ -216,7 +237,7 @@ export class StorageTab extends React.PureComponent<Props, State> {
     return (
       <>
         <div className={styles.capacity}>
-          <span className={styles.capacityValue} data-testid="storage-capacity">
+          <span className={styles.capacityValue} data-testid="storage-capacity" aria-live="polite">
             {formatQuantity(info.capacity ?? info.requested)}
             {isPending && info.requested && <> → {formatQuantity(info.requested)}</>}
             {info.resizing && (
@@ -283,13 +304,19 @@ export class StorageTab extends React.PureComponent<Props, State> {
             variant={AlertVariant.warning}
             title="Failed to refresh storage information"
             isInline
+            isLiveRegion
             className={styles.alert}
           >
             {infoError}
           </Alert>
         )}
         <div className={styles.donut}>
-          <UsageDonut state={usageState} usage={usage} />
+          <UsageDonut status={usageState} usage={usage} />
+          {info.shared && (
+            <div className={styles.donutCaption} data-testid="storage-usage-shared">
+              Shared volume: the usage includes all workspaces in this namespace.
+            </div>
+          )}
         </div>
         <DescriptionList className={styles.details}>
           <DescriptionListGroup>
@@ -327,7 +354,7 @@ export class StorageTab extends React.PureComponent<Props, State> {
         <Title headingLevel="h3" className={styles.title}>
           Storage
         </Title>
-        <div aria-live="polite">{this.renderContent()}</div>
+        {this.renderContent()}
       </PageSection>
     );
   }

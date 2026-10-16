@@ -23,19 +23,19 @@ const { renderComponent } = getComponentRenderer((props: Props) => <UsageDonut {
 describe('UsageDonut', () => {
   test('loaded: shows the available size', () => {
     renderComponent({
-      state: 'loaded',
+      status: 'loaded',
       usage: { totalBytes: 10 * GI, usedBytes: 5.3 * GI, availableBytes: 4.7 * GI },
     });
 
     const donut = screen.getByTestId('storage-usage-donut');
     expect(donut).toHaveTextContent('4.7 Gi');
     expect(donut).toHaveTextContent('Available');
-    expect(donut).toHaveAttribute('aria-label', '5.3 Gi used of 10 Gi, 4.7 Gi available');
+    expect(donut).toHaveAttribute('aria-label', '5.3 Gi used, 4.7 Gi available');
     expect(screen.getByTestId('storage-usage-used')).toBeTruthy();
   });
 
   test('stopped: asks to start the workspace', () => {
-    renderComponent({ state: 'stopped' });
+    renderComponent({ status: 'stopped' });
 
     const donut = screen.getByTestId('storage-usage-donut');
     expect(donut).toHaveTextContent('Start the');
@@ -44,14 +44,14 @@ describe('UsageDonut', () => {
   });
 
   test('unavailable', () => {
-    renderComponent({ state: 'unavailable' });
+    renderComponent({ status: 'unavailable' });
 
     expect(screen.getByTestId('storage-usage-donut')).toHaveTextContent('Usage');
     expect(screen.getByTestId('storage-usage-donut')).toHaveTextContent('unavailable');
   });
 
   test('loading', () => {
-    renderComponent({ state: 'loading' });
+    renderComponent({ status: 'loading' });
 
     expect(screen.getByTestId('storage-usage-donut')).toHaveTextContent('Loading');
   });
@@ -62,7 +62,7 @@ describe('UsageDonut', () => {
     [9.5, 'usedDanger'],
   ])('%d Gi used of 10 Gi → class "%s"', (usedGi, className) => {
     renderComponent({
-      state: 'loaded',
+      status: 'loaded',
       usage: { totalBytes: 10 * GI, usedBytes: usedGi * GI, availableBytes: (10 - usedGi) * GI },
     });
 

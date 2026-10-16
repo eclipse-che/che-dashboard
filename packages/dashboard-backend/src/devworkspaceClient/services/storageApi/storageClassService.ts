@@ -50,13 +50,12 @@ export class StorageClassService {
       return cached.expandability;
     }
 
+    // failures are cached as well, not to retry both identities on every poll
     const storageClass = await this.readStorageClass(storageClassName);
-    if (!storageClass) {
-      return 'unknown';
+    let expandability: Expandability = 'unknown';
+    if (storageClass) {
+      expandability = storageClass.allowVolumeExpansion === true ? 'allowed' : 'forbidden';
     }
-
-    const expandability: Expandability =
-      storageClass.allowVolumeExpansion === true ? 'allowed' : 'forbidden';
     cache.set(storageClassName, {
       expandability,
       expiresAt: Date.now() + STORAGE_CLASS_CACHE_TTL_MS,

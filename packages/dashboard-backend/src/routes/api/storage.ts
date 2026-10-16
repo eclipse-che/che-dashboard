@@ -66,18 +66,32 @@ function createStorageApiService(request: FastifyRequest): WorkspaceStorageApiSe
   return new WorkspaceStorageApiService(userKubeConfig, saKubeConfig);
 }
 
+export const DEFAULT_STRATEGY_CACHE_TTL_MS = 60 * 1000;
+
+let defaultStrategyCache: { value: string | undefined; expiresAt: number } | undefined;
+
+export function clearDefaultStrategyCache(): void {
+  defaultStrategyCache = undefined;
+}
+
 /**
  * Returns the default PVC strategy of the CheCluster, or `undefined` if it can't be read.
+ * Cached, as the Storage tab polls and the CheCluster is listed cluster-wide.
  */
 async function getDefaultStrategy(): Promise<string | undefined> {
+  if (defaultStrategyCache && defaultStrategyCache.expiresAt > Date.now()) {
+    return defaultStrategyCache.value;
+  }
+  let value: string | undefined;
   try {
     const { serverConfigApi } = getDevWorkspaceClient(getServiceAccountToken());
     const cheCustomResource = await serverConfigApi.fetchCheCustomResource();
-    return serverConfigApi.getPvcStrategy(cheCustomResource) || undefined;
+    value = serverConfigApi.getPvcStrategy(cheCustomResource) || undefined;
   } catch (e) {
     logger.warn(e, 'Unable to read the default PVC strategy');
-    return undefined;
   }
+  defaultStrategyCache = { value, expiresAt: Date.now() + DEFAULT_STRATEGY_CACHE_TTL_MS };
+  return value;
 }
 
 export function registerStorageRoutes(instance: FastifyInstance) {

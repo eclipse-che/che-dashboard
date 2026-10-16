@@ -64,18 +64,31 @@ describe('quantity helpers', () => {
       expect(parseQuantity('1.5')).toEqual(2);
     });
 
+    it('should accept a leading plus sign', () => {
+      expect(parseQuantity('+5Gi')).toEqual(5 * GI);
+    });
+
     it('should ignore surrounding whitespace', () => {
       expect(parseQuantity(' 5Gi ')).toEqual(5 * GI);
     });
 
-    it.each(['abc', '-5Gi', '', '5 Gi', '5gi', '5Gb', 'Gi', '1e', '1e3Gi'])(
-      'should throw on invalid input "%s"',
-      quantity => {
-        expect(() => parseQuantity(quantity)).toThrow(
-          `Invalid quantity: "${quantity}"`,
-        );
-      },
-    );
+    it.each([
+      'abc',
+      '-5Gi',
+      '',
+      '5 Gi',
+      '5gi',
+      '5Gb',
+      'Gi',
+      '1e',
+      '1e3Gi',
+      '++5Gi',
+      '+',
+    ])('should throw on invalid input "%s"', quantity => {
+      expect(() => parseQuantity(quantity)).toThrow(
+        `Invalid quantity: "${quantity}"`,
+      );
+    });
 
     it('should throw on undefined input', () => {
       expect(() => parseQuantity(undefined as unknown as string)).toThrow();

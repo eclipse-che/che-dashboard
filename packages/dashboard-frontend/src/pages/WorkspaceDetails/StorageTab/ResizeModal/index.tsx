@@ -156,21 +156,18 @@ export class ResizeModal extends React.PureComponent<Props, State> {
 
   private handleMinus(): void {
     const { sizeGi } = this.state;
-    const next = sizeGi === '' ? this.minGi : sizeGi - 1;
-    this.setSize(Math.max(this.minGi, next));
+    this.setSize(Math.max(this.minGi, Number(sizeGi) - 1));
   }
 
   private handlePlus(): void {
     const { sizeGi } = this.state;
-    this.setSize(sizeGi === '' ? this.minGi : Math.max(this.minGi, sizeGi + 1));
+    this.setSize(Math.max(this.minGi, Number(sizeGi) + 1));
   }
 
   private async handleResize(): Promise<void> {
     const { namespace, workspaceName, onResized } = this.props;
+    // [Resize] is disabled while the size is invalid
     const { sizeGi } = this.state;
-    if (!this.isSizeValid(sizeGi)) {
-      return;
-    }
     this.setState({ isSubmitting: true, submitError: undefined });
     try {
       const info = await resizeWorkspaceStorage(namespace, workspaceName, `${sizeGi}Gi`);
@@ -200,11 +197,13 @@ export class ResizeModal extends React.PureComponent<Props, State> {
       usage = `${projected} Gi / ${hard} Gi`;
     }
 
-    const excess = parseFloat((projected - hard).toFixed(1));
+    // `ok` is computed on exact bytes, the values are rounded to 0.1 Gi
+    const excessGi = parseFloat((projected - hard).toFixed(1));
+    const excess = excessGi > 0 ? `${excessGi} Gi` : 'less than 0.1 Gi';
     const excessMessage =
       entry.source === 'LimitRange'
-        ? `Exceeds the maximum volume size by ${excess} Gi.`
-        : `Exceeds namespace quota by ${excess} Gi.`;
+        ? `Exceeds the maximum volume size by ${excess}.`
+        : `Exceeds namespace quota by ${excess}.`;
 
     return (
       <div key={`${entry.source}-${entry.name}-${entry.key}-${index}`} data-testid="quota-entry">

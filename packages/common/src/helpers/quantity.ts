@@ -34,7 +34,7 @@ const MULTIPLIERS: Record<string, number> = {
 
 // `1E` is exa, `1E3` is an exponent: the exponent needs digits, so it is tried first
 const QUANTITY_REGEX =
-  /^(\d+(?:\.\d+)?|\.\d+)(?:[eE]([+-]?\d+)|(m|Ki|Mi|Gi|Ti|Pi|Ei|k|M|G|T|P|E))?$/;
+  /^\+?(\d+(?:\.\d+)?|\.\d+)(?:[eE]([+-]?\d+)|(m|Ki|Mi|Gi|Ti|Pi|Ei|k|M|G|T|P|E))?$/;
 
 /**
  * Parses a Kubernetes storage quantity (e.g. `10Gi`, `500M`, `1073741824`, `5e9`) into bytes.

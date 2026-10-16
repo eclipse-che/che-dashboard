@@ -13,7 +13,7 @@
 import { helpers, QuotaCheckEntry, WorkspaceStorageQuotaCheck } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 
-import { getRequestedSize } from '@/devworkspaceClient/services/storageApi/pvcService';
+import { assertGrows } from '@/devworkspaceClient/services/storageApi/pvcService';
 import { logger } from '@/utils/logger';
 
 type CoreV1API = Pick<k8s.CoreV1Api, 'listNamespacedResourceQuota' | 'listNamespacedLimitRange'>;
@@ -28,7 +28,7 @@ export function getStorageClassQuotaKey(storageClassName: string): string {
 
 /**
  * Validates a new PVC size against the namespace ResourceQuotas and LimitRanges,
- * read with the user token. If they can't be read, the check is `unavailable`
+ * read with the user token. If they can't be read or parsed, the check is `unavailable`
  * and the API server remains the source of truth on submit.
  */
 export class QuotaService {
@@ -43,6 +43,9 @@ export class QuotaService {
     pvc: k8s.V1PersistentVolumeClaim,
     newSize: string,
   ): Promise<WorkspaceStorageQuotaCheck> {
+    const newBytes = parseQuantity(newSize);
+    const currentBytes = assertGrows(pvc, newBytes);
+
     let quotas: k8s.V1ResourceQuota[];
     let limitRanges: k8s.V1LimitRange[];
     try {
@@ -57,13 +60,25 @@ export class QuotaService {
       return { status: 'unavailable', entries: [] };
     }
 
-    const newBytes = parseQuantity(newSize);
-    const currentSize = getRequestedSize(pvc);
-    const currentBytes = currentSize ? parseQuantity(currentSize) : 0;
+    try {
+      return this.evaluate(pvc, quotas, limitRanges, newBytes, currentBytes);
+    } catch (e) {
+      logger.warn(e, `Unable to parse the storage quota of namespace "${namespace}"`);
+      return { status: 'unavailable', entries: [] };
+    }
+  }
+
+  private evaluate(
+    pvc: k8s.V1PersistentVolumeClaim,
+    quotas: k8s.V1ResourceQuota[],
+    limitRanges: k8s.V1LimitRange[],
+    newBytes: number,
+    currentBytes: number,
+  ): WorkspaceStorageQuotaCheck {
     const delta = newBytes - currentBytes;
 
     const entries: QuotaCheckEntry[] = [];
-    const maxCandidates: number[] = [];
+    const maxAllowedBytesCandidates: number[] = [];
 
     const keys = [REQUESTS_STORAGE_KEY];
     if (pvc.spec?.storageClassName) {
@@ -88,7 +103,7 @@ export class QuotaService {
           projected: formatGi(projectedBytes),
           ok: projectedBytes <= hardBytes,
         });
-        maxCandidates.push(hardBytes - usedBytes + currentBytes);
+        maxAllowedBytesCandidates.push(hardBytes - usedBytes + currentBytes);
       }
     }
 
@@ -107,7 +122,7 @@ export class QuotaService {
           projected: formatGi(newBytes),
           ok: newBytes <= maxBytes,
         });
-        maxCandidates.push(maxBytes);
+        maxAllowedBytesCandidates.push(maxBytes);
       }
     }
 
@@ -115,9 +130,9 @@ export class QuotaService {
       status: entries.every(entry => entry.ok) ? 'ok' : 'exceeded',
       entries,
     };
-    if (maxCandidates.length > 0) {
+    if (maxAllowedBytesCandidates.length > 0) {
       // rounded down to whole gibibytes, the resize step of the Dashboard
-      const maxAllowedBytes = Math.max(0, Math.min(...maxCandidates));
+      const maxAllowedBytes = Math.max(0, Math.min(...maxAllowedBytesCandidates));
       result.maxAllowedSize = formatGi(Math.floor(maxAllowedBytes / GI) * GI, 0);
     }
     return result;

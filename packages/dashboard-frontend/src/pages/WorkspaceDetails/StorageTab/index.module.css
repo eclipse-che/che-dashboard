@@ -29,6 +29,11 @@
   margin-bottom: var(--pf-t--global--spacer--lg);
 }
 
+.donutCaption {
+  margin-top: var(--pf-t--global--spacer--xs);
+  color: var(--pf-t--global--text--color--subtle);
+}
+
 .details {
   max-width: 40rem;
 }
