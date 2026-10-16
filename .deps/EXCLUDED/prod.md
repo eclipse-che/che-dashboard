@@ -8,3 +8,4 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `@fastify/http-proxy@11.6.3` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/http-proxy/11.6.3) |
 | `fastify@5.12.5` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/5.12.5) |
 | `joi@17.13.8` | transitive dependency |
+| `@fastify/proxy-addr@5.1.2` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/proxy-addr/5.1.2) |

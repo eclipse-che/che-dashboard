@@ -23,7 +23,7 @@
 | `@fastify/http-proxy@11.6.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/http-proxy/11.6.3) |
 | `@fastify/merge-json-schemas@0.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/merge-json-schemas/0.2.1) |
 | `@fastify/oauth2@8.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/oauth2/8.2.0) |
-| `@fastify/proxy-addr@5.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/proxy-addr/5.1.0) |
+| `@fastify/proxy-addr@5.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/proxy-addr/5.1.2) |
 | `@fastify/rate-limit@10.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/rate-limit/10.3.0) |
 | `@fastify/reply-from@12.6.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/reply-from/12.6.2) |
 | `@fastify/send@4.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/send/4.1.0) |

@@ -370,8 +370,8 @@
 | `bn.js@5.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/bn.js/5.2.1) |
 | `boolbase@1.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/boolbase/1.0.0) |
 | `bplist-parser@0.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/bplist-parser/0.2.0) |
-| `brace-expansion@1.1.18` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/brace-expansion/1.1.18) |
-| `brace-expansion@5.0.9` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/brace-expansion/5.0.9) |
+| `brace-expansion@1.1.21` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/brace-expansion/1.1.21) |
+| `brace-expansion@5.0.12` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/brace-expansion/5.0.12) |
 | `braces@3.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/braces/3.0.3) |
 | `browserslist@4.28.8` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/browserslist/4.28.8) |
 | `bs-logger@0.2.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/bs-logger/0.2.6) |
@@ -1112,7 +1112,7 @@
 | `socks@2.8.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/socks/2.8.3) |
 | `sort-keys@2.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sort-keys/2.0.0) |
 | `source-list-map@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/source-list-map/2.0.1) |
-| `source-map-js@1.2.2` | BSD-3-Clause | transitive dependency |
+| `source-map-js@1.2.2` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/source-map-js/1.2.2) |
 | `source-map-loader@4.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/source-map-loader/4.0.1) |
 | `source-map-loader@5.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/source-map-loader/5.0.0) |
 | `source-map-support@0.5.13` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/source-map-support/0.5.13) |
@@ -1211,14 +1211,14 @@
 | `undefsafe@2.0.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undefsafe/2.0.5) |
 | `undici-types@5.26.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici-types/5.26.5) |
 | `undici-types@7.16.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici-types/7.16.0) |
-| `undici@7.29.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici/7.29.1) |
+| `undici@7.30.1` | MIT | transitive dependency |
 | `unique-filename@3.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/unique-filename/3.0.0) |
 | `unique-slug@4.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/unique-slug/4.0.0) |
 | `universalify@0.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/universalify/0.2.0) |
 | `unrs-resolver@1.11.1` | Apache-2.0 AND MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/unrs-resolver/1.11.1) |
 | `untildify@4.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/untildify/4.0.0) |
 | `update-browserslist-db@1.3.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/update-browserslist-db/1.3.1) |
-| `uri-js@4.4.1` | BSD-2-Clause AND BSD-2-Clause-Views | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/uri-js/4.4.1) |
+| `uri-js-replace@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/uri-js-replace/1.0.1) |
 | `url-parse@1.5.10` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/url-parse/1.5.10) |
 | `util-deprecate@1.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/util-deprecate/1.0.2) |
 | `utila@0.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/utila/0.4.0) |
