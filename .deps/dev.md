@@ -648,7 +648,7 @@
 | `graceful-fs@4.2.11` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/graceful-fs/4.2.11) |
 | `graphemer@1.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/graphemer/1.4.0) |
 | `gzip-size@6.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/gzip-size/6.0.0) |
-| `handlebars@4.7.9` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/handlebars/4.7.9) |
+| `handlebars@4.7.10` | MIT | transitive dependency |
 | `har-schema@2.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/har-schema/2.0.0) |
 | `har-validator@5.1.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/har-validator/5.1.5) |
 | `hard-source-webpack-plugin@0.13.1` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/hard-source-webpack-plugin/0.13.1) |

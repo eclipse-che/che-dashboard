@@ -8,3 +8,4 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 | `baseline-browser-mapping@2.11.14` | transitive dependency |
 | `find-my-way@9.9.0` | transitive dependency |
 | `undici@7.30.1` | transitive dependency |
+| `handlebars@4.7.10` | transitive dependency |
