@@ -191,11 +191,20 @@ describe('Route Registration Integration Tests', () => {
 
   describe('Route Accessibility via Print Routes', () => {
     it('should list backup-status route in routes tree', () => {
-      const routes = app.printRoutes();
+      // without common prefixes, sibling routes (e.g. '/storage') don't split the path
+      const routes = app.printRoutes({ commonPrefix: false });
 
       expect(routes).toContain('/backup-status');
       // Note: 'backups' path is factored out character-by-character in printRoutes() tree
       // visualization, so we verify it via actual route calls in other tests
+    });
+
+    it('should list the workspace storage routes in routes tree', () => {
+      const routes = app.printRoutes({ commonPrefix: false });
+
+      expect(routes).toContain('/storage (GET, HEAD, PATCH)');
+      expect(routes).toContain('/usage (GET, HEAD)');
+      expect(routes).toContain('/quota (GET, HEAD)');
     });
   });
 });
