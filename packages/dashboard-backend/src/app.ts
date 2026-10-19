@@ -47,6 +47,7 @@ import { registerPersonalAccessTokenRoutes } from '@/routes/api/personalAccessTo
 import { registerPodmanLoginRoute } from '@/routes/api/podmanLogin';
 import { registerPodsRoutes } from '@/routes/api/pods';
 import { registerSandboxesRoutes } from '@/routes/api/sandboxes';
+import { registerSandboxTerminalRoute } from '@/routes/api/sandboxTerminal';
 import { registerSccPermissionRoute } from '@/routes/api/sccPermission';
 import { registerServerConfigRoute } from '@/routes/api/serverConfig';
 import { registerSShKeysRoutes } from '@/routes/api/sshKeys';
@@ -119,6 +120,8 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
     registerPodsRoutes(server),
 
     registerSandboxesRoutes(server),
+
+    registerSandboxTerminalRoute(server),
 
     registerKubeConfigRoute(server),
 

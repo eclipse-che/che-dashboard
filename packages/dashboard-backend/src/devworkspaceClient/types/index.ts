@@ -577,6 +577,42 @@ export interface ISandboxApi extends IWatcherService<api.webSocket.SubscribePara
   delete(namespace: string, name: string): Promise<void>;
 }
 
+/** The pod and container a sandbox's terminal is opened in. */
+export interface SandboxTerminalTarget {
+  podName: string;
+  containerName: string;
+}
+
+export interface SandboxTerminalHandlers {
+  /** Called with everything the shell writes, stdout and stderr alike. */
+  onData(chunk: string): void;
+
+  /** Called once, with why the shell ended when it ended badly. */
+  onClose(reason: string | undefined): void;
+}
+
+/** A shell running in a sandbox pod, for as long as it is held open. */
+export interface ISandboxTerminalSession {
+  write(data: string): void;
+  resize(cols: number, rows: number): void;
+  close(): void;
+}
+
+export interface ISandboxTerminalApi {
+  /**
+   * Finds the pod and container a sandbox's terminal belongs in, or throws
+   * when the sandbox has no pod that could serve one.
+   */
+  resolveTarget(namespace: string, sandboxName: string): Promise<SandboxTerminalTarget>;
+
+  /** Starts a shell in the resolved container. */
+  openSession(
+    namespace: string,
+    target: SandboxTerminalTarget,
+    handlers: SandboxTerminalHandlers,
+  ): Promise<ISandboxTerminalSession>;
+}
+
 export interface IDevWorkspaceClient {
   devWorkspaceTemplateApi: IDevWorkspaceTemplateApi;
   devworkspaceApi: IDevWorkspaceApi;
@@ -598,6 +634,7 @@ export interface IDevWorkspaceClient {
   deviceAuthTokenApi: IDeviceAuthTokenApi;
   sccPermissionApi: ISccPermissionApi;
   sandboxApi: ISandboxApi;
+  sandboxTerminalApi: ISandboxTerminalApi;
 }
 
 export interface IDevWorkspaceSingletonClient {
