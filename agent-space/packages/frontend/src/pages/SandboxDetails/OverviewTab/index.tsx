@@ -15,11 +15,14 @@ import {
   DescriptionListDescription,
   DescriptionListGroup,
   DescriptionListTerm,
+  FormGroupLabelHelp,
   PageSection,
 } from '@patternfly/react-core';
 import React from 'react';
 
 import { AiToolSelector } from '@/components/AiToolSelector';
+import { AiToolInfoModal } from '@/components/AiToolSelector/InfoModal';
+import styles from '@/components/AiToolSelector/SelectorModal.module.css';
 import { ErrorAlert } from '@/components/ErrorAlert';
 import { formatTimestamp } from '@/services/format';
 import {
@@ -54,6 +57,8 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
   const aiTools = useAppSelector(selectAiTools);
   const aiProviders = useAppSelector(selectAiProviders);
   const dashboardUrl = useAppSelector(selectDashboardUrl);
+
+  const [isInfoOpen, setIsInfoOpen] = React.useState(false);
 
   const blocking = findBlockingCondition(sandbox);
   const phase = getSandboxPhase(sandbox);
@@ -137,7 +142,17 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
           <DescriptionListDescription>{sandbox.status?.nodeName ?? '-'}</DescriptionListDescription>
         </DescriptionListGroup>
         <DescriptionListGroup>
-          <DescriptionListTerm>AI tools</DescriptionListTerm>
+          <DescriptionListTerm>
+            {/* Worded and labelled as the workspace overview words it, down to
+                the help button beside it: the two pages describe one feature. */}
+            AI Tool&nbsp;&nbsp;
+            <FormGroupLabelHelp
+              className={styles.labelHelp}
+              aria-label="More info for AI tool"
+              data-testid="ai-tool-info-toggle"
+              onClick={() => setIsInfoOpen(true)}
+            />
+          </DescriptionListTerm>
           <DescriptionListDescription>
             <AiToolSelector
               aiTools={aiTools}
@@ -147,6 +162,12 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
               isDisabled={!canEditAiTools(phase)}
               disabledReason={getAiToolsDisabledReason(phase)}
               onChange={handleChange}
+            />
+            <AiToolInfoModal
+              isOpen={isInfoOpen}
+              aiTools={aiTools}
+              aiProviders={aiProviders}
+              onClose={() => setIsInfoOpen(false)}
             />
           </DescriptionListDescription>
         </DescriptionListGroup>

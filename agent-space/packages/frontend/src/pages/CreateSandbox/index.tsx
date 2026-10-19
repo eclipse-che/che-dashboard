@@ -33,7 +33,7 @@ import { dump } from 'js-yaml';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { AiToolSelector } from '@/components/AiToolSelector';
+import { AiToolDropdown } from '@/components/AiToolSelector/Dropdown';
 import { ErrorAlert } from '@/components/ErrorAlert';
 import { buildSandboxDetailsRoute, ROUTE, SANDBOX_TAB } from '@/Routes';
 import { pageTitle, SECTION } from '@/services/pageTitle';
@@ -264,7 +264,7 @@ export function CreateSandbox(): React.ReactElement {
             </FormGroup>
 
             <FormGroup label="AI tools" fieldId="sandbox-ai-tools">
-              <AiToolSelector
+              <AiToolDropdown
                 aiTools={aiTools}
                 aiProviders={aiProviders}
                 dashboardUrl={dashboardUrl}

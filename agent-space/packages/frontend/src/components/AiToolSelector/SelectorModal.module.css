@@ -27,3 +27,12 @@
   gap: 4px;
   align-items: center;
 }
+
+.labelHelp {
+  position: relative;
+  top: 0.12rem;
+}
+
+.manageKeys {
+  padding: 0.5rem 1rem;
+}

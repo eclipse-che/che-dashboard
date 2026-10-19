@@ -19,6 +19,7 @@ import { AiProviderDefinition, AiToolDefinition, EMPTY_CATALOG } from '@/service
 import { getSandboxOriginalManifest } from '@/services/sandbox';
 import { SandboxClientError } from '@/services/types';
 import { unloadedState as catalogUnloadedState } from '@/store/Catalog/reducer';
+import { unloadedState as sandboxesUnloadedState } from '@/store/Sandboxes/reducer';
 import { renderInApp, StoreOptions, TEST_NAMESPACE, testClient, testConfig } from '@/testUtils';
 
 const CLAUDE: AiToolDefinition = {
@@ -57,14 +58,14 @@ beforeEach(() => {
   mockNavigate.mockClear();
 });
 
-/** Opens 'Change AI Tools', flips the given providers and saves. */
+/** Opens the AI tools dropdown and flips the given providers. */
 async function changeAiTools(...providerIds: string[]): Promise<void> {
-  await userEvent.click(screen.getByTestId('ai-tool-edit-toggle'));
-  const modal = within(screen.getByTestId('ai-tool-selector-modal'));
+  await userEvent.click(screen.getByTestId('ai-tool-dropdown-toggle'));
+  const menu = within(screen.getByTestId('ai-tool-dropdown'));
   for (const providerId of providerIds) {
-    await userEvent.click(modal.getByRole('checkbox', { name: new RegExp(providerId, 'i') }));
+    await userEvent.click(menu.getByRole('checkbox', { name: new RegExp(providerId, 'i') }));
   }
-  await userEvent.click(modal.getByRole('button', { name: 'Save' }));
+  await userEvent.click(screen.getByTestId('ai-tool-dropdown-toggle'));
 }
 
 describe('CreateSandbox', () => {
@@ -218,7 +219,7 @@ describe('CreateSandbox', () => {
     it('are not offered when the registry publishes none', () => {
       renderInApp(<CreateSandbox />);
 
-      expect(screen.queryByTestId('ai-tool-selector')).toBeNull();
+      expect(screen.queryByTestId('ai-tool-dropdown')).toBeNull();
     });
 
     it('come last on the form, after the resource limits', () => {
@@ -236,7 +237,30 @@ describe('CreateSandbox', () => {
     it('start with none selected, so a sandbox can run without one', () => {
       renderInApp(<CreateSandbox />, { preloadedState: WITH_CATALOG });
 
-      expect(screen.getByTestId('ai-tool-selector')).toHaveTextContent('None');
+      expect(screen.getByTestId('ai-tool-dropdown-toggle')).toHaveTextContent('None');
+    });
+
+    it('are picked from a dropdown, like the rest of the form', async () => {
+      renderInApp(<CreateSandbox />, { preloadedState: WITH_CATALOG });
+
+      const toggle = screen.getByTestId('ai-tool-dropdown-toggle');
+      expect(toggle).toHaveAttribute('aria-expanded', 'false');
+
+      await userEvent.click(toggle);
+
+      expect(toggle).toHaveAttribute('aria-expanded', 'true');
+      expect(screen.getByRole('checkbox', { name: /Anthropic/i })).toBeInTheDocument();
+    });
+
+    it('stay open while more than one is picked', async () => {
+      renderInApp(<CreateSandbox />, { preloadedState: WITH_CATALOG });
+
+      await userEvent.click(screen.getByTestId('ai-tool-dropdown-toggle'));
+      await userEvent.click(screen.getByRole('checkbox', { name: /Anthropic/i }));
+
+      // A multi-select that closed on the first pick would make the second
+      // one cost another open.
+      expect(screen.getByRole('checkbox', { name: /Anthropic/i })).toBeChecked();
     });
 
     it('install the selected agent into the sandbox', async () => {
@@ -245,7 +269,7 @@ describe('CreateSandbox', () => {
 
       await changeAiTools('Anthropic');
 
-      expect(screen.getByTestId('ai-tool-selector')).toHaveTextContent('Anthropic');
+      expect(screen.getByTestId('ai-tool-dropdown-toggle')).toHaveTextContent('Anthropic');
       const preview = screen.getByTestId('manifest-preview');
       expect(preview).toHaveTextContent('claude-code-injector');
       expect(preview).toHaveTextContent('che.eclipse.org/ai-providers: anthropic');
@@ -259,31 +283,43 @@ describe('CreateSandbox', () => {
       await changeAiTools('Anthropic');
       await changeAiTools('Anthropic');
 
-      expect(screen.getByTestId('ai-tool-selector')).toHaveTextContent('None');
+      expect(screen.getByTestId('ai-tool-dropdown-toggle')).toHaveTextContent('None');
       expect(screen.getByTestId('manifest-preview')).not.toHaveTextContent('ai-providers');
     });
 
-    it('keep Save disabled until the selection actually differs', async () => {
+    it('apply as soon as one is picked, with nothing to confirm', async () => {
       renderInApp(<CreateSandbox />, { preloadedState: WITH_CATALOG });
+      await userEvent.type(screen.getByTestId('sandbox-name'), 'my-agent');
 
-      await userEvent.click(screen.getByTestId('ai-tool-edit-toggle'));
-      const modal = within(screen.getByTestId('ai-tool-selector-modal'));
-      expect(modal.getByRole('button', { name: 'Save' })).toBeDisabled();
+      await userEvent.click(screen.getByTestId('ai-tool-dropdown-toggle'));
+      await userEvent.click(screen.getByRole('checkbox', { name: /Anthropic/i }));
 
-      await userEvent.click(modal.getByRole('checkbox', { name: /Anthropic/i }));
-
-      expect(modal.getByRole('button', { name: 'Save' })).toBeEnabled();
+      // The form is still being filled in; there is nothing to save against
+      // yet, so the preview follows the pick the way it follows a keystroke.
+      expect(screen.getByTestId('manifest-preview')).toHaveTextContent(
+        'che.eclipse.org/ai-providers: anthropic',
+      );
     });
 
-    it('leave the selection alone on Cancel', async () => {
+    it('can be chosen with the keyboard', async () => {
       renderInApp(<CreateSandbox />, { preloadedState: WITH_CATALOG });
 
-      await userEvent.click(screen.getByTestId('ai-tool-edit-toggle'));
-      const modal = within(screen.getByTestId('ai-tool-selector-modal'));
-      await userEvent.click(modal.getByRole('checkbox', { name: /Anthropic/i }));
-      await userEvent.click(modal.getByRole('button', { name: 'Cancel' }));
+      await userEvent.click(screen.getByTestId('ai-tool-dropdown-toggle'));
+      screen.getByRole('checkbox', { name: /Anthropic/i }).focus();
+      await userEvent.keyboard('{Enter}');
 
-      expect(screen.getByTestId('ai-tool-selector')).toHaveTextContent('None');
+      expect(screen.getByTestId('ai-tool-dropdown-toggle')).toHaveTextContent('Anthropic');
+    });
+
+    it('cannot be changed while the sandbox is being created', () => {
+      renderInApp(<CreateSandbox />, {
+        preloadedState: {
+          ...WITH_CATALOG,
+          sandboxes: { ...sandboxesUnloadedState, pendingName: 'my-agent' },
+        },
+      });
+
+      expect(screen.getByTestId('ai-tool-dropdown-toggle')).toBeDisabled();
     });
 
     it('point at the dashboard page where the API keys are managed', async () => {
@@ -292,7 +328,7 @@ describe('CreateSandbox', () => {
         preloadedState: WITH_CATALOG,
       });
 
-      await userEvent.click(screen.getByTestId('ai-tool-edit-toggle'));
+      await userEvent.click(screen.getByTestId('ai-tool-dropdown-toggle'));
 
       expect(screen.getByRole('link', { name: /Manage API keys/ })).toHaveAttribute(
         'href',

@@ -14,15 +14,11 @@ import { Button, HelperText, HelperTextItem } from '@patternfly/react-core';
 import { PencilAltIcon } from '@patternfly/react-icons';
 import React from 'react';
 
+import { buildManageKeysUrl } from '@/components/AiToolSelector/manageKeys';
 import { AiToolSelectorModal } from '@/components/AiToolSelector/SelectorModal';
 import styles from '@/components/AiToolSelector/SelectorModal.module.css';
 import { AiProviderDefinition, AiToolDefinition } from '@/services/catalog';
-import { dashboardRoute } from '@/services/config';
 import { SandboxCustomization } from '@/services/sandboxFactory';
-
-/** Where the dashboard keeps the AI provider API keys. */
-const USER_PREFERENCES_ROUTE = '/user-preferences';
-const AI_PROVIDER_KEYS_TAB = 'AiProviderKeys';
 
 export type Props = {
   aiTools: AiToolDefinition[];
@@ -96,10 +92,7 @@ export function AiToolSelector({
         aiProviders={aiProviders}
         originSelection={customization.aiProviderIds}
         originVersions={customization.aiVersions ?? {}}
-        manageKeysUrl={dashboardRoute(
-          dashboardUrl,
-          `${USER_PREFERENCES_ROUTE}?tab=${AI_PROVIDER_KEYS_TAB}`,
-        )}
+        manageKeysUrl={buildManageKeysUrl(dashboardUrl)}
         onConfirm={(aiProviderIds, aiVersions) => {
           setIsOpen(false);
           onChange({ aiProviderIds, aiVersions });

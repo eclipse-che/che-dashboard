@@ -286,6 +286,22 @@ describe('SandboxDetails', () => {
       expect(screen.getByTestId('ai-tool-selector')).toHaveTextContent('None');
     });
 
+    it('labels the row the way the workspace overview labels it', async () => {
+      await renderWithAgent();
+
+      expect(screen.getByText('AI Tool')).toBeInTheDocument();
+      expect(screen.getByLabelText('More info for AI tool')).toBeInTheDocument();
+    });
+
+    it('explains what the AI tools are, under the same title a workspace uses', async () => {
+      await renderWithAgent();
+
+      await userEvent.click(screen.getByLabelText('More info for AI tool'));
+
+      expect(screen.getByRole('heading', { name: 'AI Tool Info' })).toBeInTheDocument();
+      expect(screen.getByTestId('ai-tool-info-modal')).toHaveTextContent('init containers');
+    });
+
     it('is editable while the sandbox is suspended, because resuming applies it', async () => {
       await renderWithAgent();
 
