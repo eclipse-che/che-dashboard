@@ -101,7 +101,7 @@ export interface IEventApi extends IWatcherService<api.webSocket.SubscribeParams
   /**
    * Get list of Events in the given namespace
    */
-  listInNamespace(namespace: string): Promise<api.IEventList>;
+  listInNamespace(namespace: string, involvedObjectName?: string): Promise<api.IEventList>;
 }
 
 export interface IPodApi extends IWatcherService<api.webSocket.SubscribeParams> {
