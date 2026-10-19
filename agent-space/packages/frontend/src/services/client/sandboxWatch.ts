@@ -19,6 +19,16 @@ const SANDBOX_CHANNEL = 'sandbox';
 export const RECONNECT_DELAY_MS = 3000;
 
 /**
+ * How long to wait before subscribing again after the backend reported that
+ * its own watch ended.
+ *
+ * Short, because this is the common case rather than a failure: the API server
+ * closes a watch every few minutes, and until the subscription is renewed the
+ * page shows a state that no longer changes.
+ */
+export const RESUBSCRIBE_DELAY_MS = 1000;
+
+/**
  * Ceiling for the backoff. A backend that is down for a while - a pod restart,
  * a revoked token - would otherwise be hammered every three seconds for as
  * long as the tab stays open, and each attempt costs the caller a full list.
@@ -100,6 +110,12 @@ export function buildWebSocketUrl(path: string, location = window.location): str
  * listener is told about the break so the caller can list again: events that
  * happened while the socket was down - a deletion in particular - are not
  * replayed, and only a fresh list can make the UI whole again.
+ *
+ * A watch can also end while the socket stays open. The API server closes
+ * watches periodically, which reaches the backend as a premature close and the
+ * browser as an ERROR notification: nothing about the socket changed, so
+ * reopening it is not what is needed - the channel has to be subscribed to
+ * again, which is what {@link RESUBSCRIBE_DELAY_MS} drives.
  */
 export function watchSandboxes(
   url: string,
@@ -110,6 +126,7 @@ export function watchSandboxes(
 ): StopWatching {
   let socket: WatchSocket | undefined;
   let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
+  let resubscribeTimer: ReturnType<typeof setTimeout> | undefined;
   let stopped = false;
   // Only the first connection may resume from a known version. After a break
   // that version is likely too old for the API server, so the subscription
@@ -118,6 +135,49 @@ export function watchSandboxes(
   // Consecutive failed attempts, reset once a socket opens again. Drives both
   // the backoff and whether the break is worth reporting.
   let failures = 0;
+  // Consecutive watches that ended without ever delivering an event. A watch
+  // the API server simply timed out resets this, so the usual renewal stays
+  // immediate; a subscription the backend refuses outright - no permission on
+  // the namespace, say - backs off instead of spinning.
+  let watchFailures = 0;
+
+  function subscribe(target: WatchSocket): void {
+    target.send(
+      JSON.stringify({
+        method: 'SUBSCRIBE',
+        channel: SANDBOX_CHANNEL,
+        params: { namespace, resourceVersion: startVersion },
+      }),
+    );
+  }
+
+  /**
+   * Renews a subscription whose server-side watch ended.
+   *
+   * The new watch starts from the current state rather than from the version
+   * the old one reached: that version may already be too old for the API
+   * server, and the caller answers the same ERROR with a full list, which is
+   * what covers whatever happened in between.
+   */
+  function scheduleResubscribe(target: WatchSocket): void {
+    startVersion = '';
+
+    const delay = Math.min(RESUBSCRIBE_DELAY_MS * 2 ** watchFailures, MAX_RECONNECT_DELAY_MS);
+    watchFailures += 1;
+
+    if (resubscribeTimer !== undefined) {
+      clearTimeout(resubscribeTimer);
+    }
+    resubscribeTimer = setTimeout(() => {
+      resubscribeTimer = undefined;
+      // A socket that was replaced or closed in the meantime is reconnected by
+      // `onclose`, which subscribes on its own.
+      if (stopped || socket !== target) {
+        return;
+      }
+      subscribe(target);
+    }, delay);
+  }
 
   function connect(): void {
     if (stopped) {
@@ -135,13 +195,7 @@ export function watchSandboxes(
 
     current.onopen = () => {
       failures = 0;
-      current.send(
-        JSON.stringify({
-          method: 'SUBSCRIBE',
-          channel: SANDBOX_CHANNEL,
-          params: { namespace, resourceVersion: startVersion },
-        }),
-      );
+      subscribe(current);
     };
 
     current.onmessage = event => {
@@ -162,12 +216,19 @@ export function watchSandboxes(
 
       const { message } = payload;
       if (isSandboxNotification(message)) {
+        // The watch is delivering, so whatever ended the previous one was a
+        // timeout rather than a subscription the backend cannot serve.
+        watchFailures = 0;
         listener({ type: message.eventPhase, sandbox: message.sandbox });
       } else if (isStatusNotification(message)) {
         listener({
           type: 'ERROR',
           message: message.status?.message ?? 'The sandbox watch reported an error.',
         });
+        // The socket is still open and still carries the channel; only the
+        // watch behind it is gone. Without a new subscription every later
+        // change would go unnoticed until the page is reloaded.
+        scheduleResubscribe(current);
       }
     };
 
@@ -212,6 +273,10 @@ export function watchSandboxes(
     if (reconnectTimer !== undefined) {
       clearTimeout(reconnectTimer);
       reconnectTimer = undefined;
+    }
+    if (resubscribeTimer !== undefined) {
+      clearTimeout(resubscribeTimer);
+      resubscribeTimer = undefined;
     }
     const current = socket;
     socket = undefined;

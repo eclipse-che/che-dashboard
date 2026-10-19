@@ -21,7 +21,7 @@ import {
   sandboxDetailsRequestAction,
   sandboxDetailsUpdateAction,
 } from '@/store/SandboxDetails/actions';
-import { sandboxChangeAction } from '@/store/Sandboxes/actions';
+import { sandboxChangeAction, sandboxesReceiveAction } from '@/store/Sandboxes/actions';
 
 export interface State {
   isLoading: boolean;
@@ -98,6 +98,24 @@ export const reducer = createReducer(unloadedState, builder =>
       state.sandbox = type === 'DELETED' ? undefined : sandbox;
       state.isLoading = false;
       state.isLoaded = true;
+    })
+    .addCase(sandboxesReceiveAction, (state, action) => {
+      // A list is also how the watch recovers: when the stream breaks, changes
+      // that happened in the meantime arrive this way and not as events. The
+      // page has to take them, or it would sit on a status that stopped being
+      // true the moment the stream died.
+      if (state.name === undefined) {
+        return;
+      }
+      const sandbox = action.payload.sandboxes.find(item => item.metadata.name === state.name);
+      // Only an answer about this sandbox counts. A list that does not mention
+      // it may be a namespace the page is not showing, so the manifest stays
+      // until the details request says otherwise.
+      if (sandbox !== undefined) {
+        state.sandbox = sandbox;
+        state.isLoading = false;
+        state.isLoaded = true;
+      }
     })
     .addDefaultCase(state => state),
 );

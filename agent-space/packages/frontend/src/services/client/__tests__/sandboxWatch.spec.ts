@@ -14,6 +14,7 @@ import {
   buildWebSocketUrl,
   MAX_RECONNECT_DELAY_MS,
   RECONNECT_DELAY_MS,
+  RESUBSCRIBE_DELAY_MS,
   watchSandboxes,
   WatchSocket,
 } from '@/services/client/sandboxWatch';
@@ -169,6 +170,134 @@ describe('watchSandboxes', () => {
     sockets[0].deliverRaw(new ArrayBuffer(4));
 
     expect(events).toEqual([]);
+  });
+
+  describe('when the watch ends but the socket stays open', () => {
+    it('subscribes again, from the current state', () => {
+      const { sockets, events } = start('42');
+      sockets[0].open();
+
+      sockets[0].deliver({
+        channel: 'sandbox',
+        message: { eventPhase: 'ERROR', status: { message: 'Premature close' } },
+      });
+
+      // Reported first, so the caller lists and picks up whatever the dead
+      // watch never delivered.
+      expect(events).toEqual([{ type: 'ERROR', message: 'Premature close' }]);
+      expect(sockets[0].sent).toHaveLength(1);
+
+      jest.advanceTimersByTime(RESUBSCRIBE_DELAY_MS);
+
+      expect(sockets).toHaveLength(1);
+      expect(sockets[0].isClosed).toBe(false);
+      expect(JSON.parse(sockets[0].sent[1])).toEqual({
+        method: 'SUBSCRIBE',
+        channel: 'sandbox',
+        params: { namespace: NAMESPACE, resourceVersion: '' },
+      });
+    });
+
+    it('keeps the sandbox changing on screen after the API server times the watch out', () => {
+      const { sockets, events } = start();
+      sockets[0].open();
+
+      sockets[0].deliver({
+        channel: 'sandbox',
+        message: { eventPhase: 'ERROR', status: { message: 'Premature close' } },
+      });
+      jest.advanceTimersByTime(RESUBSCRIBE_DELAY_MS);
+
+      sockets[0].deliver({
+        channel: 'sandbox',
+        message: { eventPhase: 'MODIFIED', sandbox: SANDBOX },
+      });
+
+      expect(events).toEqual([
+        { type: 'ERROR', message: 'Premature close' },
+        { type: 'MODIFIED', sandbox: SANDBOX },
+      ]);
+    });
+
+    it('backs off on a subscription the backend will not serve', () => {
+      const { sockets } = start();
+      sockets[0].open();
+
+      const refuse = () =>
+        sockets[0].deliver({
+          channel: 'sandbox',
+          message: { eventPhase: 'ERROR', status: { message: 'forbidden' } },
+        });
+
+      refuse();
+      jest.advanceTimersByTime(RESUBSCRIBE_DELAY_MS);
+      expect(sockets[0].sent).toHaveLength(2);
+
+      refuse();
+      jest.advanceTimersByTime(RESUBSCRIBE_DELAY_MS);
+      expect(sockets[0].sent).toHaveLength(2);
+
+      jest.advanceTimersByTime(RESUBSCRIBE_DELAY_MS);
+      expect(sockets[0].sent).toHaveLength(3);
+    });
+
+    it('never waits longer than the ceiling', () => {
+      const { sockets } = start();
+      sockets[0].open();
+
+      for (let attempt = 0; attempt < 12; attempt++) {
+        sockets[0].deliver({ channel: 'sandbox', message: { eventPhase: 'ERROR' } });
+        jest.advanceTimersByTime(MAX_RECONNECT_DELAY_MS);
+      }
+
+      expect(sockets[0].sent).toHaveLength(13);
+    });
+
+    it('starts over from a short wait once a watch delivers again', () => {
+      const { sockets } = start();
+      sockets[0].open();
+
+      sockets[0].deliver({ channel: 'sandbox', message: { eventPhase: 'ERROR' } });
+      jest.advanceTimersByTime(RESUBSCRIBE_DELAY_MS);
+      sockets[0].deliver({ channel: 'sandbox', message: { eventPhase: 'ERROR' } });
+      jest.advanceTimersByTime(RESUBSCRIBE_DELAY_MS * 2);
+      expect(sockets[0].sent).toHaveLength(3);
+
+      // The renewed watch works, so the next timeout is an ordinary one.
+      sockets[0].deliver({
+        channel: 'sandbox',
+        message: { eventPhase: 'ADDED', sandbox: SANDBOX },
+      });
+
+      sockets[0].deliver({ channel: 'sandbox', message: { eventPhase: 'ERROR' } });
+      jest.advanceTimersByTime(RESUBSCRIBE_DELAY_MS);
+
+      expect(sockets[0].sent).toHaveLength(4);
+    });
+
+    it('leaves a socket that dropped meanwhile to the reconnect', () => {
+      const { sockets } = start();
+      sockets[0].open();
+
+      sockets[0].deliver({ channel: 'sandbox', message: { eventPhase: 'ERROR' } });
+      sockets[0].drop();
+      jest.advanceTimersByTime(RECONNECT_DELAY_MS + RESUBSCRIBE_DELAY_MS);
+
+      // The second socket subscribes on open; the dead one is not written to.
+      expect(sockets).toHaveLength(2);
+      expect(sockets[0].sent).toHaveLength(1);
+    });
+
+    it('does not subscribe again after the caller stopped watching', () => {
+      const { sockets, stop } = start();
+      sockets[0].open();
+
+      sockets[0].deliver({ channel: 'sandbox', message: { eventPhase: 'ERROR' } });
+      stop();
+      jest.advanceTimersByTime(RESUBSCRIBE_DELAY_MS);
+
+      expect(sockets[0].sent).toHaveLength(1);
+    });
   });
 
   describe('when the connection drops', () => {

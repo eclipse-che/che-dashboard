@@ -144,6 +144,32 @@ describe('the SandboxDetails slice', () => {
 
       expect(selectSandboxDetails(store.getState())?.metadata.name).toBe('hello-world');
     });
+
+    it('takes what a recovery list says about the sandbox on screen', async () => {
+      const client = testClient();
+      const store = createTestStore({ client });
+      await store.dispatch(sandboxDetailsActionCreators.requestSandboxDetails('hello-world'));
+
+      // A broken watch is answered with a list, not with events: the page has
+      // to pick the change up there or it sits on a dead status.
+      await client.patchSandbox(TEST_NAMESPACE, 'hello-world', buildActionPatch('suspend'));
+      await store.dispatch(sandboxesActionCreators.requestSandboxes());
+
+      expect(selectSandboxDetails(store.getState())?.spec.operatingMode).toBe('Suspended');
+    });
+
+    it('keeps the sandbox when a list does not mention it', async () => {
+      const client = testClient();
+      jest.spyOn(client, 'listSandboxes').mockResolvedValue({ items: [] });
+      const store = createTestStore({ client });
+      await store.dispatch(sandboxDetailsActionCreators.requestSandboxDetails('hello-world'));
+
+      await store.dispatch(sandboxesActionCreators.requestSandboxes());
+
+      // Only a reply about this sandbox may clear it; an unrelated list is not
+      // evidence that it is gone.
+      expect(selectSandboxDetails(store.getState())?.metadata.name).toBe('hello-world');
+    });
   });
 
   describe('requestSandboxEvents', () => {
