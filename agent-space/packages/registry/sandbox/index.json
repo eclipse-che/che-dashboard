@@ -1,0 +1,75 @@
+[
+  {
+    "id": "hello-world",
+    "displayName": "Hello World",
+    "description": "The smallest possible Sandbox: one idling container, no storage, no prerequisites. Use it to check that the agent-sandbox controller is installed and reconciling.",
+    "tags": ["Basic", "Getting Started"],
+    "icon": "/images/sandbox.svg",
+    "source": {
+      "url": "https://github.com/kubernetes-sigs/agent-sandbox",
+      "ref": "main",
+      "path": "examples/hello-world-sandbox/hello-world.yaml"
+    },
+    "defaults": {
+      "image": "registry.access.redhat.com/ubi9/ubi-minimal:9.6",
+      "command": ["sleep", "infinity"]
+    },
+    "notes": "Upstream runs the container with no command, so the image entrypoint returns at once and the sandbox settles on Completed instead of Running. This copy keeps the container alive with 'sleep infinity', the way the other samples do, so the sandbox stays up and can be exec'd into.",
+    "manifest": {
+      "filename": "hello-world.yaml"
+    }
+  },
+  {
+    "id": "python-sandbox",
+    "displayName": "Python Sandbox",
+    "description": "A long-lived Python 3.12 container with no service account token mounted. The container idles, so you can exec into it and run code for as long as the sandbox exists.",
+    "tags": ["Basic", "Python"],
+    "icon": "/images/sandbox.svg",
+    "source": {
+      "url": "https://github.com/kubernetes-sigs/agent-sandbox",
+      "ref": "main",
+      "path": "examples/network-policy-api-sandbox/manifests/90-raw-sandbox.yaml"
+    },
+    "manifest": {
+      "filename": "python-sandbox.yaml"
+    }
+  },
+  {
+    "id": "python-runtime",
+    "displayName": "Python Code Execution Runtime",
+    "description": "The upstream agent runtime image: a FastAPI server on port 8888 that executes code on behalf of an agent. The closest sample to what an AI agent actually talks to.",
+    "tags": ["Agent", "Runtime", "HTTP"],
+    "icon": "/images/sandbox.svg",
+    "source": {
+      "url": "https://github.com/kubernetes-sigs/agent-sandbox",
+      "ref": "main",
+      "path": "examples/python-runtime-sandbox/sandbox-python-kind.yaml"
+    },
+    "defaults": {
+      "image": "us-central1-docker.pkg.dev/k8s-staging-images/agent-sandbox/python-runtime-sandbox:latest-main"
+    },
+    "notes": "The upstream manifest expects an image built locally by its own test script; this copy is pinned to the published build of that image instead. The port is not exposed outside the cluster - reach it with 'kubectl port-forward'.",
+    "manifest": {
+      "filename": "python-runtime.yaml"
+    }
+  },
+  {
+    "id": "playwright-sandbox",
+    "displayName": "Playwright Browser Automation",
+    "description": "Drives a headless Chromium session against a target URL, prints the page title and a content snippet, then idles. A good example of an untrusted browser workload with visible output.",
+    "tags": ["Browser", "Automation"],
+    "icon": "/images/sandbox.svg",
+    "source": {
+      "url": "https://github.com/kubernetes-sigs/agent-sandbox",
+      "ref": "main",
+      "path": "examples/playwright-sandbox/playwright-sandbox.yaml"
+    },
+    "defaults": {
+      "image": "mcr.microsoft.com/playwright/python:v1.49.0-noble"
+    },
+    "notes": "Change the TARGET_URL environment variable to point at another page. The screenshot is written inside the container and is not persisted - read the result from the sandbox logs.",
+    "manifest": {
+      "filename": "playwright-sandbox.yaml"
+    }
+  }
+]
