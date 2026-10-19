@@ -172,6 +172,31 @@ describe('Sandbox Terminal API Service', () => {
       expect(target.podName).toEqual('current');
     });
 
+    it('skips the pod a suspend is still tearing down', async () => {
+      // The outgoing pod keeps its phase until the kubelet is done with it, so
+      // it looks every bit as runnable as the one that replaced it.
+      spyListPod.mockResolvedValueOnce({
+        items: [
+          pod({ metadata: { name: 'old', deletionTimestamp: new Date() } }),
+          pod({ metadata: { name: 'current' } }),
+        ],
+      } as unknown as Awaited<ReturnType<CoreV1Api['listNamespacedPod']>>);
+
+      const target = await service.resolveTarget(namespace, name);
+
+      expect(target.podName).toEqual('current');
+    });
+
+    it('says the pod is going away rather than opening a shell that is about to die', async () => {
+      spyListPod.mockResolvedValueOnce({
+        items: [pod({ metadata: { name, deletionTimestamp: new Date() } })],
+      } as unknown as Awaited<ReturnType<CoreV1Api['listNamespacedPod']>>);
+
+      await expect(service.resolveTarget(namespace, name)).rejects.toThrow(
+        `The pod of sandbox '${name}' is shutting down`,
+      );
+    });
+
     it('drops the user into the workload, not into the proxy beside it', async () => {
       spyListPod.mockResolvedValueOnce({
         items: [pod({ spec: { containers: [{ name: 'editor-proxy' }, { name: 'agent' }] } })],

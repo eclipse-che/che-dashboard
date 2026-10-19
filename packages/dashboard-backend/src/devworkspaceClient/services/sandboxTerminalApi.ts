@@ -65,6 +65,17 @@ export const TERMINAL_COMMAND = ['/bin/sh', '-c', 'exec /bin/bash || exec /bin/s
 /** Phases a pod can serve a terminal in. */
 const RUNNING_PHASE = 'Running';
 
+/**
+ * Whether the API server has been asked to delete the pod.
+ *
+ * A pod being deleted keeps its phase and its containers until the kubelet is
+ * done, so this is the only thing that tells it apart from the one that
+ * replaced it.
+ */
+function isTerminating(pod: k8s.V1Pod): boolean {
+  return pod.metadata?.deletionTimestamp !== undefined;
+}
+
 export class SandboxTerminalApiService implements ISandboxTerminalApi {
   private readonly coreV1API: CoreV1API;
   private readonly exec: k8s.Exec;
@@ -92,6 +103,17 @@ export class SandboxTerminalApiService implements ISandboxTerminalApi {
         undefined,
         TERMINAL_API_ERROR_LABEL,
         `The pod of sandbox '${sandboxName}' has no name`,
+      );
+    }
+
+    // Checked before the phase, which stays Running the whole way down: the
+    // sandbox is on its way to a new pod, and saying so is more use than
+    // dropping the user into the one being replaced.
+    if (isTerminating(pod)) {
+      throw createError(
+        undefined,
+        TERMINAL_API_ERROR_LABEL,
+        `The pod of sandbox '${sandboxName}' is shutting down`,
       );
     }
 
@@ -124,13 +146,19 @@ export class SandboxTerminalApiService implements ISandboxTerminalApi {
         labelSelector: `${SANDBOX_POD_LABEL}=${sandboxName}`,
       });
       // A sandbox that was suspended and resumed leaves the pod it had behind
-      // for a while, so a running one is preferred over whichever came first.
-      const running = items.find(pod => pod.status?.phase === RUNNING_PHASE);
+      // for a while, and that pod goes on reporting Running until the kubelet
+      // has finished with it. Preferring a running pod is therefore not enough
+      // on its own: one the API server has already been asked to delete is
+      // skipped, or the user lands in a shell that is about to be killed.
+      const candidates = items.filter(pod => !isTerminating(pod));
+      const searched = candidates.length > 0 ? candidates : items;
+
+      const running = searched.find(pod => pod.status?.phase === RUNNING_PHASE);
       if (running !== undefined) {
         return running;
       }
-      if (items.length > 0) {
-        return items[0];
+      if (searched.length > 0) {
+        return searched[0];
       }
     } catch (e) {
       throw createError(
