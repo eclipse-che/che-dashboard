@@ -44,6 +44,7 @@ import {
   IShhKeysApi,
   IWorkspacePreferencesApi,
 } from '@/devworkspaceClient';
+import { mockState } from '@/routes/api/helpers/__mocks__/mockState';
 import { getDevWorkspaceClient as helper } from '@/routes/api/helpers/getDevWorkspaceClient';
 
 export const stubContainerBuild = {
@@ -227,6 +228,7 @@ export const getDevWorkspaceClient = jest.fn(
         getInternalRegistryDisableStatus: () => internalRegistryDisableStatus,
         getDashboardLogo: () => dashboardLogo,
         getAutoProvision: () => stubAutoProvision,
+        getAgentSandboxEnabled: () => mockState.agentSandboxEnabled,
         getAdvancedAuthorization: () => stubAdvancedAuthorization,
         getAllowedSourceUrls: () => stubAllowedSourceUrls,
         getShowDeprecatedEditors: () => stubShowDeprecatedEditors,

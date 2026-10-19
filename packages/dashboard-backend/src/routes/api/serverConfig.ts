@@ -52,6 +52,7 @@ export function registerServerConfigRoute(instance: FastifyInstance) {
       const axiosRequestTimeout = serverConfigApi.getAxiosRequestTimeout();
       const showDeprecated = serverConfigApi.getShowDeprecatedEditors(cheCustomResource);
       const hideById = serverConfigApi.getHideEditorsById(cheCustomResource);
+      const agentSandboxEnabled = serverConfigApi.getAgentSandboxEnabled(cheCustomResource);
       const sessionTimeout = await serverConfigApi.getSessionTimeout(cheCustomResource);
 
       const serverConfig: api.IServerConfig = {
@@ -94,6 +95,10 @@ export function registerServerConfigRoute(instance: FastifyInstance) {
             advancedAuthorization,
           },
         };
+      }
+
+      if (agentSandboxEnabled) {
+        serverConfig.agentSandbox = { enabled: true };
       }
 
       if (showDeprecated || hideById.length > 0) {

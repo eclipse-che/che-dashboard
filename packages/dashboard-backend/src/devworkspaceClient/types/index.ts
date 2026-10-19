@@ -144,6 +144,8 @@ export type CheClusterCustomResource = k8s.V1CustomResourceDefinition & {
         };
       };
     };
+    // Added in che-operator PR #2184
+    agentSandbox?: CheClusterCustomResourceSpecAgentSandbox;
   };
   status: {
     pluginRegistryURL: string;
@@ -163,6 +165,15 @@ export function isCheClusterCustomResource(object: unknown): object is CheCluste
       isCheClusterCustomResourceSpecComponent(spec.components))
   );
 }
+
+/**
+ * Enables the Agent Sandbox integration (kubernetes-sigs/agent-sandbox).
+ * The operator only accepts `enabled: true` when the `agents.x-k8s.io` API group
+ * is available on the cluster, so the dashboard can trust the flag as-is.
+ */
+export type CheClusterCustomResourceSpecAgentSandbox = {
+  enabled?: boolean;
+};
 
 export type CheClusterCustomResourceSpecDevEnvironments = {
   containerBuildConfiguration?: {
@@ -403,6 +414,11 @@ export interface IServerConfigApi {
    * Returns the autoProvision value
    */
   getAutoProvision(cheCustomResource: CheClusterCustomResource): boolean;
+
+  /**
+   * Returns true when the Agent Sandbox integration is enabled in the CheCluster CR.
+   */
+  getAgentSandboxEnabled(cheCustomResource: CheClusterCustomResource): boolean;
 
   /**
    * Returns the allowed source URLs
