@@ -1,0 +1,33 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+.manifestViewer {
+  height: 50vh;
+}
+
+/* Expanding hides the masthead, so only the toolbar and the page padding are
+   left to subtract. */
+.manifestViewerExpanded {
+  height: calc(100vh - 5rem);
+}
+
+.manifestViewer > div,
+.manifestViewerExpanded > div {
+  height: inherit;
+}
+
+.manifestViewer > div > div,
+.manifestViewerExpanded > div > div {
+  overflow: auto;
+  height: 100%;
+  border: 1px solid var(--pf-t--global--border--color--default);
+}
