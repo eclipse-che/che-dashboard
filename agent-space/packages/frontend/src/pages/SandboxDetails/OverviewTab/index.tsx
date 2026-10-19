@@ -18,6 +18,8 @@ import {
   DescriptionListGroup,
   DescriptionListTerm,
   FormGroupLabelHelp,
+  HelperText,
+  HelperTextItem,
   PageSection,
 } from '@patternfly/react-core';
 import { ExternalLinkSquareAltIcon } from '@patternfly/react-icons';
@@ -29,6 +31,7 @@ import styles from '@/components/AiToolSelector/SelectorModal.module.css';
 import { ErrorAlert } from '@/components/ErrorAlert';
 import { StorageTypeSelector } from '@/components/StorageTypeSelector';
 import { StorageTypeInfoModal } from '@/components/StorageTypeSelector/InfoModal';
+import { findToolsByProviderIds } from '@/services/catalog';
 import { buildSandboxConsoleUrl } from '@/services/clusterInfo';
 import { formatTimestamp } from '@/services/format';
 import {
@@ -81,6 +84,18 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
       aiVersions: getSandboxAiVersions(sandbox),
     }),
     [sandbox],
+  );
+
+  // A key only reaches the sandbox through an environment variable resolved as
+  // the container starts, so saving one in user preferences afterwards leaves
+  // the running pod as it was. Said only where it applies: an agent that takes
+  // no key is unaffected by what is saved there.
+  const showKeyHint = React.useMemo(
+    () =>
+      findToolsByProviderIds(aiTools, customization.aiProviderIds, customization.aiVersions).some(
+        tool => tool.envVarName !== undefined,
+      ),
+    [aiTools, customization],
   );
 
   const handleChange = React.useCallback(
@@ -202,6 +217,14 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
               disabledReason={getAiToolsDisabledReason(phase)}
               onChange={handleChange}
             />
+            {showKeyHint && (
+              <HelperText>
+                <HelperTextItem data-testid="ai-tool-keys-hint">
+                  API keys are read as the pod starts. Suspend and resume to apply a key saved in
+                  user preferences since then.
+                </HelperTextItem>
+              </HelperText>
+            )}
             <AiToolInfoModal
               isOpen={isInfoOpen}
               aiTools={aiTools}

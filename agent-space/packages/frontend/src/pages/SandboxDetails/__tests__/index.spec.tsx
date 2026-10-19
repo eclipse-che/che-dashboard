@@ -86,6 +86,32 @@ const WITH_CATALOG = {
   },
 };
 
+/** An agent that takes an API key, which Claude Code above deliberately does not. */
+const GEMINI: AiToolDefinition = {
+  providerId: 'google',
+  tag: 'latest',
+  name: 'Gemini CLI',
+  url: '',
+  binary: 'gemini',
+  pattern: 'init',
+  injectorImage: 'quay.io/example/gemini-cli:latest',
+  envVarName: 'GEMINI_API_KEY',
+};
+
+const GOOGLE: AiProviderDefinition = {
+  id: 'google',
+  name: 'Google',
+  publisher: 'Google',
+};
+
+const WITH_KEYED_CATALOG = {
+  catalog: {
+    ...catalogUnloadedState,
+    isLoaded: true,
+    catalog: { ...EMPTY_CATALOG, aiTools: [CLAUDE, GEMINI], aiProviders: [ANTHROPIC, GOOGLE] },
+  },
+};
+
 async function renderDetails(
   name: string,
   {
@@ -356,6 +382,44 @@ describe('SandboxDetails', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
       expect(patchSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('the API key hint on the Overview tab', () => {
+    /** Opens the Overview tab of a suspended sandbox running the given agent. */
+    async function renderWithProvider(providerId: string): Promise<void> {
+      const client = testClient();
+      await client.createSandbox(TEST_NAMESPACE, {
+        metadata: { name: 'keyed', annotations: { [AI_PROVIDERS_ANNOTATION]: providerId } },
+        spec: {
+          operatingMode: 'Suspended',
+          podTemplate: { spec: { containers: [{ name: 'agent', image: 'busybox' }] } },
+        },
+      } as Sandbox);
+      await renderDetails('keyed', { client, preloadedState: WITH_KEYED_CATALOG });
+    }
+
+    it('says a key saved since the pod started needs a restart to reach it', async () => {
+      await renderWithProvider('google');
+
+      // The variable is resolved as the container starts, so a key saved in
+      // user preferences afterwards never reaches the pod on its own.
+      expect(screen.getByTestId('ai-tool-keys-hint')).toHaveTextContent(
+        'API keys are read as the pod starts. Suspend and resume to apply a key saved in user preferences since then.',
+      );
+    });
+
+    it('stays quiet for an agent that takes no key', async () => {
+      await renderWithProvider('anthropic');
+
+      expect(screen.getByTestId('ai-tool-selector')).toHaveTextContent('Anthropic');
+      expect(screen.queryByTestId('ai-tool-keys-hint')).not.toBeInTheDocument();
+    });
+
+    it('stays quiet for a sandbox running no agent at all', async () => {
+      await renderDetails('hello-world', { preloadedState: WITH_KEYED_CATALOG });
+
+      expect(screen.queryByTestId('ai-tool-keys-hint')).not.toBeInTheDocument();
     });
   });
 
