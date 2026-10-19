@@ -38,6 +38,8 @@ export type StoreOptions = {
   client?: AgentSandboxClient;
   config?: AgentSpaceConfig;
   namespace?: string;
+  /** Console the cluster publishes, empty by default as a plain cluster has none. */
+  clusterConsoleUrl?: string;
   /** Slices to start from, merged over the bootstrapped defaults. */
   preloadedState?: Partial<RootState>;
 };
@@ -55,6 +57,7 @@ export function createTestStore({
   client,
   config,
   namespace,
+  clusterConsoleUrl = '',
   preloadedState = {},
 }: StoreOptions = {}) {
   const resolvedConfig = config ?? testConfig();
@@ -70,6 +73,7 @@ export function createTestStore({
         isReady: true,
         config: resolvedConfig,
         namespace: namespace ?? resolvedConfig.namespace ?? TEST_NAMESPACE,
+        clusterConsoleUrl,
         clientMode: resolvedClient.mode,
       },
       ...preloadedState,

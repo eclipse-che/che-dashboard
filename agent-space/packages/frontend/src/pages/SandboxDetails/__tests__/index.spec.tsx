@@ -92,14 +92,16 @@ async function renderDetails(
     client = testClient(),
     tab,
     preloadedState,
+    clusterConsoleUrl,
   }: {
     client?: MockSandboxClient;
     tab?: string;
     preloadedState?: StoreOptions['preloadedState'];
+    clusterConsoleUrl?: string;
   } = {},
 ) {
   currentName = name;
-  const store = createTestStore({ client, preloadedState });
+  const store = createTestStore({ client, preloadedState, clusterConsoleUrl });
   // The page is fed by the namespace watch the application opens, so the tests
   // open it too.
   await store.dispatch(sandboxesActionCreators.startWatchingSandboxes());
@@ -354,6 +356,27 @@ describe('SandboxDetails', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
       expect(patchSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('the name on the Overview tab', () => {
+    it('links the sandbox to the console, where the object itself is', async () => {
+      await renderDetails('hello-world', { clusterConsoleUrl: 'https://console.example.com' });
+
+      const link = screen.getByTestId('sandbox-console-link');
+      expect(link).toHaveAttribute(
+        'href',
+        `https://console.example.com/k8s/ns/${TEST_NAMESPACE}/agents.x-k8s.io~v1beta1~Sandbox/hello-world`,
+      );
+      expect(link).toHaveAttribute('target', '_blank');
+      expect(link).toHaveAccessibleName('hello-world (opens in new tab)');
+    });
+
+    it('still names the sandbox on a cluster that publishes no console', async () => {
+      await renderDetails('hello-world');
+
+      expect(screen.queryByTestId('sandbox-console-link')).not.toBeInTheDocument();
+      expect(screen.getByTestId('overview-tab')).toHaveTextContent('hello-world');
     });
   });
 

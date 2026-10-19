@@ -26,6 +26,8 @@ export interface State {
   isReady: boolean;
   config: AgentSpaceConfig;
   namespace: string;
+  /** Where the cluster console lives, or empty when there is none. */
+  clusterConsoleUrl: string;
   clientMode?: AgentSandboxClient['mode'];
   error?: SandboxError;
 }
@@ -35,6 +37,7 @@ export const unloadedState: State = {
   isReady: false,
   config: DEFAULT_CONFIG,
   namespace: '',
+  clusterConsoleUrl: '',
 };
 
 export const reducer = createReducer(unloadedState, builder =>
@@ -48,6 +51,7 @@ export const reducer = createReducer(unloadedState, builder =>
       state.isReady = true;
       state.config = action.payload.config;
       state.namespace = action.payload.namespace;
+      state.clusterConsoleUrl = action.payload.clusterConsoleUrl;
       state.clientMode = action.payload.clientMode;
     })
     .addCase(bootstrapErrorAction, (state, action) => {

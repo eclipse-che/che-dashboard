@@ -14,6 +14,7 @@ import { createAction } from '@reduxjs/toolkit';
 
 import { createSandboxClient } from '@/services/client';
 import { setSandboxClient } from '@/services/client/instance';
+import { fetchClusterConsoleUrl } from '@/services/clusterInfo';
 import { AgentSpaceConfig, loadConfig } from '@/services/config';
 import { resolveNamespace } from '@/services/namespace';
 import { AgentSandboxClient, SandboxError, toSandboxError } from '@/services/types';
@@ -23,6 +24,8 @@ export interface BootstrapPayload {
   config: AgentSpaceConfig;
   namespace: string;
   clientMode: AgentSandboxClient['mode'];
+  /** Where the cluster console lives, or empty when there is none. */
+  clusterConsoleUrl: string;
 }
 
 export const bootstrapRequestAction = createAction('bootstrap/request');
@@ -47,8 +50,16 @@ export const actionCreators = {
         const client = await createSandboxClient(config);
         setSandboxClient(client);
         const namespace = await resolveNamespace(config, client);
+        const clusterConsoleUrl = await fetchClusterConsoleUrl(config.kubeApiBaseUrl);
 
-        dispatch(bootstrapReceiveAction({ config, namespace, clientMode: client.mode }));
+        dispatch(
+          bootstrapReceiveAction({
+            config,
+            namespace,
+            clientMode: client.mode,
+            clusterConsoleUrl,
+          }),
+        );
       } catch (e) {
         setSandboxClient(undefined);
         dispatch(bootstrapErrorAction(toSandboxError(e)));

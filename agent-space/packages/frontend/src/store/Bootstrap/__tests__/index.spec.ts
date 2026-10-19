@@ -12,6 +12,7 @@
 
 import { createSandboxClient } from '@/services/client';
 import { getSandboxClient, setSandboxClient } from '@/services/client/instance';
+import { fetchClusterConsoleUrl } from '@/services/clusterInfo';
 import { loadConfig } from '@/services/config';
 import { resolveNamespace } from '@/services/namespace';
 import { SandboxClientError } from '@/services/types';
@@ -20,6 +21,7 @@ import {
   selectBootstrapError,
   selectBootstrapIsLoading,
   selectBootstrapIsReady,
+  selectClusterConsoleUrl,
   selectConfig,
   selectIsMockData,
   selectNamespace,
@@ -32,13 +34,18 @@ jest.mock('@/services/config', () => ({
 }));
 jest.mock('@/services/client', () => ({ createSandboxClient: jest.fn() }));
 jest.mock('@/services/namespace', () => ({ resolveNamespace: jest.fn() }));
+jest.mock('@/services/clusterInfo', () => ({ fetchClusterConsoleUrl: jest.fn() }));
 
 const loadConfigMock = loadConfig as jest.MockedFunction<typeof loadConfig>;
 const createClientMock = createSandboxClient as jest.MockedFunction<typeof createSandboxClient>;
 const resolveNamespaceMock = resolveNamespace as jest.MockedFunction<typeof resolveNamespace>;
+const fetchConsoleMock = fetchClusterConsoleUrl as jest.MockedFunction<
+  typeof fetchClusterConsoleUrl
+>;
 
 beforeEach(() => {
   jest.clearAllMocks();
+  fetchConsoleMock.mockResolvedValue('');
   setSandboxClient(undefined);
 });
 
@@ -117,6 +124,32 @@ describe('the Bootstrap slice', () => {
     await createUnloadedStore().dispatch(bootstrapActionCreators.requestBootstrap());
 
     expect(() => getSandboxClient()).toThrow();
+  });
+
+  it('records where the cluster console lives, for the links that point at it', async () => {
+    const config = testConfig({ kubeApiBaseUrl: 'https://che.example.com' });
+    loadConfigMock.mockResolvedValue(config);
+    createClientMock.mockResolvedValue(testClient());
+    resolveNamespaceMock.mockResolvedValue(TEST_NAMESPACE);
+    fetchConsoleMock.mockResolvedValue('https://console.example.com');
+    const store = createUnloadedStore();
+
+    await store.dispatch(bootstrapActionCreators.requestBootstrap());
+
+    expect(fetchConsoleMock).toHaveBeenCalledWith('https://che.example.com');
+    expect(selectClusterConsoleUrl(store.getState())).toBe('https://console.example.com');
+  });
+
+  it('comes up on a cluster that publishes no console', async () => {
+    loadConfigMock.mockResolvedValue(testConfig());
+    createClientMock.mockResolvedValue(testClient());
+    resolveNamespaceMock.mockResolvedValue(TEST_NAMESPACE);
+    const store = createUnloadedStore();
+
+    await store.dispatch(bootstrapActionCreators.requestBootstrap());
+
+    expect(selectBootstrapIsReady(store.getState())).toBe(true);
+    expect(selectClusterConsoleUrl(store.getState())).toBe('');
   });
 
   it('clears the previous failure when the user retries', async () => {

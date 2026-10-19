@@ -11,6 +11,8 @@
  */
 
 import {
+  Button,
+  ButtonVariant,
   DescriptionList,
   DescriptionListDescription,
   DescriptionListGroup,
@@ -18,6 +20,7 @@ import {
   FormGroupLabelHelp,
   PageSection,
 } from '@patternfly/react-core';
+import { ExternalLinkSquareAltIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 import { AiToolSelector } from '@/components/AiToolSelector';
@@ -26,6 +29,7 @@ import styles from '@/components/AiToolSelector/SelectorModal.module.css';
 import { ErrorAlert } from '@/components/ErrorAlert';
 import { StorageTypeSelector } from '@/components/StorageTypeSelector';
 import { StorageTypeInfoModal } from '@/components/StorageTypeSelector/InfoModal';
+import { buildSandboxConsoleUrl } from '@/services/clusterInfo';
 import { formatTimestamp } from '@/services/format';
 import {
   canEditAiTools,
@@ -41,7 +45,7 @@ import {
 import { SandboxCustomization } from '@/services/sandboxFactory';
 import { getSandboxStorageType, SandboxStorageType } from '@/services/sandboxStorage';
 import { Sandbox, SandboxError } from '@/services/types';
-import { selectDashboardUrl } from '@/store/Bootstrap';
+import { selectClusterConsoleUrl, selectDashboardUrl } from '@/store/Bootstrap';
 import { selectAiProviders, selectAiTools } from '@/store/Catalog';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { sandboxDetailsActionCreators } from '@/store/SandboxDetails';
@@ -60,10 +64,12 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
   const aiTools = useAppSelector(selectAiTools);
   const aiProviders = useAppSelector(selectAiProviders);
   const dashboardUrl = useAppSelector(selectDashboardUrl);
+  const clusterConsoleUrl = useAppSelector(selectClusterConsoleUrl);
 
   const [isInfoOpen, setIsInfoOpen] = React.useState(false);
   const [isStorageInfoOpen, setIsStorageInfoOpen] = React.useState(false);
 
+  const consoleUrl = buildSandboxConsoleUrl(clusterConsoleUrl, sandbox);
   const blocking = findBlockingCondition(sandbox);
   const phase = getSandboxPhase(sandbox);
 
@@ -108,6 +114,28 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
       )}
 
       <DescriptionList isHorizontal columnModifier={{ default: '2Col' }}>
+        <DescriptionListGroup>
+          <DescriptionListTerm>Name</DescriptionListTerm>
+          <DescriptionListDescription>
+            {consoleUrl ? (
+              <Button
+                component="a"
+                variant={ButtonVariant.link}
+                href={consoleUrl}
+                target="_blank"
+                icon={<ExternalLinkSquareAltIcon />}
+                iconPosition="end"
+                isInline
+                data-testid="sandbox-console-link"
+                aria-label={`${sandbox.metadata.name} (opens in new tab)`}
+              >
+                {sandbox.metadata.name}
+              </Button>
+            ) : (
+              sandbox.metadata.name
+            )}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
         <DescriptionListGroup>
           <DescriptionListTerm>Namespace</DescriptionListTerm>
           <DescriptionListDescription>
