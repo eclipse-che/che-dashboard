@@ -24,6 +24,8 @@ import { AiToolSelector } from '@/components/AiToolSelector';
 import { AiToolInfoModal } from '@/components/AiToolSelector/InfoModal';
 import styles from '@/components/AiToolSelector/SelectorModal.module.css';
 import { ErrorAlert } from '@/components/ErrorAlert';
+import { StorageTypeSelector } from '@/components/StorageTypeSelector';
+import { StorageTypeInfoModal } from '@/components/StorageTypeSelector/InfoModal';
 import { formatTimestamp } from '@/services/format';
 import {
   canEditAiTools,
@@ -37,6 +39,7 @@ import {
   getSandboxRuntimeClass,
 } from '@/services/sandbox';
 import { SandboxCustomization } from '@/services/sandboxFactory';
+import { getSandboxStorageType, SandboxStorageType } from '@/services/sandboxStorage';
 import { Sandbox, SandboxError } from '@/services/types';
 import { selectDashboardUrl } from '@/store/Bootstrap';
 import { selectAiProviders, selectAiTools } from '@/store/Catalog';
@@ -59,6 +62,7 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
   const dashboardUrl = useAppSelector(selectDashboardUrl);
 
   const [isInfoOpen, setIsInfoOpen] = React.useState(false);
+  const [isStorageInfoOpen, setIsStorageInfoOpen] = React.useState(false);
 
   const blocking = findBlockingCondition(sandbox);
   const phase = getSandboxPhase(sandbox);
@@ -76,6 +80,13 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
   const handleChange = React.useCallback(
     (next: SandboxCustomization) => {
       void dispatch(sandboxDetailsActionCreators.updateSandboxAiTools(next));
+    },
+    [dispatch],
+  );
+
+  const handleStorageChange = React.useCallback(
+    (next: SandboxStorageType) => {
+      void dispatch(sandboxDetailsActionCreators.updateSandboxStorage(next));
     },
     [dispatch],
   );
@@ -168,6 +179,31 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
               aiTools={aiTools}
               aiProviders={aiProviders}
               onClose={() => setIsInfoOpen(false)}
+            />
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>
+            Storage Type&nbsp;&nbsp;
+            <FormGroupLabelHelp
+              className={styles.labelHelp}
+              aria-label="More info for storage type"
+              data-testid="storage-type-info-toggle"
+              onClick={() => setIsStorageInfoOpen(true)}
+            />
+          </DescriptionListTerm>
+          <DescriptionListDescription>
+            <StorageTypeSelector
+              storageType={getSandboxStorageType(sandbox)}
+              // The pod template is only editable while no pod is running off
+              // it, which is the same window the AI tools are editable in.
+              isDisabled={!canEditAiTools(phase)}
+              disabledReason={getAiToolsDisabledReason(phase)}
+              onChange={handleStorageChange}
+            />
+            <StorageTypeInfoModal
+              isOpen={isStorageInfoOpen}
+              onClose={() => setIsStorageInfoOpen(false)}
             />
           </DescriptionListDescription>
         </DescriptionListGroup>

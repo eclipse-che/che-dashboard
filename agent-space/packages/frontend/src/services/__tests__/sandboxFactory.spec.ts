@@ -270,9 +270,11 @@ describe('buildSandbox', () => {
       const sandbox = buildSandbox(formData({ aiProviderIds: ['anthropic'] }), 'user-ns', TOOLS);
       const { spec } = sandbox.spec.podTemplate;
 
-      expect(spec.volumes).toEqual([
-        { name: INJECTED_TOOLS_VOLUME, emptyDir: { sizeLimit: '512Mi' } },
-      ]);
+      // Alongside whatever the chosen storage type contributes.
+      expect(spec.volumes).toContainEqual({
+        name: INJECTED_TOOLS_VOLUME,
+        emptyDir: { sizeLimit: '512Mi' },
+      });
       expect(spec.containers[0].volumeMounts).toContainEqual({
         name: INJECTED_TOOLS_VOLUME,
         mountPath: INJECTED_TOOLS_PATH,
@@ -349,7 +351,11 @@ describe('buildSandbox', () => {
       const sandbox = buildSandbox(formData({ aiProviderIds: ['gone'] }), 'user-ns', TOOLS);
 
       expect(sandbox.spec.podTemplate.spec.initContainers).toBeUndefined();
-      expect(sandbox.spec.podTemplate.spec.volumes).toBeUndefined();
+      expect(
+        sandbox.spec.podTemplate.spec.volumes?.some(
+          volume => volume.name === INJECTED_TOOLS_VOLUME,
+        ),
+      ).toBe(false);
       expect(sandbox.spec.podTemplate.spec.containers[0].env).toBeUndefined();
     });
   });

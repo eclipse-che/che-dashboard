@@ -222,16 +222,16 @@ describe('CreateSandbox', () => {
       expect(screen.queryByTestId('ai-tool-dropdown')).toBeNull();
     });
 
-    it('come last on the form, after the resource limits', () => {
+    it('come after the resource limits, with only the storage below them', () => {
       renderInApp(<CreateSandbox />, { preloadedState: WITH_CATALOG });
 
       const labels = screen
         .getAllByText(
-          /^(Name|Container image|Command|Runtime class|CPU limit|Memory limit|AI tools)$/,
+          /^(Name|Container image|Command|Runtime class|CPU limit|Memory limit|AI tools|Storage Type)$/,
         )
         .map(label => label.textContent);
 
-      expect(labels[labels.length - 1]).toBe('AI tools');
+      expect(labels.slice(-2)).toEqual(['AI tools', 'Storage Type']);
     });
 
     it('start with none selected, so a sandbox can run without one', () => {
@@ -334,6 +334,65 @@ describe('CreateSandbox', () => {
         'href',
         'https://che.example.com/dashboard/#/user-preferences?tab=AiProviderKeys',
       );
+    });
+  });
+
+  describe('the storage type', () => {
+    it('keeps the work of the sandbox by default', async () => {
+      renderInApp(<CreateSandbox />);
+      await userEvent.type(screen.getByTestId('sandbox-name'), 'my-agent');
+
+      expect(screen.getByTestId('storage-type')).toHaveValue('per-sandbox');
+      expect(screen.getByTestId('manifest-preview')).toHaveTextContent(
+        'claimName: sandbox-my-agent',
+      );
+    });
+
+    it('follows the name, so the claim is the one the backend will make', async () => {
+      renderInApp(<CreateSandbox />);
+      await userEvent.type(screen.getByTestId('sandbox-name'), 'other-agent');
+
+      expect(screen.getByTestId('manifest-preview')).toHaveTextContent(
+        'claimName: sandbox-other-agent',
+      );
+    });
+
+    it('asks for an emptyDir once ephemeral is picked', async () => {
+      renderInApp(<CreateSandbox />);
+      await userEvent.type(screen.getByTestId('sandbox-name'), 'my-agent');
+
+      await userEvent.selectOptions(screen.getByTestId('storage-type'), 'ephemeral');
+
+      const preview = screen.getByTestId('manifest-preview');
+      expect(preview).toHaveTextContent('emptyDir');
+      expect(preview).not.toHaveTextContent('claimName');
+    });
+
+    it('says what the picked type means', async () => {
+      renderInApp(<CreateSandbox />);
+
+      expect(screen.getByText(/A persistent volume claim is provisioned/)).toBeInTheDocument();
+
+      await userEvent.selectOptions(screen.getByTestId('storage-type'), 'ephemeral');
+
+      expect(screen.getByText(/faster I\/O but may have limited storage/)).toBeInTheDocument();
+    });
+
+    it('explains both types from the help button', async () => {
+      renderInApp(<CreateSandbox />);
+
+      await userEvent.click(screen.getByTestId('storage-type-info-toggle'));
+
+      expect(screen.getByTestId('storage-type-info-modal')).toBeInTheDocument();
+      expect(screen.getByText('Storage Type Info')).toBeInTheDocument();
+    });
+
+    it('cannot be changed while the sandbox is being created', () => {
+      renderInApp(<CreateSandbox />, {
+        preloadedState: { sandboxes: { ...sandboxesUnloadedState, pendingName: 'my-agent' } },
+      });
+
+      expect(screen.getByTestId('storage-type')).toBeDisabled();
     });
   });
 });

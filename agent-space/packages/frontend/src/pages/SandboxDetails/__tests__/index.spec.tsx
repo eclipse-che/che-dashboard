@@ -20,6 +20,7 @@ import { SANDBOX_TAB } from '@/Routes';
 import { AiProviderDefinition, AiToolDefinition, EMPTY_CATALOG } from '@/services/catalog';
 import { MockSandboxClient } from '@/services/client/mockClient';
 import { AI_PROVIDERS_ANNOTATION, ORIGINAL_MANIFEST_ANNOTATION } from '@/services/sandboxFactory';
+import { STORAGE_VOLUME_NAME } from '@/services/sandboxStorage';
 import { Sandbox, SandboxClientError, SandboxPhase } from '@/services/types';
 import { unloadedState as catalogUnloadedState } from '@/store/Catalog/reducer';
 import { sandboxesActionCreators } from '@/store/Sandboxes';
@@ -350,6 +351,109 @@ describe('SandboxDetails', () => {
 
       await userEvent.click(screen.getByTestId('ai-tool-edit-toggle'));
       await userEvent.click(screen.getByRole('checkbox', { name: /Anthropic/i }));
+      await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+      expect(patchSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('the storage type on the Overview tab', () => {
+    /**
+     * Creates a suspended sandbox and opens its Overview tab.
+     *
+     * Suspended for the same reason the AI tools are: the pod template only
+     * reaches a pod that has yet to start.
+     */
+    async function renderSuspended(
+      podSpec: Partial<Sandbox['spec']['podTemplate']['spec']> = {},
+    ): Promise<MockSandboxClient> {
+      const client = testClient();
+      await client.createSandbox(TEST_NAMESPACE, {
+        metadata: { name: 'with-storage' },
+        spec: {
+          operatingMode: 'Suspended',
+          podTemplate: {
+            spec: { containers: [{ name: 'agent', image: 'busybox' }], ...podSpec },
+          },
+        },
+      } as Sandbox);
+      await renderDetails('with-storage', { client });
+      return client;
+    }
+
+    it('reads the type off the volume the sandbox declares', async () => {
+      await renderSuspended({
+        volumes: [
+          {
+            name: STORAGE_VOLUME_NAME,
+            persistentVolumeClaim: { claimName: 'sandbox-with-storage' },
+          },
+        ],
+      });
+
+      expect(screen.getByTestId('storage-type-selector')).toHaveTextContent('Per-sandbox');
+    });
+
+    it('calls a sandbox that declares no volume ephemeral', async () => {
+      await renderDetails('hello-world');
+
+      expect(screen.getByTestId('storage-type-selector')).toHaveTextContent('Ephemeral');
+    });
+
+    it('labels the row the way the workspace overview labels it', async () => {
+      await renderSuspended();
+
+      expect(screen.getByText('Storage Type')).toBeInTheDocument();
+      expect(screen.getByLabelText('More info for storage type')).toBeInTheDocument();
+    });
+
+    it('explains both types from the help button', async () => {
+      await renderSuspended();
+
+      await userEvent.click(screen.getByLabelText('More info for storage type'));
+
+      expect(screen.getByRole('heading', { name: 'Storage Type Info' })).toBeInTheDocument();
+    });
+
+    it('is editable while the sandbox is suspended, because resuming applies it', async () => {
+      await renderSuspended();
+
+      expect(screen.getByTestId('storage-type-edit-toggle')).toBeEnabled();
+      expect(screen.queryByTestId('storage-type-disabled-reason')).toBeNull();
+    });
+
+    it('asks for a suspend while the pod is there', async () => {
+      await renderDetails('hello-world');
+
+      expect(screen.getByTestId('storage-type-edit-toggle')).toBeDisabled();
+      expect(screen.getByTestId('storage-type-disabled-reason')).toHaveTextContent(
+        'Suspend the sandbox',
+      );
+    });
+
+    it('patches the pod template, and nothing the CRD freezes, when saved', async () => {
+      const client = await renderSuspended();
+      const patchSpy = jest.spyOn(client, 'patchSandbox');
+
+      await userEvent.click(screen.getByTestId('storage-type-edit-toggle'));
+      await userEvent.click(screen.getByRole('radio', { name: /Per-sandbox/ }));
+      await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+      await waitFor(() => expect(patchSpy).toHaveBeenCalled());
+      const [, , patch] = patchSpy.mock.calls[0];
+      expect(Object.keys(patch.spec ?? {})).toEqual(['podTemplate']);
+      expect(patch.spec?.podTemplate?.spec.volumes).toContainEqual({
+        name: STORAGE_VOLUME_NAME,
+        persistentVolumeClaim: { claimName: 'sandbox-with-storage' },
+      });
+    });
+
+    it('sends nothing when the modal is dismissed', async () => {
+      const client = await renderSuspended();
+      const patchSpy = jest.spyOn(client, 'patchSandbox');
+
+      await userEvent.click(screen.getByTestId('storage-type-edit-toggle'));
+      await userEvent.click(screen.getByRole('radio', { name: /Per-sandbox/ }));
       await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
       expect(patchSpy).not.toHaveBeenCalled();

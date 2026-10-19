@@ -11,6 +11,7 @@
  */
 
 import { buildActionPatch } from '@/services/sandbox';
+import { getSandboxClaimName, getSandboxStorageType } from '@/services/sandboxStorage';
 import { SandboxClientError } from '@/services/types';
 import {
   sandboxDetailsActionCreators,
@@ -208,6 +209,52 @@ describe('the SandboxDetails slice', () => {
       await store.dispatch(sandboxDetailsActionCreators.requestSandboxEvents('openclaw-agent'));
 
       expect(selectSandboxDetailsEvents(store.getState())).toEqual(loaded);
+    });
+  });
+
+  describe('updateSandboxStorage', () => {
+    it('gives the sandbox a claim of its own', async () => {
+      const store = createTestStore();
+      await store.dispatch(sandboxDetailsActionCreators.requestSandboxDetails('hello-world'));
+
+      await store.dispatch(sandboxDetailsActionCreators.updateSandboxStorage('per-sandbox'));
+
+      const sandbox = selectSandboxDetails(store.getState());
+      expect(getSandboxStorageType(sandbox!)).toBe('per-sandbox');
+      expect(getSandboxClaimName(sandbox!)).toBe('sandbox-hello-world');
+    });
+
+    it('takes the claim away again', async () => {
+      const store = createTestStore();
+      await store.dispatch(sandboxDetailsActionCreators.requestSandboxDetails('hello-world'));
+      await store.dispatch(sandboxDetailsActionCreators.updateSandboxStorage('per-sandbox'));
+
+      await store.dispatch(sandboxDetailsActionCreators.updateSandboxStorage('ephemeral'));
+
+      expect(getSandboxStorageType(selectSandboxDetails(store.getState())!)).toBe('ephemeral');
+    });
+
+    it('does nothing when no sandbox is on screen', async () => {
+      const client = testClient();
+      const patch = jest.spyOn(client, 'patchSandbox');
+      const store = createTestStore({ client });
+
+      await store.dispatch(sandboxDetailsActionCreators.updateSandboxStorage('ephemeral'));
+
+      expect(patch).not.toHaveBeenCalled();
+    });
+
+    it('reports a rejected change under the sandbox on screen', async () => {
+      const client = testClient();
+      const store = createTestStore({ client });
+      await store.dispatch(sandboxDetailsActionCreators.requestSandboxDetails('hello-world'));
+      jest
+        .spyOn(client, 'patchSandbox')
+        .mockRejectedValue(new SandboxClientError(403, 'Forbidden.'));
+
+      await store.dispatch(sandboxDetailsActionCreators.updateSandboxStorage('ephemeral'));
+
+      expect(selectSandboxDetailsError(store.getState())?.statusCode).toBe(403);
     });
   });
 });

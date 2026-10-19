@@ -30,6 +30,7 @@ import { PersonalAccessTokenService } from '@/devworkspaceClient/services/person
 import { PodApiService } from '@/devworkspaceClient/services/podApi';
 import { PodmanApiService } from '@/devworkspaceClient/services/podmanApi';
 import { SandboxApiService } from '@/devworkspaceClient/services/sandboxApi';
+import { SandboxStorageApiService } from '@/devworkspaceClient/services/sandboxStorageApi';
 import { SandboxTerminalApiService } from '@/devworkspaceClient/services/sandboxTerminalApi';
 import { SccPermissionApiService } from '@/devworkspaceClient/services/sccPermissionApi';
 import { ServerConfigApiService } from '@/devworkspaceClient/services/serverConfigApi';
@@ -55,6 +56,7 @@ import {
   IPodApi,
   IPodmanApi,
   ISandboxApi,
+  ISandboxStorageApi,
   ISandboxTerminalApi,
   ISccPermissionApi,
   IServerConfigApi,
@@ -159,6 +161,10 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
 
   get sandboxApi(): ISandboxApi {
     return new SandboxApiService(this.kubeConfig);
+  }
+
+  get sandboxStorageApi(): ISandboxStorageApi {
+    return new SandboxStorageApiService(this.kubeConfig);
   }
 
   get sandboxTerminalApi(): ISandboxTerminalApi {

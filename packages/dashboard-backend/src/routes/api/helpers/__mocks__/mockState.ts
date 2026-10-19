@@ -29,4 +29,16 @@ export const mockState = {
    * taken in the test is not the one the route under test uses.
    */
   lastSandboxPatch: undefined as Record<string, unknown> | undefined,
+
+  /** Makes `sandboxApi.create` fail, to exercise the storage rollback. */
+  sandboxCreateFails: false,
+
+  /**
+   * What the storage service was asked to do, in order, for the same reason
+   * `lastSandboxPatch` is recorded here rather than spied on.
+   */
+  sandboxStorageCalls: [] as string[],
+
+  /** What `sandboxStorageApi.ensureClaim` reports back to the route. */
+  sandboxClaimCreated: true,
 };

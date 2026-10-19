@@ -11,6 +11,7 @@
  */
 
 import { AiToolDefinition, findToolsByProviderIds, getToolSlug } from '@/services/catalog';
+import { applyStorage, DEFAULT_STORAGE_TYPE, SandboxStorageType } from '@/services/sandboxStorage';
 import {
   ResourceList,
   Sandbox,
@@ -65,6 +66,8 @@ export interface SandboxFormData {
   aiProviderIds: string[];
   /** Tag picked per provider, for the providers that ship more than one. */
   aiVersions: AiToolVersions;
+  /** Whether the sandbox keeps its work across a suspend. */
+  storageType: SandboxStorageType;
 }
 
 /**
@@ -84,6 +87,7 @@ export const DEFAULT_FORM_DATA: SandboxFormData = {
   memoryLimit: '2Gi',
   aiProviderIds: [],
   aiVersions: {},
+  storageType: DEFAULT_STORAGE_TYPE,
 };
 
 /**
@@ -560,10 +564,15 @@ export function buildSandbox(
     },
   };
 
-  return applyCustomization(
-    sandbox,
-    { aiProviderIds: data.aiProviderIds, aiVersions: data.aiVersions },
-    aiTools,
+  // Storage goes on last so it reads as a layer over the finished sandbox, the
+  // same way the details page lays it over a live one.
+  return applyStorage(
+    applyCustomization(
+      sandbox,
+      { aiProviderIds: data.aiProviderIds, aiVersions: data.aiVersions },
+      aiTools,
+    ),
+    data.storageType,
   );
 }
 

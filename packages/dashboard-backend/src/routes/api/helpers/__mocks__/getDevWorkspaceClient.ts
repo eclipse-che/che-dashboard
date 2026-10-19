@@ -42,6 +42,7 @@ import {
   ISandbox,
   ISandboxApi,
   ISandboxList,
+  ISandboxStorageApi,
   ISccPermissionApi,
   IServerConfigApi,
   IShhKeysApi,
@@ -341,7 +342,10 @@ export const getDevWorkspaceClient = jest.fn(
         isAvailable: () => Promise.resolve(stubSandboxApiAvailable),
         listInNamespace: _namespace => Promise.resolve(stubSandboxList),
         getByName: (_namespace, _name) => Promise.resolve(stubSandbox),
-        create: (_namespace, _sandbox) => Promise.resolve(stubSandbox),
+        create: (_namespace, _sandbox) =>
+          mockState.sandboxCreateFails
+            ? Promise.reject(new Error('sandbox already exists'))
+            : Promise.resolve(stubSandbox),
         patch: (_namespace, _name, patch) => {
           mockState.lastSandboxPatch = patch;
           return Promise.resolve(stubSandbox);
@@ -350,6 +354,20 @@ export const getDevWorkspaceClient = jest.fn(
         watchInNamespace: (_listener, _params) => Promise.resolve(undefined),
         stopWatching: () => undefined,
       } as ISandboxApi,
+      sandboxStorageApi: {
+        ensureClaim: (_namespace, _sandboxName, claimName) => {
+          mockState.sandboxStorageCalls.push(`ensure:${claimName}`);
+          return Promise.resolve(mockState.sandboxClaimCreated);
+        },
+        adoptClaim: (_namespace, sandbox) => {
+          mockState.sandboxStorageCalls.push(`adopt:${sandbox.metadata?.name}`);
+          return Promise.resolve(undefined);
+        },
+        deleteClaim: (_namespace, sandboxName) => {
+          mockState.sandboxStorageCalls.push(`delete:${sandboxName}`);
+          return Promise.resolve(undefined);
+        },
+      } as ISandboxStorageApi,
     } as DevWorkspaceClient;
   },
 );

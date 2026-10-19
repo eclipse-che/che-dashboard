@@ -19,6 +19,7 @@ import {
   sandboxBodySchema,
   sandboxPatchSchema,
 } from '@/constants/schemas';
+import { readManagedClaimName } from '@/devworkspaceClient/services/sandboxStorageApi';
 import { ISandbox } from '@/devworkspaceClient/types';
 import { restParams } from '@/models';
 import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
@@ -103,8 +104,34 @@ export function registerSandboxesRoutes(instance: FastifyInstance) {
         const { namespace } = request.params as restParams.INamespacedParams;
         const sandbox = request.body as ISandbox;
         const token = getToken(request);
-        const { sandboxApi } = getDevWorkspaceClient(token);
-        return sandboxApi.create(namespace, sandbox);
+        const { sandboxApi, sandboxStorageApi } = getDevWorkspaceClient(token);
+
+        const sandboxName = sandbox.metadata?.name ?? '';
+        const claimName = readManagedClaimName(sandbox.spec, sandboxName);
+
+        // The claim has to exist first: a pod referencing one that is missing
+        // never schedules, and nothing afterwards would retry it.
+        const claimCreated = claimName
+          ? await sandboxStorageApi.ensureClaim(namespace, sandboxName, claimName)
+          : false;
+
+        let created: ISandbox;
+        try {
+          created = await sandboxApi.create(namespace, sandbox);
+        } catch (e) {
+          // Only a claim this request brought into being is taken back. One
+          // that was already there belongs to something else - a sandbox of the
+          // same name, which is the likeliest reason creation just failed.
+          if (claimCreated) {
+            await sandboxStorageApi.deleteClaim(namespace, sandboxName);
+          }
+          throw e;
+        }
+
+        if (claimName) {
+          await sandboxStorageApi.adoptClaim(namespace, created);
+        }
+        return created;
       },
     );
 
@@ -115,8 +142,28 @@ export function registerSandboxesRoutes(instance: FastifyInstance) {
         const { namespace, sandboxName } = request.params as restParams.INamespacedSandboxParams;
         const patch = request.body as Record<string, unknown>;
         const token = getToken(request);
-        const { sandboxApi } = getDevWorkspaceClient(token);
-        return sandboxApi.patch(namespace, sandboxName, patch);
+        const { sandboxApi, sandboxStorageApi } = getDevWorkspaceClient(token);
+
+        // A patch that says nothing about the pod template - suspending the
+        // sandbox, say - says nothing about its storage either.
+        const spec = patch.spec as Record<string, unknown> | undefined;
+        if (spec?.podTemplate === undefined) {
+          return sandboxApi.patch(namespace, sandboxName, patch);
+        }
+
+        const claimName = readManagedClaimName(spec, sandboxName);
+        if (claimName) {
+          await sandboxStorageApi.ensureClaim(namespace, sandboxName, claimName);
+          const patched = await sandboxApi.patch(namespace, sandboxName, patch);
+          await sandboxStorageApi.adoptClaim(namespace, patched);
+          return patched;
+        }
+
+        // Going the other way the order reverses: the claim may only go once
+        // nothing refers to it any more.
+        const patched = await sandboxApi.patch(namespace, sandboxName, patch);
+        await sandboxStorageApi.deleteClaim(namespace, sandboxName);
+        return patched;
       },
     );
 
@@ -135,9 +182,12 @@ export function registerSandboxesRoutes(instance: FastifyInstance) {
       async function (request: FastifyRequest, reply: FastifyReply) {
         const { namespace, sandboxName } = request.params as restParams.INamespacedSandboxParams;
         const token = getToken(request);
-        const { sandboxApi } = getDevWorkspaceClient(token);
+        const { sandboxApi, sandboxStorageApi } = getDevWorkspaceClient(token);
 
         await sandboxApi.delete(namespace, sandboxName);
+        // The owner reference usually sees to this; the call covers the sandbox
+        // whose claim was never adopted.
+        await sandboxStorageApi.deleteClaim(namespace, sandboxName);
 
         reply.code(204).send();
       },

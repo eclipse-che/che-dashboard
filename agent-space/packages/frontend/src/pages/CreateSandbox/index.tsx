@@ -18,6 +18,7 @@ import {
   Content,
   Form,
   FormGroup,
+  FormGroupLabelHelp,
   FormHelperText,
   FormSelect,
   FormSelectOption,
@@ -35,6 +36,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { AiToolDropdown } from '@/components/AiToolSelector/Dropdown';
 import { ErrorAlert } from '@/components/ErrorAlert';
+import { StorageTypeInfoModal } from '@/components/StorageTypeSelector/InfoModal';
 import { buildSandboxDetailsRoute, ROUTE, SANDBOX_TAB } from '@/Routes';
 import { pageTitle, SECTION } from '@/services/pageTitle';
 import {
@@ -47,6 +49,12 @@ import {
   validateForm,
   withOriginalManifest,
 } from '@/services/sandboxFactory';
+import {
+  DEFAULT_STORAGE_TYPE,
+  STORAGE_TYPE_DESCRIPTIONS,
+  STORAGE_TYPE_TITLES,
+  STORAGE_TYPES,
+} from '@/services/sandboxStorage';
 import { selectDashboardUrl, selectNamespace } from '@/store/Bootstrap';
 import { selectAiProviders, selectAiTools } from '@/store/Catalog';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -80,6 +88,7 @@ export function CreateSandbox(): React.ReactElement {
 
   const [data, setData] = React.useState<SandboxFormData>(DEFAULT_FORM_DATA);
   const [touched, setTouched] = React.useState<Partial<Record<keyof SandboxFormData, boolean>>>({});
+  const [isStorageInfoOpen, setIsStorageInfoOpen] = React.useState(false);
 
   const errors = React.useMemo(() => validateForm(data), [data]);
   const isValid = Object.keys(errors).length === 0;
@@ -106,6 +115,13 @@ export function CreateSandbox(): React.ReactElement {
     },
     [],
   );
+
+  // The select hands back a plain string; looking it up rather than asserting
+  // keeps a value the form never offered out of the manifest.
+  const handleStorageTypeChange = React.useCallback((value: string) => {
+    const storageType = STORAGE_TYPES.find(type => type === value) ?? DEFAULT_STORAGE_TYPE;
+    setData(prev => ({ ...prev, storageType }));
+  }, []);
 
   const handleSubmit = React.useCallback(async () => {
     const sandbox = buildSandbox(data, namespace, aiTools);
@@ -284,6 +300,43 @@ export function CreateSandbox(): React.ReactElement {
                   </HelperTextItem>
                 </HelperText>
               </FormHelperText>
+            </FormGroup>
+
+            <FormGroup
+              label="Storage Type"
+              fieldId="storage-type"
+              labelHelp={
+                <FormGroupLabelHelp
+                  aria-label="More info for storage type"
+                  data-testid="storage-type-info-toggle"
+                  onClick={() => setIsStorageInfoOpen(true)}
+                />
+              }
+            >
+              <FormSelect
+                id="storage-type"
+                data-testid="storage-type"
+                value={data.storageType}
+                isDisabled={isSubmitting}
+                onChange={(_event, value) => handleStorageTypeChange(value)}
+              >
+                {STORAGE_TYPES.map(storageType => (
+                  <FormSelectOption
+                    key={storageType}
+                    value={storageType}
+                    label={STORAGE_TYPE_TITLES[storageType]}
+                  />
+                ))}
+              </FormSelect>
+              <FormHelperText>
+                <HelperText>
+                  <HelperTextItem>{STORAGE_TYPE_DESCRIPTIONS[data.storageType]}</HelperTextItem>
+                </HelperText>
+              </FormHelperText>
+              <StorageTypeInfoModal
+                isOpen={isStorageInfoOpen}
+                onClose={() => setIsStorageInfoOpen(false)}
+              />
             </FormGroup>
 
             <div>

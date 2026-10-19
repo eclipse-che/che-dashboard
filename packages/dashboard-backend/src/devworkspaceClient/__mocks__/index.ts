@@ -29,6 +29,7 @@ import {
   IPersonalAccessTokenApi,
   IPodApi,
   ISandboxApi,
+  ISandboxStorageApi,
   ISandboxTerminalApi,
   ISccPermissionApi,
   IServerConfigApi,
@@ -105,6 +106,10 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
   }
 
   get sandboxApi(): ISandboxApi {
+    throw new Error('Method not implemented.');
+  }
+
+  get sandboxStorageApi(): ISandboxStorageApi {
     throw new Error('Method not implemented.');
   }
 

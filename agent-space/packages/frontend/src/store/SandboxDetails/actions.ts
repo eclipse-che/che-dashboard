@@ -14,6 +14,7 @@ import { createAction } from '@reduxjs/toolkit';
 
 import { getSandboxClient } from '@/services/client/instance';
 import { buildAiToolsPatch, SandboxCustomization } from '@/services/sandboxFactory';
+import { buildStoragePatch, SandboxStorageType } from '@/services/sandboxStorage';
 import { Sandbox, SandboxError, SandboxEvent, toSandboxError } from '@/services/types';
 import { AppThunk } from '@/store';
 import { selectNamespace } from '@/store/Bootstrap';
@@ -128,6 +129,33 @@ export const actionCreators = {
 
       try {
         const patch = buildAiToolsPatch(sandbox, customization, selectAiTools(state));
+        const updated = await getSandboxClient().patchSandbox(namespace, name, patch);
+        dispatch(sandboxDetailsUpdateAction(updated));
+      } catch (e) {
+        dispatch(sandboxDetailsErrorAction({ name, error: toSandboxError(e) }));
+      }
+    },
+
+  /**
+   * Moves a sandbox that already exists to another storage type.
+   *
+   * Only the pod template is patched; the claim behind it is the backend's to
+   * create or remove, which it does from the same request. Like the agents,
+   * the change reaches the sandbox on its next start.
+   */
+  updateSandboxStorage:
+    (storageType: SandboxStorageType): AppThunk<Promise<void>> =>
+    async (dispatch, getState): Promise<void> => {
+      const state = getState();
+      const sandbox = selectSandboxDetails(state);
+      if (sandbox === undefined) {
+        return;
+      }
+      const name = sandbox.metadata.name;
+      const namespace = selectNamespace(state);
+
+      try {
+        const patch = buildStoragePatch(sandbox, storageType);
         const updated = await getSandboxClient().patchSandbox(namespace, name, patch);
         dispatch(sandboxDetailsUpdateAction(updated));
       } catch (e) {

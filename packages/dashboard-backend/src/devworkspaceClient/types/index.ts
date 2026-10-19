@@ -577,6 +577,32 @@ export interface ISandboxApi extends IWatcherService<api.webSocket.SubscribePara
   delete(namespace: string, name: string): Promise<void>;
 }
 
+/**
+ * Provisions the persistent storage a sandbox's pod template references.
+ *
+ * Kept apart from ISandboxApi because it speaks to a different API group: the
+ * claim is an ordinary core/v1 object that happens to be named after a sandbox.
+ */
+export interface ISandboxStorageApi {
+  /**
+   * Creates the claim if it is not there already, and reports whether this call
+   * is the one that created it.
+   */
+  ensureClaim(namespace: string, sandboxName: string, claimName: string): Promise<boolean>;
+
+  /**
+   * Makes the sandbox the owner of its claim, so deleting the sandbox deletes
+   * the claim too. Never throws: the sandbox already has its storage.
+   */
+  adoptClaim(namespace: string, sandbox: ISandbox): Promise<void>;
+
+  /**
+   * Deletes the claim provisioned for a sandbox, leaving alone any claim the
+   * dashboard did not provision.
+   */
+  deleteClaim(namespace: string, sandboxName: string): Promise<void>;
+}
+
 /** The pod and container a sandbox's terminal is opened in. */
 export interface SandboxTerminalTarget {
   podName: string;
@@ -634,6 +660,7 @@ export interface IDevWorkspaceClient {
   deviceAuthTokenApi: IDeviceAuthTokenApi;
   sccPermissionApi: ISccPermissionApi;
   sandboxApi: ISandboxApi;
+  sandboxStorageApi: ISandboxStorageApi;
   sandboxTerminalApi: ISandboxTerminalApi;
 }
 
