@@ -252,12 +252,23 @@ describe('SandboxDetails', () => {
   });
 
   describe('the AI tools on the Overview tab', () => {
-    /** Creates a sandbox already running an agent and opens its Overview tab. */
-    async function renderWithAgent(): Promise<MockSandboxClient> {
+    /**
+     * Creates a sandbox carrying an agent and opens its Overview tab.
+     *
+     * Suspended by default: the agents are installed as the pod starts, so the
+     * pencil is only live where a next pod is still coming.
+     */
+    async function renderWithAgent(
+      spec: Partial<Sandbox['spec']> = {},
+    ): Promise<MockSandboxClient> {
       const client = testClient();
       await client.createSandbox(TEST_NAMESPACE, {
         metadata: { name: 'with-agent', annotations: { [AI_PROVIDERS_ANNOTATION]: 'anthropic' } },
-        spec: { podTemplate: { spec: { containers: [{ name: 'agent', image: 'busybox' }] } } },
+        spec: {
+          operatingMode: 'Suspended',
+          podTemplate: { spec: { containers: [{ name: 'agent', image: 'busybox' }] } },
+          ...spec,
+        },
       } as Sandbox);
       await renderDetails('with-agent', { client, preloadedState: WITH_CATALOG });
       return client;
@@ -273,6 +284,33 @@ describe('SandboxDetails', () => {
       await renderDetails('hello-world', { preloadedState: WITH_CATALOG });
 
       expect(screen.getByTestId('ai-tool-selector')).toHaveTextContent('None');
+    });
+
+    it('is editable while the sandbox is suspended, because resuming applies it', async () => {
+      await renderWithAgent();
+
+      expect(screen.getByTestId('ai-tool-edit-toggle')).toBeEnabled();
+      expect(screen.queryByTestId('ai-tool-disabled-reason')).toBeNull();
+    });
+
+    it('asks for a suspend while the pod is there, rather than taking an edit that would not land', async () => {
+      await renderWithAgent({ operatingMode: 'Running' });
+
+      expect(screen.getByTestId('ai-tool-edit-toggle')).toBeDisabled();
+      expect(screen.getByTestId('ai-tool-disabled-reason')).toHaveTextContent(
+        'Suspend the sandbox to change its AI tools',
+      );
+    });
+
+    it('says so for a sandbox that will never start again', async () => {
+      // `sandboxed-tools` ran to completion, so no later pod would carry the
+      // edit and the UI offers no action that would produce one.
+      await renderDetails('sandboxed-tools', { preloadedState: WITH_CATALOG });
+
+      expect(screen.getByTestId('ai-tool-edit-toggle')).toBeDisabled();
+      expect(screen.getByTestId('ai-tool-disabled-reason')).toHaveTextContent(
+        'will not start again',
+      );
     });
 
     it('patches the sandbox when the selection is saved', async () => {

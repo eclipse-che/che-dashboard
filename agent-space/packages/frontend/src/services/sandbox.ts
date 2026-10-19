@@ -206,6 +206,34 @@ export const ACTION_LABELS: Record<SandboxAction, string> = {
 };
 
 /**
+ * Whether changing the AI tools of this sandbox would ever reach it.
+ *
+ * The controller renders `spec.podTemplate` into a Pod, and a Pod is immutable
+ * apart from the images of its containers: an injector container, the volume it
+ * copies into and the API key it needs cannot be added to one that already
+ * exists. A patch therefore only lands on the next pod the controller creates.
+ *
+ * So the control is offered exactly where the UI also offers a way to get that
+ * next pod - Resume on a suspended sandbox, Restart on a failed one. While the
+ * pod is there, or in a phase that will never produce another, the edit would
+ * be recorded and silently never applied.
+ */
+export function canEditAiTools(phase: SandboxPhase): boolean {
+  return getAvailableActions(phase).some(action => action === 'resume' || action === 'restart');
+}
+
+/** Why {@link canEditAiTools} said no, in the words the Overview tab uses. */
+export function getAiToolsDisabledReason(phase: SandboxPhase): string | undefined {
+  if (canEditAiTools(phase)) {
+    return undefined;
+  }
+  if (getAvailableActions(phase).includes('suspend')) {
+    return 'Suspend the sandbox to change its AI tools. They are installed into the pod as it starts.';
+  }
+  return 'This sandbox will not start again, so its AI tools can no longer be changed.';
+}
+
+/**
  * Merge patch applied for each lifecycle action.
  *
  * `operatingMode` is the whole lifecycle API: suspending deletes the pod and

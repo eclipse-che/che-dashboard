@@ -13,9 +13,11 @@
 import {
   ACTION_LABELS,
   buildActionPatch,
+  canEditAiTools,
   findBlockingCondition,
   findCondition,
   formatResourceLimits,
+  getAiToolsDisabledReason,
   getAvailableActions,
   getSandboxAiProviderIds,
   getSandboxAiVersions,
@@ -296,6 +298,48 @@ describe('getAvailableActions', () => {
     const actions = Object.values(SandboxPhase).flatMap(phase => getAvailableActions(phase));
 
     actions.forEach(action => expect(ACTION_LABELS[action]).toBeTruthy());
+  });
+});
+
+describe('canEditAiTools', () => {
+  it('allows the edit exactly where a next pod is still coming', () => {
+    // The injector runs as the pod starts, so Resume and Restart are the only
+    // two actions that can carry a new selection into the sandbox.
+    expect(canEditAiTools(SandboxPhase.SUSPENDED)).toBe(true);
+    expect(canEditAiTools(SandboxPhase.FAILED)).toBe(true);
+  });
+
+  it('refuses while the pod the edit would have to change is already there', () => {
+    // A Pod is immutable apart from its container images: the injector, its
+    // volume and its API key cannot be added to one that exists.
+    expect(canEditAiTools(SandboxPhase.RUNNING)).toBe(false);
+    expect(canEditAiTools(SandboxPhase.PENDING)).toBe(false);
+    expect(canEditAiTools(SandboxPhase.BLOCKED)).toBe(false);
+  });
+
+  it('refuses where no pod will ever follow', () => {
+    expect(canEditAiTools(SandboxPhase.COMPLETED)).toBe(false);
+    expect(canEditAiTools(SandboxPhase.EXPIRED)).toBe(false);
+    expect(canEditAiTools(SandboxPhase.TERMINATING)).toBe(false);
+  });
+});
+
+describe('getAiToolsDisabledReason', () => {
+  it('says nothing when the edit would land', () => {
+    expect(getAiToolsDisabledReason(SandboxPhase.SUSPENDED)).toBeUndefined();
+    expect(getAiToolsDisabledReason(SandboxPhase.FAILED)).toBeUndefined();
+  });
+
+  it('points at the suspend that would make the edit possible', () => {
+    expect(getAiToolsDisabledReason(SandboxPhase.RUNNING)).toContain('Suspend the sandbox');
+    expect(getAiToolsDisabledReason(SandboxPhase.PENDING)).toContain('Suspend the sandbox');
+    expect(getAiToolsDisabledReason(SandboxPhase.BLOCKED)).toContain('Suspend the sandbox');
+  });
+
+  it('says so plainly where there is no way back', () => {
+    expect(getAiToolsDisabledReason(SandboxPhase.COMPLETED)).toContain('will not start again');
+    expect(getAiToolsDisabledReason(SandboxPhase.EXPIRED)).toContain('will not start again');
+    expect(getAiToolsDisabledReason(SandboxPhase.TERMINATING)).toContain('will not start again');
   });
 });
 

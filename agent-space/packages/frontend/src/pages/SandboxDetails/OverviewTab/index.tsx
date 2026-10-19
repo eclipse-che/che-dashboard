@@ -23,11 +23,14 @@ import { AiToolSelector } from '@/components/AiToolSelector';
 import { ErrorAlert } from '@/components/ErrorAlert';
 import { formatTimestamp } from '@/services/format';
 import {
+  canEditAiTools,
   findBlockingCondition,
   formatResourceLimits,
+  getAiToolsDisabledReason,
   getSandboxAiProviderIds,
   getSandboxAiVersions,
   getSandboxImages,
+  getSandboxPhase,
   getSandboxRuntimeClass,
 } from '@/services/sandbox';
 import { SandboxCustomization } from '@/services/sandboxFactory';
@@ -53,6 +56,7 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
   const dashboardUrl = useAppSelector(selectDashboardUrl);
 
   const blocking = findBlockingCondition(sandbox);
+  const phase = getSandboxPhase(sandbox);
 
   // Read off the sandbox rather than held in state, so the selector reopens on
   // what the object carries after a patch, not on what was last sent.
@@ -140,6 +144,8 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
               aiProviders={aiProviders}
               dashboardUrl={dashboardUrl}
               customization={customization}
+              isDisabled={!canEditAiTools(phase)}
+              disabledReason={getAiToolsDisabledReason(phase)}
               onChange={handleChange}
             />
           </DescriptionListDescription>

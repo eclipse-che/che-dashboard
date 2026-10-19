@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Button } from '@patternfly/react-core';
+import { Button, HelperText, HelperTextItem } from '@patternfly/react-core';
 import { PencilAltIcon } from '@patternfly/react-icons';
 import React from 'react';
 
@@ -30,6 +30,8 @@ export type Props = {
   dashboardUrl: string;
   customization: SandboxCustomization;
   isDisabled?: boolean;
+  /** Shown beside the pencil while it is disabled, so the reason is not a guess. */
+  disabledReason?: string;
   onChange: (customization: SandboxCustomization) => void;
 };
 
@@ -50,6 +52,7 @@ export function AiToolSelector({
   dashboardUrl,
   customization,
   isDisabled = false,
+  disabledReason,
   onChange,
 }: Props): React.ReactElement | null {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -67,6 +70,8 @@ export function AiToolSelector({
     return null;
   }
 
+  const hint = isDisabled ? disabledReason : undefined;
+
   return (
     <span className={styles.editable} data-testid="ai-tool-selector">
       {displayName}
@@ -76,10 +81,15 @@ export function AiToolSelector({
         isDisabled={isDisabled}
         onClick={() => setIsOpen(true)}
         aria-label="Change AI Tools"
-        title="Change AI Tools"
+        title={hint ?? 'Change AI Tools'}
       >
         <PencilAltIcon />
       </Button>
+      {hint !== undefined && (
+        <HelperText>
+          <HelperTextItem data-testid="ai-tool-disabled-reason">{hint}</HelperTextItem>
+        </HelperText>
+      )}
       <AiToolSelectorModal
         isOpen={isOpen}
         aiTools={aiTools}
