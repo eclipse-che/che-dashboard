@@ -1,0 +1,5 @@
+# Build output and dependencies are covered by the repository-root .gitignore;
+# this file only lists what is specific to Agent Space.
+
+# Manifests downloaded by scripts/prepare-samples.sh; index.json is tracked.
+packages/registry/sandbox/*.yaml
