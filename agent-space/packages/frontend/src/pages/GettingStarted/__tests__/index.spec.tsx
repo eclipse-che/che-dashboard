@@ -23,7 +23,7 @@ import {
 } from '@/services/sandboxFactory';
 import { SandboxClientError } from '@/services/types';
 import { unloadedState as catalogUnloadedState } from '@/store/Catalog/reducer';
-import { renderInApp, StoreOptions, TEST_NAMESPACE, testClient } from '@/testUtils';
+import { renderInApp, StoreOptions, TEST_NAMESPACE, testClient, testConfig } from '@/testUtils';
 
 const CLAUDE: AiToolDefinition = {
   providerId: 'anthropic',
@@ -395,6 +395,35 @@ describe('GettingStarted', () => {
       await screen.findByTestId('sample-hello-world');
 
       expect(screen.getByTestId('ai-tool-selector')).toHaveTextContent('None');
+    });
+
+    it('points at the dashboard page where the API keys are managed', async () => {
+      stubSampleRegistry();
+      renderInApp(<GettingStarted />, {
+        config: testConfig({ dashboardUrl: 'https://che.example.com/dashboard/#/workspaces' }),
+        preloadedState: WITH_CATALOG,
+      });
+
+      await screen.findByTestId('sample-hello-world');
+
+      expect(screen.getByTestId('manage-keys-link')).toHaveAttribute(
+        'href',
+        'https://che.example.com/dashboard/#/user-preferences?tab=AiProviderKeys',
+      );
+    });
+
+    it('keeps the key link out of the Change AI Tools dialog', async () => {
+      stubSampleRegistry();
+      renderInApp(<GettingStarted />, { preloadedState: WITH_CATALOG });
+
+      await screen.findByTestId('sample-hello-world');
+      await userEvent.click(screen.getByTestId('ai-tool-edit-toggle'));
+
+      expect(
+        within(screen.getByTestId('ai-tool-selector-modal')).queryByRole('link', {
+          name: /Manage API keys/,
+        }),
+      ).toBeNull();
     });
 
     it('creates the sample as published when nothing is chosen', async () => {

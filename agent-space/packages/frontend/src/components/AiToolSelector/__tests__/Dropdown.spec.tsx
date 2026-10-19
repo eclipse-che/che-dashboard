@@ -43,7 +43,6 @@ function renderDropdown(props: Partial<Props> = {}) {
     <AiToolDropdown
       aiTools={[tool()]}
       aiProviders={[ANTHROPIC]}
-      dashboardUrl="https://che.example.com/dashboard/#/workspaces"
       customization={{ aiProviderIds: [], aiVersions: {} }}
       onChange={onChange}
       {...props}
@@ -151,14 +150,11 @@ describe('AiToolDropdown', () => {
     expect(screen.getByTestId('ai-tool-dropdown-toggle')).toBeDisabled();
   });
 
-  it('points at the dashboard page where the API keys are managed', async () => {
+  it('lists the agents and nothing else', async () => {
     renderDropdown();
     await open();
 
-    expect(screen.getByRole('link', { name: /Manage API keys/ })).toHaveAttribute(
-      'href',
-      'https://che.example.com/dashboard/#/user-preferences?tab=AiProviderKeys',
-    );
+    expect(screen.queryByRole('link', { name: /Manage API keys/ })).toBeNull();
   });
 
   describe('a provider that publishes several tags', () => {

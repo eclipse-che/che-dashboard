@@ -11,8 +11,6 @@
  */
 
 import {
-  Button,
-  Divider,
   Dropdown,
   DropdownItem,
   DropdownList,
@@ -26,7 +24,6 @@ import {
 import { CheckIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import React from 'react';
 
-import { buildManageKeysUrl } from '@/components/AiToolSelector/manageKeys';
 import styles from '@/components/AiToolSelector/SelectorModal.module.css';
 import { AiProviderDefinition, AiToolDefinition, groupToolsByProvider } from '@/services/catalog';
 import { AiToolVersions, SandboxCustomization } from '@/services/sandboxFactory';
@@ -34,7 +31,6 @@ import { AiToolVersions, SandboxCustomization } from '@/services/sandboxFactory'
 export type Props = {
   aiTools: AiToolDefinition[];
   aiProviders: AiProviderDefinition[];
-  dashboardUrl: string;
   customization: SandboxCustomization;
   isDisabled?: boolean;
   onChange: (customization: SandboxCustomization) => void;
@@ -55,7 +51,6 @@ export type Props = {
 export function AiToolDropdown({
   aiTools,
   aiProviders,
-  dashboardUrl,
   customization,
   isDisabled = false,
   onChange,
@@ -219,18 +214,6 @@ export function AiToolDropdown({
             </SelectOption>
           );
         })}
-        <Divider component="li" />
-        <li role="none" className={styles.manageKeys}>
-          <Button
-            variant="link"
-            isInline
-            component="a"
-            href={buildManageKeysUrl(dashboardUrl)}
-            target="_blank"
-          >
-            Manage API keys in User Preferences
-          </Button>
-        </li>
       </SelectList>
     </Select>
   );

@@ -27,6 +27,7 @@ import React from 'react';
 
 import { AiToolSelector } from '@/components/AiToolSelector';
 import { AiToolInfoModal } from '@/components/AiToolSelector/InfoModal';
+import { buildManageKeysUrl } from '@/components/AiToolSelector/manageKeys';
 import styles from '@/components/AiToolSelector/SelectorModal.module.css';
 import { ErrorAlert } from '@/components/ErrorAlert';
 import { StorageTypeSelector } from '@/components/StorageTypeSelector';
@@ -211,7 +212,6 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
             <AiToolSelector
               aiTools={aiTools}
               aiProviders={aiProviders}
-              dashboardUrl={dashboardUrl}
               customization={customization}
               isDisabled={!canEditAiTools(phase)}
               disabledReason={getAiToolsDisabledReason(phase)}
@@ -220,8 +220,18 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
             {showKeyHint && (
               <HelperText>
                 <HelperTextItem data-testid="ai-tool-keys-hint">
-                  API keys are read as the pod starts. Suspend and resume to apply a key saved in
-                  user preferences since then.
+                  API keys are read as the pod starts. Suspend and resume to apply a key saved in{' '}
+                  <Button
+                    variant={ButtonVariant.link}
+                    isInline
+                    component="a"
+                    href={buildManageKeysUrl(dashboardUrl)}
+                    target="_blank"
+                    data-testid="manage-keys-link"
+                  >
+                    User Preferences
+                  </Button>{' '}
+                  since then.
                 </HelperTextItem>
               </HelperText>
             )}

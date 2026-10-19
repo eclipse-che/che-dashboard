@@ -41,8 +41,6 @@ export type Props = {
   /** What is installed now; the modal opens on it and compares against it. */
   originSelection: string[];
   originVersions: AiToolVersions;
-  /** Where the user manages the API keys the selected agents need. */
-  manageKeysUrl: string;
   onConfirm: (providerIds: string[], versions: AiToolVersions) => void;
   onCancel: () => void;
 };
@@ -61,7 +59,6 @@ export function AiToolSelectorModal({
   aiProviders,
   originSelection,
   originVersions,
-  manageKeysUrl,
   onConfirm,
   onCancel,
 }: Props): React.ReactElement {
@@ -210,11 +207,6 @@ export function AiToolSelectorModal({
                   </Content>
                 );
               })}
-              <Content component="p">
-                <Button variant="link" isInline component="a" href={manageKeysUrl} target="_blank">
-                  Manage API keys in User Preferences
-                </Button>
-              </Content>
             </>
           )}
         </Content>

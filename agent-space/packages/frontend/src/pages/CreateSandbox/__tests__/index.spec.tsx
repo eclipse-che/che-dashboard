@@ -322,7 +322,7 @@ describe('CreateSandbox', () => {
       expect(screen.getByTestId('ai-tool-dropdown-toggle')).toBeDisabled();
     });
 
-    it('point at the dashboard page where the API keys are managed', async () => {
+    it('lists the agents and nothing else', async () => {
       renderInApp(<CreateSandbox />, {
         config: testConfig({ dashboardUrl: 'https://che.example.com/dashboard/#/workspaces' }),
         preloadedState: WITH_CATALOG,
@@ -330,9 +330,14 @@ describe('CreateSandbox', () => {
 
       await userEvent.click(screen.getByTestId('ai-tool-dropdown-toggle'));
 
-      expect(screen.getByRole('link', { name: /Manage API keys/ })).toHaveAttribute(
-        'href',
-        'https://che.example.com/dashboard/#/user-preferences?tab=AiProviderKeys',
+      expect(screen.queryByRole('link', { name: /Manage API keys/ })).toBeNull();
+    });
+
+    it('says how an agent reaches the sandbox, without mentioning keys', () => {
+      renderInApp(<CreateSandbox />, { preloadedState: WITH_CATALOG });
+
+      expect(screen.getByText(/installed into the sandbox by an init container/)).toHaveTextContent(
+        'Each selected agent is installed into the sandbox by an init container.',
       );
     });
   });

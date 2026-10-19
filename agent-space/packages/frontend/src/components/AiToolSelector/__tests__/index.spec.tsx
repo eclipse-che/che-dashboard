@@ -48,7 +48,6 @@ function renderSelector(props: Partial<Props> = {}) {
     <AiToolSelector
       aiTools={[CLAUDE, CODEX]}
       aiProviders={PROVIDERS}
-      dashboardUrl="https://che.example.com/dashboard/#/workspaces"
       customization={{ aiProviderIds: [] }}
       onChange={onChange}
       {...props}
@@ -141,14 +140,11 @@ describe('AiToolSelector', () => {
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
   });
 
-  it('sends the user to the dashboard page that holds the API keys', async () => {
+  it('offers the agents and nothing else', async () => {
     renderSelector();
 
     await userEvent.click(screen.getByTestId('ai-tool-edit-toggle'));
 
-    expect(screen.getByRole('link', { name: /Manage API keys/ })).toHaveAttribute(
-      'href',
-      'https://che.example.com/dashboard/#/user-preferences?tab=AiProviderKeys',
-    );
+    expect(screen.queryByRole('link', { name: /Manage API keys/ })).toBeNull();
   });
 });

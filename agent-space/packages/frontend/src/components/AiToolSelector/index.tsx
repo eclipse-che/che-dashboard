@@ -14,7 +14,6 @@ import { Button, HelperText, HelperTextItem } from '@patternfly/react-core';
 import { PencilAltIcon } from '@patternfly/react-icons';
 import React from 'react';
 
-import { buildManageKeysUrl } from '@/components/AiToolSelector/manageKeys';
 import { AiToolSelectorModal } from '@/components/AiToolSelector/SelectorModal';
 import styles from '@/components/AiToolSelector/SelectorModal.module.css';
 import { AiProviderDefinition, AiToolDefinition } from '@/services/catalog';
@@ -23,7 +22,6 @@ import { SandboxCustomization } from '@/services/sandboxFactory';
 export type Props = {
   aiTools: AiToolDefinition[];
   aiProviders: AiProviderDefinition[];
-  dashboardUrl: string;
   customization: SandboxCustomization;
   isDisabled?: boolean;
   /** Shown beside the pencil while it is disabled, so the reason is not a guess. */
@@ -45,7 +43,6 @@ export type Props = {
 export function AiToolSelector({
   aiTools,
   aiProviders,
-  dashboardUrl,
   customization,
   isDisabled = false,
   disabledReason,
@@ -92,7 +89,6 @@ export function AiToolSelector({
         aiProviders={aiProviders}
         originSelection={customization.aiProviderIds}
         originVersions={customization.aiVersions ?? {}}
-        manageKeysUrl={buildManageKeysUrl(dashboardUrl)}
         onConfirm={(aiProviderIds, aiVersions) => {
           setIsOpen(false);
           onChange({ aiProviderIds, aiVersions });

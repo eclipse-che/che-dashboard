@@ -55,7 +55,7 @@ import {
   STORAGE_TYPE_TITLES,
   STORAGE_TYPES,
 } from '@/services/sandboxStorage';
-import { selectDashboardUrl, selectNamespace } from '@/store/Bootstrap';
+import { selectNamespace } from '@/store/Bootstrap';
 import { selectAiProviders, selectAiTools } from '@/store/Catalog';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
@@ -79,7 +79,6 @@ export function CreateSandbox(): React.ReactElement {
   const dispatch = useAppDispatch();
 
   const namespace = useAppSelector(selectNamespace);
-  const dashboardUrl = useAppSelector(selectDashboardUrl);
   const error = useAppSelector(selectSandboxActionError);
   const isSubmitting = useAppSelector(selectSandboxActionPendingName) !== undefined;
 
@@ -283,7 +282,6 @@ export function CreateSandbox(): React.ReactElement {
               <AiToolDropdown
                 aiTools={aiTools}
                 aiProviders={aiProviders}
-                dashboardUrl={dashboardUrl}
                 customization={{
                   aiProviderIds: data.aiProviderIds,
                   aiVersions: data.aiVersions,
@@ -294,9 +292,7 @@ export function CreateSandbox(): React.ReactElement {
               <FormHelperText>
                 <HelperText>
                   <HelperTextItem>
-                    Each selected agent is installed into the sandbox by an init container. Its API
-                    key is read from the namespace secret the dashboard stores it in, if there is
-                    one.
+                    Each selected agent is installed into the sandbox by an init container.
                   </HelperTextItem>
                 </HelperText>
               </FormHelperText>
@@ -361,7 +357,11 @@ export function CreateSandbox(): React.ReactElement {
         </GridItem>
 
         <GridItem lg={6} md={12}>
-          <Title headingLevel="h2" size="md">
+          <Title
+            headingLevel="h2"
+            size="md"
+            style={{ marginBottom: 'var(--pf-t--global--spacer--sm)' }}
+          >
             Manifest preview
           </Title>
           <CodeBlock>

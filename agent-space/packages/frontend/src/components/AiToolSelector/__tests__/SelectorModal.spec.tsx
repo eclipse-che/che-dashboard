@@ -47,7 +47,6 @@ function renderModal(props: Partial<Props> = {}) {
       aiProviders={[ANTHROPIC]}
       originSelection={[]}
       originVersions={{}}
-      manageKeysUrl="https://che.example.com/dashboard/#/user-preferences"
       onConfirm={onConfirm}
       onCancel={onCancel}
       {...props}

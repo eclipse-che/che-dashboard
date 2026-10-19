@@ -39,6 +39,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { AiToolSelector } from '@/components/AiToolSelector';
+import { buildManageKeysUrl } from '@/components/AiToolSelector/manageKeys';
 import { ErrorAlert } from '@/components/ErrorAlert';
 import { SampleManifestModal } from '@/components/SampleManifestModal';
 import styles from '@/pages/GettingStarted/index.module.css';
@@ -162,11 +163,26 @@ export function GettingStarted(): React.ReactElement {
               <AiToolSelector
                 aiTools={aiTools}
                 aiProviders={aiProviders}
-                dashboardUrl={dashboardUrl}
                 customization={customization}
                 isDisabled={pendingId !== undefined}
                 onChange={setCustomization}
               />
+              {/* The keys themselves live in the dashboard, not here, and the
+                  selector above no longer says so - the link does. */}
+              <Content>
+                <Content component="p">
+                  <Button
+                    variant={ButtonVariant.link}
+                    isInline
+                    component="a"
+                    href={buildManageKeysUrl(dashboardUrl)}
+                    target="_blank"
+                    data-testid="manage-keys-link"
+                  >
+                    Manage API keys in User Preferences
+                  </Button>
+                </Content>
+              </Content>
             </PanelMainBody>
           </PanelMain>
         </Panel>

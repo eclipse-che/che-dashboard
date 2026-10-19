@@ -405,7 +405,16 @@ describe('SandboxDetails', () => {
       // The variable is resolved as the container starts, so a key saved in
       // user preferences afterwards never reaches the pod on its own.
       expect(screen.getByTestId('ai-tool-keys-hint')).toHaveTextContent(
-        'API keys are read as the pod starts. Suspend and resume to apply a key saved in user preferences since then.',
+        'API keys are read as the pod starts. Suspend and resume to apply a key saved in User Preferences since then.',
+      );
+    });
+
+    it('points at the page where a key is saved', async () => {
+      await renderWithProvider('google');
+
+      expect(screen.getByTestId('manage-keys-link')).toHaveAttribute(
+        'href',
+        expect.stringContaining('/user-preferences?tab=AiProviderKeys'),
       );
     });
 
