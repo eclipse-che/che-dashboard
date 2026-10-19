@@ -40,6 +40,15 @@ describe('Navigation Main List', () => {
     expect(navLinks[1]).toHaveTextContent('Workspaces (0)');
   });
 
+  it('should not show the Agent Space item even when agentSandbox is enabled', () => {
+    const store = new MockStoreBuilder()
+      .withDwServerConfig({ agentSandbox: { enabled: true } })
+      .build();
+    renderComponent(store);
+
+    expect(screen.queryByRole('link', { name: 'Agent Space' })).not.toBeInTheDocument();
+  });
+
   it('should have correct navigation item workspaces quantity', () => {
     let workspaces = [0, 1, 2, 3, 4].map(i =>
       new DevWorkspaceBuilder()

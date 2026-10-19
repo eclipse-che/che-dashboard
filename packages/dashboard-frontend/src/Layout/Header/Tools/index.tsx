@@ -16,12 +16,13 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { AboutMenu } from '@/Layout/Header/Tools/AboutMenu';
+import { AgentSpaceButton } from '@/Layout/Header/Tools/AgentSpaceButton';
 import { ApplicationsMenu } from '@/Layout/Header/Tools/ApplicationsMenu';
 import UserMenu from '@/Layout/Header/Tools/UserMenu';
 import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
 import { selectApplications } from '@/store/ClusterInfo/selectors';
-import { selectDashboardLogo } from '@/store/ServerConfig/selectors';
+import { selectAgentSandboxEnabled, selectDashboardLogo } from '@/store/ServerConfig/selectors';
 import { selectUsername } from '@/store/User/Name/selectors';
 
 type Props = MappedProps & {
@@ -34,7 +35,7 @@ export class HeaderTools extends React.PureComponent<Props> {
   }
 
   public render(): React.ReactElement {
-    const { applications, username } = this.props;
+    const { applications, isAgentSandboxEnabled, username } = this.props;
 
     return (
       <Toolbar id="header-tools" isStatic>
@@ -44,6 +45,11 @@ export class HeaderTools extends React.PureComponent<Props> {
             align={{ default: 'alignEnd' }}
             gap={{ default: 'gapNone', md: 'gapMd' }}
           >
+            {isAgentSandboxEnabled && (
+              <ToolbarItem>
+                <AgentSpaceButton />
+              </ToolbarItem>
+            )}
             {applications.length !== 0 && <ApplicationsMenu applications={applications} />}
             <ToolbarItem>
               <AboutMenu
@@ -72,6 +78,7 @@ const mapStateToProps = (state: RootState) => ({
   branding: selectBranding(state),
   dashboardLogo: selectDashboardLogo(state),
   applications: selectApplications(state),
+  isAgentSandboxEnabled: selectAgentSandboxEnabled(state),
 });
 
 const connector = connect(mapStateToProps);
