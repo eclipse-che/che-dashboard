@@ -49,3 +49,12 @@ export const STRATEGIC_MERGE_PATCH_OPTIONS: ConfigurationOptions = wrapOptions({
 export const JSON_PATCH_OPTIONS: ConfigurationOptions = wrapOptions({
   middleware: [createPatchMiddleware(PatchStrategy.JsonPatch)],
 })!;
+
+/**
+ * Configuration options for partial updates of Custom Resources sent by a client
+ * that describes the desired state rather than the operations to get there.
+ * Uses merge-patch for the object format: { spec: { replicas: 0 } }
+ */
+export const MERGE_PATCH_OPTIONS: ConfigurationOptions = wrapOptions({
+  middleware: [createPatchMiddleware(PatchStrategy.MergePatch)],
+})!;

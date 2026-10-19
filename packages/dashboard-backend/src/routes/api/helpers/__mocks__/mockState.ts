@@ -22,4 +22,11 @@
 export const mockState = {
   /** Stands in for `spec.agentSandbox.enabled` of the CheCluster CR. */
   agentSandboxEnabled: false,
+
+  /**
+   * Last merge patch `sandboxApi.patch` was asked to apply. Recorded rather
+   * than spied on: the client mock hands out a new object per call, so a spy
+   * taken in the test is not the one the route under test uses.
+   */
+  lastSandboxPatch: undefined as Record<string, unknown> | undefined,
 };

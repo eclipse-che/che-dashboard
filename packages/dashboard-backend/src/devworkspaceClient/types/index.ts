@@ -521,6 +521,62 @@ export interface IPersonalAccessTokenApi {
   delete(namespace: string, name: string): Promise<void>;
 }
 
+/**
+ * A `sandboxes.agents.x-k8s.io` object.
+ *
+ * The dashboard only relays these between the browser and the API server, so the
+ * payload is kept opaque rather than mirroring the upstream CRD schema here.
+ */
+export interface ISandbox {
+  apiVersion?: string;
+  kind?: string;
+  metadata?: k8s.V1ObjectMeta;
+  spec?: Record<string, unknown>;
+  status?: Record<string, unknown>;
+}
+
+export interface ISandboxList {
+  apiVersion?: string;
+  kind?: string;
+  metadata?: k8s.V1ListMeta;
+  items: ISandbox[];
+}
+
+/**
+ * Holds the methods for working with Agent Sandbox resources in a user namespace.
+ */
+export interface ISandboxApi extends IWatcherService<api.webSocket.SubscribeParams> {
+  /**
+   * Whether the cluster serves the `agents.x-k8s.io` API group.
+   */
+  isAvailable(): Promise<boolean>;
+
+  /**
+   * Get list of Sandboxes in the given namespace
+   */
+  listInNamespace(namespace: string): Promise<ISandboxList>;
+
+  /**
+   * Get a Sandbox by name
+   */
+  getByName(namespace: string, name: string): Promise<ISandbox>;
+
+  /**
+   * Create a Sandbox in the given namespace
+   */
+  create(namespace: string, sandbox: ISandbox): Promise<ISandbox>;
+
+  /**
+   * Apply a merge patch to a Sandbox
+   */
+  patch(namespace: string, name: string, patch: Record<string, unknown>): Promise<ISandbox>;
+
+  /**
+   * Delete a Sandbox
+   */
+  delete(namespace: string, name: string): Promise<void>;
+}
+
 export interface IDevWorkspaceClient {
   devWorkspaceTemplateApi: IDevWorkspaceTemplateApi;
   devworkspaceApi: IDevWorkspaceApi;
@@ -541,6 +597,7 @@ export interface IDevWorkspaceClient {
   aiRegistryApi: IAiRegistryApi;
   deviceAuthTokenApi: IDeviceAuthTokenApi;
   sccPermissionApi: ISccPermissionApi;
+  sandboxApi: ISandboxApi;
 }
 
 export interface IDevWorkspaceSingletonClient {

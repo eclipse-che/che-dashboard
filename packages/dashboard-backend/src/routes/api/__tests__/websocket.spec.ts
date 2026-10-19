@@ -56,6 +56,10 @@ describe('WebSocket handler', () => {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },
+      sandboxApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
     });
 
     webSocketHandler(mockWs as never, mockRequest as never);
@@ -106,6 +110,10 @@ describe('WebSocket handler', () => {
         watchInNamespace: jest.fn().mockRejectedValue(watchError),
         stopWatching: jest.fn(),
       },
+      sandboxApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
     });
 
     webSocketHandler(mockWs as never, mockRequest as never);
@@ -150,6 +158,10 @@ describe('WebSocket handler', () => {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },
+      sandboxApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
     });
 
     webSocketHandler(mockWs as never, mockRequest as never);
@@ -183,6 +195,10 @@ describe('WebSocket handler', () => {
         stopWatching: jest.fn(),
       },
       logsApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
+      sandboxApi: {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },
@@ -220,6 +236,10 @@ describe('WebSocket handler', () => {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },
+      sandboxApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
     });
 
     webSocketHandler(mockWs as never, mockRequest as never);
@@ -230,6 +250,7 @@ describe('WebSocket handler', () => {
     expect(client.eventApi.stopWatching).toHaveBeenCalled();
     expect(client.podApi.stopWatching).toHaveBeenCalled();
     expect(client.logsApi.stopWatching).toHaveBeenCalled();
+    expect(client.sandboxApi.stopWatching).toHaveBeenCalled();
     expect(logger.warn).toHaveBeenCalledWith(
       expect.stringContaining('WebSocket connection closed'),
     );
@@ -250,6 +271,10 @@ describe('WebSocket handler', () => {
         stopWatching: jest.fn(),
       },
       logsApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
+      sandboxApi: {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },
@@ -279,6 +304,10 @@ describe('WebSocket handler', () => {
         stopWatching: jest.fn(),
       },
       logsApi: {
+        watchInNamespace: jest.fn().mockResolvedValue(undefined),
+        stopWatching: jest.fn(),
+      },
+      sandboxApi: {
         watchInNamespace: jest.fn().mockResolvedValue(undefined),
         stopWatching: jest.fn(),
       },

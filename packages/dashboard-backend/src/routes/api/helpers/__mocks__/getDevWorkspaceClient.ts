@@ -39,6 +39,9 @@ import {
   IPersonalAccessTokenApi,
   IPodApi,
   IPodmanApi,
+  ISandbox,
+  ISandboxApi,
+  ISandboxList,
   ISccPermissionApi,
   IServerConfigApi,
   IShhKeysApi,
@@ -202,6 +205,20 @@ export const stubHideEditorsById: string[] = ['che-incubator/che-idea-server/nex
 
 export const stubSessionTimeout = 86400;
 
+export const stubSandboxApiAvailable = true;
+
+export const stubSandbox: ISandbox = {
+  apiVersion: 'agents.x-k8s.io/v1beta1',
+  kind: 'Sandbox',
+  metadata: { name: 'hello-world', namespace: 'user-che' },
+};
+
+export const stubSandboxList: ISandboxList = {
+  apiVersion: 'agents.x-k8s.io/v1beta1',
+  kind: 'SandboxList',
+  items: [stubSandbox],
+};
+
 export const getDevWorkspaceClient = jest.fn(
   (..._args: Parameters<typeof helper>): ReturnType<typeof helper> => {
     return {
@@ -320,6 +337,19 @@ export const getDevWorkspaceClient = jest.fn(
       sccPermissionApi: {
         checkSccPermission: (_namespace, _sccName) => Promise.resolve(true),
       } as ISccPermissionApi,
+      sandboxApi: {
+        isAvailable: () => Promise.resolve(stubSandboxApiAvailable),
+        listInNamespace: _namespace => Promise.resolve(stubSandboxList),
+        getByName: (_namespace, _name) => Promise.resolve(stubSandbox),
+        create: (_namespace, _sandbox) => Promise.resolve(stubSandbox),
+        patch: (_namespace, _name, patch) => {
+          mockState.lastSandboxPatch = patch;
+          return Promise.resolve(stubSandbox);
+        },
+        delete: (_namespace, _name) => Promise.resolve(undefined),
+        watchInNamespace: (_listener, _params) => Promise.resolve(undefined),
+        stopWatching: () => undefined,
+      } as ISandboxApi,
     } as DevWorkspaceClient;
   },
 );
