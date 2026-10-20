@@ -45,13 +45,8 @@ RUN yarn install --network-timeout 3600000 --frozen-lockfile --mode=skip-build |
 COPY packages/ /dashboard/packages
 COPY agent-space/ /dashboard/agent-space
 
-# Download the Agent Space Getting Started samples. Webpack copies them into the
-# bundle, so this has to run before the build.
-RUN /dashboard/agent-space/scripts/prepare-samples.sh \
-      -i /dashboard/agent-space/packages/registry/sandbox/index.json
-
-# Builds every workspace; the Agent Space bundle lands in
-# packages/dashboard-frontend/lib/public/dashboard/agent-space.
+# Agent Space samples are hardcoded in packages/registry/sandbox/index.json.
+# Webpack copies them into the bundle.
 RUN yarn build
 
 # Prepare air-gapped resources

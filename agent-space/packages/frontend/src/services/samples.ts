@@ -15,8 +15,7 @@ import { load } from 'js-yaml';
 import { Sandbox, SANDBOX_KIND, SandboxClientError } from '@/services/types';
 
 /**
- * One entry of `registry/sandbox/index.json`, produced by
- * `scripts/prepare-samples.sh`.
+ * One entry of `registry/sandbox/index.json`.
  */
 export interface SandboxSample {
   id: string;
@@ -65,8 +64,7 @@ export function parseSamplesIndex(raw: unknown): SandboxSample[] {
     }
 
     const manifest = entry['manifest'];
-    // prepare-samples.sh writes a deterministic `<id>.yaml`; fall back to it so
-    // a checkout where the index was not regenerated still resolves.
+    // Manifest filename is defined in index.json; fall back to the deterministic `<id>.yaml` format
     const filename =
       (isRecord(manifest) ? asString(manifest['filename']) : undefined) ?? `${id}.yaml`;
 

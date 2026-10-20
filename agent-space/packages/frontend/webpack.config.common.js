@@ -85,12 +85,12 @@ const config = {
       patterns: [
         // Runtime configuration, overridable per deployment without a rebuild.
         { from: path.join(__dirname, 'static'), to: '.' },
-        // Getting Started samples produced by scripts/prepare-samples.sh
+        // Hardcoded Agent Space samples
         {
           from: path.join(__dirname, '../registry/sandbox'),
           to: 'registry/sandbox',
         },
-        // The icons index.json points at, resolved against the registry root.
+        // Icons referenced in the sample registry
         {
           from: path.join(__dirname, '../registry/images'),
           to: 'registry/images',

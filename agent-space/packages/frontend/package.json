@@ -18,9 +18,7 @@
     "stylelint:fix": "stylelint 'src/**/*.css' --allow-empty-input --fix",
     "test": "jest",
     "test:coverage": "yarn test --coverage",
-    "test:watch": "yarn test --watch",
-    "samples:prepare": "../../scripts/prepare-samples.sh -i ../registry/sandbox/index.json",
-    "samples:check": "../../scripts/check-samples.sh -i ../registry/sandbox/index.json"
+    "test:watch": "yarn test --watch"
   },
   "dependencies": {
     "@codemirror/lang-yaml": "^6.1.2",
