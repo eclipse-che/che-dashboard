@@ -112,7 +112,18 @@ describe('parseAiRegistry', () => {
           arch: ['amd64'],
         },
       ],
+      defaultAiProviders: [],
     });
+  });
+
+  it('reads the providers the administrator made the default', () => {
+    const { defaultAiProviders } = parseAiRegistry({
+      providers: [],
+      tools: [],
+      defaultAiProviders: ['anthropic', 'google/gemini'],
+    });
+
+    expect(defaultAiProviders).toEqual(['anthropic', 'google/gemini']);
   });
 
   it('falls back for the fields a registry may leave out', () => {
@@ -147,8 +158,9 @@ describe('parseAiRegistry', () => {
   });
 
   it('returns nothing for a registry that is missing or unexpected', () => {
-    expect(parseAiRegistry(undefined)).toEqual({ aiProviders: [], aiTools: [] });
-    expect(parseAiRegistry({})).toEqual({ aiProviders: [], aiTools: [] });
+    const nothing = { aiProviders: [], aiTools: [], defaultAiProviders: [] };
+    expect(parseAiRegistry(undefined)).toEqual(nothing);
+    expect(parseAiRegistry({})).toEqual(nothing);
   });
 });
 

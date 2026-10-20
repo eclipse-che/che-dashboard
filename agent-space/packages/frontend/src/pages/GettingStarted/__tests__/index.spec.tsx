@@ -36,20 +36,46 @@ const CLAUDE: AiToolDefinition = {
   envVarName: 'ANTHROPIC_API_KEY',
 };
 
+const GEMINI: AiToolDefinition = {
+  providerId: 'google/gemini',
+  tag: 'latest',
+  name: 'Gemini CLI',
+  url: '',
+  binary: 'gemini',
+  pattern: 'init',
+  injectorImage: 'quay.io/example/gemini-cli:latest',
+  envVarName: 'GEMINI_API_KEY',
+};
+
 const ANTHROPIC: AiProviderDefinition = {
   id: 'anthropic',
   name: 'Anthropic',
   publisher: 'Anthropic',
 };
 
-/** Store that already knows the AI registry of the cluster. */
-const WITH_CATALOG: StoreOptions['preloadedState'] = {
-  catalog: {
-    ...catalogUnloadedState,
-    isLoaded: true,
-    catalog: { ...EMPTY_CATALOG, aiTools: [CLAUDE], aiProviders: [ANTHROPIC] },
-  },
+const GOOGLE: AiProviderDefinition = {
+  id: 'google/gemini',
+  name: 'Google',
+  publisher: 'Google',
 };
+
+/** Store that already knows the AI registry of the cluster. */
+function withCatalog(defaultAiProviders: string[] = []): StoreOptions['preloadedState'] {
+  return {
+    catalog: {
+      ...catalogUnloadedState,
+      isLoaded: true,
+      catalog: {
+        ...EMPTY_CATALOG,
+        aiTools: [CLAUDE, GEMINI],
+        aiProviders: [ANTHROPIC, GOOGLE],
+        defaultAiProviders,
+      },
+    },
+  };
+}
+
+const WITH_CATALOG = withCatalog();
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -378,23 +404,66 @@ describe('GettingStarted', () => {
     );
   });
 
-  describe('the AI tools panel', () => {
+  describe('the AI provider selector', () => {
+    /** Opens the second accordion item, where the card gallery lives. */
+    async function openGallery(): Promise<void> {
+      await userEvent.click(screen.getByRole('button', { name: 'Choose an AI Provider' }));
+    }
+
     it('is left out when the cluster publishes none', async () => {
       stubSampleRegistry();
       renderInApp(<GettingStarted />);
 
       await screen.findByTestId('sample-hello-world');
 
-      expect(screen.queryByTestId('ai-tool-selector')).toBeNull();
+      expect(screen.queryByRole('heading', { name: 'AI Provider Selector' })).toBeNull();
     });
 
-    it('starts with nothing selected', async () => {
+    it('opens on the provider the administrator configured', async () => {
+      stubSampleRegistry();
+      renderInApp(<GettingStarted />, { preloadedState: withCatalog(['google/gemini']) });
+
+      await screen.findByTestId('sample-hello-world');
+
+      expect(screen.getByTestId('default-ai-provider-message')).toHaveTextContent(
+        'The default AI provider "Google" configured by your administrator will be used.',
+      );
+    });
+
+    it('falls back to the first provider when the cluster names no default', async () => {
       stubSampleRegistry();
       renderInApp(<GettingStarted />, { preloadedState: WITH_CATALOG });
 
       await screen.findByTestId('sample-hello-world');
 
-      expect(screen.getByTestId('ai-tool-selector')).toHaveTextContent('None');
+      expect(screen.getByTestId('default-ai-provider-message')).toHaveTextContent(
+        'The default AI provider "Anthropic" configured by your administrator will be used.',
+      );
+    });
+
+    it('names every default the administrator configured', async () => {
+      stubSampleRegistry();
+      renderInApp(<GettingStarted />, {
+        preloadedState: withCatalog(['anthropic', 'google/gemini']),
+      });
+
+      await screen.findByTestId('sample-hello-world');
+
+      expect(screen.getByTestId('default-ai-provider-message')).toHaveTextContent(
+        'The default AI providers "Anthropic", "Google" configured by your administrator will be used.',
+      );
+    });
+
+    it('points at the documentation from the default branch', async () => {
+      stubSampleRegistry();
+      renderInApp(<GettingStarted />, { preloadedState: WITH_CATALOG });
+
+      await screen.findByTestId('sample-hello-world');
+
+      expect(screen.getByRole('link', { name: 'Learn more about AI providers' })).toHaveAttribute(
+        'href',
+        expect.stringContaining('eclipse.dev/che/docs'),
+      );
     });
 
     it('points at the dashboard page where the API keys are managed', async () => {
@@ -405,6 +474,7 @@ describe('GettingStarted', () => {
       });
 
       await screen.findByTestId('sample-hello-world');
+      await openGallery();
 
       expect(screen.getByTestId('manage-keys-link')).toHaveAttribute(
         'href',
@@ -412,48 +482,13 @@ describe('GettingStarted', () => {
       );
     });
 
-    it('keeps the key link out of the Change AI Tools dialog', async () => {
-      stubSampleRegistry();
-      renderInApp(<GettingStarted />, { preloadedState: WITH_CATALOG });
-
-      await screen.findByTestId('sample-hello-world');
-      await userEvent.click(screen.getByTestId('ai-tool-edit-toggle'));
-
-      expect(
-        within(screen.getByTestId('ai-tool-selector-modal')).queryByRole('link', {
-          name: /Manage API keys/,
-        }),
-      ).toBeNull();
-    });
-
-    it('creates the sample as published when nothing is chosen', async () => {
+    it('creates the sample with the default provider installed', async () => {
       stubSampleRegistry();
       const client = testClient();
       const createSpy = jest.spyOn(client, 'createSandbox');
-      renderInApp(<GettingStarted />, { client, preloadedState: WITH_CATALOG });
+      renderInApp(<GettingStarted />, { client, preloadedState: withCatalog(['anthropic']) });
 
       await userEvent.click(await screen.findByTestId('sample-hello-world'));
-
-      await waitFor(() => expect(createSpy).toHaveBeenCalled());
-      // Only the manifest it came from: no agent was asked for.
-      expect(createSpy.mock.calls[0][1].metadata.annotations).toEqual({
-        [ORIGINAL_MANIFEST_ANNOTATION]: MANIFEST,
-      });
-    });
-
-    it('applies the chosen agent to the sample', async () => {
-      stubSampleRegistry();
-      const client = testClient();
-      const createSpy = jest.spyOn(client, 'createSandbox');
-      renderInApp(<GettingStarted />, { client, preloadedState: WITH_CATALOG });
-      await screen.findByTestId('sample-hello-world');
-
-      await userEvent.click(screen.getByTestId('ai-tool-edit-toggle'));
-      const modal = within(screen.getByTestId('ai-tool-selector-modal'));
-      await userEvent.click(modal.getByRole('checkbox', { name: /Anthropic/i }));
-      await userEvent.click(modal.getByRole('button', { name: 'Save' }));
-
-      await userEvent.click(screen.getByTestId('sample-hello-world'));
 
       await waitFor(() => expect(createSpy).toHaveBeenCalled());
       const created = createSpy.mock.calls[0][1];
@@ -463,6 +498,64 @@ describe('GettingStarted', () => {
         [ORIGINAL_MANIFEST_ANNOTATION]: MANIFEST,
       });
       expect(created.spec.podTemplate.spec.initContainers).toHaveLength(1);
+    });
+
+    it('creates the sample as published once the provider is unpicked', async () => {
+      stubSampleRegistry();
+      const client = testClient();
+      const createSpy = jest.spyOn(client, 'createSandbox');
+      renderInApp(<GettingStarted />, { client, preloadedState: withCatalog(['anthropic']) });
+      await screen.findByTestId('sample-hello-world');
+
+      await openGallery();
+      await userEvent.click(screen.getByTestId('ai-provider-card-anthropic'));
+
+      await userEvent.click(screen.getByTestId('sample-hello-world'));
+
+      await waitFor(() => expect(createSpy).toHaveBeenCalled());
+      // Only the manifest it came from: no agent is left to inject.
+      expect(createSpy.mock.calls[0][1].metadata.annotations).toEqual({
+        [ORIGINAL_MANIFEST_ANNOTATION]: MANIFEST,
+      });
+    });
+
+    it('applies a provider picked from the gallery', async () => {
+      stubSampleRegistry();
+      const client = testClient();
+      const createSpy = jest.spyOn(client, 'createSandbox');
+      renderInApp(<GettingStarted />, { client, preloadedState: withCatalog(['anthropic']) });
+      await screen.findByTestId('sample-hello-world');
+
+      await openGallery();
+      await userEvent.click(screen.getByTestId('ai-provider-card-google-gemini'));
+
+      await userEvent.click(screen.getByTestId('sample-hello-world'));
+
+      await waitFor(() => expect(createSpy).toHaveBeenCalled());
+      const created = createSpy.mock.calls[0][1];
+      expect(created.metadata.annotations?.[AI_PROVIDERS_ANNOTATION]).toBe(
+        'anthropic,google/gemini',
+      );
+      expect(created.spec.podTemplate.spec.initContainers).toHaveLength(2);
+    });
+
+    it('goes back to the default once the default branch is reopened', async () => {
+      stubSampleRegistry();
+      const client = testClient();
+      const createSpy = jest.spyOn(client, 'createSandbox');
+      renderInApp(<GettingStarted />, { client, preloadedState: withCatalog(['anthropic']) });
+      await screen.findByTestId('sample-hello-world');
+
+      await openGallery();
+      await userEvent.click(screen.getByTestId('ai-provider-card-google-gemini'));
+      await userEvent.click(screen.getByRole('button', { name: 'Use a Default AI Provider' }));
+
+      await userEvent.click(screen.getByTestId('sample-hello-world'));
+
+      await waitFor(() => expect(createSpy).toHaveBeenCalled());
+      expect(createSpy.mock.calls[0][1].metadata.annotations?.[AI_PROVIDERS_ANNOTATION]).toBe(
+        'anthropic',
+      );
     });
 
     it('keeps the published YAML, not the manifest it ends up sending', async () => {
@@ -502,15 +595,14 @@ describe('GettingStarted', () => {
 
       await waitFor(() => expect(createSpy).toHaveBeenCalled());
       const podSpec = createSpy.mock.calls[0][1].spec.podTemplate.spec;
-      expect(podSpec.volumes).toEqual([
-        {
-          name: 'sandbox-storage',
-          persistentVolumeClaim: { claimName: 'sandbox-sample-from-upstream' },
-        },
-      ]);
-      expect(podSpec.containers[0].volumeMounts).toEqual([
-        { name: 'sandbox-storage', mountPath: '/workspace' },
-      ]);
+      expect(podSpec.volumes).toContainEqual({
+        name: 'sandbox-storage',
+        persistentVolumeClaim: { claimName: 'sandbox-sample-from-upstream' },
+      });
+      expect(podSpec.containers[0].volumeMounts).toContainEqual({
+        name: 'sandbox-storage',
+        mountPath: '/workspace',
+      });
     });
 
     it('creates the sample on an emptyDir once it is turned on', async () => {
@@ -524,9 +616,10 @@ describe('GettingStarted', () => {
       await userEvent.click(screen.getByTestId('sample-hello-world'));
 
       await waitFor(() => expect(createSpy).toHaveBeenCalled());
-      expect(createSpy.mock.calls[0][1].spec.podTemplate.spec.volumes).toEqual([
-        { name: 'sandbox-storage', emptyDir: { sizeLimit: '5Gi' } },
-      ]);
+      expect(createSpy.mock.calls[0][1].spec.podTemplate.spec.volumes).toContainEqual({
+        name: 'sandbox-storage',
+        emptyDir: { sizeLimit: '5Gi' },
+      });
     });
   });
 });

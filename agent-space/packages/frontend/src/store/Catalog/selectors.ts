@@ -33,3 +33,13 @@ export const selectCatalogError = createSelector(selectState, state => state.err
 export const selectAiProviders = createSelector(selectState, state => state.catalog.aiProviders);
 
 export const selectAiTools = createSelector(selectState, state => state.catalog.aiTools);
+
+/**
+ * The providers the administrator put in the registry, as the dashboard reads
+ * them. Empty on a cluster that names none, which is what the selector's
+ * fallback to the first tool is for.
+ */
+export const selectDefaultAiProviders = createSelector(
+  selectState,
+  state => state.catalog.defaultAiProviders,
+);

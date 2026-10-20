@@ -38,7 +38,7 @@ import { CodeIcon, CubesIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { AiToolSelector } from '@/components/AiToolSelector';
+import { AiProviderSelector } from '@/components/AiProviderSelector';
 import { buildManageKeysUrl } from '@/components/AiToolSelector/manageKeys';
 import { ErrorAlert } from '@/components/ErrorAlert';
 import { SampleManifestModal } from '@/components/SampleManifestModal';
@@ -50,7 +50,7 @@ import { resolveSampleIcon, SandboxSample } from '@/services/samples';
 import { NO_CUSTOMIZATION, SandboxCustomization } from '@/services/sandboxFactory';
 import { DEFAULT_STORAGE_TYPE, SandboxStorageType } from '@/services/sandboxStorage';
 import { selectDashboardUrl, selectNamespace, selectSamplesIndexUrl } from '@/store/Bootstrap';
-import { selectAiProviders, selectAiTools } from '@/store/Catalog';
+import { selectAiProviders, selectAiTools, selectDefaultAiProviders } from '@/store/Catalog';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   samplesActionCreators,
@@ -90,6 +90,7 @@ export function GettingStarted(): React.ReactElement {
   const dashboardUrl = useAppSelector(selectDashboardUrl);
   const aiTools = useAppSelector(selectAiTools);
   const aiProviders = useAppSelector(selectAiProviders);
+  const defaultProviderIds = useAppSelector(selectDefaultAiProviders);
 
   const [customization, setCustomization] = React.useState<SandboxCustomization>(NO_CUSTOMIZATION);
   const [storageType, setStorageType] = React.useState<SandboxStorageType>(DEFAULT_STORAGE_TYPE);
@@ -150,46 +151,17 @@ export function GettingStarted(): React.ReactElement {
         onClose={() => dispatch(samplesActionCreators.clearSampleCreateError())}
       />
 
-      {/* Nothing to ask when the cluster publishes no AI tools. */}
-      {aiTools.length > 0 && (
-        <Panel variant="bordered" style={{ marginBottom: 'var(--pf-t--global--spacer--md)' }}>
-          <PanelHeader>
-            <Title headingLevel="h3">AI tools</Title>
-            <Content>
-              <Content component="small">
-                Installed into whichever sample you pick, by an init container.
-              </Content>
-            </Content>
-          </PanelHeader>
-          <PanelMain>
-            <PanelMainBody>
-              <AiToolSelector
-                aiTools={aiTools}
-                aiProviders={aiProviders}
-                customization={customization}
-                isDisabled={pendingId !== undefined}
-                onChange={setCustomization}
-              />
-              {/* The keys themselves live in the dashboard, not here, and the
-                  selector above no longer says so - the link does. */}
-              <Content>
-                <Content component="p">
-                  <Button
-                    variant={ButtonVariant.link}
-                    isInline
-                    component="a"
-                    href={buildManageKeysUrl(dashboardUrl)}
-                    target="_blank"
-                    data-testid="manage-keys-link"
-                  >
-                    Manage API keys in User Preferences
-                  </Button>
-                </Content>
-              </Content>
-            </PanelMainBody>
-          </PanelMain>
-        </Panel>
-      )}
+      {/* The dashboard's create-workspace selector, copied for this page; the
+          wizard and the details page keep the compact pencil one. Renders
+          nothing when the cluster publishes no AI tools. */}
+      <AiProviderSelector
+        aiTools={aiTools}
+        aiProviders={aiProviders}
+        defaultProviderIds={defaultProviderIds}
+        manageKeysUrl={buildManageKeysUrl(dashboardUrl)}
+        isDisabled={pendingId !== undefined}
+        onChange={setCustomization}
+      />
 
       {/* The dashboard draws the same border with an `overrides.css` rule that
           Agent Space does not load; `bordered` is the PatternFly equivalent. */}

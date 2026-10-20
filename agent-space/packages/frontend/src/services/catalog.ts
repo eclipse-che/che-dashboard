@@ -55,11 +55,14 @@ export interface Catalog {
   currentArchitecture?: string;
   aiProviders: AiProviderDefinition[];
   aiTools: AiToolDefinition[];
+  /** Providers the administrator named in the registry, in their order. */
+  defaultAiProviders: string[];
 }
 
 export const EMPTY_CATALOG: Catalog = {
   aiProviders: [],
   aiTools: [],
+  defaultAiProviders: [],
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -125,9 +128,10 @@ function toAiTool(raw: unknown): AiToolDefinition | undefined {
 export function parseAiRegistry(payload: unknown): {
   aiProviders: AiProviderDefinition[];
   aiTools: AiToolDefinition[];
+  defaultAiProviders: string[];
 } {
   if (!isRecord(payload)) {
-    return { aiProviders: [], aiTools: [] };
+    return { aiProviders: [], aiTools: [], defaultAiProviders: [] };
   }
   const providers = Array.isArray(payload.providers) ? payload.providers : [];
   const tools = Array.isArray(payload.tools) ? payload.tools : [];
@@ -137,6 +141,7 @@ export function parseAiRegistry(payload: unknown): {
       .map(toAiProvider)
       .filter((provider): provider is AiProviderDefinition => provider !== undefined),
     aiTools: tools.map(toAiTool).filter((tool): tool is AiToolDefinition => tool !== undefined),
+    defaultAiProviders: asStringArray(payload.defaultAiProviders) ?? [],
   };
 }
 
@@ -170,12 +175,13 @@ export async function fetchCatalog(baseUrl = '', http?: AxiosInstance): Promise<
     get('/cluster-config'),
   ]);
 
-  const { aiProviders, aiTools } = parseAiRegistry(registryPayload);
+  const { aiProviders, aiTools, defaultAiProviders } = parseAiRegistry(registryPayload);
 
   return {
     currentArchitecture: parseCurrentArchitecture(clusterConfigPayload),
     aiProviders,
     aiTools,
+    defaultAiProviders,
   };
 }
 
