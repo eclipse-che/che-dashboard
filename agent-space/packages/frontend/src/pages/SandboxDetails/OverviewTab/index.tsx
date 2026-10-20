@@ -18,8 +18,6 @@ import {
   DescriptionListGroup,
   DescriptionListTerm,
   FormGroupLabelHelp,
-  HelperText,
-  HelperTextItem,
   PageSection,
 } from '@patternfly/react-core';
 import { ExternalLinkSquareAltIcon } from '@patternfly/react-icons';
@@ -27,19 +25,16 @@ import React from 'react';
 
 import { AiToolSelector } from '@/components/AiToolSelector';
 import { AiToolInfoModal } from '@/components/AiToolSelector/InfoModal';
-import { buildManageKeysUrl } from '@/components/AiToolSelector/manageKeys';
 import styles from '@/components/AiToolSelector/SelectorModal.module.css';
 import { ErrorAlert } from '@/components/ErrorAlert';
 import { StorageTypeSelector } from '@/components/StorageTypeSelector';
 import { StorageTypeInfoModal } from '@/components/StorageTypeSelector/InfoModal';
-import { findToolsByProviderIds } from '@/services/catalog';
 import { buildSandboxConsoleUrl } from '@/services/clusterInfo';
 import { formatTimestamp } from '@/services/format';
 import {
   canEditAiTools,
   findBlockingCondition,
   formatResourceLimits,
-  getAiToolsDisabledReason,
   getSandboxAiProviderIds,
   getSandboxAiVersions,
   getSandboxImages,
@@ -49,7 +44,7 @@ import {
 import { SandboxCustomization } from '@/services/sandboxFactory';
 import { getSandboxStorageType, SandboxStorageType } from '@/services/sandboxStorage';
 import { Sandbox, SandboxError } from '@/services/types';
-import { selectClusterConsoleUrl, selectDashboardUrl } from '@/store/Bootstrap';
+import { selectClusterConsoleUrl } from '@/store/Bootstrap';
 import { selectAiProviders, selectAiTools } from '@/store/Catalog';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { sandboxDetailsActionCreators } from '@/store/SandboxDetails';
@@ -67,7 +62,6 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
 
   const aiTools = useAppSelector(selectAiTools);
   const aiProviders = useAppSelector(selectAiProviders);
-  const dashboardUrl = useAppSelector(selectDashboardUrl);
   const clusterConsoleUrl = useAppSelector(selectClusterConsoleUrl);
 
   const [isInfoOpen, setIsInfoOpen] = React.useState(false);
@@ -85,18 +79,6 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
       aiVersions: getSandboxAiVersions(sandbox),
     }),
     [sandbox],
-  );
-
-  // A key only reaches the sandbox through an environment variable resolved as
-  // the container starts, so saving one in user preferences afterwards leaves
-  // the running pod as it was. Said only where it applies: an agent that takes
-  // no key is unaffected by what is saved there.
-  const showKeyHint = React.useMemo(
-    () =>
-      findToolsByProviderIds(aiTools, customization.aiProviderIds, customization.aiVersions).some(
-        tool => tool.envVarName !== undefined,
-      ),
-    [aiTools, customization],
   );
 
   const handleChange = React.useCallback(
@@ -165,12 +147,6 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
           </DescriptionListDescription>
         </DescriptionListGroup>
         <DescriptionListGroup>
-          <DescriptionListTerm>Operating mode</DescriptionListTerm>
-          <DescriptionListDescription>
-            {sandbox.spec?.operatingMode ?? 'Running'}
-          </DescriptionListDescription>
-        </DescriptionListGroup>
-        <DescriptionListGroup>
           <DescriptionListTerm>Runtime class</DescriptionListTerm>
           <DescriptionListDescription>
             {getSandboxRuntimeClass(sandbox) ?? 'Cluster default'}
@@ -181,20 +157,10 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
           <DescriptionListDescription>{formatResourceLimits(sandbox)}</DescriptionListDescription>
         </DescriptionListGroup>
         <DescriptionListGroup>
-          <DescriptionListTerm>Images</DescriptionListTerm>
+          <DescriptionListTerm>Container image</DescriptionListTerm>
           <DescriptionListDescription>
             {getSandboxImages(sandbox).join(', ') || '-'}
           </DescriptionListDescription>
-        </DescriptionListGroup>
-        <DescriptionListGroup>
-          <DescriptionListTerm>Service</DescriptionListTerm>
-          <DescriptionListDescription>
-            {sandbox.status?.serviceFQDN ?? sandbox.status?.service ?? '-'}
-          </DescriptionListDescription>
-        </DescriptionListGroup>
-        <DescriptionListGroup>
-          <DescriptionListTerm>Node</DescriptionListTerm>
-          <DescriptionListDescription>{sandbox.status?.nodeName ?? '-'}</DescriptionListDescription>
         </DescriptionListGroup>
         <DescriptionListGroup>
           <DescriptionListTerm>
@@ -214,27 +180,8 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
               aiProviders={aiProviders}
               customization={customization}
               isDisabled={!canEditAiTools(phase)}
-              disabledReason={getAiToolsDisabledReason(phase)}
               onChange={handleChange}
             />
-            {showKeyHint && (
-              <HelperText>
-                <HelperTextItem data-testid="ai-tool-keys-hint">
-                  API keys are read as the pod starts. Suspend and resume to apply a key saved in{' '}
-                  <Button
-                    variant={ButtonVariant.link}
-                    isInline
-                    component="a"
-                    href={buildManageKeysUrl(dashboardUrl)}
-                    target="_blank"
-                    data-testid="manage-keys-link"
-                  >
-                    User Preferences
-                  </Button>{' '}
-                  since then.
-                </HelperTextItem>
-              </HelperText>
-            )}
             <AiToolInfoModal
               isOpen={isInfoOpen}
               aiTools={aiTools}
@@ -259,7 +206,6 @@ export function OverviewTab({ sandbox }: Props): React.ReactElement {
               // The pod template is only editable while no pod is running off
               // it, which is the same window the AI tools are editable in.
               isDisabled={!canEditAiTools(phase)}
-              disabledReason={getAiToolsDisabledReason(phase)}
               onChange={handleStorageChange}
             />
             <StorageTypeInfoModal

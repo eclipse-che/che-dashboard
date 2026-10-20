@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Button, HelperText, HelperTextItem } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core';
 import { PencilAltIcon } from '@patternfly/react-icons';
 import React from 'react';
 
@@ -20,9 +20,8 @@ import { SandboxStorageType, STORAGE_TYPE_TITLES } from '@/services/sandboxStora
 
 export type Props = {
   storageType: SandboxStorageType;
+  /** Drops the pencil: the type is shown, but cannot be changed. */
   isDisabled?: boolean;
-  /** Shown beside the pencil while it is disabled, so the reason is not a guess. */
-  disabledReason?: string;
   onChange: (storageType: SandboxStorageType) => void;
 };
 
@@ -33,12 +32,14 @@ export type Props = {
 export function StorageTypeSelector({
   storageType,
   isDisabled = false,
-  disabledReason,
   onChange,
 }: Props): React.ReactElement {
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const hint = isDisabled ? disabledReason : undefined;
+  // As with the AI tools: no pencil where there is nothing to be done with it.
+  if (isDisabled) {
+    return <span data-testid="storage-type-selector">{STORAGE_TYPE_TITLES[storageType]}</span>;
+  }
 
   return (
     <span className={styles.editable} data-testid="storage-type-selector">
@@ -46,18 +47,12 @@ export function StorageTypeSelector({
       <Button
         data-testid="storage-type-edit-toggle"
         variant="plain"
-        isDisabled={isDisabled}
         onClick={() => setIsOpen(true)}
         aria-label="Change Storage Type"
-        title={hint ?? 'Change Storage Type'}
+        title="Change Storage Type"
       >
         <PencilAltIcon />
       </Button>
-      {hint !== undefined && (
-        <HelperText>
-          <HelperTextItem data-testid="storage-type-disabled-reason">{hint}</HelperTextItem>
-        </HelperText>
-      )}
       <StorageTypeSelectorModal
         isOpen={isOpen}
         originSelection={storageType}

@@ -81,29 +81,11 @@ describe('AiToolSelector', () => {
     expect(screen.getByTestId('ai-tool-selector')).toHaveTextContent('retired');
   });
 
-  it('keeps the pencil out of reach while the sandbox may not be changed', () => {
-    renderSelector({ isDisabled: true });
+  it('drops the pencil while the sandbox may not be changed', () => {
+    renderSelector({ isDisabled: true, customization: { aiProviderIds: ['anthropic'] } });
 
-    expect(screen.getByTestId('ai-tool-edit-toggle')).toBeDisabled();
-  });
-
-  it('spells out why the pencil is out of reach', () => {
-    renderSelector({ isDisabled: true, disabledReason: 'Suspend the sandbox first.' });
-
-    expect(screen.getByTestId('ai-tool-disabled-reason')).toHaveTextContent(
-      'Suspend the sandbox first.',
-    );
-    expect(screen.getByTestId('ai-tool-edit-toggle')).toHaveAttribute(
-      'title',
-      'Suspend the sandbox first.',
-    );
-  });
-
-  it('keeps a reason it was handed to itself while the pencil still works', () => {
-    renderSelector({ disabledReason: 'Suspend the sandbox first.' });
-
-    expect(screen.queryByTestId('ai-tool-disabled-reason')).toBeNull();
-    expect(screen.getByTestId('ai-tool-edit-toggle')).toHaveAttribute('title', 'Change AI Tools');
+    expect(screen.queryByTestId('ai-tool-edit-toggle')).toBeNull();
+    expect(screen.getByTestId('ai-tool-selector')).toHaveTextContent('Anthropic');
   });
 
   it('reports the saved selection to its parent and closes', async () => {

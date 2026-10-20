@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Button, HelperText, HelperTextItem } from '@patternfly/react-core';
+import { Button } from '@patternfly/react-core';
 import { PencilAltIcon } from '@patternfly/react-icons';
 import React from 'react';
 
@@ -23,9 +23,8 @@ export type Props = {
   aiTools: AiToolDefinition[];
   aiProviders: AiProviderDefinition[];
   customization: SandboxCustomization;
+  /** Drops the pencil: the selection is shown, but cannot be changed. */
   isDisabled?: boolean;
-  /** Shown beside the pencil while it is disabled, so the reason is not a guess. */
-  disabledReason?: string;
   onChange: (customization: SandboxCustomization) => void;
 };
 
@@ -45,7 +44,6 @@ export function AiToolSelector({
   aiProviders,
   customization,
   isDisabled = false,
-  disabledReason,
   onChange,
 }: Props): React.ReactElement | null {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -63,7 +61,11 @@ export function AiToolSelector({
     return null;
   }
 
-  const hint = isDisabled ? disabledReason : undefined;
+  // A pencil that cannot be pressed is an invitation to press it. Where the
+  // tools are fixed - a pod is running off them - the row is plain text.
+  if (isDisabled) {
+    return <span data-testid="ai-tool-selector">{displayName}</span>;
+  }
 
   return (
     <span className={styles.editable} data-testid="ai-tool-selector">
@@ -71,18 +73,12 @@ export function AiToolSelector({
       <Button
         data-testid="ai-tool-edit-toggle"
         variant="plain"
-        isDisabled={isDisabled}
         onClick={() => setIsOpen(true)}
         aria-label="Change AI Tools"
-        title={hint ?? 'Change AI Tools'}
+        title="Change AI Tools"
       >
         <PencilAltIcon />
       </Button>
-      {hint !== undefined && (
-        <HelperText>
-          <HelperTextItem data-testid="ai-tool-disabled-reason">{hint}</HelperTextItem>
-        </HelperText>
-      )}
       <AiToolSelectorModal
         isOpen={isOpen}
         aiTools={aiTools}

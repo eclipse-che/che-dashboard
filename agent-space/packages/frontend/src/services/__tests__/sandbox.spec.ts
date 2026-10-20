@@ -17,7 +17,6 @@ import {
   findBlockingCondition,
   findCondition,
   formatResourceLimits,
-  getAiToolsDisabledReason,
   getAvailableActions,
   getSandboxAiProviderIds,
   getSandboxAiVersions,
@@ -321,25 +320,6 @@ describe('canEditAiTools', () => {
     expect(canEditAiTools(SandboxPhase.COMPLETED)).toBe(false);
     expect(canEditAiTools(SandboxPhase.EXPIRED)).toBe(false);
     expect(canEditAiTools(SandboxPhase.TERMINATING)).toBe(false);
-  });
-});
-
-describe('getAiToolsDisabledReason', () => {
-  it('says nothing when the edit would land', () => {
-    expect(getAiToolsDisabledReason(SandboxPhase.SUSPENDED)).toBeUndefined();
-    expect(getAiToolsDisabledReason(SandboxPhase.FAILED)).toBeUndefined();
-  });
-
-  it('points at the suspend that would make the edit possible', () => {
-    expect(getAiToolsDisabledReason(SandboxPhase.RUNNING)).toContain('Suspend the sandbox');
-    expect(getAiToolsDisabledReason(SandboxPhase.PENDING)).toContain('Suspend the sandbox');
-    expect(getAiToolsDisabledReason(SandboxPhase.BLOCKED)).toContain('Suspend the sandbox');
-  });
-
-  it('says so plainly where there is no way back', () => {
-    expect(getAiToolsDisabledReason(SandboxPhase.COMPLETED)).toContain('will not start again');
-    expect(getAiToolsDisabledReason(SandboxPhase.EXPIRED)).toContain('will not start again');
-    expect(getAiToolsDisabledReason(SandboxPhase.TERMINATING)).toContain('will not start again');
   });
 });
 

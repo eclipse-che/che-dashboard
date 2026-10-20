@@ -222,17 +222,6 @@ export function canEditAiTools(phase: SandboxPhase): boolean {
   return getAvailableActions(phase).some(action => action === 'resume' || action === 'restart');
 }
 
-/** Why {@link canEditAiTools} said no, in the words the Overview tab uses. */
-export function getAiToolsDisabledReason(phase: SandboxPhase): string | undefined {
-  if (canEditAiTools(phase)) {
-    return undefined;
-  }
-  if (getAvailableActions(phase).includes('suspend')) {
-    return 'Suspend the sandbox to change its AI tools. They are installed into the pod as it starts.';
-  }
-  return 'This sandbox will not start again, so its AI tools can no longer be changed.';
-}
-
 /**
  * Merge patch applied for each lifecycle action.
  *

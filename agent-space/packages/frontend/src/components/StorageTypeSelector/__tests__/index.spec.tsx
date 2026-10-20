@@ -88,12 +88,10 @@ describe('StorageTypeSelector', () => {
     ).toBeInTheDocument();
   });
 
-  it('says why the pencil is disabled', () => {
-    renderSelector({ isDisabled: true, disabledReason: 'Suspend the sandbox first.' });
+  it('drops the pencil while the sandbox may not be changed', () => {
+    renderSelector({ isDisabled: true });
 
-    expect(screen.getByTestId('storage-type-edit-toggle')).toBeDisabled();
-    expect(screen.getByTestId('storage-type-disabled-reason')).toHaveTextContent(
-      'Suspend the sandbox first.',
-    );
+    expect(screen.queryByTestId('storage-type-edit-toggle')).toBeNull();
+    expect(screen.getByTestId('storage-type-selector')).toHaveTextContent('Per-sandbox');
   });
 });

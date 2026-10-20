@@ -86,32 +86,6 @@ const WITH_CATALOG = {
   },
 };
 
-/** An agent that takes an API key, which Claude Code above deliberately does not. */
-const GEMINI: AiToolDefinition = {
-  providerId: 'google',
-  tag: 'latest',
-  name: 'Gemini CLI',
-  url: '',
-  binary: 'gemini',
-  pattern: 'init',
-  injectorImage: 'quay.io/example/gemini-cli:latest',
-  envVarName: 'GEMINI_API_KEY',
-};
-
-const GOOGLE: AiProviderDefinition = {
-  id: 'google',
-  name: 'Google',
-  publisher: 'Google',
-};
-
-const WITH_KEYED_CATALOG = {
-  catalog: {
-    ...catalogUnloadedState,
-    isLoaded: true,
-    catalog: { ...EMPTY_CATALOG, aiTools: [CLAUDE, GEMINI], aiProviders: [ANTHROPIC, GOOGLE] },
-  },
-};
-
 async function renderDetails(
   name: string,
   {
@@ -245,16 +219,18 @@ describe('SandboxDetails', () => {
       expect(screen.getByText(TEST_NAMESPACE)).toBeInTheDocument();
       expect(screen.getByText('gvisor')).toBeInTheDocument();
       expect(screen.getByText('cpu: 2, memory: 4Gi')).toBeInTheDocument();
+      expect(screen.getByText('Container image')).toBeInTheDocument();
       expect(screen.getByText('ghcr.io/openclaw/openclaw:2026.3.23')).toBeInTheDocument();
-      expect(
-        screen.getByText(`hello-world.${TEST_NAMESPACE}.svc.cluster.local`),
-      ).toBeInTheDocument();
     });
 
-    it('names the operating mode the lifecycle actions write', async () => {
-      await renderDetails('openclaw-agent');
+    it('leaves out what the user has nothing to do with', async () => {
+      await renderDetails('hello-world');
 
-      expect(screen.getByText('Suspended', { selector: 'dd *' })).toBeInTheDocument();
+      // The service, the node and the operating mode are the controller's
+      // business; the phase beside the name is what there is to act on.
+      expect(screen.queryByText('Service')).not.toBeInTheDocument();
+      expect(screen.queryByText('Node')).not.toBeInTheDocument();
+      expect(screen.queryByText('Operating mode')).not.toBeInTheDocument();
     });
 
     it('spells out why a blocked sandbox cannot start', async () => {
@@ -335,27 +311,21 @@ describe('SandboxDetails', () => {
       await renderWithAgent();
 
       expect(screen.getByTestId('ai-tool-edit-toggle')).toBeEnabled();
-      expect(screen.queryByTestId('ai-tool-disabled-reason')).toBeNull();
     });
 
-    it('asks for a suspend while the pod is there, rather than taking an edit that would not land', async () => {
+    it('shows the agent without a pencil while the pod is running off it', async () => {
       await renderWithAgent({ operatingMode: 'Running' });
 
-      expect(screen.getByTestId('ai-tool-edit-toggle')).toBeDisabled();
-      expect(screen.getByTestId('ai-tool-disabled-reason')).toHaveTextContent(
-        'Suspend the sandbox to change its AI tools',
-      );
+      expect(screen.getByTestId('ai-tool-selector')).toHaveTextContent('Anthropic');
+      expect(screen.queryByTestId('ai-tool-edit-toggle')).not.toBeInTheDocument();
     });
 
-    it('says so for a sandbox that will never start again', async () => {
+    it('offers no pencil for a sandbox that will never start again', async () => {
       // `sandboxed-tools` ran to completion, so no later pod would carry the
       // edit and the UI offers no action that would produce one.
       await renderDetails('sandboxed-tools', { preloadedState: WITH_CATALOG });
 
-      expect(screen.getByTestId('ai-tool-edit-toggle')).toBeDisabled();
-      expect(screen.getByTestId('ai-tool-disabled-reason')).toHaveTextContent(
-        'will not start again',
-      );
+      expect(screen.queryByTestId('ai-tool-edit-toggle')).not.toBeInTheDocument();
     });
 
     it('patches the sandbox when the selection is saved', async () => {
@@ -382,53 +352,6 @@ describe('SandboxDetails', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
       expect(patchSpy).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('the API key hint on the Overview tab', () => {
-    /** Opens the Overview tab of a suspended sandbox running the given agent. */
-    async function renderWithProvider(providerId: string): Promise<void> {
-      const client = testClient();
-      await client.createSandbox(TEST_NAMESPACE, {
-        metadata: { name: 'keyed', annotations: { [AI_PROVIDERS_ANNOTATION]: providerId } },
-        spec: {
-          operatingMode: 'Suspended',
-          podTemplate: { spec: { containers: [{ name: 'agent', image: 'busybox' }] } },
-        },
-      } as Sandbox);
-      await renderDetails('keyed', { client, preloadedState: WITH_KEYED_CATALOG });
-    }
-
-    it('says a key saved since the pod started needs a restart to reach it', async () => {
-      await renderWithProvider('google');
-
-      // The variable is resolved as the container starts, so a key saved in
-      // user preferences afterwards never reaches the pod on its own.
-      expect(screen.getByTestId('ai-tool-keys-hint')).toHaveTextContent(
-        'API keys are read as the pod starts. Suspend and resume to apply a key saved in User Preferences since then.',
-      );
-    });
-
-    it('points at the page where a key is saved', async () => {
-      await renderWithProvider('google');
-
-      expect(screen.getByTestId('manage-keys-link')).toHaveAttribute(
-        'href',
-        expect.stringContaining('/user-preferences?tab=AiProviderKeys'),
-      );
-    });
-
-    it('stays quiet for an agent that takes no key', async () => {
-      await renderWithProvider('anthropic');
-
-      expect(screen.getByTestId('ai-tool-selector')).toHaveTextContent('Anthropic');
-      expect(screen.queryByTestId('ai-tool-keys-hint')).not.toBeInTheDocument();
-    });
-
-    it('stays quiet for a sandbox running no agent at all', async () => {
-      await renderDetails('hello-world', { preloadedState: WITH_KEYED_CATALOG });
-
-      expect(screen.queryByTestId('ai-tool-keys-hint')).not.toBeInTheDocument();
     });
   });
 
@@ -515,16 +438,13 @@ describe('SandboxDetails', () => {
       await renderSuspended();
 
       expect(screen.getByTestId('storage-type-edit-toggle')).toBeEnabled();
-      expect(screen.queryByTestId('storage-type-disabled-reason')).toBeNull();
     });
 
-    it('asks for a suspend while the pod is there', async () => {
+    it('shows the type without a pencil while the pod is running off it', async () => {
       await renderDetails('hello-world');
 
-      expect(screen.getByTestId('storage-type-edit-toggle')).toBeDisabled();
-      expect(screen.getByTestId('storage-type-disabled-reason')).toHaveTextContent(
-        'Suspend the sandbox',
-      );
+      expect(screen.getByTestId('storage-type-selector')).toHaveTextContent('Ephemeral');
+      expect(screen.queryByTestId('storage-type-edit-toggle')).not.toBeInTheDocument();
     });
 
     it('patches the pod template, and nothing the CRD freezes, when saved', async () => {
