@@ -99,6 +99,7 @@
     "brace-expansion@^1.1.7": "1.1.21",
     "htmlparser2@^12.0.0": "10.1.0",
     "qs": "6.16.0",
+    "source-map-js": "1.2.2",
     "uri-js@^4.2.2": "npm:uri-js-replace@1.0.1"
   }
 }
