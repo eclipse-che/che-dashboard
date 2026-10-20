@@ -42,11 +42,13 @@ import { AiToolSelector } from '@/components/AiToolSelector';
 import { buildManageKeysUrl } from '@/components/AiToolSelector/manageKeys';
 import { ErrorAlert } from '@/components/ErrorAlert';
 import { SampleManifestModal } from '@/components/SampleManifestModal';
+import { TemporaryStorageSwitch } from '@/components/TemporaryStorageSwitch';
 import styles from '@/pages/GettingStarted/index.module.css';
 import { buildSandboxDetailsRoute, SANDBOX_TAB } from '@/Routes';
 import { pageTitle, SECTION } from '@/services/pageTitle';
 import { resolveSampleIcon, SandboxSample } from '@/services/samples';
 import { NO_CUSTOMIZATION, SandboxCustomization } from '@/services/sandboxFactory';
+import { DEFAULT_STORAGE_TYPE, SandboxStorageType } from '@/services/sandboxStorage';
 import { selectDashboardUrl, selectNamespace, selectSamplesIndexUrl } from '@/store/Bootstrap';
 import { selectAiProviders, selectAiTools } from '@/store/Catalog';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -90,6 +92,7 @@ export function GettingStarted(): React.ReactElement {
   const aiProviders = useAppSelector(selectAiProviders);
 
   const [customization, setCustomization] = React.useState<SandboxCustomization>(NO_CUSTOMIZATION);
+  const [storageType, setStorageType] = React.useState<SandboxStorageType>(DEFAULT_STORAGE_TYPE);
 
   React.useEffect(() => {
     void dispatch(samplesActionCreators.requestSamples());
@@ -98,7 +101,7 @@ export function GettingStarted(): React.ReactElement {
   const handleCreate = React.useCallback(
     async (sample: SandboxSample) => {
       const created = await dispatch(
-        samplesActionCreators.createSandboxFromSample(sample, customization),
+        samplesActionCreators.createSandboxFromSample(sample, customization, storageType),
       );
       if (created !== undefined) {
         // Events are what there is to watch on a sandbox that has just been
@@ -106,7 +109,7 @@ export function GettingStarted(): React.ReactElement {
         navigate(buildSandboxDetailsRoute(created.metadata.name, SANDBOX_TAB.EVENTS));
       }
     },
-    [customization, dispatch, navigate],
+    [customization, dispatch, navigate, storageType],
   );
 
   // A clickable card is not a button, so Enter and Space have to be wired up.
@@ -192,10 +195,25 @@ export function GettingStarted(): React.ReactElement {
           Agent Space does not load; `bordered` is the PatternFly equivalent. */}
       <Panel variant="bordered">
         <PanelHeader>
-          <Title headingLevel="h3">Select a Sample</Title>
-          <Content>
-            <Content component="small">Select a sample to create your first Agent Sandbox.</Content>
-          </Content>
+          <Flex alignItems={{ default: 'alignItemsCenter' }}>
+            <FlexItem>
+              <Title headingLevel="h3">Select a Sample</Title>
+              <Content>
+                <Content component="small">
+                  Select a sample to create your first Agent Sandbox.
+                </Content>
+              </Content>
+            </FlexItem>
+            {/* The storage of a sample is decided before the card is clicked,
+                because the click is the whole of the create. */}
+            <FlexItem align={{ default: 'alignRight' }}>
+              <TemporaryStorageSwitch
+                isTemporary={storageType === 'ephemeral'}
+                isDisabled={pendingId !== undefined}
+                onChange={isTemporary => setStorageType(isTemporary ? 'ephemeral' : 'per-sandbox')}
+              />
+            </FlexItem>
+          </Flex>
         </PanelHeader>
         <PanelMain>
           <PanelMainBody>

@@ -479,4 +479,54 @@ describe('GettingStarted', () => {
       expect(manifest).toContain('namespace: upstream-ns');
     });
   });
+
+  describe('the storage switch', () => {
+    it('sits with the samples, as a card click is the whole of the create', async () => {
+      stubSampleRegistry();
+      renderInApp(<GettingStarted />, { preloadedState: WITH_CATALOG });
+
+      const header = (await screen.findByRole('heading', { name: 'Select a Sample' })).closest(
+        '.pf-v6-c-panel__header',
+      ) as HTMLElement;
+
+      expect(within(header).getByRole('switch', { name: /Temporary Storage/ })).not.toBeChecked();
+    });
+
+    it('creates the sample with a claim of its own while it is off', async () => {
+      stubSampleRegistry();
+      const client = testClient();
+      const createSpy = jest.spyOn(client, 'createSandbox');
+      renderInApp(<GettingStarted />, { client, preloadedState: WITH_CATALOG });
+
+      await userEvent.click(await screen.findByTestId('sample-hello-world'));
+
+      await waitFor(() => expect(createSpy).toHaveBeenCalled());
+      const podSpec = createSpy.mock.calls[0][1].spec.podTemplate.spec;
+      expect(podSpec.volumes).toEqual([
+        {
+          name: 'sandbox-storage',
+          persistentVolumeClaim: { claimName: 'sandbox-sample-from-upstream' },
+        },
+      ]);
+      expect(podSpec.containers[0].volumeMounts).toEqual([
+        { name: 'sandbox-storage', mountPath: '/workspace' },
+      ]);
+    });
+
+    it('creates the sample on an emptyDir once it is turned on', async () => {
+      stubSampleRegistry();
+      const client = testClient();
+      const createSpy = jest.spyOn(client, 'createSandbox');
+      renderInApp(<GettingStarted />, { client, preloadedState: WITH_CATALOG });
+      await screen.findByTestId('sample-hello-world');
+
+      await userEvent.click(screen.getByRole('switch', { name: /Temporary Storage/ }));
+      await userEvent.click(screen.getByTestId('sample-hello-world'));
+
+      await waitFor(() => expect(createSpy).toHaveBeenCalled());
+      expect(createSpy.mock.calls[0][1].spec.podTemplate.spec.volumes).toEqual([
+        { name: 'sandbox-storage', emptyDir: { sizeLimit: '5Gi' } },
+      ]);
+    });
+  });
 });

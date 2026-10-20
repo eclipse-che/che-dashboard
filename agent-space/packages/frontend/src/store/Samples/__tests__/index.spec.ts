@@ -14,6 +14,7 @@ import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'ax
 
 import { SandboxSample } from '@/services/samples';
 import { getSandboxOriginalManifest } from '@/services/sandbox';
+import { NO_CUSTOMIZATION } from '@/services/sandboxFactory';
 import { SandboxClientError } from '@/services/types';
 import {
   samplesActionCreators,
@@ -149,6 +150,41 @@ describe('the Samples slice', () => {
       }),
     );
     expect(selectSampleCreatePendingId(store.getState())).toBeUndefined();
+  });
+
+  it('gives the sample a claim of its own when no storage is picked', async () => {
+    stubSampleRegistry();
+    const client = testClient();
+    const createSpy = jest.spyOn(client, 'createSandbox');
+    const store = createTestStore({ client });
+
+    await store.dispatch(samplesActionCreators.createSandboxFromSample(HELLO_WORLD));
+
+    const podSpec = createSpy.mock.calls[0][1].spec.podTemplate.spec;
+    expect(podSpec.volumes).toEqual([
+      {
+        name: 'sandbox-storage',
+        persistentVolumeClaim: { claimName: 'sandbox-sample-from-upstream' },
+      },
+    ]);
+    expect(podSpec.containers[0].volumeMounts).toEqual([
+      { name: 'sandbox-storage', mountPath: '/workspace' },
+    ]);
+  });
+
+  it('creates the sample on temporary storage when that is what was picked', async () => {
+    stubSampleRegistry();
+    const client = testClient();
+    const createSpy = jest.spyOn(client, 'createSandbox');
+    const store = createTestStore({ client });
+
+    await store.dispatch(
+      samplesActionCreators.createSandboxFromSample(HELLO_WORLD, NO_CUSTOMIZATION, 'ephemeral'),
+    );
+
+    expect(createSpy.mock.calls[0][1].spec.podTemplate.spec.volumes).toEqual([
+      { name: 'sandbox-storage', emptyDir: { sizeLimit: '5Gi' } },
+    ]);
   });
 
   it('waits for the AI catalogue before it creates the sample', async () => {

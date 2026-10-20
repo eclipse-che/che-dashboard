@@ -22,6 +22,7 @@ import {
   SandboxCustomization,
   withOriginalManifest,
 } from '@/services/sandboxFactory';
+import { applyStorage, DEFAULT_STORAGE_TYPE, SandboxStorageType } from '@/services/sandboxStorage';
 import { isAlreadyExistsError, Sandbox, SandboxError, toSandboxError } from '@/services/types';
 import { AppThunk } from '@/store';
 import { selectNamespace, selectSamplesIndexUrl } from '@/store/Bootstrap';
@@ -77,6 +78,7 @@ export const actionCreators = {
     (
       sample: SandboxSample,
       customization: SandboxCustomization = NO_CUSTOMIZATION,
+      storageType: SandboxStorageType = DEFAULT_STORAGE_TYPE,
     ): AppThunk<Promise<Sandbox | undefined>> =>
     async (dispatch, getState): Promise<Sandbox | undefined> => {
       if (!selectCatalogIsLoaded(getState())) {
@@ -96,8 +98,14 @@ export const actionCreators = {
         const manifest = toSandbox(load(yaml), sample.id);
         // The YAML as published is what the Manifest tab shows, so it is kept
         // before the namespace and the agents are layered on top of it.
+        // Storage goes on last, over the finished sandbox, as it does in the
+        // wizard. A sample that mounts things of its own keeps them: only the
+        // volume the dashboard owns is rewritten.
         const desired = withOriginalManifest(
-          applyCustomization(applySampleOverrides(manifest, namespace), customization, aiTools),
+          applyStorage(
+            applyCustomization(applySampleOverrides(manifest, namespace), customization, aiTools),
+            storageType,
+          ),
           yaml,
         );
 
