@@ -230,6 +230,17 @@ describe('TerminalTab', () => {
     );
   });
 
+  it('takes the dead terminal off the page when the session ends', async () => {
+    renderTab();
+    expect(screen.getByTestId('terminal-host')).toBeInTheDocument();
+
+    await act(() =>
+      lastConnection().handlers.onClose("The pod of sandbox 'test' is shutting down."),
+    );
+
+    expect(screen.queryByTestId('terminal-host')).not.toBeInTheDocument();
+  });
+
   it('starts a fresh session on Reconnect, and drops the old one', async () => {
     renderTab();
     await act(() => lastConnection().handlers.onClose('the pod went away'));
@@ -240,6 +251,15 @@ describe('TerminalTab', () => {
     expect(mockConnections[0].closed).toBe(true);
     expect(mockTerminals[0].disposed).toBe(true);
     expect(screen.queryByTestId('terminal-closed')).not.toBeInTheDocument();
+  });
+
+  it('puts the terminal back, attached, once Reconnect is pressed', async () => {
+    renderTab();
+    await act(() => lastConnection().handlers.onClose('the pod went away'));
+
+    await userEvent.click(screen.getByTestId('terminal-reconnect'));
+
+    expect(lastTerminal().host).toBe(screen.getByTestId('terminal-host'));
   });
 
   it('ends the session when the tab goes away', () => {

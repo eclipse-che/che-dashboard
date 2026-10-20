@@ -55,6 +55,14 @@ export function TerminalTab({ namespace, sandboxName }: Props): React.ReactEleme
   // what "Reconnect" does.
   const [attempt, setAttempt] = React.useState(0);
 
+  // The box has to be back on the page before the effect looks for it, so the
+  // ending is cleared here rather than left to the effect that opens the shell.
+  const handleReconnect = React.useCallback(() => {
+    setHasClosed(false);
+    setClosedReason(undefined);
+    setAttempt(current => current + 1);
+  }, []);
+
   React.useEffect(() => {
     const host = hostRef.current;
     if (host === null) {
@@ -113,7 +121,9 @@ export function TerminalTab({ namespace, sandboxName }: Props): React.ReactEleme
 
   return (
     <PageSection data-testid="terminal-tab">
-      <div className={styles.terminal} ref={hostRef} data-testid="terminal-host" />
+      {/* A dead shell is a black box with a frozen cursor in it, so the box
+          goes away with the session and the ending takes its place. */}
+      {!hasClosed && <div className={styles.terminal} ref={hostRef} data-testid="terminal-host" />}
       {hasClosed && (
         <EmptyState
           titleText="The terminal session ended"
@@ -127,7 +137,7 @@ export function TerminalTab({ namespace, sandboxName }: Props): React.ReactEleme
             <EmptyStateActions>
               <Button
                 variant={ButtonVariant.secondary}
-                onClick={() => setAttempt(current => current + 1)}
+                onClick={handleReconnect}
                 data-testid="terminal-reconnect"
               >
                 Reconnect
