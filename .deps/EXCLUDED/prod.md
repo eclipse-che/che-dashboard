@@ -9,3 +9,5 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `fastify@5.12.5` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/5.12.5) |
 | `joi@17.13.8` | transitive dependency |
 | `@fastify/proxy-addr@5.1.2` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/proxy-addr/5.1.2) |
+| `launder@1.7.2` | transitive dependency |
+| `sanitize-html@2.18.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sanitize-html/2.18.0) |
