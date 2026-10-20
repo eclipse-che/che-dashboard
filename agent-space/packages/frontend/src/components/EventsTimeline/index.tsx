@@ -59,7 +59,7 @@ export function EventsTimeline({ events, hasFailed = false }: Props): React.Reac
   }
 
   return (
-    <div role="log" aria-label="Sandbox events" data-testid="events-timeline">
+    <div role="log" aria-label="Agent space events" data-testid="events-timeline">
       <Stack>
         <StackItem>
           <Flex>

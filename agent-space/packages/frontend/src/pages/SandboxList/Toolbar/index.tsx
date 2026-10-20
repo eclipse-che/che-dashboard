@@ -27,7 +27,7 @@ import React from 'react';
 import styles from '@/pages/SandboxList/Toolbar/index.module.css';
 
 export type Props = {
-  /** The toolbar is reduced to Create Sandbox while the namespace is empty. */
+  /** The toolbar is reduced to Create Agent while the namespace is empty. */
   hasSandboxes: boolean;
   isAllSelected: boolean;
   isDeleteDisabled: boolean;
@@ -82,7 +82,7 @@ export function SandboxListToolbar({
               id="toggle-select-all-sandboxes"
               name="toggle-select-all-sandboxes"
               data-testid="select-all-checkbox"
-              aria-label="Toggle: select all sandboxes"
+              aria-label="Toggle: select all agent spaces"
               isChecked={isAllSelected}
               onChange={(_event, isChecked) => onToggleSelectAll(isChecked)}
             />
@@ -96,7 +96,7 @@ export function SandboxListToolbar({
                 id="sandboxes-filter-input"
                 data-testid="sandboxes-filter-input"
                 type="search"
-                aria-label="Search sandboxes"
+                aria-label="Search agent spaces"
                 placeholder="Search"
                 value={filterValue}
                 onChange={(_event, value) => setFilterValue(value)}
@@ -104,7 +104,7 @@ export function SandboxListToolbar({
               />
               <Button
                 variant={ButtonVariant.control}
-                aria-label="Filter sandboxes"
+                aria-label="Filter agent spaces"
                 data-testid="sandboxes-filter-button"
                 onClick={() => onFilter(filterValue)}
               >
@@ -122,7 +122,7 @@ export function SandboxListToolbar({
             <ToolbarItem>
               <Button
                 variant={ButtonVariant.primary}
-                aria-label="Delete Selected Sandboxes"
+                aria-label="Delete Selected Agent Spaces"
                 data-testid="bulk-delete-button"
                 isDisabled={isDeleteDisabled}
                 onClick={onBulkDelete}
@@ -137,13 +137,13 @@ export function SandboxListToolbar({
           <ToolbarItem align={{ default: 'alignEnd' }}>
             <Button
               variant={ButtonVariant.link}
-              aria-label="Create Sandbox"
+              aria-label="Create Agent"
               data-testid="create-sandbox-button"
               icon={<PlusCircleIcon />}
               iconPosition="left"
               onClick={onCreate}
             >
-              Create Sandbox
+              Create Agent
             </Button>
           </ToolbarItem>
         </ToolbarToggleGroup>

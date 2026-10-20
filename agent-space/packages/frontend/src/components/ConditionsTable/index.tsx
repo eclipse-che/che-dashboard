@@ -37,7 +37,7 @@ export function ConditionsTable({ conditions }: Props): React.ReactElement {
   }
 
   return (
-    <Table aria-label="Sandbox conditions" variant="compact" data-testid="conditions-table">
+    <Table aria-label="Agent space conditions" variant="compact" data-testid="conditions-table">
       <Thead>
         <Tr>
           <Th>Type</Th>

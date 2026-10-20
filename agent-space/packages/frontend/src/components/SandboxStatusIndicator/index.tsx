@@ -36,11 +36,11 @@ export type Props = {
 };
 
 /**
- * Phase of one sandbox as a single glyph, for the navigation sidebar.
+ * Phase of one agent space as a single glyph, for the navigation sidebar.
  *
  * The same role the dashboard's `WorkspaceStatusIndicator` plays next to a
  * recent workspace: the list is read at a glance, and a full status label
- * would push the sandbox names out of the sidebar.
+ * would push the agent space names out of the sidebar.
  */
 export function SandboxStatusIndicator({ phase, sandboxName }: Props): React.ReactElement {
   return (
@@ -49,7 +49,7 @@ export function SandboxStatusIndicator({ phase, sandboxName }: Props): React.Rea
         role="img"
         className={styles.statusIndicator}
         data-testid="sandbox-status-indicator"
-        aria-label={`Sandbox ${sandboxName} status is ${phase}`}
+        aria-label={`Agent space ${sandboxName} status is ${phase}`}
       >
         <Icon isInline status={STATUS[phase]}>
           {PHASE_ICON[phase]}

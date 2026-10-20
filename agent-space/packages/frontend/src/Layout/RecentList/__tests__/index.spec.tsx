@@ -87,7 +87,7 @@ describe('RecentSandboxes', () => {
 
     expect(screen.getByRole('img')).toHaveAttribute(
       'aria-label',
-      'Sandbox alpha status is Pending',
+      'Agent space alpha status is Pending',
     );
   });
 
@@ -197,7 +197,7 @@ describe('RecentSandboxes', () => {
       await clickAction('delete');
       expect(remove).not.toHaveBeenCalled();
 
-      expect(screen.getByRole('dialog')).toHaveTextContent('delete the sandbox "alpha"');
+      expect(screen.getByRole('dialog')).toHaveTextContent('delete the agent space "alpha"');
       await userEvent.click(screen.getByTestId('confirmation-checkbox'));
       await userEvent.click(screen.getByTestId('delete-sandbox-button'));
 

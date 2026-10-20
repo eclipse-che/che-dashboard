@@ -72,9 +72,7 @@ describe('CreateSandbox', () => {
   it('says which application the page belongs to', () => {
     renderInApp(<CreateSandbox />);
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'Agent Space/Create Sandbox',
-    );
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Agent Space/Create Agent');
   });
 
   it('names the namespace the sandbox lands in', () => {

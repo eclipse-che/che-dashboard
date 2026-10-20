@@ -89,7 +89,7 @@ export function ManifestViewer({ value, id, isExpanded }: Props): React.ReactEle
 
   const extensions = React.useMemo(() => {
     const baseExtensions = [
-      EditorView.contentAttributes.of({ 'aria-label': 'Sandbox manifest' }),
+      EditorView.contentAttributes.of({ 'aria-label': 'Agent space manifest' }),
       yaml(),
     ];
     return isDarkTheme

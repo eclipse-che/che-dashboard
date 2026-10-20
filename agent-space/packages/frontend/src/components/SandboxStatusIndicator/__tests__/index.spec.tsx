@@ -18,12 +18,12 @@ import { SandboxStatusIndicator } from '@/components/SandboxStatusIndicator';
 import { SandboxPhase } from '@/services/types';
 
 describe('SandboxStatusIndicator', () => {
-  it('names the sandbox and its phase, as the glyph alone says nothing', () => {
+  it('names the agent space and its phase, as the glyph alone says nothing', () => {
     render(<SandboxStatusIndicator phase={SandboxPhase.RUNNING} sandboxName="my-agent" />);
 
     expect(screen.getByRole('img')).toHaveAttribute(
       'aria-label',
-      'Sandbox my-agent status is Running',
+      'Agent space my-agent status is Running',
     );
   });
 

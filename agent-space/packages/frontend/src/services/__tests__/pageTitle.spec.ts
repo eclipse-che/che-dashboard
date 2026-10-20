@@ -14,14 +14,14 @@ import { APP_TITLE, pageTitle, SECTION } from '@/services/pageTitle';
 
 describe('pageTitle', () => {
   it('names the application in front of the section', () => {
-    expect(pageTitle(SECTION.SANDBOXES)).toEqual('Agent Space/Sandboxes');
+    expect(pageTitle(SECTION.SANDBOXES)).toEqual('Agent Space/Agents');
   });
 
   it('covers every section of the navigation', () => {
     expect(Object.values(SECTION).map(pageTitle)).toEqual([
       'Agent Space/Getting Started',
-      'Agent Space/Create Sandbox',
-      'Agent Space/Sandboxes',
+      'Agent Space/Create Agent',
+      'Agent Space/Agents',
     ]);
   });
 

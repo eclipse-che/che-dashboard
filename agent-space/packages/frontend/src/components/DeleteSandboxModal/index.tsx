@@ -61,7 +61,7 @@ export function DeleteSandboxModal({
       elementToFocus="[data-pf-initial-focus]"
     >
       <ModalHeader
-        title={sandboxNames.length > 1 ? 'Delete Agent Sandboxes' : 'Delete Agent Sandbox'}
+        title={sandboxNames.length > 1 ? 'Delete Agent Spaces' : 'Delete Agent Space'}
         titleIconVariant="warning"
       />
       <ModalBody>
@@ -69,7 +69,7 @@ export function DeleteSandboxModal({
           {sandboxNames.length > 1 ? (
             <>
               <Content component="p">
-                Would you like to delete {sandboxNames.length} sandboxes?
+                Would you like to delete {sandboxNames.length} agent spaces?
               </Content>
               <Content component="ul" data-testid="delete-sandbox-names">
                 {sandboxNames.map(name => (
@@ -81,7 +81,7 @@ export function DeleteSandboxModal({
             </>
           ) : (
             <Content component="p">
-              Would you like to delete the sandbox &quot;{sandboxNames[0]}&quot;?
+              Would you like to delete the agent space &quot;{sandboxNames[0]}&quot;?
             </Content>
           )}
           <Checkbox

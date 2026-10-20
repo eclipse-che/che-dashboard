@@ -122,7 +122,7 @@ describe('SandboxList', () => {
   it('says which application the page belongs to', async () => {
     await renderList();
 
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Agent Space/Sandboxes');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Agent Space/Agents');
   });
 
   it('lists the sandboxes of the namespace', async () => {

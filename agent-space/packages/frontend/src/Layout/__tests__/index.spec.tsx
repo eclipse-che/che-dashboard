@@ -99,16 +99,16 @@ describe('Layout', () => {
     renderInApp(<Layout>content</Layout>);
 
     expect(navLink('Getting Started')).toHaveAttribute('href', '/getting-started');
-    expect(navLink('Create Sandbox')).toHaveAttribute('href', '/create');
-    expect(navLink('Sandboxes')).toHaveAttribute('href', '/sandboxes');
+    expect(navLink('Create Agent')).toHaveAttribute('href', '/create');
+    expect(navLink('Agents')).toHaveAttribute('href', '/sandboxes');
     await waitForLogo();
   });
 
   it('marks the section matching the current location as active', async () => {
     renderInApp(<Layout>content</Layout>, { route: '/sandboxes/hello-world' });
 
-    expect(navLink('Sandboxes')).toHaveClass('pf-m-current');
-    expect(navLink('Create Sandbox')).not.toHaveClass('pf-m-current');
+    expect(navLink('Agents')).toHaveClass('pf-m-current');
+    expect(navLink('Create Agent')).not.toHaveClass('pf-m-current');
     await waitForLogo();
   });
 
@@ -157,17 +157,17 @@ describe('Layout', () => {
       await waitForLogo();
       // identity-obj-proxy maps a CSS module key to its own name.
       expect(masthead()).toHaveClass('showHeader');
-      expect(navLink('Sandboxes')).toBeInTheDocument();
+      expect(navLink('Agents')).toBeInTheDocument();
 
       await userEvent.click(screen.getByTestId('hide-bars'));
 
       expect(masthead()).toHaveClass('hideHeader');
-      expect(screen.queryByText('Sandboxes')).not.toBeInTheDocument();
+      expect(screen.queryByText('Agents')).not.toBeInTheDocument();
 
       await userEvent.click(screen.getByTestId('show-bars'));
 
       expect(masthead()).toHaveClass('showHeader');
-      expect(navLink('Sandboxes')).toBeInTheDocument();
+      expect(navLink('Agents')).toBeInTheDocument();
     });
   });
 

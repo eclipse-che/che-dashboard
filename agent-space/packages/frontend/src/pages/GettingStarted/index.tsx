@@ -139,9 +139,8 @@ export function GettingStarted(): React.ReactElement {
         {pageTitle(SECTION.GETTING_STARTED)}
       </Title>
       <Content component="p">
-        Create an Agent Sandbox from one of the upstream examples. Each card applies the manifest as
-        published by the agent-sandbox project into <strong>{namespace}</strong>, with the AI tools
-        chosen below.
+        Create an Agent Space from the example below. The card applies the manifest as published by
+        the agent-sandbox project into <strong>{namespace}</strong>, with the AI tools chosen below.
       </Content>
 
       <ErrorAlert title="Could not load the samples" error={loadError} />
@@ -169,11 +168,9 @@ export function GettingStarted(): React.ReactElement {
         <PanelHeader>
           <Flex alignItems={{ default: 'alignItemsCenter' }}>
             <FlexItem>
-              <Title headingLevel="h3">Select a Sample</Title>
+              <Title headingLevel="h3">Universal Developer Agent</Title>
               <Content>
-                <Content component="small">
-                  Select a sample to create your first Agent Sandbox.
-                </Content>
+                <Content component="small">Create your first Agent Space from this sample.</Content>
               </Content>
             </FlexItem>
             {/* The storage of a sample is decided before the card is clicked,
@@ -213,7 +210,7 @@ export function GettingStarted(): React.ReactElement {
                       onClick={() => void handleCreate(sample)}
                       onKeyDown={event => handleCardKeyDown(event, sample)}
                       tabIndex={0}
-                      aria-label={`Create an Agent Sandbox from the ${sample.displayName} sample`}
+                      aria-label={`Create an Agent Space from the ${sample.displayName} sample`}
                       className={styles.sampleCard}
                       data-testid={`sample-${sample.id}`}
                     >

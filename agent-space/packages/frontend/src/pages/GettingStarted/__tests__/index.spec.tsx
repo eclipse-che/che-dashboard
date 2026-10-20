@@ -86,8 +86,8 @@ jest.mock('react-router-dom', () => ({
 const INDEX = [
   {
     id: 'hello-world',
-    displayName: 'Hello World',
-    description: 'The smallest possible Sandbox.',
+    displayName: 'Universal Developer Agent',
+    description: 'The smallest possible Agent Space.',
     tags: ['Basic'],
     icon: '/images/sandbox.svg',
     source: {
@@ -100,7 +100,7 @@ const INDEX = [
   {
     id: 'jupyterlab',
     displayName: 'JupyterLab',
-    description: 'A notebook server in a sandbox.',
+    description: 'A notebook server in an agent space.',
     tags: [],
     notes: 'Needs a persistent volume.',
     manifest: { filename: 'jupyterlab.yaml' },
@@ -160,9 +160,11 @@ describe('GettingStarted', () => {
     stubSampleRegistry();
     renderInApp(<GettingStarted />);
 
-    expect(await screen.findByTestId('sample-hello-world')).toHaveTextContent('Hello World');
+    expect(await screen.findByTestId('sample-hello-world')).toHaveTextContent(
+      'Universal Developer Agent',
+    );
     expect(screen.getByTestId('sample-hello-world')).toHaveTextContent(
-      'The smallest possible Sandbox.',
+      'The smallest possible Agent Space.',
     );
     expect(screen.getByTestId('sample-jupyterlab')).toHaveTextContent('Needs a persistent volume.');
   });
@@ -206,8 +208,8 @@ describe('GettingStarted', () => {
 
     await screen.findByTestId('sample-hello-world');
 
-    expect(screen.getByRole('heading', { name: 'Select a Sample' })).toBeInTheDocument();
-    expect(screen.getByText(/Select a sample to create/)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Universal Developer Agent' })).toBeInTheDocument();
+    expect(screen.getByText(/Create your first Agent Space/)).toBeInTheDocument();
   });
 
   it('shows the manifest served from the registry, not a link to upstream', async () => {
@@ -217,7 +219,7 @@ describe('GettingStarted', () => {
     await userEvent.click(await screen.findByTestId('view-manifest-hello-world'));
 
     const modal = await screen.findByTestId('sample-manifest-modal');
-    expect(modal).toHaveTextContent('Hello World manifest');
+    expect(modal).toHaveTextContent('Universal Developer Agent manifest');
     expect(screen.getByTestId('sandbox-manifest')).toHaveTextContent('name: sample-from-upstream');
     expect(fetchMock).toHaveBeenCalledWith(
       './registry/sandbox/hello-world.yaml',
@@ -578,9 +580,9 @@ describe('GettingStarted', () => {
       stubSampleRegistry();
       renderInApp(<GettingStarted />, { preloadedState: WITH_CATALOG });
 
-      const header = (await screen.findByRole('heading', { name: 'Select a Sample' })).closest(
-        '.pf-v6-c-panel__header',
-      ) as HTMLElement;
+      const header = (
+        await screen.findByRole('heading', { name: 'Universal Developer Agent' })
+      ).closest('.pf-v6-c-panel__header') as HTMLElement;
 
       expect(within(header).getByRole('switch', { name: /Temporary Storage/ })).not.toBeChecked();
     });

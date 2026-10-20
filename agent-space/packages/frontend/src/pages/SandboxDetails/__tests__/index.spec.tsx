@@ -137,7 +137,7 @@ describe('SandboxDetails', () => {
   it('leads back to the list it came from', async () => {
     await renderDetails('hello-world');
 
-    await userEvent.click(screen.getByText('Agent Space/Sandboxes'));
+    await userEvent.click(screen.getByText('Agent Space/Agents'));
 
     expect(mockNavigate).toHaveBeenCalledWith('/sandboxes');
   });
@@ -674,13 +674,13 @@ describe('SandboxDetails', () => {
     });
   });
 
-  it('offers a way back when the sandbox does not exist', async () => {
+  it('offers a way back when the agent space does not exist', async () => {
     currentName = 'missing';
     renderInApp(<SandboxDetails />, { route: '/sandboxes/missing' });
 
-    expect(await screen.findByText('Sandbox unavailable')).toBeInTheDocument();
+    expect(await screen.findByText('Agent space unavailable')).toBeInTheDocument();
     expect(screen.getByTestId('error-alert')).toHaveTextContent('not found');
-    expect(screen.getByRole('link', { name: /back to the sandbox list/i })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /back to the agent spaces list/i })).toHaveAttribute(
       'href',
       '/sandboxes',
     );

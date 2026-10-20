@@ -207,7 +207,7 @@ export function SandboxList(): React.ReactElement {
           </EmptyStateFooter>
         </EmptyState>
       ) : (
-        <Table aria-label="Agent Sandboxes" variant="compact" data-testid="sandboxes-table">
+        <Table aria-label="Agent Spaces" variant="compact" data-testid="sandboxes-table">
           <Thead>
             <Tr>
               <Th screenReaderText="Row select" />

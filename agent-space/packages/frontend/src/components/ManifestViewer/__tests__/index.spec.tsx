@@ -41,7 +41,7 @@ describe('ManifestViewer', () => {
     expect(screen.getByRole('textbox')).toHaveTextContent('kind: Sandbox');
   });
 
-  it('refuses edits, because a sandbox is changed through its actions', () => {
+  it('refuses edits, because an agent space is changed through its actions', () => {
     renderViewer();
 
     // CodeMirror keeps the element focusable - it stays `contenteditable` so
@@ -52,7 +52,7 @@ describe('ManifestViewer', () => {
   it('names the content for a screen reader', () => {
     renderViewer();
 
-    expect(screen.getByRole('textbox')).toHaveAttribute('aria-label', 'Sandbox manifest');
+    expect(screen.getByRole('textbox')).toHaveAttribute('aria-label', 'Agent space manifest');
   });
 
   it('follows the manifest when the watch reports a new version', () => {

@@ -54,7 +54,7 @@ describe('EventsTimeline', () => {
   it('is a live region, so a new event is announced', () => {
     render(<EventsTimeline events={[event()]} />);
 
-    expect(screen.getByRole('log', { name: 'Sandbox events' })).toBeInTheDocument();
+    expect(screen.getByRole('log', { name: 'Agent space events' })).toBeInTheDocument();
   });
 
   it('puts the most recent event at the top', () => {

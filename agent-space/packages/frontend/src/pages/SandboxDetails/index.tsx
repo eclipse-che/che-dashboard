@@ -171,12 +171,12 @@ export function SandboxDetails(): React.ReactElement {
     return (
       <PageSection>
         <ErrorAlert
-          title={`Could not load the sandbox '${name}'`}
-          error={error ?? { statusCode: 404, message: `Sandbox '${name}' was not found.` }}
+          title={`Could not load the agent space '${name}'`}
+          error={error ?? { statusCode: 404, message: `Agent space '${name}' was not found.` }}
         />
-        <EmptyState titleText="Sandbox unavailable">
+        <EmptyState titleText="Agent space unavailable">
           <EmptyStateBody>
-            <Link to={ROUTE.SANDBOXES}>Back to the sandbox list</Link>
+            <Link to={ROUTE.SANDBOXES}>Back to the agent spaces list</Link>
           </EmptyStateBody>
         </EmptyState>
       </PageSection>

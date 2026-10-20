@@ -38,16 +38,16 @@ describe('DeleteSandboxModal', () => {
     expect(screen.queryByTestId('delete-sandbox-button')).not.toBeInTheDocument();
   });
 
-  it('names the sandbox being deleted', () => {
+  it('names the agent space being deleted', () => {
     renderModal();
 
-    expect(screen.getByRole('dialog')).toHaveTextContent('delete the sandbox "hello-world"');
+    expect(screen.getByRole('dialog')).toHaveTextContent('delete the agent space "hello-world"');
   });
 
-  it('lists every sandbox of a bulk deletion', () => {
+  it('lists every agent space of a bulk deletion', () => {
     renderModal({ sandboxNames: ['one', 'two', 'three'] });
 
-    expect(screen.getByRole('dialog')).toHaveTextContent('delete 3 sandboxes');
+    expect(screen.getByRole('dialog')).toHaveTextContent('delete 3 agent spaces');
     expect(screen.getByTestId('delete-sandbox-names')).toHaveTextContent('one');
     expect(screen.getByTestId('delete-sandbox-names')).toHaveTextContent('three');
   });
