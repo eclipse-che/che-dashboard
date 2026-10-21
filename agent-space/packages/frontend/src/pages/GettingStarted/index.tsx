@@ -108,8 +108,13 @@ export function GettingStarted(): React.ReactElement {
 
   const handleCreate = React.useCallback(
     async (sample: SandboxSample) => {
+      // If "Create New" is enabled, add a copy suffix; otherwise, use the sample name as-is
+      const name = createNewEnabled
+        ? sanitizeKubernetesName(`${sample.displayName} copy`)
+        : undefined;
+
       const created = await dispatch(
-        samplesActionCreators.createSandboxFromSample(sample, customization, storageType),
+        samplesActionCreators.createSandboxFromSample(sample, customization, storageType, name),
       );
       if (created !== undefined) {
         // Events are what there is to watch on a sandbox that has just been
@@ -117,7 +122,7 @@ export function GettingStarted(): React.ReactElement {
         navigate(buildSandboxDetailsRoute(created.metadata.name, SANDBOX_TAB.EVENTS));
       }
     },
-    [customization, dispatch, navigate, storageType],
+    [createNewEnabled, customization, dispatch, navigate, storageType],
   );
 
   // A clickable card is not a button, so Enter and Space have to be wired up.
@@ -132,29 +137,9 @@ export function GettingStarted(): React.ReactElement {
     [handleCreate],
   );
 
-  const handleCreateNewChange = React.useCallback(
-    async (_event: React.FormEvent, checked: boolean) => {
-      setCreateNewEnabled(checked);
-      if (checked && samples.length > 0) {
-        // Create from the first sample with " copy" suffix, then sanitize for Kubernetes
-        const sample = samples[0];
-        const newName = sanitizeKubernetesName(`${sample.displayName} copy`);
-        const created = await dispatch(
-          samplesActionCreators.createSandboxFromSample(
-            sample,
-            customization,
-            storageType,
-            newName,
-          ),
-        );
-        if (created !== undefined) {
-          navigate(buildSandboxDetailsRoute(created.metadata.name, SANDBOX_TAB.EVENTS));
-        }
-        setCreateNewEnabled(false);
-      }
-    },
-    [samples, customization, storageType, dispatch, navigate],
-  );
+  const handleCreateNewChange = React.useCallback((_event: React.FormEvent, checked: boolean) => {
+    setCreateNewEnabled(checked);
+  }, []);
 
   if (isLoading) {
     return (
@@ -230,7 +215,7 @@ export function GettingStarted(): React.ReactElement {
                           Create New
                           <Tooltip
                             exitDelay={1500}
-                            content="Create a new Agent Space using the dashboard wizard for full customization."
+                            content="Create a new agent each time when ON; reuse an existing one when OFF."
                           >
                             <OutlinedQuestionCircleIcon
                               style={{ marginLeft: '0.5rem' }}
