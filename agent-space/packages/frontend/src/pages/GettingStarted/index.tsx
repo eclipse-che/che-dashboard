@@ -32,9 +32,11 @@ import {
   PanelMain,
   PanelMainBody,
   Spinner,
+  Switch,
   Title,
+  Tooltip,
 } from '@patternfly/react-core';
-import { CodeIcon, CubesIcon, PlusCircleIcon } from '@patternfly/react-icons';
+import { CodeIcon, CubesIcon, OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -94,6 +96,7 @@ export function GettingStarted(): React.ReactElement {
 
   const [customization, setCustomization] = React.useState<SandboxCustomization>(NO_CUSTOMIZATION);
   const [storageType, setStorageType] = React.useState<SandboxStorageType>(DEFAULT_STORAGE_TYPE);
+  const [createNewEnabled, setCreateNewEnabled] = React.useState(false);
 
   React.useEffect(() => {
     void dispatch(samplesActionCreators.requestSamples());
@@ -123,6 +126,16 @@ export function GettingStarted(): React.ReactElement {
       void handleCreate(sample);
     },
     [handleCreate],
+  );
+
+  const handleCreateNewChange = React.useCallback(
+    (_event: React.FormEvent, checked: boolean) => {
+      setCreateNewEnabled(checked);
+      if (checked) {
+        navigate(ROUTE.CREATE);
+      }
+    },
+    [navigate],
   );
 
   if (isLoading) {
@@ -162,16 +175,36 @@ export function GettingStarted(): React.ReactElement {
         onChange={setCustomization}
       />
 
-      {/* Create New button - links to the wizard */}
-      <div style={{ marginBottom: '1rem' }}>
-        <Button
-          variant={ButtonVariant.primary}
-          icon={<PlusCircleIcon />}
-          iconPosition="left"
-          onClick={() => navigate(ROUTE.CREATE)}
-        >
-          Create New
-        </Button>
+      {/* Create New switch - links to the wizard */}
+      <div
+        style={{ marginBottom: '1rem', display: 'contents' }}
+        onKeyDown={(event: React.KeyboardEvent) => {
+          if ((event.key === 'Enter' || event.key === ' ') && !createNewEnabled) {
+            event.preventDefault();
+            handleCreateNewChange(event as unknown as React.FormEvent, true);
+          }
+        }}
+      >
+        <Switch
+          id="create-new-switch"
+          data-testid="create-new-switch"
+          isChecked={createNewEnabled}
+          onChange={handleCreateNewChange}
+          label={
+            <div style={{ minWidth: '125px' }}>
+              Create New
+              <Tooltip
+                exitDelay={1500}
+                content="Create a new Agent Space using the dashboard wizard for full customization."
+              >
+                <OutlinedQuestionCircleIcon
+                  style={{ marginLeft: '0.5rem' }}
+                  data-testid="create-new-info"
+                />
+              </Tooltip>
+            </div>
+          }
+        />
       </div>
 
       {/* The dashboard draws the same border with an `overrides.css` rule that
