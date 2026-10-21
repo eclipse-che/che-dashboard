@@ -46,7 +46,7 @@ import { ErrorAlert } from '@/components/ErrorAlert';
 import { SampleManifestModal } from '@/components/SampleManifestModal';
 import { TemporaryStorageSwitch } from '@/components/TemporaryStorageSwitch';
 import styles from '@/pages/GettingStarted/index.module.css';
-import { buildSandboxDetailsRoute, ROUTE, SANDBOX_TAB } from '@/Routes';
+import { buildSandboxDetailsRoute, SANDBOX_TAB } from '@/Routes';
 import { pageTitle, SECTION } from '@/services/pageTitle';
 import { resolveSampleIcon, SandboxSample } from '@/services/samples';
 import { NO_CUSTOMIZATION, SandboxCustomization } from '@/services/sandboxFactory';
@@ -129,13 +129,27 @@ export function GettingStarted(): React.ReactElement {
   );
 
   const handleCreateNewChange = React.useCallback(
-    (_event: React.FormEvent, checked: boolean) => {
+    async (_event: React.FormEvent, checked: boolean) => {
       setCreateNewEnabled(checked);
-      if (checked) {
-        navigate(ROUTE.CREATE);
+      if (checked && samples.length > 0) {
+        // Create from the first sample with " copy" suffix for uniqueness
+        const sample = samples[0];
+        const newName = `${sample.displayName} copy`;
+        const created = await dispatch(
+          samplesActionCreators.createSandboxFromSample(
+            sample,
+            customization,
+            storageType,
+            newName,
+          ),
+        );
+        if (created !== undefined) {
+          navigate(buildSandboxDetailsRoute(created.metadata.name, SANDBOX_TAB.EVENTS));
+        }
+        setCreateNewEnabled(false);
       }
     },
-    [navigate],
+    [samples, customization, storageType, dispatch, navigate],
   );
 
   if (isLoading) {
@@ -175,38 +189,6 @@ export function GettingStarted(): React.ReactElement {
         onChange={setCustomization}
       />
 
-      {/* Create New switch - links to the wizard */}
-      <div
-        style={{ marginBottom: '1rem', display: 'contents' }}
-        onKeyDown={(event: React.KeyboardEvent) => {
-          if ((event.key === 'Enter' || event.key === ' ') && !createNewEnabled) {
-            event.preventDefault();
-            handleCreateNewChange(event as unknown as React.FormEvent, true);
-          }
-        }}
-      >
-        <Switch
-          id="create-new-switch"
-          data-testid="create-new-switch"
-          isChecked={createNewEnabled}
-          onChange={handleCreateNewChange}
-          label={
-            <div style={{ minWidth: '125px' }}>
-              Create New
-              <Tooltip
-                exitDelay={1500}
-                content="Create a new Agent Space using the dashboard wizard for full customization."
-              >
-                <OutlinedQuestionCircleIcon
-                  style={{ marginLeft: '0.5rem' }}
-                  data-testid="create-new-info"
-                />
-              </Tooltip>
-            </div>
-          }
-        />
-      </div>
-
       {/* The dashboard draws the same border with an `overrides.css` rule that
           Agent Space does not load; `bordered` is the PatternFly equivalent. */}
       <Panel variant="bordered">
@@ -223,11 +205,49 @@ export function GettingStarted(): React.ReactElement {
             {/* The storage of a sample is decided before the card is clicked,
                 because the click is the whole of the create. */}
             <FlexItem align={{ default: 'alignRight' }}>
-              <TemporaryStorageSwitch
-                isTemporary={storageType === 'ephemeral'}
-                isDisabled={pendingId !== undefined}
-                onChange={isTemporary => setStorageType(isTemporary ? 'ephemeral' : 'per-sandbox')}
-              />
+              <Flex gap={{ default: 'gapLg' }}>
+                <FlexItem>
+                  <div
+                    style={{ display: 'contents' }}
+                    onKeyDown={(event: React.KeyboardEvent) => {
+                      if ((event.key === 'Enter' || event.key === ' ') && !createNewEnabled) {
+                        event.preventDefault();
+                        handleCreateNewChange(event as unknown as React.FormEvent, true);
+                      }
+                    }}
+                  >
+                    <Switch
+                      id="create-new-switch"
+                      data-testid="create-new-switch"
+                      isChecked={createNewEnabled}
+                      onChange={handleCreateNewChange}
+                      label={
+                        <div style={{ minWidth: '125px' }}>
+                          Create New
+                          <Tooltip
+                            exitDelay={1500}
+                            content="Create a new Agent Space using the dashboard wizard for full customization."
+                          >
+                            <OutlinedQuestionCircleIcon
+                              style={{ marginLeft: '0.5rem' }}
+                              data-testid="create-new-info"
+                            />
+                          </Tooltip>
+                        </div>
+                      }
+                    />
+                  </div>
+                </FlexItem>
+                <FlexItem>
+                  <TemporaryStorageSwitch
+                    isTemporary={storageType === 'ephemeral'}
+                    isDisabled={pendingId !== undefined}
+                    onChange={isTemporary =>
+                      setStorageType(isTemporary ? 'ephemeral' : 'per-sandbox')
+                    }
+                  />
+                </FlexItem>
+              </Flex>
             </FlexItem>
           </Flex>
         </PanelHeader>

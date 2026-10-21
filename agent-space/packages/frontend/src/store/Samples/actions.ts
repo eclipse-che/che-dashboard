@@ -79,6 +79,7 @@ export const actionCreators = {
       sample: SandboxSample,
       customization: SandboxCustomization = NO_CUSTOMIZATION,
       storageType: SandboxStorageType = DEFAULT_STORAGE_TYPE,
+      name?: string,
     ): AppThunk<Promise<Sandbox | undefined>> =>
     async (dispatch, getState): Promise<Sandbox | undefined> => {
       if (!selectCatalogIsLoaded(getState())) {
@@ -103,7 +104,11 @@ export const actionCreators = {
         // volume the dashboard owns is rewritten.
         const desired = withOriginalManifest(
           applyStorage(
-            applyCustomization(applySampleOverrides(manifest, namespace), customization, aiTools),
+            applyCustomization(
+              applySampleOverrides(manifest, namespace, name),
+              customization,
+              aiTools,
+            ),
             storageType,
           ),
           yaml,
