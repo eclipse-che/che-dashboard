@@ -50,6 +50,7 @@ import { buildSandboxDetailsRoute, SANDBOX_TAB } from '@/Routes';
 import { pageTitle, SECTION } from '@/services/pageTitle';
 import { resolveSampleIcon, SandboxSample } from '@/services/samples';
 import {
+  generateRandomSuffix,
   NO_CUSTOMIZATION,
   SandboxCustomization,
   sanitizeKubernetesName,
@@ -108,9 +109,9 @@ export function GettingStarted(): React.ReactElement {
 
   const handleCreate = React.useCallback(
     async (sample: SandboxSample) => {
-      // If "Create New" is enabled, add a copy suffix; otherwise, use the sample name as-is
+      // If "Create New" is enabled, add a random suffix to ensure uniqueness; otherwise, use the sample name as-is
       const name = createNewEnabled
-        ? sanitizeKubernetesName(`${sample.displayName} copy`)
+        ? sanitizeKubernetesName(`${sample.displayName}-${generateRandomSuffix()}`)
         : undefined;
 
       const created = await dispatch(

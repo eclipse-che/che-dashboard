@@ -192,6 +192,19 @@ export function sanitizeKubernetesName(displayName: string): string {
     .slice(0, 63);
 }
 
+/**
+ * Generate a random suffix for unique resource names.
+ * Returns 5 random lowercase alphanumeric characters.
+ */
+export function generateRandomSuffix(): string {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < 5; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
 export type SandboxFormErrors = Partial<Record<keyof SandboxFormData, string>>;
 
 export function validateForm(data: SandboxFormData): SandboxFormErrors {
