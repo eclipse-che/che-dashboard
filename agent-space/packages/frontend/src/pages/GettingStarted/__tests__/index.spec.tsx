@@ -208,8 +208,8 @@ describe('GettingStarted', () => {
 
     await screen.findByTestId('sample-hello-world');
 
-    expect(screen.getByRole('heading', { name: 'Universal Developer Agent' })).toBeInTheDocument();
-    expect(screen.getByText(/Create your first Agent Space/)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Select a Sample' })).toBeInTheDocument();
+    expect(screen.getByText(/Select a sample to create/)).toBeInTheDocument();
   });
 
   it('shows the manifest served from the registry, not a link to upstream', async () => {
@@ -580,9 +580,9 @@ describe('GettingStarted', () => {
       stubSampleRegistry();
       renderInApp(<GettingStarted />, { preloadedState: WITH_CATALOG });
 
-      const header = (
-        await screen.findByRole('heading', { name: 'Universal Developer Agent' })
-      ).closest('.pf-v6-c-panel__header') as HTMLElement;
+      const header = (await screen.findByRole('heading', { name: 'Select a Sample' })).closest(
+        '.pf-v6-c-panel__header',
+      ) as HTMLElement;
 
       expect(within(header).getByRole('switch', { name: /Temporary Storage/ })).not.toBeChecked();
     });

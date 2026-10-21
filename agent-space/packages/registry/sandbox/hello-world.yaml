@@ -1,0 +1,14 @@
+apiVersion: agents.x-k8s.io/v1beta1
+kind: Sandbox
+metadata:
+  name: hello-world
+spec:
+  podTemplate:
+    spec:
+      containers:
+        - name: my-container
+          image: registry.access.redhat.com/ubi9/ubi-minimal:9.6
+          command:
+            - sleep
+            - infinity
+      restartPolicy: Never

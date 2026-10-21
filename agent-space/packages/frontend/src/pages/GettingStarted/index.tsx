@@ -34,7 +34,7 @@ import {
   Spinner,
   Title,
 } from '@patternfly/react-core';
-import { CodeIcon, CubesIcon } from '@patternfly/react-icons';
+import { CodeIcon, CubesIcon, PlusCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -44,7 +44,7 @@ import { ErrorAlert } from '@/components/ErrorAlert';
 import { SampleManifestModal } from '@/components/SampleManifestModal';
 import { TemporaryStorageSwitch } from '@/components/TemporaryStorageSwitch';
 import styles from '@/pages/GettingStarted/index.module.css';
-import { buildSandboxDetailsRoute, SANDBOX_TAB } from '@/Routes';
+import { buildSandboxDetailsRoute, ROUTE, SANDBOX_TAB } from '@/Routes';
 import { pageTitle, SECTION } from '@/services/pageTitle';
 import { resolveSampleIcon, SandboxSample } from '@/services/samples';
 import { NO_CUSTOMIZATION, SandboxCustomization } from '@/services/sandboxFactory';
@@ -162,15 +162,29 @@ export function GettingStarted(): React.ReactElement {
         onChange={setCustomization}
       />
 
+      {/* Create New button - links to the wizard */}
+      <div style={{ marginBottom: '1rem' }}>
+        <Button
+          variant={ButtonVariant.primary}
+          icon={<PlusCircleIcon />}
+          iconPosition="left"
+          onClick={() => navigate(ROUTE.CREATE)}
+        >
+          Create New
+        </Button>
+      </div>
+
       {/* The dashboard draws the same border with an `overrides.css` rule that
           Agent Space does not load; `bordered` is the PatternFly equivalent. */}
       <Panel variant="bordered">
         <PanelHeader>
           <Flex alignItems={{ default: 'alignItemsCenter' }}>
             <FlexItem>
-              <Title headingLevel="h3">Universal Developer Agent</Title>
+              <Title headingLevel="h3">Select a Sample</Title>
               <Content>
-                <Content component="small">Create your first Agent Space from this sample.</Content>
+                <Content component="small">
+                  Select a sample to create your first Agent Space.
+                </Content>
               </Content>
             </FlexItem>
             {/* The storage of a sample is decided before the card is clicked,
