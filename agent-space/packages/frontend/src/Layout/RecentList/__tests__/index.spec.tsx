@@ -71,14 +71,14 @@ describe('RecentSandboxes', () => {
   it('adds no heading to the sidebar until there is a sandbox to list', () => {
     renderList([]);
 
-    expect(screen.queryByText('RECENT SANDBOXES')).toBeNull();
+    expect(screen.queryByText('RECENT AGENTS')).toBeNull();
     expect(screen.queryAllByTestId(/^recent-sandbox-/)).toEqual([]);
   });
 
   it('lists the sandboxes under a heading of their own', () => {
     renderList([sandbox('alpha')]);
 
-    expect(screen.getByText('RECENT SANDBOXES')).toBeInTheDocument();
+    expect(screen.getByText('RECENT AGENTS')).toBeInTheDocument();
     expect(screen.getByTestId('recent-sandbox-alpha')).toHaveTextContent('alpha');
   });
 

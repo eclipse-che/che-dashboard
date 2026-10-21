@@ -89,7 +89,7 @@ export function RecentSandboxes(): React.ReactElement | null {
 
   return (
     <>
-      <NavGroup title="RECENT SANDBOXES" style={{ marginTop: '25px' }}>
+      <NavGroup title="RECENT AGENTS" style={{ marginTop: '25px' }}>
         {recent.map(sandbox => {
           const name = sandbox.metadata.name;
           const detailsRoute = buildSandboxDetailsRoute(name);
