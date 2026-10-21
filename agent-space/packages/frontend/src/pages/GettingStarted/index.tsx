@@ -49,7 +49,11 @@ import styles from '@/pages/GettingStarted/index.module.css';
 import { buildSandboxDetailsRoute, SANDBOX_TAB } from '@/Routes';
 import { pageTitle, SECTION } from '@/services/pageTitle';
 import { resolveSampleIcon, SandboxSample } from '@/services/samples';
-import { NO_CUSTOMIZATION, SandboxCustomization } from '@/services/sandboxFactory';
+import {
+  NO_CUSTOMIZATION,
+  SandboxCustomization,
+  sanitizeKubernetesName,
+} from '@/services/sandboxFactory';
 import { DEFAULT_STORAGE_TYPE, SandboxStorageType } from '@/services/sandboxStorage';
 import { selectDashboardUrl, selectNamespace, selectSamplesIndexUrl } from '@/store/Bootstrap';
 import { selectAiProviders, selectAiTools, selectDefaultAiProviders } from '@/store/Catalog';
@@ -132,9 +136,9 @@ export function GettingStarted(): React.ReactElement {
     async (_event: React.FormEvent, checked: boolean) => {
       setCreateNewEnabled(checked);
       if (checked && samples.length > 0) {
-        // Create from the first sample with " copy" suffix for uniqueness
+        // Create from the first sample with " copy" suffix, then sanitize for Kubernetes
         const sample = samples[0];
-        const newName = `${sample.displayName} copy`;
+        const newName = sanitizeKubernetesName(`${sample.displayName} copy`);
         const created = await dispatch(
           samplesActionCreators.createSandboxFromSample(
             sample,

@@ -177,6 +177,21 @@ export function validateMemory(memory: string): string | undefined {
     : "Memory limit must be a Kubernetes quantity, for example '2Gi' or '512Mi'.";
 }
 
+/**
+ * Generate a valid Kubernetes RFC 1123 subdomain name from a display name.
+ * Converts to lowercase, replaces spaces with hyphens, removes invalid characters,
+ * and ensures the name is properly formatted.
+ */
+export function sanitizeKubernetesName(displayName: string): string {
+  return displayName
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9.-]/g, '')
+    .replace(/^-+|-+$/g, '')
+    .replace(/-+/g, '-')
+    .slice(0, 63);
+}
+
 export type SandboxFormErrors = Partial<Record<keyof SandboxFormData, string>>;
 
 export function validateForm(data: SandboxFormData): SandboxFormErrors {
