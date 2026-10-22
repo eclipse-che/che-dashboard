@@ -95,7 +95,7 @@
 | `crypto-browserify@3.12.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/crypto-browserify/3.12.0) |
 | `date-fns@3.6.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/date-fns/3.6.0) |
 | `dateformat@4.6.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/dateformat/4.6.3) |
-| `dayjs@1.11.21` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/dayjs/1.11.21) |
+| `dayjs@1.11.23` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/dayjs/1.11.23) |
 | `depd@2.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/depd/2.0.0) |
 | `des.js@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/des.js/1.1.0) |
 | `detect-browser@5.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/detect-browser/5.3.0) |
@@ -133,6 +133,7 @@
 | `inversify@6.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/inversify/6.0.2) |
 | `inversify@7.5.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/inversify/7.5.1) |
 | `ipaddr.js@2.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ipaddr.js/2.3.0) |
+| `is-plain-object@5.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/is-plain-object/5.1.0) |
 | `joi@17.13.8` | BSD-3-Clause | transitive dependency |
 | `joycon@3.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/joycon/3.1.1) |
 | `json-schema-ref-resolver@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-schema-ref-resolver/3.0.0) |
@@ -140,7 +141,7 @@
 | `jsonc-parser@3.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsonc-parser/3.2.0) |
 | `jsonfile@6.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsonfile/6.1.0) |
 | `jsonschema@1.4.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsonschema/1.4.1) |
-| `launder@1.7.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/launder/1.7.1) |
+| `launder@1.7.2` | MIT | transitive dependency |
 | `leven@2.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/leven/2.1.0) |
 | `light-my-request@6.6.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/light-my-request/6.6.0) |
 | `lodash@4.18.1` | CC0-1.0 AND MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/lodash/4.18.1) |
@@ -196,7 +197,7 @@
 | `rfdc@1.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/rfdc/1.3.0) |
 | `ripemd160@2.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ripemd160/2.0.2) |
 | `safe-stable-stringify@2.4.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safe-stable-stringify/2.4.3) |
-| `sanitize-html@2.17.7` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sanitize-html/2.17.7) |
+| `sanitize-html@2.18.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sanitize-html/2.18.0) |
 | `secure-json-parse@2.7.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/secure-json-parse/2.7.0) |
 | `secure-json-parse@4.1.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/secure-json-parse/4.1.0) |
 | `set-cookie-parser@2.7.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/set-cookie-parser/2.7.2) |
