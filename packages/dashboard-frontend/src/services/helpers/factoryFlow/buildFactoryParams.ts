@@ -180,6 +180,9 @@ function getRevision(searchParams: URLSearchParams): string | undefined {
   // Extract branch from a GitHub-style /tree/<branch> factory URL path so that
   // getSameRepoWorkspaces() can match workspaces whose devfile projects were created
   // with checkoutFrom.revision set to that branch name.
+  // Only a single path segment is accepted: a remainder containing slashes is ambiguous
+  // (a branch with slashes like `feature/foo` is indistinguishable from `main/src/file.ts`),
+  // so it is ignored rather than reported as a revision that may include a subpath.
   // Note: getProjectFromLocation.ts uses the same split('/tree/') pattern — if this
   // ever changes (e.g. to support Bitbucket's /src/ paths), update both locations.
   const factoryUrl = getFactoryUrl(searchParams);
@@ -187,7 +190,7 @@ function getRevision(searchParams: URLSearchParams): string | undefined {
     try {
       const url = new URL(factoryUrl);
       const parts = url.pathname.split('/tree/');
-      if (parts.length > 1 && parts[1]) {
+      if (parts.length > 1 && parts[1] && !parts[1].includes('/')) {
         return parts[1];
       }
     } catch {

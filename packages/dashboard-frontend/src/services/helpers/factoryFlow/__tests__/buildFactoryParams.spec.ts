@@ -156,13 +156,6 @@ describe('buildFactoryParams', () => {
         expect(buildFactoryParams(searchParams).revision).toBe('param-branch');
       });
 
-      it('should extract branch names containing slashes from /tree/ path', () => {
-        const searchParams = new URLSearchParams({
-          [FACTORY_URL_ATTR]: 'https://github.com/eclipse-che/che-dashboard/tree/feature/CRW-10950',
-        });
-        expect(buildFactoryParams(searchParams).revision).toBe('feature/CRW-10950');
-      });
-
       it('should return undefined for /tree/ with no branch name', () => {
         const searchParams = new URLSearchParams({
           [FACTORY_URL_ATTR]: 'https://github.com/eclipse-che/che-dashboard/tree/',
@@ -170,15 +163,30 @@ describe('buildFactoryParams', () => {
         expect(buildFactoryParams(searchParams).revision).toBeUndefined();
       });
 
-      it('should return the full path after /tree/ for file-level URLs (branch+path are indistinguishable)', () => {
-        // Known limitation: split('/tree/') cannot tell apart a branch name containing
-        // slashes (feature/my-branch) from a branch + subdirectory path (main/src/file.ts).
-        // GitHub resolves this ambiguity server-side. Returning the full remainder is
-        // consistent with getProjectFromLocation.ts and acceptable for workspace deduplication.
+      it('should return undefined for file-level URLs (branch+path are indistinguishable)', () => {
+        // split('/tree/') cannot tell apart a branch name containing slashes
+        // (feature/my-branch) from a branch + subdirectory path (main/src/file.ts).
+        // GitHub resolves this ambiguity server-side, so a multi-segment remainder is
+        // skipped rather than reported as a revision that may carry a subpath.
         const searchParams = new URLSearchParams({
           [FACTORY_URL_ATTR]: 'https://github.com/eclipse-che/che-dashboard/tree/main/src/file.ts',
         });
-        expect(buildFactoryParams(searchParams).revision).toBe('main/src/file.ts');
+        expect(buildFactoryParams(searchParams).revision).toBeUndefined();
+      });
+
+      it('should return undefined for a /tree/ remainder containing slashes', () => {
+        const searchParams = new URLSearchParams({
+          [FACTORY_URL_ATTR]: 'https://github.com/eclipse-che/che-dashboard/tree/feature/CRW-10950',
+        });
+        expect(buildFactoryParams(searchParams).revision).toBeUndefined();
+      });
+
+      it('should still return a slashed branch when given via ?revision=', () => {
+        const searchParams = new URLSearchParams({
+          [FACTORY_URL_ATTR]: 'https://github.com/eclipse-che/che-dashboard/tree/feature/CRW-10950',
+          [REVISION_ATTR]: 'feature/CRW-10950',
+        });
+        expect(buildFactoryParams(searchParams).revision).toBe('feature/CRW-10950');
       });
     });
 
