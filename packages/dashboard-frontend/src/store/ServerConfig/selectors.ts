@@ -85,6 +85,15 @@ export const selectIsAllowedSourcesConfigured = createSelector(
   },
 );
 
+/**
+ * Agent Sandbox integration is opt-in: the 'Agent Space' navigation item is only
+ * shown when `spec.agentSandbox.enabled` is set on the CheCluster CR.
+ */
+export const selectAgentSandboxEnabled = createSelector(
+  selectState,
+  state => state.config.agentSandbox?.enabled === true,
+);
+
 export const selectServerConfigError = createSelector(selectState, state => state.error);
 
 /**

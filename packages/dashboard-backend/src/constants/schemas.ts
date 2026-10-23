@@ -403,6 +403,42 @@ export const namespacedTemplateSchema: JSONSchema7 = {
   required: ['namespace', 'templateName'],
 };
 
+export const namespacedSandboxSchema: JSONSchema7 = {
+  type: 'object',
+  properties: {
+    namespace: {
+      type: 'string',
+    },
+    sandboxName: {
+      type: 'string',
+    },
+  },
+  required: ['namespace', 'sandboxName'],
+};
+
+export const sandboxBodySchema: JSONSchema7 = {
+  type: 'object',
+  properties: {
+    apiVersion: {
+      type: 'string',
+    },
+    kind: {
+      type: 'string',
+    },
+    metadata: {
+      type: 'object',
+    },
+    spec: {
+      type: 'object',
+    },
+  },
+  required: ['metadata'],
+};
+
+export const sandboxPatchSchema: JSONSchema7 = {
+  type: 'object',
+};
+
 export const namespacedWorkspacePreferencesAuthorizationSchema: JSONSchema7 = {
   type: 'object',
   properties: {

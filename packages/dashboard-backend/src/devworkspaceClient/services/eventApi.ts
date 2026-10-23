@@ -36,9 +36,21 @@ export class EventApiService implements IEventApi {
     this.customObjectWatch = prepareCustomObjectWatch(kubeConfig);
   }
 
-  async listInNamespace(namespace: string): Promise<api.IEventList> {
+  /**
+   * Lists events of the namespace, optionally only those of one object.
+   *
+   * A namespace with a handful of active workspaces accumulates a lot of
+   * events, and a caller that wants one object's events would otherwise
+   * download all of them and throw most away - once per refresh. The selector
+   * is built here rather than taken from the caller so the only thing a
+   * request can scope by is an object name.
+   */
+  async listInNamespace(namespace: string, involvedObjectName?: string): Promise<api.IEventList> {
     try {
-      const resp = await this.coreV1API.listNamespacedEvent({ namespace });
+      const resp = await this.coreV1API.listNamespacedEvent({
+        namespace,
+        fieldSelector: involvedObjectName ? `involvedObject.name=${involvedObjectName}` : undefined,
+      });
       return resp;
     } catch (e) {
       throw createError(e, EVENT_API_ERROR_LABEL, 'Unable to list events');

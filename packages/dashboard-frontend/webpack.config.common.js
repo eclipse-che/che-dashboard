@@ -39,7 +39,12 @@ const config = {
     },
     chunkFilename: '[name].[chunkhash].js',
     globalObject: 'this',
-    clean: true,
+    // The Agent Space bundle (agent-space) builds into agent-space/ inside this
+    // same output folder so that both are served from one static tree. Keep it, so
+    // the two workspaces can be built in either order.
+    clean: {
+      keep: /^agent-space\//,
+    },
   },
   optimization: {
     splitChunks: {

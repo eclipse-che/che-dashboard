@@ -63,6 +63,8 @@
 | `@uiw/codemirror-theme-github@4.25.9` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/codemirror-theme-github/4.25.9) |
 | `@uiw/codemirror-themes@4.25.9` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/codemirror-themes/4.25.9) |
 | `@uiw/react-codemirror@4.23.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/react-codemirror/4.23.5) |
+| `@xterm/addon-fit@0.11.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@xterm/addon-fit/0.11.0) |
+| `@xterm/xterm@6.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@xterm/xterm/6.0.0) |
 | `abort-controller@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/abort-controller/3.0.0) |
 | `abstract-logging@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/abstract-logging/2.0.1) |
 | `ajv-formats@3.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ajv-formats/3.0.1) |
@@ -186,6 +188,7 @@
 | `readable-stream@4.4.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/readable-stream/4.4.2) |
 | `real-require@0.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/real-require/0.2.0) |
 | `reconnecting-websocket@4.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/reconnecting-websocket/4.4.0) |
+| `redux-logger@3.0.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/redux-logger/3.0.6) |
 | `redux-thunk@3.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/redux-thunk/3.1.0) |
 | `redux@5.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/redux/5.0.1) |
 | `reflect-metadata@0.1.13` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/reflect-metadata/0.1.13) |

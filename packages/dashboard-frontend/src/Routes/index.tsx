@@ -11,19 +11,23 @@
  */
 
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Params, Route, Routes } from 'react-router-dom';
 
+import AgentSpaceContainer from '@/containers/AgentSpace';
 import GetStartedContainer from '@/containers/GetStarted';
 import RestoreFromBackupContainer from '@/containers/RestoreFromBackup';
 import UserPreferencesContainer from '@/containers/UserPreferences';
 import WorkspaceDetailsContainer from '@/containers/WorkspaceDetails';
 import WorkspacesListContainer from '@/containers/WorkspacesList';
 import { Redirects } from '@/Routes/Redirects';
+import { selectAgentSandboxEnabled } from '@/store/ServerConfig/selectors';
 
 export enum ROUTE {
   HOME = '/',
   GET_STARTED = '/create-workspace',
   WORKSPACES = '/workspaces',
+  AGENT_SPACE = '/agent-space',
   WORKSPACE_DETAILS = '/workspace/:namespace/:workspaceName',
   WORKSPACE_DETAILS_TAB = '/workspace/:namespace/:workspaceName?tab=:tabId',
   IDE_LOADER = '/ide/:namespace/:workspaceName',
@@ -40,10 +44,18 @@ export type WorkspaceRouteParams = Params<'namespace' | 'workspaceName'>;
 const LoaderContainer = React.lazy(() => import('../containers/Loader'));
 
 export function AppRoutes(): React.ReactElement {
+  // The same switch that hides the masthead button, so the route it leads to
+  // is not left open to anyone who knows the path. Unregistered, it falls
+  // through to the catch-all below and the user lands back on the dashboard.
+  const isAgentSandboxEnabled = useSelector(selectAgentSandboxEnabled);
+
   return (
     <Routes>
       <Route key="get-started" path={ROUTE.GET_STARTED} element={<GetStartedContainer />} />
       <Route key="workspaces-list" path={ROUTE.WORKSPACES} element={<WorkspacesListContainer />} />
+      {isAgentSandboxEnabled && (
+        <Route key="agent-space" path={ROUTE.AGENT_SPACE} element={<AgentSpaceContainer />} />
+      )}
       <Route
         key="workspace-details"
         path={ROUTE.WORKSPACE_DETAILS}

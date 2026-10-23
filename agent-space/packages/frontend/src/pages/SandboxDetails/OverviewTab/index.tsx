@@ -1,0 +1,220 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+import {
+  Button,
+  ButtonVariant,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
+  FormGroupLabelHelp,
+  PageSection,
+} from '@patternfly/react-core';
+import { ExternalLinkSquareAltIcon } from '@patternfly/react-icons';
+import React from 'react';
+
+import { AiToolSelector } from '@/components/AiToolSelector';
+import { AiToolInfoModal } from '@/components/AiToolSelector/InfoModal';
+import styles from '@/components/AiToolSelector/SelectorModal.module.css';
+import { ErrorAlert } from '@/components/ErrorAlert';
+import { StorageTypeSelector } from '@/components/StorageTypeSelector';
+import { StorageTypeInfoModal } from '@/components/StorageTypeSelector/InfoModal';
+import { buildSandboxConsoleUrl } from '@/services/clusterInfo';
+import { formatTimestamp } from '@/services/format';
+import {
+  canEditAiTools,
+  findBlockingCondition,
+  formatResourceLimits,
+  getSandboxAiProviderIds,
+  getSandboxAiVersions,
+  getSandboxImages,
+  getSandboxPhase,
+  getSandboxRuntimeClass,
+} from '@/services/sandbox';
+import { SandboxCustomization } from '@/services/sandboxFactory';
+import { getSandboxStorageType, SandboxStorageType } from '@/services/sandboxStorage';
+import { Sandbox, SandboxError } from '@/services/types';
+import { selectClusterConsoleUrl } from '@/store/Bootstrap';
+import { selectAiProviders, selectAiTools } from '@/store/Catalog';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { sandboxDetailsActionCreators } from '@/store/SandboxDetails';
+
+export type Props = {
+  sandbox: Sandbox;
+};
+
+/**
+ * What the sandbox is: its spec in human terms, and the conditions the
+ * controller publishes about it.
+ */
+export function OverviewTab({ sandbox }: Props): React.ReactElement {
+  const dispatch = useAppDispatch();
+
+  const aiTools = useAppSelector(selectAiTools);
+  const aiProviders = useAppSelector(selectAiProviders);
+  const clusterConsoleUrl = useAppSelector(selectClusterConsoleUrl);
+
+  const [isInfoOpen, setIsInfoOpen] = React.useState(false);
+  const [isStorageInfoOpen, setIsStorageInfoOpen] = React.useState(false);
+
+  const consoleUrl = buildSandboxConsoleUrl(clusterConsoleUrl, sandbox);
+  const blocking = findBlockingCondition(sandbox);
+  const phase = getSandboxPhase(sandbox);
+
+  // Read off the sandbox rather than held in state, so the selector reopens on
+  // what the object carries after a patch, not on what was last sent.
+  const customization = React.useMemo<SandboxCustomization>(
+    () => ({
+      aiProviderIds: getSandboxAiProviderIds(sandbox),
+      aiVersions: getSandboxAiVersions(sandbox),
+    }),
+    [sandbox],
+  );
+
+  const handleChange = React.useCallback(
+    (next: SandboxCustomization) => {
+      void dispatch(sandboxDetailsActionCreators.updateSandboxAiTools(next));
+    },
+    [dispatch],
+  );
+
+  const handleStorageChange = React.useCallback(
+    (next: SandboxStorageType) => {
+      void dispatch(sandboxDetailsActionCreators.updateSandboxStorage(next));
+    },
+    [dispatch],
+  );
+
+  return (
+    <PageSection data-testid="overview-tab">
+      {blocking && (
+        <ErrorAlert
+          title="This sandbox cannot start"
+          error={
+            {
+              // No status code: this is what the controller said about the
+              // sandbox, not the outcome of a request the browser made.
+              message: blocking.message ?? 'The controller reported a blocking condition.',
+              reason: blocking.reason,
+            } satisfies SandboxError
+          }
+        />
+      )}
+
+      <DescriptionList isHorizontal columnModifier={{ default: '2Col' }}>
+        <DescriptionListGroup>
+          <DescriptionListTerm>Name</DescriptionListTerm>
+          <DescriptionListDescription>
+            {consoleUrl ? (
+              <Button
+                component="a"
+                variant={ButtonVariant.link}
+                href={consoleUrl}
+                target="_blank"
+                icon={<ExternalLinkSquareAltIcon />}
+                iconPosition="end"
+                isInline
+                data-testid="sandbox-console-link"
+                aria-label={`${sandbox.metadata.name} (opens in new tab)`}
+              >
+                {sandbox.metadata.name}
+              </Button>
+            ) : (
+              sandbox.metadata.name
+            )}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>Namespace</DescriptionListTerm>
+          <DescriptionListDescription>
+            {sandbox.metadata.namespace ?? '-'}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>Created</DescriptionListTerm>
+          <DescriptionListDescription>
+            {formatTimestamp(sandbox.metadata.creationTimestamp)}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>Runtime class</DescriptionListTerm>
+          <DescriptionListDescription>
+            {getSandboxRuntimeClass(sandbox) ?? 'Cluster default'}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>Resource limits</DescriptionListTerm>
+          <DescriptionListDescription>{formatResourceLimits(sandbox)}</DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>Container image</DescriptionListTerm>
+          <DescriptionListDescription>
+            {getSandboxImages(sandbox).join(', ') || '-'}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>
+            {/* Worded and labelled as the workspace overview words it, down to
+                the help button beside it: the two pages describe one feature. */}
+            AI Tool&nbsp;&nbsp;
+            <FormGroupLabelHelp
+              className={styles.labelHelp}
+              aria-label="More info for AI tool"
+              data-testid="ai-tool-info-toggle"
+              onClick={() => setIsInfoOpen(true)}
+            />
+          </DescriptionListTerm>
+          <DescriptionListDescription>
+            <AiToolSelector
+              aiTools={aiTools}
+              aiProviders={aiProviders}
+              customization={customization}
+              isDisabled={!canEditAiTools(phase)}
+              onChange={handleChange}
+            />
+            <AiToolInfoModal
+              isOpen={isInfoOpen}
+              aiTools={aiTools}
+              aiProviders={aiProviders}
+              onClose={() => setIsInfoOpen(false)}
+            />
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>
+            Storage Type&nbsp;&nbsp;
+            <FormGroupLabelHelp
+              className={styles.labelHelp}
+              aria-label="More info for storage type"
+              data-testid="storage-type-info-toggle"
+              onClick={() => setIsStorageInfoOpen(true)}
+            />
+          </DescriptionListTerm>
+          <DescriptionListDescription>
+            <StorageTypeSelector
+              storageType={getSandboxStorageType(sandbox)}
+              // The pod template is only editable while no pod is running off
+              // it, which is the same window the AI tools are editable in.
+              isDisabled={!canEditAiTools(phase)}
+              onChange={handleStorageChange}
+            />
+            <StorageTypeInfoModal
+              isOpen={isStorageInfoOpen}
+              onClose={() => setIsStorageInfoOpen(false)}
+            />
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+      </DescriptionList>
+    </PageSection>
+  );
+}

@@ -29,6 +29,9 @@ import { LogsApiService } from '@/devworkspaceClient/services/logsApi';
 import { PersonalAccessTokenService } from '@/devworkspaceClient/services/personalAccessTokenApi';
 import { PodApiService } from '@/devworkspaceClient/services/podApi';
 import { PodmanApiService } from '@/devworkspaceClient/services/podmanApi';
+import { SandboxApiService } from '@/devworkspaceClient/services/sandboxApi';
+import { SandboxStorageApiService } from '@/devworkspaceClient/services/sandboxStorageApi';
+import { SandboxTerminalApiService } from '@/devworkspaceClient/services/sandboxTerminalApi';
 import { SccPermissionApiService } from '@/devworkspaceClient/services/sccPermissionApi';
 import { ServerConfigApiService } from '@/devworkspaceClient/services/serverConfigApi';
 import { SshKeysService } from '@/devworkspaceClient/services/sshKeysApi';
@@ -52,6 +55,9 @@ import {
   IPersonalAccessTokenApi,
   IPodApi,
   IPodmanApi,
+  ISandboxApi,
+  ISandboxStorageApi,
+  ISandboxTerminalApi,
   ISccPermissionApi,
   IServerConfigApi,
   IShhKeysApi,
@@ -151,5 +157,17 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
 
   get sccPermissionApi(): ISccPermissionApi {
     return new SccPermissionApiService(this.kubeConfig);
+  }
+
+  get sandboxApi(): ISandboxApi {
+    return new SandboxApiService(this.kubeConfig);
+  }
+
+  get sandboxStorageApi(): ISandboxStorageApi {
+    return new SandboxStorageApiService(this.kubeConfig);
+  }
+
+  get sandboxTerminalApi(): ISandboxTerminalApi {
+    return new SandboxTerminalApiService(this.kubeConfig);
   }
 }
