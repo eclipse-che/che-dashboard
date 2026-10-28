@@ -30,10 +30,9 @@ RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo && \
 ARG NODE_VERSION=22.23.3
 ARG NODE_TARBALL=node-v${NODE_VERSION}-linux-x64-glibc-217.tar.gz
 
-# Install yq, node, kubectl, chectl cli.
-RUN yum install --assumeyes -d1 python3-pip  httpd-tools && \
-    pip3 install --upgrade setuptools && \
-    pip3 install yq && \
+# Install the happy-path test dependencies (jq, unzip — used by the remote
+# scripts fetched from the eclipse-che/che repository), node, kubectl, chectl cli.
+RUN yum install --assumeyes -d1 jq unzip && \
     mkdir -p /usr/local/lib/nodejs && \
     curl -sL https://unofficial-builds.nodejs.org/download/release/v${NODE_VERSION}/${NODE_TARBALL} | \
       tar -xz -C /usr/local/lib/nodejs --strip-components=1 --no-same-owner && \
