@@ -256,7 +256,7 @@ describe('StorageTab', () => {
       expect.objectContaining({
         title: 'Storage resized',
         variant: AlertVariant.success,
-        children: 'The volume of my-workspace is now 15 Gi.',
+        children: 'The volume of my-workspace is now 15\u00a0Gi.',
       }),
     );
 

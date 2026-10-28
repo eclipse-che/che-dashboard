@@ -319,6 +319,7 @@ export class ResizeModal extends React.PureComponent<Props, State> {
               <DescriptionListTerm>New size</DescriptionListTerm>
               <DescriptionListDescription>
                 <NumberInput
+                  className={styles.sizeInput}
                   value={sizeGi}
                   min={this.minGi}
                   unit="Gi"

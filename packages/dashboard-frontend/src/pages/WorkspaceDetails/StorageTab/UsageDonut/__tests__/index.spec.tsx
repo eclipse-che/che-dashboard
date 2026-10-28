@@ -30,7 +30,7 @@ describe('UsageDonut', () => {
     const donut = screen.getByTestId('storage-usage-donut');
     expect(donut).toHaveTextContent('4.7 Gi');
     expect(donut).toHaveTextContent('Available');
-    expect(donut).toHaveAttribute('aria-label', '5.3 Gi used, 4.7 Gi available');
+    expect(donut).toHaveAttribute('aria-label', '5.3\u00a0Gi used, 4.7\u00a0Gi available');
     expect(screen.getByTestId('storage-usage-used')).toBeTruthy();
   });
 

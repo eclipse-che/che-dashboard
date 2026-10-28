@@ -17,10 +17,10 @@ const { formatGi, parseQuantity, GI } = helpers.quantity;
 export const RESIZE_STEP_GI = 5;
 
 /**
- * Formats bytes for display, e.g. `4.7 Gi`.
+ * Formats bytes for display, e.g. `4.7 Gi`, with a non-breaking space so the unit never wraps.
  */
 export function formatGiB(bytes: number): string {
-  return formatGi(bytes).replace(/Gi$/, ' Gi');
+  return formatGi(bytes).replace(/Gi$/, '\u00a0Gi');
 }
 
 /**

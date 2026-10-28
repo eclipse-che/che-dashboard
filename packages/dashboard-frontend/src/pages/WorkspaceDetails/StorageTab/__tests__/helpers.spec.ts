@@ -37,12 +37,12 @@ function buildInfo(info: Partial<WorkspaceStorageInfo>): WorkspaceStorageInfo {
 
 describe('StorageTab helpers', () => {
   test('formatGiB', () => {
-    expect(formatGiB(4.7 * GI)).toEqual('4.7 Gi');
+    expect(formatGiB(4.7 * GI)).toEqual('4.7\u00a0Gi');
   });
 
   test('formatQuantity', () => {
-    expect(formatQuantity('10Gi')).toEqual('10 Gi');
-    expect(formatQuantity('10240Mi')).toEqual('10 Gi');
+    expect(formatQuantity('10Gi')).toEqual('10\u00a0Gi');
+    expect(formatQuantity('10240Mi')).toEqual('10\u00a0Gi');
     expect(formatQuantity(undefined)).toEqual('—');
     expect(formatQuantity('weird')).toEqual('weird');
   });
