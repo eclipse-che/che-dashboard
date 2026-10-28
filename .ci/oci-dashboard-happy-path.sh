@@ -31,12 +31,20 @@ export WORKDIR=${WORKDIR:-"/tmp/che-dashboard-happy-path"}
 export ARTIFACT_DIR=${ARTIFACT_DIR:-"/tmp/devworkspace-smoke-test-artifacts"}
 export DEVWORKSPACE_HAPPY_PATH="https://raw.githubusercontent.com/eclipse-che/che/main/tests/devworkspace-happy-path"
 
+# Copy the CR patch into the artifacts once the test is over: the remote
+# test scripts wipe and recreate ARTIFACT_DIR when they start, so the copy
+# cannot be made before launching them. The trap fires on both success and
+# failure paths.
+trap 'mkdir -p ${ARTIFACT_DIR} && cp ${WORKDIR}/che-cr-patch.yaml ${ARTIFACT_DIR}/che-cr-patch.yaml' EXIT
+
 runTests() {
-  mkdir -p ${WORKDIR}
   # Deploy Eclipse Che with a custom dashboard image.
-  # Note: do not create ${ARTIFACT_DIR}/e2e here — the remote test script
-  # creates it and does not tolerate it existing beforehand.
-  cat > /tmp/che-cr-patch.yaml <<EOF
+  # Note: the CR patch is kept in WORKDIR: common.sh of the remote test
+  # scripts wipes and recreates the whole ARTIFACT_DIR on startup, which
+  # would delete any file the wrapper puts there beforehand. The copy in
+  # the artifacts is made by the EXIT trap below, once the test is over.
+  mkdir -p ${WORKDIR}
+  cat > ${WORKDIR}/che-cr-patch.yaml <<EOF
 apiVersion: org.eclipse.che/v2
 spec:
   components:
@@ -46,11 +54,9 @@ spec:
           - image: '${CI_CHE_DASHBOARD_IMAGE}'
             imagePullPolicy: Always
 EOF
-  mkdir -p ${ARTIFACT_DIR}
-  cp /tmp/che-cr-patch.yaml ${ARTIFACT_DIR}/che-cr-patch.yaml
   chectl server:deploy \
     --platform openshift \
-    --che-operator-cr-patch-yaml /tmp/che-cr-patch.yaml \
+    --che-operator-cr-patch-yaml ${WORKDIR}/che-cr-patch.yaml \
     --batch \
     --telemetry=off
 
