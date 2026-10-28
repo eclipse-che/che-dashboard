@@ -16,5 +16,6 @@ describe('Helpers', () => {
   it('should export helpers', () => {
     expect(helpers).toBeDefined();
     expect(helpers.errors).toBeDefined();
+    expect(helpers.quantity).toBeDefined();
   });
 });

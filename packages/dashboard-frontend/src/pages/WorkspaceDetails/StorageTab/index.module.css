@@ -1,0 +1,61 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--pf-t--global--spacer--xl) 0;
+}
+
+.alert {
+  margin-bottom: var(--pf-t--global--spacer--md);
+}
+
+.title {
+  margin-bottom: var(--pf-t--global--spacer--md);
+}
+
+.donut {
+  margin-bottom: var(--pf-t--global--spacer--lg);
+}
+
+.donutCaption {
+  margin-top: var(--pf-t--global--spacer--xs);
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+.details {
+  max-width: 40rem;
+}
+
+.capacity {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pf-t--global--spacer--md);
+  align-items: center;
+}
+
+.capacityValue {
+  display: inline-flex;
+  gap: var(--pf-t--global--spacer--sm);
+  align-items: center;
+}
+
+.resizeButton {
+  margin-left: auto;
+}
+
+.restartMessage {
+  margin-top: var(--pf-t--global--spacer--xs);
+  color: var(--pf-t--global--text--color--subtle);
+}
