@@ -27,7 +27,12 @@ set -x
 START=$(date +%s.%N)
 
 export CHE_NAMESPACE=${CHE_NAMESPACE:-"eclipse-che"}
-export WORKDIR=${WORKDIR:-"/tmp/che-dashboard-happy-path"}
+# Directory for the wrapper's own files (the CR patch, the downloaded
+# launcher). Deliberately NOT exported and not named WORKDIR: the remote
+# happy-path scripts reuse an exported WORKDIR and wipe it on startup
+# (provision-openshift-oauth-user.sh and start-happypath-tests.sh both
+# 'rm -rf' it), which would delete the patch and the launcher.
+DEPLOY_DIR=${DEPLOY_DIR:-"/tmp/che-dashboard-happy-path"}
 export ARTIFACT_DIR=${ARTIFACT_DIR:-"/tmp/devworkspace-smoke-test-artifacts"}
 export DEVWORKSPACE_HAPPY_PATH="https://raw.githubusercontent.com/eclipse-che/che/main/tests/devworkspace-happy-path"
 
@@ -35,16 +40,16 @@ export DEVWORKSPACE_HAPPY_PATH="https://raw.githubusercontent.com/eclipse-che/ch
 # test scripts wipe and recreate ARTIFACT_DIR when they start, so the copy
 # cannot be made before launching them. The trap fires on both success and
 # failure paths.
-trap 'mkdir -p ${ARTIFACT_DIR} && cp ${WORKDIR}/che-cr-patch.yaml ${ARTIFACT_DIR}/che-cr-patch.yaml' EXIT
+trap 'mkdir -p ${ARTIFACT_DIR} && cp ${DEPLOY_DIR}/che-cr-patch.yaml ${ARTIFACT_DIR}/che-cr-patch.yaml' EXIT
 
 runTests() {
   # Deploy Eclipse Che with a custom dashboard image.
-  # Note: the CR patch is kept in WORKDIR: common.sh of the remote test
-  # scripts wipes and recreates the whole ARTIFACT_DIR on startup, which
+  # Note: the CR patch is kept in DEPLOY_DIR: the remote test scripts wipe
+  # and recreate both ARTIFACT_DIR and their own WORKDIR on startup, which
   # would delete any file the wrapper puts there beforehand. The copy in
-  # the artifacts is made by the EXIT trap below, once the test is over.
-  mkdir -p ${WORKDIR}
-  cat > ${WORKDIR}/che-cr-patch.yaml <<EOF
+  # the artifacts is made by the EXIT trap above, once the test is over.
+  mkdir -p ${DEPLOY_DIR}
+  cat > ${DEPLOY_DIR}/che-cr-patch.yaml <<EOF
 apiVersion: org.eclipse.che/v2
 spec:
   components:
@@ -56,7 +61,7 @@ spec:
 EOF
   chectl server:deploy \
     --platform openshift \
-    --che-operator-cr-patch-yaml ${WORKDIR}/che-cr-patch.yaml \
+    --che-operator-cr-patch-yaml ${DEPLOY_DIR}/che-cr-patch.yaml \
     --batch \
     --telemetry=off
 
@@ -69,8 +74,8 @@ EOF
   # codes) and could execute an HTTP error body as a script.
   export HAPPY_PATH_USERSTORY=SmokeTest
   export HAPPY_PATH_SUITE=test
-  curl -fsSL ${DEVWORKSPACE_HAPPY_PATH}/remote-launch.sh -o ${WORKDIR}/remote-launch.sh
-  bash ${WORKDIR}/remote-launch.sh
+  curl -fsSL ${DEVWORKSPACE_HAPPY_PATH}/remote-launch.sh -o ${DEPLOY_DIR}/remote-launch.sh
+  bash ${DEPLOY_DIR}/remote-launch.sh
 }
 
 runTests
