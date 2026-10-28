@@ -27,10 +27,12 @@ set -x
 START=$(date +%s.%N)
 
 export CHE_NAMESPACE=${CHE_NAMESPACE:-"eclipse-che"}
+export WORKDIR=${WORKDIR:-"/tmp/che-dashboard-happy-path"}
 export ARTIFACT_DIR=${ARTIFACT_DIR:-"/tmp/devworkspace-smoke-test-artifacts"}
 export DEVWORKSPACE_HAPPY_PATH="https://raw.githubusercontent.com/eclipse-che/che/main/tests/devworkspace-happy-path"
 
 runTests() {
+  mkdir -p ${WORKDIR}
   # Deploy Eclipse Che with a custom dashboard image.
   # Note: do not create ${ARTIFACT_DIR}/e2e here — the remote test script
   # creates it and does not tolerate it existing beforehand.
@@ -56,9 +58,13 @@ EOF
   # it provisions the OAuth user (works on standalone and HyperShift
   # hosted clusters), runs the SmokeTest user story against the deployed
   # Che instance and collects logs and test reports into the artifacts.
+  # Download the launcher to a file first: 'bash <(curl ...)' would hide
+  # a fetch failure (set -e does not check process substitution exit
+  # codes) and could execute an HTTP error body as a script.
   export HAPPY_PATH_USERSTORY=SmokeTest
   export HAPPY_PATH_SUITE=test
-  bash <(curl -s ${DEVWORKSPACE_HAPPY_PATH}/remote-launch.sh)
+  curl -fsSL ${DEVWORKSPACE_HAPPY_PATH}/remote-launch.sh -o ${WORKDIR}/remote-launch.sh
+  bash ${WORKDIR}/remote-launch.sh
 }
 
 runTests
