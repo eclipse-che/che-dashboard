@@ -16,19 +16,12 @@ import * as k8s from '@kubernetes/client-node';
 import { isForbidden } from '@/devworkspaceClient/services/storageApi/errors';
 import { logger } from '@/utils/logger';
 
-export const STORAGE_CLASS_CACHE_TTL_MS = 5 * 60 * 1000;
-
 type StorageV1API = Pick<k8s.StorageV1Api, 'readStorageClass'>;
-
-const cache = new Map<string, { expandability: Expandability; expiresAt: number }>();
-
-export function clearStorageClassCache(): void {
-  cache.clear();
-}
 
 /**
  * Reads `allowVolumeExpansion` of a storage class with the user token.
  * If the user is not allowed to read storage classes, expandability is `unknown`.
+ * Not cached: the result depends on the user's permissions.
  */
 export class StorageClassService {
   private readonly userApi: StorageV1API;
@@ -42,22 +35,11 @@ export class StorageClassService {
       return 'unknown';
     }
 
-    const cached = cache.get(storageClassName);
-    if (cached && cached.expiresAt > Date.now()) {
-      return cached.expandability;
-    }
-
-    // failures are cached as well, not to retry on every poll
     const storageClass = await this.readStorageClass(storageClassName);
-    let expandability: Expandability = 'unknown';
-    if (storageClass) {
-      expandability = storageClass.allowVolumeExpansion === true ? 'allowed' : 'forbidden';
+    if (!storageClass) {
+      return 'unknown';
     }
-    cache.set(storageClassName, {
-      expandability,
-      expiresAt: Date.now() + STORAGE_CLASS_CACHE_TTL_MS,
-    });
-    return expandability;
+    return storageClass.allowVolumeExpansion === true ? 'allowed' : 'forbidden';
   }
 
   private async readStorageClass(name: string): Promise<k8s.V1StorageClass | undefined> {

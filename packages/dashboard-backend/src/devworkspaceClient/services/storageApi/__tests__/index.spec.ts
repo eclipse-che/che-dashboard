@@ -23,7 +23,6 @@ import {
   workspaceId,
   workspaceName,
 } from '@/devworkspaceClient/services/storageApi/__tests__/fixtures';
-import { clearStorageClassCache } from '@/devworkspaceClient/services/storageApi/storageClassService';
 
 describe('WorkspaceStorageApiService', () => {
   const mockGetDevWorkspace = jest.fn();
@@ -39,8 +38,6 @@ describe('WorkspaceStorageApiService', () => {
   let service: WorkspaceStorageApiService;
 
   beforeEach(() => {
-    clearStorageClassCache();
-
     userKc = new k8s.KubeConfig();
     userKc.makeApiClient = jest.fn().mockImplementation(api => {
       if (api === k8s.CustomObjectsApi) {

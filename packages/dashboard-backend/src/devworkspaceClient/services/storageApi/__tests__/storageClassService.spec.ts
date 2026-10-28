@@ -13,25 +13,19 @@
 import * as k8s from '@kubernetes/client-node';
 
 import { buildApiException } from '@/devworkspaceClient/services/storageApi/__tests__/fixtures';
-import {
-  clearStorageClassCache,
-  STORAGE_CLASS_CACHE_TTL_MS,
-  StorageClassService,
-} from '@/devworkspaceClient/services/storageApi/storageClassService';
+import { StorageClassService } from '@/devworkspaceClient/services/storageApi/storageClassService';
 
 describe('StorageClassService', () => {
   const userReadStorageClass = jest.fn();
   let userKc: k8s.KubeConfig;
 
   beforeEach(() => {
-    clearStorageClassCache();
     userKc = new k8s.KubeConfig();
     userKc.makeApiClient = jest.fn().mockReturnValue({ readStorageClass: userReadStorageClass });
   });
 
   afterEach(() => {
     jest.resetAllMocks();
-    jest.useRealTimers();
   });
 
   it.each([
@@ -62,30 +56,18 @@ describe('StorageClassService', () => {
     expect(userReadStorageClass).not.toHaveBeenCalled();
   });
 
-  it('should cache results and refresh them after expiry', async () => {
-    jest.useFakeTimers();
+  it('should not share a result between users', async () => {
+    const otherReadStorageClass = jest.fn();
+    const otherKc = new k8s.KubeConfig();
+    otherKc.makeApiClient = jest.fn().mockReturnValue({ readStorageClass: otherReadStorageClass });
     userReadStorageClass.mockResolvedValue({ allowVolumeExpansion: true });
+    otherReadStorageClass.mockRejectedValue(buildApiException(403, 'forbidden'));
 
-    const service = new StorageClassService(userKc);
-    await service.getExpandability('standard');
-    await new StorageClassService(userKc).getExpandability('standard');
-
-    expect(userReadStorageClass).toHaveBeenCalledTimes(1);
-
-    jest.advanceTimersByTime(STORAGE_CLASS_CACHE_TTL_MS + 1);
-    userReadStorageClass.mockResolvedValue({ allowVolumeExpansion: false });
-
-    await expect(service.getExpandability('standard')).resolves.toEqual('forbidden');
-    expect(userReadStorageClass).toHaveBeenCalledTimes(2);
-  });
-
-  it('should cache unknown results', async () => {
-    userReadStorageClass.mockRejectedValueOnce(buildApiException(500, 'error'));
-    userReadStorageClass.mockResolvedValueOnce({ allowVolumeExpansion: true });
-
-    const service = new StorageClassService(userKc);
-    await expect(service.getExpandability('standard')).resolves.toEqual('unknown');
-    await expect(service.getExpandability('standard')).resolves.toEqual('unknown');
-    expect(userReadStorageClass).toHaveBeenCalledTimes(1);
+    await expect(new StorageClassService(userKc).getExpandability('standard')).resolves.toEqual(
+      'allowed',
+    );
+    await expect(new StorageClassService(otherKc).getExpandability('standard')).resolves.toEqual(
+      'unknown',
+    );
   });
 });
