@@ -62,8 +62,7 @@ const resizeBodySchema = {
 function createStorageApiService(request: FastifyRequest): WorkspaceStorageApiService {
   const kubeConfigProvider = new KubeConfigProvider();
   const userKubeConfig = kubeConfigProvider.getKubeConfig(getToken(request));
-  const saKubeConfig = kubeConfigProvider.getKubeConfig(getServiceAccountToken());
-  return new WorkspaceStorageApiService(userKubeConfig, saKubeConfig);
+  return new WorkspaceStorageApiService(userKubeConfig);
 }
 
 export const DEFAULT_STRATEGY_CACHE_TTL_MS = 60 * 1000;

@@ -27,17 +27,14 @@ export function clearStorageClassCache(): void {
 }
 
 /**
- * Reads `allowVolumeExpansion` of a storage class. The user token is tried first,
- * the dashboard service account is used as a fallback if the user is not allowed
- * to read storage classes.
+ * Reads `allowVolumeExpansion` of a storage class with the user token.
+ * If the user is not allowed to read storage classes, expandability is `unknown`.
  */
 export class StorageClassService {
   private readonly userApi: StorageV1API;
-  private readonly serviceAccountApi: StorageV1API | undefined;
 
-  constructor(userKc: k8s.KubeConfig, serviceAccountKc?: k8s.KubeConfig) {
+  constructor(userKc: k8s.KubeConfig) {
     this.userApi = userKc.makeApiClient(k8s.StorageV1Api);
-    this.serviceAccountApi = serviceAccountKc?.makeApiClient(k8s.StorageV1Api);
   }
 
   async getExpandability(storageClassName: string | undefined): Promise<Expandability> {
@@ -50,7 +47,7 @@ export class StorageClassService {
       return cached.expandability;
     }
 
-    // failures are cached as well, not to retry both identities on every poll
+    // failures are cached as well, not to retry on every poll
     const storageClass = await this.readStorageClass(storageClassName);
     let expandability: Expandability = 'unknown';
     if (storageClass) {
@@ -67,15 +64,9 @@ export class StorageClassService {
     try {
       return await this.userApi.readStorageClass({ name });
     } catch (e) {
-      if (!isForbidden(e) || !this.serviceAccountApi) {
+      if (!isForbidden(e)) {
         logger.warn(e, `Unable to read storage class "${name}"`);
-        return undefined;
       }
-    }
-    try {
-      return await this.serviceAccountApi.readStorageClass({ name });
-    } catch (e) {
-      logger.warn(e, `Unable to read storage class "${name}" with the service account`);
       return undefined;
     }
   }

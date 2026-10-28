@@ -41,8 +41,7 @@ type WorkspaceContext = {
 
 /**
  * Workspace storage (PVC) status, usage, quota check and resize.
- * The user token is used for everything except reading storage classes,
- * which falls back to the dashboard service account.
+ * Everything is done with the user token.
  */
 export class WorkspaceStorageApiService {
   private readonly coreV1Api: Pick<k8s.CoreV1Api, 'listNamespacedPod'>;
@@ -51,10 +50,10 @@ export class WorkspaceStorageApiService {
   private readonly quotaService: QuotaService;
   private readonly usageService: StorageUsageService;
 
-  constructor(userKc: k8s.KubeConfig, serviceAccountKc?: k8s.KubeConfig) {
+  constructor(userKc: k8s.KubeConfig) {
     this.coreV1Api = userKc.makeApiClient(k8s.CoreV1Api);
     this.devWorkspaceApi = new DevWorkspaceApiService(userKc);
-    this.pvcService = new PvcService(userKc, new StorageClassService(userKc, serviceAccountKc));
+    this.pvcService = new PvcService(userKc, new StorageClassService(userKc));
     this.quotaService = new QuotaService(userKc);
     this.usageService = new StorageUsageService(userKc);
   }

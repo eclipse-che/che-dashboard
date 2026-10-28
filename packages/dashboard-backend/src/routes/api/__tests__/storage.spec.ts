@@ -82,10 +82,7 @@ describe('Workspace Storage Routes', () => {
 
   function expectTokensForwarded() {
     expect(WorkspaceStorageApiService).toHaveBeenCalledTimes(1);
-    expect(WorkspaceStorageApiService).toHaveBeenCalledWith(
-      { token: stubUserToken },
-      { token: stubSaToken },
-    );
+    expect(WorkspaceStorageApiService).toHaveBeenCalledWith({ token: stubUserToken });
   }
 
   describe('GET storage', () => {

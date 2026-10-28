@@ -33,11 +33,9 @@ describe('WorkspaceStorageApiService', () => {
   const mockListQuotas = jest.fn();
   const mockListLimitRanges = jest.fn();
   const mockUserReadStorageClass = jest.fn();
-  const mockSaReadStorageClass = jest.fn();
   const spyExec = jest.spyOn(helper, 'exec');
 
   let userKc: k8s.KubeConfig;
-  let saKc: k8s.KubeConfig;
   let service: WorkspaceStorageApiService;
 
   beforeEach(() => {
@@ -59,11 +57,7 @@ describe('WorkspaceStorageApiService', () => {
         listNamespacedLimitRange: mockListLimitRanges,
       };
     });
-    // the service account is only allowed to read storage classes
-    saKc = new k8s.KubeConfig();
-    saKc.makeApiClient = jest.fn().mockReturnValue({ readStorageClass: mockSaReadStorageClass });
-
-    service = new WorkspaceStorageApiService(userKc, saKc);
+    service = new WorkspaceStorageApiService(userKc);
 
     mockGetDevWorkspace.mockResolvedValue(buildDevWorkspace({ phase: 'Running' }));
     mockListPods.mockResolvedValue({ items: [buildPod('claim-from-pod')] });
@@ -71,8 +65,7 @@ describe('WorkspaceStorageApiService', () => {
     mockPatchPvc.mockResolvedValue(buildPvc({ name: 'claim-from-pod', requested: '15Gi' }));
     mockListQuotas.mockResolvedValue({ items: [] });
     mockListLimitRanges.mockResolvedValue({ items: [] });
-    mockUserReadStorageClass.mockRejectedValue(buildApiException(403, 'forbidden'));
-    mockSaReadStorageClass.mockResolvedValue({ allowVolumeExpansion: true });
+    mockUserReadStorageClass.mockResolvedValue({ allowVolumeExpansion: true });
   });
 
   afterEach(() => {
@@ -196,7 +189,7 @@ describe('WorkspaceStorageApiService', () => {
   });
 
   describe('resize', () => {
-    it('should patch the PVC with the user token, never with the service account', async () => {
+    it('should patch the PVC with the user token', async () => {
       const info = await service.resize(namespace, workspaceName, '15Gi');
 
       expect(mockPatchPvc).toHaveBeenCalledWith(
@@ -204,10 +197,6 @@ describe('WorkspaceStorageApiService', () => {
         expect.anything(),
       );
       expect(info.requested).toEqual('15Gi');
-      // the service account kubeconfig is only used to build the storage class client
-      expect(saKc.makeApiClient).toHaveBeenCalledTimes(1);
-      expect(saKc.makeApiClient).toHaveBeenCalledWith(k8s.StorageV1Api);
-      expect(mockSaReadStorageClass).toHaveBeenCalled();
     });
   });
 });

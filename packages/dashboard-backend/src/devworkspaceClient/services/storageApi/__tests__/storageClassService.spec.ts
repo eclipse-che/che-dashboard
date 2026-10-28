@@ -21,16 +21,12 @@ import {
 
 describe('StorageClassService', () => {
   const userReadStorageClass = jest.fn();
-  const saReadStorageClass = jest.fn();
   let userKc: k8s.KubeConfig;
-  let saKc: k8s.KubeConfig;
 
   beforeEach(() => {
     clearStorageClassCache();
     userKc = new k8s.KubeConfig();
     userKc.makeApiClient = jest.fn().mockReturnValue({ readStorageClass: userReadStorageClass });
-    saKc = new k8s.KubeConfig();
-    saKc.makeApiClient = jest.fn().mockReturnValue({ readStorageClass: saReadStorageClass });
   });
 
   afterEach(() => {
@@ -45,49 +41,21 @@ describe('StorageClassService', () => {
   ])('allowVolumeExpansion=%s → %s with the user token', async (allow, expected) => {
     userReadStorageClass.mockResolvedValue({ allowVolumeExpansion: allow });
 
-    const service = new StorageClassService(userKc, saKc);
+    const service = new StorageClassService(userKc);
     await expect(service.getExpandability('standard')).resolves.toEqual(expected);
 
     expect(userReadStorageClass).toHaveBeenCalledWith({ name: 'standard' });
-    expect(saReadStorageClass).not.toHaveBeenCalled();
   });
 
-  it('should use the service account on 403', async () => {
-    userReadStorageClass.mockRejectedValue(buildApiException(403, 'forbidden'));
-    saReadStorageClass.mockResolvedValue({ allowVolumeExpansion: true });
-
-    const service = new StorageClassService(userKc, saKc);
-    await expect(service.getExpandability('standard')).resolves.toEqual('allowed');
-
-    expect(saReadStorageClass).toHaveBeenCalledWith({ name: 'standard' });
-  });
-
-  it('should return unknown if both fail', async () => {
-    userReadStorageClass.mockRejectedValue(buildApiException(403, 'forbidden'));
-    saReadStorageClass.mockRejectedValue(buildApiException(403, 'forbidden'));
-
-    const service = new StorageClassService(userKc, saKc);
-    await expect(service.getExpandability('standard')).resolves.toEqual('unknown');
-  });
-
-  it('should return unknown on 403 without service account', async () => {
-    userReadStorageClass.mockRejectedValue(buildApiException(403, 'forbidden'));
+  it.each([403, 404])('should return unknown on %s', async statusCode => {
+    userReadStorageClass.mockRejectedValue(buildApiException(statusCode, 'error'));
 
     const service = new StorageClassService(userKc);
     await expect(service.getExpandability('standard')).resolves.toEqual('unknown');
   });
 
-  it('should not use the service account on errors other than 403', async () => {
-    userReadStorageClass.mockRejectedValue(buildApiException(404, 'not found'));
-
-    const service = new StorageClassService(userKc, saKc);
-    await expect(service.getExpandability('standard')).resolves.toEqual('unknown');
-
-    expect(saReadStorageClass).not.toHaveBeenCalled();
-  });
-
   it('should return unknown without storage class name', async () => {
-    const service = new StorageClassService(userKc, saKc);
+    const service = new StorageClassService(userKc);
     await expect(service.getExpandability(undefined)).resolves.toEqual('unknown');
     await expect(service.getExpandability('')).resolves.toEqual('unknown');
 
@@ -98,9 +66,9 @@ describe('StorageClassService', () => {
     jest.useFakeTimers();
     userReadStorageClass.mockResolvedValue({ allowVolumeExpansion: true });
 
-    const service = new StorageClassService(userKc, saKc);
+    const service = new StorageClassService(userKc);
     await service.getExpandability('standard');
-    await new StorageClassService(userKc, saKc).getExpandability('standard');
+    await new StorageClassService(userKc).getExpandability('standard');
 
     expect(userReadStorageClass).toHaveBeenCalledTimes(1);
 
@@ -115,7 +83,7 @@ describe('StorageClassService', () => {
     userReadStorageClass.mockRejectedValueOnce(buildApiException(500, 'error'));
     userReadStorageClass.mockResolvedValueOnce({ allowVolumeExpansion: true });
 
-    const service = new StorageClassService(userKc, saKc);
+    const service = new StorageClassService(userKc);
     await expect(service.getExpandability('standard')).resolves.toEqual('unknown');
     await expect(service.getExpandability('standard')).resolves.toEqual('unknown');
     expect(userReadStorageClass).toHaveBeenCalledTimes(1);
