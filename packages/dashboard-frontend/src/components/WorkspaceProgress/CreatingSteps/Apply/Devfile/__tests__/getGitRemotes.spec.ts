@@ -311,4 +311,243 @@ describe('getGitRemotes functions', () => {
       expect(defaultDevfile).toStrictEqual(expectedDevfile);
     });
   });
+
+  describe('configureProjectRemotes() with multiple Git projects', () => {
+    const SOURCE_URL = 'https://github.com/user/weebo-che-project';
+
+    function buildMultiProjectDevfile(): devfileApi.Devfile {
+      return {
+        schemaVersion: '2.3.0',
+        metadata: { name: 'weebo-che-project' },
+        projects: [
+          {
+            name: 'main',
+            git: { remotes: { origin: 'https://github.com/user/weebo-che-project.git' } },
+          },
+          {
+            name: 'dashboard',
+            git: {
+              remotes: { origin: 'https://github.com/other/che-dashboard.git' },
+              checkoutFrom: { revision: 'develop' },
+            },
+          },
+          {
+            name: 'che-code',
+            git: {
+              remotes: {
+                origin: 'https://github.com/other/che-code.git',
+                fork: 'https://github.com/user/che-code.git',
+              },
+              checkoutFrom: { remote: 'origin', revision: 'develop' },
+            },
+          },
+        ],
+      } as devfileApi.Devfile;
+    }
+
+    test('should configure only the project matching the factory URL', () => {
+      const devfile = buildMultiProjectDevfile();
+
+      configureProjectRemotes(devfile, undefined, false, 'my-branch', SOURCE_URL);
+
+      // the project the factory URL points at is checked out at the requested revision
+      expect(devfile.projects?.[0]).toStrictEqual({
+        name: 'main',
+        git: {
+          remotes: { origin: 'https://github.com/user/weebo-che-project.git' },
+          checkoutFrom: { remote: 'origin', revision: 'my-branch' },
+        },
+      });
+      // the other projects are left untouched
+      expect(devfile.projects?.[1]).toStrictEqual(buildMultiProjectDevfile().projects?.[1]);
+      expect(devfile.projects?.[2]).toStrictEqual(buildMultiProjectDevfile().projects?.[2]);
+    });
+
+    test('should not throw when several Git projects are present (CHE-23991)', () => {
+      const devfile = buildMultiProjectDevfile();
+
+      expect(() =>
+        configureProjectRemotes(
+          devfile,
+          undefined,
+          false,
+          'demo-cant-create-workspace',
+          `${SOURCE_URL}/tree/demo-cant-create-workspace`,
+        ),
+      ).not.toThrow();
+
+      expect(devfile.projects?.[0].git?.checkoutFrom?.revision).toBe('demo-cant-create-workspace');
+    });
+
+    test.each([
+      ['GitLab tree URL', 'https://gitlab.com/user/weebo/-/tree/my-branch'],
+      ['GitLab blob URL', 'https://gitlab.com/user/weebo/-/blob/my-branch/devfile.yaml'],
+      ['Bitbucket src URL', 'https://bitbucket.org/user/weebo/src/my-branch'],
+      ['SSH URL', 'git@gitlab.com:user/weebo.git'],
+    ])('should match the project by %s', (_label, sourceUrl) => {
+      const devfile = {
+        schemaVersion: '2.3.0',
+        metadata: { name: 'weebo' },
+        projects: [
+          { name: 'other', git: { remotes: { origin: 'https://github.com/other/other.git' } } },
+          { name: 'weebo', git: { remotes: { origin: `${getHost(sourceUrl)}/user/weebo.git` } } },
+        ],
+      } as devfileApi.Devfile;
+
+      configureProjectRemotes(devfile, undefined, false, 'my-branch', sourceUrl);
+
+      expect(devfile.projects?.[1].git?.checkoutFrom).toStrictEqual({
+        remote: 'origin',
+        revision: 'my-branch',
+      });
+      expect(devfile.projects?.[0].git?.checkoutFrom).toBeUndefined();
+    });
+
+    test('should add the remotes to the matching project only', () => {
+      const devfile = buildMultiProjectDevfile();
+      const remotes = '{{upstream,https://github.com/upstream/weebo-che-project.git}}';
+
+      configureProjectRemotes(devfile, remotes, false, 'HEAD', SOURCE_URL);
+
+      expect(devfile.projects?.[0].git?.remotes).toStrictEqual({
+        origin: 'https://github.com/user/weebo-che-project.git',
+        upstream: 'https://github.com/upstream/weebo-che-project.git',
+      });
+      expect(devfile.projects?.[1].git?.remotes).toStrictEqual({
+        origin: 'https://github.com/other/che-dashboard.git',
+      });
+    });
+
+    test('should skip configuration when no project matches and no remotes were requested', () => {
+      const devfile = buildMultiProjectDevfile();
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+      configureProjectRemotes(
+        devfile,
+        undefined,
+        false,
+        'my-branch',
+        'https://github.com/user/unrelated-repo',
+      );
+
+      expect(devfile.projects).toStrictEqual(buildMultiProjectDevfile().projects);
+      expect(warnSpy).toHaveBeenCalled();
+      warnSpy.mockRestore();
+    });
+
+    test('should throw when no project matches and remotes were explicitly requested', () => {
+      const devfile = buildMultiProjectDevfile();
+      const remotes = '{{upstream,https://github.com/upstream/weebo-che-project.git}}';
+
+      expect(() =>
+        configureProjectRemotes(
+          devfile,
+          remotes,
+          false,
+          'HEAD',
+          'https://github.com/user/unrelated-repo',
+        ),
+      ).toThrow(
+        "Unable to configure remotes: no project in the Devfile has a remote matching 'https://github.com/user/unrelated-repo'.",
+      );
+    });
+
+    test('should check out from the remote the factory URL points at, not from origin', () => {
+      const devfile = buildMultiProjectDevfile();
+
+      // the factory URL points at the `fork` remote of the `che-code` project, so the
+      // revision has to be resolved against that remote and not against origin
+      configureProjectRemotes(
+        devfile,
+        undefined,
+        false,
+        'feature-x',
+        'https://github.com/user/che-code/tree/feature-x',
+      );
+
+      expect(devfile.projects?.[2].git?.checkoutFrom).toStrictEqual({
+        remote: 'fork',
+        revision: 'feature-x',
+      });
+      expect(devfile.projects?.[0]).toStrictEqual(buildMultiProjectDevfile().projects?.[0]);
+    });
+
+    test.each([
+      ['an undefined', undefined],
+      ['an empty', ''],
+      ['a blank', '   '],
+    ])('should name the factory URL in the error when it is %s string', (_label, sourceUrl) => {
+      const devfile = buildMultiProjectDevfile();
+      const remotes = '{{upstream,https://github.com/upstream/weebo-che-project.git}}';
+
+      expect(() => configureProjectRemotes(devfile, remotes, false, 'HEAD', sourceUrl)).toThrow(
+        'Unable to configure remotes: no project in the Devfile has a remote matching the factory URL.',
+      );
+    });
+
+    test('should name the factory URL in the warning when it is undefined', () => {
+      const devfile = buildMultiProjectDevfile();
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+      configureProjectRemotes(devfile, undefined, false, 'my-branch', undefined);
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        'No Devfile project matches the factory URL. Skipping the Git remotes configuration.',
+      );
+      warnSpy.mockRestore();
+    });
+  });
+
+  describe('configureProjectRemotes() edge cases', () => {
+    test('should not throw when the devfile declares no Git project and only a revision is given', () => {
+      const devfile = {
+        schemaVersion: '2.3.0',
+        metadata: { name: 'no-git' },
+        projects: [{ name: 'archive', zip: { location: 'https://example.com/archive.zip' } }],
+      } as devfileApi.Devfile;
+
+      expect(() =>
+        configureProjectRemotes(devfile, undefined, false, 'my-branch', 'https://example.com'),
+      ).not.toThrow();
+      expect(devfile.projects?.length).toBe(1);
+    });
+
+    test('should not throw when the devfile has no projects at all and only a revision is given', () => {
+      const devfile = {
+        schemaVersion: '2.3.0',
+        metadata: { name: 'empty' },
+      } as devfileApi.Devfile;
+
+      expect(() =>
+        configureProjectRemotes(devfile, undefined, false, 'my-branch', 'https://example.com'),
+      ).not.toThrow();
+      expect(devfile.projects).toBeUndefined();
+    });
+
+    test('should check out from the only remote when the project has no origin', () => {
+      const devfile = {
+        schemaVersion: '2.3.0',
+        metadata: { name: 'no-origin' },
+        projects: [
+          {
+            name: 'no-origin',
+            git: { remotes: { upstream: 'https://github.com/upstream/repo.git' } },
+          },
+        ],
+      } as devfileApi.Devfile;
+
+      expect(() =>
+        configureProjectRemotes(devfile, undefined, false, 'my-branch', undefined),
+      ).not.toThrow();
+      expect(devfile.projects?.[0].git?.checkoutFrom).toStrictEqual({
+        remote: 'upstream',
+        revision: 'my-branch',
+      });
+    });
+  });
 });
+
+function getHost(url: string): string {
+  const match = url.match(/^(?:[a-z+]+:\/\/)?(?:[^@/]+@)?([^:/]+)/i);
+  return `https://${match?.[1]}`;
+}
