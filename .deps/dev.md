@@ -212,6 +212,7 @@
 | `@types/react-router@5.1.20` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/react-router/5.1.20) |
 | `@types/react-test-renderer@18.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/react-test-renderer/18.3.0) |
 | `@types/react@18.2.36` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/react/18.2.36) |
+| `@types/react@18.3.31` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/react/18.3.31) |
 | `@types/redux-logger@3.0.13` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/redux-logger/3.0.13) |
 | `@types/redux-mock-store@1.0.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/redux-mock-store/1.0.6) |
 | `@types/request@2.48.12` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/request/2.48.12) |
@@ -463,6 +464,7 @@
 | `cssom@0.5.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cssom/0.5.0) |
 | `cssstyle@2.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cssstyle/2.3.0) |
 | `csstype@3.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/csstype/3.1.2) |
+| `csstype@3.2.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/csstype/3.2.3) |
 | `dashdash@1.14.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/dashdash/1.14.1) |
 | `data-urls@3.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/data-urls/3.0.2) |
 | `debounce@1.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/debounce/1.2.1) |
