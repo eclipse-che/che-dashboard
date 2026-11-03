@@ -18,13 +18,17 @@ import { retryableExec } from '@/devworkspaceClient/services/helpers/retryableEx
 export type CoreV1API = Pick<
   k8s.CoreV1Api,
   | 'createNamespacedConfigMap'
+  | 'createNamespacedPersistentVolumeClaim'
   | 'createNamespacedSecret'
+  | 'deleteNamespacedPersistentVolumeClaim'
   | 'listNamespace'
   | 'listNamespacedEvent'
   | 'listNamespacedPod'
   | 'listNamespacedSecret'
   | 'patchNamespacedConfigMap'
+  | 'patchNamespacedPersistentVolumeClaim'
   | 'readNamespacedConfigMap'
+  | 'readNamespacedPersistentVolumeClaim'
   | 'readNamespacedPod'
   | 'readNamespacedSecret'
   | 'replaceNamespacedSecret'
@@ -37,8 +41,14 @@ export function prepareCoreV1API(kc: k8s.KubeConfig): CoreV1API {
   return {
     createNamespacedConfigMap: (...args: Parameters<typeof coreV1API.createNamespacedConfigMap>) =>
       retryableExec(() => coreV1API.createNamespacedConfigMap(...args)),
+    createNamespacedPersistentVolumeClaim: (
+      ...args: Parameters<typeof coreV1API.createNamespacedPersistentVolumeClaim>
+    ) => retryableExec(() => coreV1API.createNamespacedPersistentVolumeClaim(...args)),
     createNamespacedSecret: (...args: Parameters<typeof coreV1API.createNamespacedSecret>) =>
       retryableExec(() => coreV1API.createNamespacedSecret(...args)),
+    deleteNamespacedPersistentVolumeClaim: (
+      ...args: Parameters<typeof coreV1API.deleteNamespacedPersistentVolumeClaim>
+    ) => retryableExec(() => coreV1API.deleteNamespacedPersistentVolumeClaim(...args)),
     listNamespace: (...args: Parameters<typeof coreV1API.listNamespace>) =>
       retryableExec(() => coreV1API.listNamespace(...args)),
     listNamespacedEvent: (...args: Parameters<typeof coreV1API.listNamespacedEvent>) =>
@@ -49,8 +59,17 @@ export function prepareCoreV1API(kc: k8s.KubeConfig): CoreV1API {
       retryableExec(() => coreV1API.listNamespacedSecret(...args)),
     patchNamespacedConfigMap: (param: Parameters<typeof coreV1API.patchNamespacedConfigMap>[0]) =>
       retryableExec(() => coreV1API.patchNamespacedConfigMap(param, STRATEGIC_MERGE_PATCH_OPTIONS)),
+    patchNamespacedPersistentVolumeClaim: (
+      param: Parameters<typeof coreV1API.patchNamespacedPersistentVolumeClaim>[0],
+    ) =>
+      retryableExec(() =>
+        coreV1API.patchNamespacedPersistentVolumeClaim(param, STRATEGIC_MERGE_PATCH_OPTIONS),
+      ),
     readNamespacedConfigMap: (...args: Parameters<typeof coreV1API.readNamespacedConfigMap>) =>
       retryableExec(() => coreV1API.readNamespacedConfigMap(...args)),
+    readNamespacedPersistentVolumeClaim: (
+      ...args: Parameters<typeof coreV1API.readNamespacedPersistentVolumeClaim>
+    ) => retryableExec(() => coreV1API.readNamespacedPersistentVolumeClaim(...args)),
     readNamespacedPod: (...args: Parameters<typeof coreV1API.readNamespacedPod>) =>
       retryableExec(() => coreV1API.readNamespacedPod(...args)),
     readNamespacedSecret: (...args: Parameters<typeof coreV1API.readNamespacedSecret>) =>
