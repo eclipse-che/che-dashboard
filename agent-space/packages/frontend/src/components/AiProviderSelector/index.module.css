@@ -1,0 +1,65 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+.cardTitle {
+  padding-top: var(--pf-t--global--spacer--xs);
+}
+
+.activeCard {
+  font-weight: 600;
+}
+
+.providerIcon {
+  position: relative;
+  bottom: 1px;
+
+  width: 20px;
+  height: 20px;
+  padding: 1px;
+
+  vertical-align: middle;
+
+  border-radius: 3px;
+}
+
+:global(html.pf-v6-theme-dark) .providerIcon {
+  background-color: var(--pf-t--color--gray--10);
+}
+
+.description {
+  font-size: 75%;
+}
+
+.badgeGroup {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.versionLabel {
+  position: relative;
+  top: 0.125rem;
+
+  margin-left: 5px;
+  padding: 0 5px;
+
+  font-size: x-small;
+  line-height: 12px;
+  vertical-align: top;
+
+  background-color: var(--pf-t--global--background--color--primary--default);
+}
+
+.versionLabel :global(.pf-v6-c-label__content)::before {
+  border-color: var(--pf-t--global--text--color--link--default);
+}
