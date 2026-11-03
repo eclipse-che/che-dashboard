@@ -53,6 +53,17 @@ describe('Event API Service', () => {
     expect(spyListNamespacedEvent).toHaveBeenCalledWith({ namespace });
   });
 
+  it('should scope the listing to one object server-side', async () => {
+    await eventApiService.listInNamespace(namespace, 'my-sandbox');
+
+    // Without this the caller downloads every event of the namespace and
+    // throws most of them away, once per refresh.
+    expect(spyListNamespacedEvent).toHaveBeenCalledWith({
+      namespace,
+      fieldSelector: 'involvedObject.name=my-sandbox',
+    });
+  });
+
   it('should throw when getting events list', async () => {
     const failureReason = 'failed to get events list';
     spyListNamespacedEvent.mockRejectedValue(new Error(failureReason));
