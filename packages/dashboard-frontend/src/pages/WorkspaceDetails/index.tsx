@@ -29,7 +29,6 @@ import WorkspaceLogs from '@/components/WorkspaceLogs';
 import { lazyInject } from '@/inversify.config';
 import AdvancedTab from '@/pages/WorkspaceDetails/AdvancedTab';
 import BackupTab from '@/pages/WorkspaceDetails/BackupTab';
-import DevfileEditorTab from '@/pages/WorkspaceDetails/DevfileEditorTab';
 import Header from '@/pages/WorkspaceDetails/Header';
 import { WorkspaceDetailsHeaderActions } from '@/pages/WorkspaceDetails/Header/Actions';
 import styles from '@/pages/WorkspaceDetails/index.module.css';
@@ -96,7 +95,6 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
       if (
         pathname.startsWith('/workspace/') &&
         (tab === WorkspaceDetailsTab.OVERVIEW ||
-          tab === WorkspaceDetailsTab.DEVFILE ||
           tab === WorkspaceDetailsTab.STORAGE ||
           tab === WorkspaceDetailsTab.BACKUP ||
           tab === WorkspaceDetailsTab.EVENTS ||
@@ -168,14 +166,6 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
                 onSave={workspace => this.handleOnSave(workspace)}
               />
             </Tab>
-            <Tab eventKey={WorkspaceDetailsTab.DEVFILE} title={WorkspaceDetailsTab.DEVFILE}>
-              <ProgressIndicator isLoading={this.props.isLoading} />
-
-              <DevfileEditorTab
-                workspace={workspace}
-                isActive={WorkspaceDetailsTab.DEVFILE === this.state.activeTabKey}
-              />
-            </Tab>
             <Tab eventKey={WorkspaceDetailsTab.STORAGE} title={WorkspaceDetailsTab.STORAGE}>
               <StorageTab
                 key={workspace.uid}
@@ -216,9 +206,6 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
       this.props.navigate(location, { replace: true });
     } catch (e) {
       const errorMessage = common.helpers.errors.getMessage(e);
-      if (this.state.activeTabKey === WorkspaceDetailsTab.DEVFILE) {
-        throw errorMessage;
-      }
       this.showAlert(AlertVariant.danger, errorMessage);
     }
   }
