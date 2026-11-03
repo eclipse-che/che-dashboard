@@ -13,6 +13,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { Location } from 'history';
 import React, { Suspense } from 'react';
+import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 
 import Fallback from '@/components/Fallback';
@@ -26,6 +27,7 @@ import {
 import { LoaderTab, WorkspaceDetailsTab } from '@/services/helpers/types';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 jest.mock('@/pages/GetStarted', () => {
   return function GetStarted() {
@@ -50,6 +52,11 @@ jest.mock('@/containers/Loader', () => {
 jest.mock('@/pages/UserPreferences', () => {
   return function UserPreferences() {
     return <span>User Preferences</span>;
+  };
+});
+jest.mock('@/containers/AgentSpace', () => {
+  return function AgentSpace() {
+    return <span>Agent Space</span>;
   };
 });
 jest.mock('@/Routes/NavigateHome', () => {
@@ -186,6 +193,23 @@ describe('Routes', () => {
     });
   });
 
+  describe('Agent Space route', () => {
+    it('should handle "/agent-space" when the Agent Sandbox is enabled', async () => {
+      render(getComponent(ROUTE.AGENT_SPACE, true));
+
+      await waitFor(() => expect(screen.queryByText('Agent Space')).toBeTruthy());
+    });
+
+    it('should not register "/agent-space" when the Agent Sandbox is disabled', async () => {
+      // The bundle ships in every image, so an unguarded route would reach a
+      // working Agent Space on a cluster where the administrator turned it off.
+      render(getComponent(ROUTE.AGENT_SPACE));
+
+      await waitFor(() => expect(screen.queryByText('Navigate Home')).toBeTruthy());
+      expect(screen.queryByText('Agent Space')).toBeFalsy();
+    });
+  });
+
   describe('User Preferences route', () => {
     it('should handle "/user-preferences"', async () => {
       const path = ROUTE.USER_PREFERENCES;
@@ -198,12 +222,21 @@ describe('Routes', () => {
   });
 });
 
-function getComponent(locationOrPath: Location | string): React.ReactElement {
+function getComponent(
+  locationOrPath: Location | string,
+  agentSandboxEnabled = false,
+): React.ReactElement {
+  const store = new MockStoreBuilder()
+    .withDwServerConfig(agentSandboxEnabled ? { agentSandbox: { enabled: true } } : {})
+    .build();
+
   return (
-    <MemoryRouter initialEntries={[locationOrPath]}>
-      <Suspense fallback={Fallback}>
-        <AppRoutes />
-      </Suspense>
-    </MemoryRouter>
+    <Provider store={store}>
+      <MemoryRouter initialEntries={[locationOrPath]}>
+        <Suspense fallback={Fallback}>
+          <AppRoutes />
+        </Suspense>
+      </MemoryRouter>
+    </Provider>
   );
 }
