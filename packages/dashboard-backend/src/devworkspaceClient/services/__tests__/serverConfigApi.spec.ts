@@ -184,6 +184,29 @@ describe('Server Config API Service', () => {
     expect(res).toEqual({ allowUsers: ['user1', 'user2'] });
   });
 
+  describe('Agent Sandbox', () => {
+    test('disabled when the CR does not define agentSandbox', () => {
+      const res = serverConfigService.getAgentSandboxEnabled(buildCustomResource());
+      expect(res).toBeFalsy();
+    });
+
+    test('disabled when agentSandbox.enabled is false', () => {
+      const customResource = buildCustomResource();
+      customResource.spec.agentSandbox = { enabled: false };
+
+      const res = serverConfigService.getAgentSandboxEnabled(customResource);
+      expect(res).toBeFalsy();
+    });
+
+    test('enabled when agentSandbox.enabled is true', () => {
+      const customResource = buildCustomResource();
+      customResource.spec.agentSandbox = { enabled: true };
+
+      const res = serverConfigService.getAgentSandboxEnabled(customResource);
+      expect(res).toBeTruthy();
+    });
+  });
+
   test('getting allowed source urls', () => {
     const res = serverConfigService.getAllowedSourceUrls(buildCustomResource());
     expect(res).toEqual(['https://github.com']);

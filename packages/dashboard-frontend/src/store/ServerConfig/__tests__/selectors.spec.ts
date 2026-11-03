@@ -16,6 +16,7 @@ import { api } from '@eclipse-che/common';
 import { RootState } from '@/store';
 import {
   selectAdvancedAuthorization,
+  selectAgentSandboxEnabled,
   selectAllowedSources,
   selectAutoProvision,
   selectCurrentScc,
@@ -151,6 +152,35 @@ describe('ServerConfig Selectors', () => {
   it('should select auto provision', () => {
     const result = selectAutoProvision(mockState);
     expect(result).toEqual(true);
+  });
+
+  describe('selectAgentSandboxEnabled', () => {
+    it('should return false when agentSandbox is not set', () => {
+      expect(selectAgentSandboxEnabled(mockState)).toEqual(false);
+    });
+
+    it('should return false when agentSandbox is disabled', () => {
+      const state = buildStateWithAgentSandbox(false);
+      expect(selectAgentSandboxEnabled(state)).toEqual(false);
+    });
+
+    it('should return true when agentSandbox is enabled', () => {
+      const state = buildStateWithAgentSandbox(true);
+      expect(selectAgentSandboxEnabled(state)).toEqual(true);
+    });
+
+    function buildStateWithAgentSandbox(enabled: boolean): RootState {
+      return {
+        ...mockState,
+        dwServerConfig: {
+          ...mockState.dwServerConfig,
+          config: {
+            ...mockState.dwServerConfig.config,
+            agentSandbox: { enabled },
+          },
+        },
+      } as RootState;
+    }
   });
 
   it('should select allowed sources', () => {
