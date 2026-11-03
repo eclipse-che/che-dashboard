@@ -1,0 +1,16 @@
+[
+  {
+    "id": "hello-world",
+    "displayName": "Universal Developer Agent",
+    "description": "The smallest possible Agent Space: one idling container, no storage, no prerequisites. Use it to check that the agent-sandbox controller is installed and reconciling.",
+    "tags": ["Basic", "Getting Started"],
+    "icon": "/images/sandbox.svg",
+    "defaults": {
+      "image": "registry.access.redhat.com/ubi9/ubi-minimal:9.6",
+      "command": ["sleep", "infinity"]
+    },
+    "manifest": {
+      "filename": "hello-world.yaml"
+    }
+  }
+]

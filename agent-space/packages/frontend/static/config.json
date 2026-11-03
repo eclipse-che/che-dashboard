@@ -1,0 +1,7 @@
+{
+  "mode": "auto",
+  "kubeApiBaseUrl": "",
+  "namespace": "",
+  "samplesIndexUrl": "./registry/sandbox/index.json",
+  "dashboardUrl": "../#/workspaces"
+}

@@ -1,0 +1,36 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+/* The masthead slides back in rather than appearing, as it does in the dashboard. */
+.showHeader {
+  animation-name: show;
+  animation-duration: 0.1s;
+  animation-timing-function: linear;
+}
+
+@keyframes show {
+  0% {
+    overflow: hidden;
+    min-height: 0;
+    max-height: 0;
+  }
+
+  100% {
+    overflow: visible;
+    min-height: 57px;
+    max-height: 57px;
+  }
+}
+
+.hideHeader {
+  display: none;
+}

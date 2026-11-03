@@ -209,6 +209,15 @@ export interface IServerConfig {
   pluginRegistryInternalURL: string;
   dashboardLogo?: { base64data: string; mediatype: string };
   allowedSourceUrls: string[];
+  agentSandbox?: IAgentSandbox;
+}
+
+/**
+ * Agent Sandbox integration, read from `spec.agentSandbox` of the CheCluster CR.
+ * See https://github.com/eclipse-che/che-operator/pull/2184
+ */
+export interface IAgentSandbox {
+  enabled: boolean;
 }
 
 /**

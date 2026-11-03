@@ -59,6 +59,10 @@ export interface INamespacedTemplateParams extends INamespacedParams {
   templateName: string;
 }
 
+export interface INamespacedSandboxParams extends INamespacedParams {
+  sandboxName: string;
+}
+
 export interface INamespacedPodParams extends INamespacedParams {
   devworkspaceId: string;
 }

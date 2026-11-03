@@ -51,7 +51,13 @@ Key components:
 - Restore workspaces from backup images (`/restore-from-backup`)
 - Backend backup-config API per namespace
 
-### 6. Administration
+### 6. Agent Space
+
+A separate client-side bundle (`agent-space/`) for managing [Kubernetes Agent Sandbox](https://agent-sandbox.sigs.k8s.io/) resources (`sandboxes.agents.x-k8s.io/v1beta1`): Getting Started samples, a create wizard, list and details with conditions and events, delete with confirmation, and Start / Stop / Hibernate / Resume lifecycle actions with status polling.
+
+The **Agent Space** navigation item is rendered only when the CheCluster CR has `spec.agentSandbox.enabled: true`, surfaced through `GET /dashboard/api/server-config`. The item hands off to `<dashboard-root>/agent-space/`, where the bundle is served from the dashboard's own static tree. See [`agent-space/README.md`](../agent-space/README.md).
+
+### 7. Administration
 
 - Cluster-wide workspace limits
 - Allowed source URLs
@@ -144,6 +150,9 @@ src/
 
 - `GET /dashboard/api/namespace/:namespace/pods`
 - `GET /dashboard/api/namespace/:namespace/events`
+- `GET /dashboard/api/sandboxes/available` — whether the cluster serves `agents.x-k8s.io`
+- `GET/POST /dashboard/api/namespace/:namespace/sandboxes`
+- `GET/PATCH/DELETE /dashboard/api/namespace/:namespace/sandboxes/:sandboxName`
 - `GET /dashboard/api/namespace/:namespace/kubeconfig`
 - `GET /dashboard/api/namespace/:namespace/scc-permission`
 

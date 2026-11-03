@@ -1,0 +1,43 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+/*
+ * The same card treatment the dashboard gives its own sample gallery on
+ * /dashboard/#/create-workspace, so the two pages read as one product.
+ */
+
+.sampleCard {
+  border: var(--pf-v6-c-card--BorderWidth) var(--pf-v6-c-card--BorderStyle)
+    var(--pf-t--global--border--color--default);
+}
+
+.tagGroup {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--pf-t--global--spacer--xs);
+
+  margin-inline-start: var(--pf-t--global--spacer--sm);
+
+  vertical-align: middle;
+}
+
+.sampleCardIcon {
+  width: 68px;
+  height: 68px;
+  padding: 4px;
+  color: var(--pf-t--global--icon--color--subtle);
+}
+
+html.pf-v6-theme-dark .sampleCardIcon {
+  background-color: var(--pf-t--color--gray--10);
+  border-radius: calc(var(--pf-v6-c-card--BorderRadius) / 4);
+}

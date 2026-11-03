@@ -39,11 +39,16 @@ import {
   IPersonalAccessTokenApi,
   IPodApi,
   IPodmanApi,
+  ISandbox,
+  ISandboxApi,
+  ISandboxList,
+  ISandboxStorageApi,
   ISccPermissionApi,
   IServerConfigApi,
   IShhKeysApi,
   IWorkspacePreferencesApi,
 } from '@/devworkspaceClient';
+import { mockState } from '@/routes/api/helpers/__mocks__/mockState';
 import { getDevWorkspaceClient as helper } from '@/routes/api/helpers/getDevWorkspaceClient';
 
 export const stubContainerBuild = {
@@ -201,6 +206,20 @@ export const stubHideEditorsById: string[] = ['che-incubator/che-idea-server/nex
 
 export const stubSessionTimeout = 86400;
 
+export const stubSandboxApiAvailable = true;
+
+export const stubSandbox: ISandbox = {
+  apiVersion: 'agents.x-k8s.io/v1beta1',
+  kind: 'Sandbox',
+  metadata: { name: 'hello-world', namespace: 'user-che' },
+};
+
+export const stubSandboxList: ISandboxList = {
+  apiVersion: 'agents.x-k8s.io/v1beta1',
+  kind: 'SandboxList',
+  items: [stubSandbox],
+};
+
 export const getDevWorkspaceClient = jest.fn(
   (..._args: Parameters<typeof helper>): ReturnType<typeof helper> => {
     return {
@@ -227,6 +246,7 @@ export const getDevWorkspaceClient = jest.fn(
         getInternalRegistryDisableStatus: () => internalRegistryDisableStatus,
         getDashboardLogo: () => dashboardLogo,
         getAutoProvision: () => stubAutoProvision,
+        getAgentSandboxEnabled: () => mockState.agentSandboxEnabled,
         getAdvancedAuthorization: () => stubAdvancedAuthorization,
         getAllowedSourceUrls: () => stubAllowedSourceUrls,
         getShowDeprecatedEditors: () => stubShowDeprecatedEditors,
@@ -318,6 +338,36 @@ export const getDevWorkspaceClient = jest.fn(
       sccPermissionApi: {
         checkSccPermission: (_namespace, _sccName) => Promise.resolve(true),
       } as ISccPermissionApi,
+      sandboxApi: {
+        isAvailable: () => Promise.resolve(stubSandboxApiAvailable),
+        listInNamespace: _namespace => Promise.resolve(stubSandboxList),
+        getByName: (_namespace, _name) => Promise.resolve(stubSandbox),
+        create: (_namespace, _sandbox) =>
+          mockState.sandboxCreateFails
+            ? Promise.reject(new Error('sandbox already exists'))
+            : Promise.resolve(stubSandbox),
+        patch: (_namespace, _name, patch) => {
+          mockState.lastSandboxPatch = patch;
+          return Promise.resolve(stubSandbox);
+        },
+        delete: (_namespace, _name) => Promise.resolve(undefined),
+        watchInNamespace: (_listener, _params) => Promise.resolve(undefined),
+        stopWatching: () => undefined,
+      } as ISandboxApi,
+      sandboxStorageApi: {
+        ensureClaim: (_namespace, _sandboxName, claimName) => {
+          mockState.sandboxStorageCalls.push(`ensure:${claimName}`);
+          return Promise.resolve(mockState.sandboxClaimCreated);
+        },
+        adoptClaim: (_namespace, sandbox) => {
+          mockState.sandboxStorageCalls.push(`adopt:${sandbox.metadata?.name}`);
+          return Promise.resolve(undefined);
+        },
+        deleteClaim: (_namespace, sandboxName) => {
+          mockState.sandboxStorageCalls.push(`delete:${sandboxName}`);
+          return Promise.resolve(undefined);
+        },
+      } as ISandboxStorageApi,
     } as DevWorkspaceClient;
   },
 );

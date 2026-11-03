@@ -21,17 +21,30 @@ import { getSchema } from '@/services/helpers';
 
 const tags = ['Event'];
 
+interface IEventListQuery {
+  /** Narrows the listing to the events of one object, server-side. */
+  involvedObjectName?: string;
+}
+
+const eventListQuerySchema = {
+  type: 'object',
+  properties: {
+    involvedObjectName: { type: 'string' },
+  },
+} as const;
+
 export function registerEventsRoutes(instance: FastifyInstance) {
   instance.register(async server => {
     server.get(
       `${baseApiPath}/namespace/:namespace/events`,
-      getSchema({ tags, params: namespacedSchema }),
+      getSchema({ tags, params: namespacedSchema, querystring: eventListQuerySchema }),
       async function (request: FastifyRequest) {
         const { namespace } = request.params as restParams.INamespacedParams;
+        const { involvedObjectName } = request.query as IEventListQuery;
         const token = getToken(request);
 
         const { eventApi } = getDevWorkspaceClient(token);
-        return await eventApi.listInNamespace(namespace);
+        return await eventApi.listInNamespace(namespace, involvedObjectName);
       },
     );
   });

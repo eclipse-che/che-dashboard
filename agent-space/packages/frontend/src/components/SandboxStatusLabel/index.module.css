@@ -1,0 +1,44 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+/* Matches the dashboard's own workspace status label. */
+.statusLabel {
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+/*
+ * Turns a static glyph into a progress indicator.
+ *
+ * A PatternFly `Spinner` cannot be used inside a `Label`: the label tints its
+ * icon slot through `color`, and the spinner paints from
+ * `--pf-v6-c-spinner--Color` instead, which is brand blue whatever the label
+ * is. In a blue label that leaves blue on blue. An ordinary icon inherits the
+ * colour the label asked for, so it is rotated here rather than swapped for a
+ * spinner - the same thing the dashboard does for a starting workspace.
+ */
+.rotate {
+  animation-name: statusRotate;
+  animation-duration: 1s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes statusRotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

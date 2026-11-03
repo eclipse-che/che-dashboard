@@ -101,7 +101,7 @@ export interface IEventApi extends IWatcherService<api.webSocket.SubscribeParams
   /**
    * Get list of Events in the given namespace
    */
-  listInNamespace(namespace: string): Promise<api.IEventList>;
+  listInNamespace(namespace: string, involvedObjectName?: string): Promise<api.IEventList>;
 }
 
 export interface IPodApi extends IWatcherService<api.webSocket.SubscribeParams> {
@@ -144,6 +144,8 @@ export type CheClusterCustomResource = k8s.V1CustomResourceDefinition & {
         };
       };
     };
+    // Added in che-operator PR #2184
+    agentSandbox?: CheClusterCustomResourceSpecAgentSandbox;
   };
   status: {
     pluginRegistryURL: string;
@@ -163,6 +165,15 @@ export function isCheClusterCustomResource(object: unknown): object is CheCluste
       isCheClusterCustomResourceSpecComponent(spec.components))
   );
 }
+
+/**
+ * Enables the Agent Sandbox integration (kubernetes-sigs/agent-sandbox).
+ * The operator only accepts `enabled: true` when the `agents.x-k8s.io` API group
+ * is available on the cluster, so the dashboard can trust the flag as-is.
+ */
+export type CheClusterCustomResourceSpecAgentSandbox = {
+  enabled?: boolean;
+};
 
 export type CheClusterCustomResourceSpecDevEnvironments = {
   containerBuildConfiguration?: {
@@ -405,6 +416,11 @@ export interface IServerConfigApi {
   getAutoProvision(cheCustomResource: CheClusterCustomResource): boolean;
 
   /**
+   * Returns true when the Agent Sandbox integration is enabled in the CheCluster CR.
+   */
+  getAgentSandboxEnabled(cheCustomResource: CheClusterCustomResource): boolean;
+
+  /**
    * Returns the allowed source URLs
    */
   getAllowedSourceUrls(cheCustomResource: CheClusterCustomResource): string[];
@@ -505,6 +521,124 @@ export interface IPersonalAccessTokenApi {
   delete(namespace: string, name: string): Promise<void>;
 }
 
+/**
+ * A `sandboxes.agents.x-k8s.io` object.
+ *
+ * The dashboard only relays these between the browser and the API server, so the
+ * payload is kept opaque rather than mirroring the upstream CRD schema here.
+ */
+export interface ISandbox {
+  apiVersion?: string;
+  kind?: string;
+  metadata?: k8s.V1ObjectMeta;
+  spec?: Record<string, unknown>;
+  status?: Record<string, unknown>;
+}
+
+export interface ISandboxList {
+  apiVersion?: string;
+  kind?: string;
+  metadata?: k8s.V1ListMeta;
+  items: ISandbox[];
+}
+
+/**
+ * Holds the methods for working with Agent Sandbox resources in a user namespace.
+ */
+export interface ISandboxApi extends IWatcherService<api.webSocket.SubscribeParams> {
+  /**
+   * Whether the cluster serves the `agents.x-k8s.io` API group.
+   */
+  isAvailable(): Promise<boolean>;
+
+  /**
+   * Get list of Sandboxes in the given namespace
+   */
+  listInNamespace(namespace: string): Promise<ISandboxList>;
+
+  /**
+   * Get a Sandbox by name
+   */
+  getByName(namespace: string, name: string): Promise<ISandbox>;
+
+  /**
+   * Create a Sandbox in the given namespace
+   */
+  create(namespace: string, sandbox: ISandbox): Promise<ISandbox>;
+
+  /**
+   * Apply a merge patch to a Sandbox
+   */
+  patch(namespace: string, name: string, patch: Record<string, unknown>): Promise<ISandbox>;
+
+  /**
+   * Delete a Sandbox
+   */
+  delete(namespace: string, name: string): Promise<void>;
+}
+
+/**
+ * Provisions the persistent storage a sandbox's pod template references.
+ *
+ * Kept apart from ISandboxApi because it speaks to a different API group: the
+ * claim is an ordinary core/v1 object that happens to be named after a sandbox.
+ */
+export interface ISandboxStorageApi {
+  /**
+   * Creates the claim if it is not there already, and reports whether this call
+   * is the one that created it.
+   */
+  ensureClaim(namespace: string, sandboxName: string, claimName: string): Promise<boolean>;
+
+  /**
+   * Makes the sandbox the owner of its claim, so deleting the sandbox deletes
+   * the claim too. Never throws: the sandbox already has its storage.
+   */
+  adoptClaim(namespace: string, sandbox: ISandbox): Promise<void>;
+
+  /**
+   * Deletes the claim provisioned for a sandbox, leaving alone any claim the
+   * dashboard did not provision.
+   */
+  deleteClaim(namespace: string, sandboxName: string): Promise<void>;
+}
+
+/** The pod and container a sandbox's terminal is opened in. */
+export interface SandboxTerminalTarget {
+  podName: string;
+  containerName: string;
+}
+
+export interface SandboxTerminalHandlers {
+  /** Called with everything the shell writes, stdout and stderr alike. */
+  onData(chunk: string): void;
+
+  /** Called once, with why the shell ended when it ended badly. */
+  onClose(reason: string | undefined): void;
+}
+
+/** A shell running in a sandbox pod, for as long as it is held open. */
+export interface ISandboxTerminalSession {
+  write(data: string): void;
+  resize(cols: number, rows: number): void;
+  close(): void;
+}
+
+export interface ISandboxTerminalApi {
+  /**
+   * Finds the pod and container a sandbox's terminal belongs in, or throws
+   * when the sandbox has no pod that could serve one.
+   */
+  resolveTarget(namespace: string, sandboxName: string): Promise<SandboxTerminalTarget>;
+
+  /** Starts a shell in the resolved container. */
+  openSession(
+    namespace: string,
+    target: SandboxTerminalTarget,
+    handlers: SandboxTerminalHandlers,
+  ): Promise<ISandboxTerminalSession>;
+}
+
 export interface IDevWorkspaceClient {
   devWorkspaceTemplateApi: IDevWorkspaceTemplateApi;
   devworkspaceApi: IDevWorkspaceApi;
@@ -525,6 +659,9 @@ export interface IDevWorkspaceClient {
   aiRegistryApi: IAiRegistryApi;
   deviceAuthTokenApi: IDeviceAuthTokenApi;
   sccPermissionApi: ISccPermissionApi;
+  sandboxApi: ISandboxApi;
+  sandboxStorageApi: ISandboxStorageApi;
+  sandboxTerminalApi: ISandboxTerminalApi;
 }
 
 export interface IDevWorkspaceSingletonClient {

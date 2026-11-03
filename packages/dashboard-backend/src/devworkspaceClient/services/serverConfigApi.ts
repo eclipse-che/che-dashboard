@@ -322,6 +322,10 @@ export class ServerConfigApiService implements IServerConfigApi {
     return cheCustomResource.spec.devEnvironments?.defaultNamespace?.autoProvision || false;
   }
 
+  getAgentSandboxEnabled(cheCustomResource: CheClusterCustomResource): boolean {
+    return cheCustomResource.spec.agentSandbox?.enabled === true;
+  }
+
   getAllowedSourceUrls(cheCustomResource: CheClusterCustomResource): string[] {
     return cheCustomResource.spec.devEnvironments?.allowedSources?.urls || [];
   }

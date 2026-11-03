@@ -11,13 +11,31 @@
  */
 
 import { V1alpha2DevWorkspace } from '@devfile/api';
-import { CoreV1Event, V1Pod, V1Status } from '@kubernetes/client-node';
+import {
+  CoreV1Event,
+  V1ObjectMeta,
+  V1Pod,
+  V1Status,
+} from '@kubernetes/client-node';
+
+/**
+ * A `sandboxes.agents.x-k8s.io` object. The dashboard only relays these, so the
+ * spec and the status stay opaque rather than mirroring the upstream CRD here.
+ */
+export type SandboxResource = {
+  apiVersion?: string;
+  kind?: string;
+  metadata?: V1ObjectMeta;
+  spec?: Record<string, unknown>;
+  status?: Record<string, unknown>;
+};
 
 export enum Channel {
   DEV_WORKSPACE = 'devWorkspace',
   EVENT = 'event',
   POD = 'pod',
   LOGS = 'logs',
+  SANDBOX = 'sandbox',
 }
 
 export function isWebSocketChannel(channel: unknown): channel is Channel {
@@ -26,7 +44,8 @@ export function isWebSocketChannel(channel: unknown): channel is Channel {
       ((channel as Channel) === Channel.DEV_WORKSPACE ||
         (channel as Channel) === Channel.EVENT)) ||
     (channel as Channel) === Channel.POD ||
-    (channel as Channel) === Channel.LOGS
+    (channel as Channel) === Channel.LOGS ||
+    (channel as Channel) === Channel.SANDBOX
   );
 }
 
@@ -44,7 +63,11 @@ export type SubscribeMessage = {
   method: 'SUBSCRIBE';
 } & (
   | {
-      channel: Channel.DEV_WORKSPACE | Channel.EVENT | Channel.POD;
+      channel:
+        | Channel.DEV_WORKSPACE
+        | Channel.EVENT
+        | Channel.POD
+        | Channel.SANDBOX;
       params: SubscribeParams;
     }
   | {
@@ -138,6 +161,10 @@ export type PodMessage = {
   eventPhase: EventPhase.ADDED | EventPhase.MODIFIED | EventPhase.DELETED;
   pod: V1Pod;
 };
+export type SandboxMessage = {
+  eventPhase: EventPhase.ADDED | EventPhase.MODIFIED | EventPhase.DELETED;
+  sandbox: SandboxResource;
+};
 export type LogsMessage = {
   eventPhase: EventPhase.ADDED;
   podName: string;
@@ -153,6 +180,7 @@ export type NotificationMessage =
   | EventMessage
   | DevWorkspaceMessage
   | PodMessage
+  | SandboxMessage
   | LogsMessage
   | StatusMessage;
 export type EventData = {
@@ -209,6 +237,16 @@ export function isPodMessage(message: unknown): message is PodMessage {
       (message as PodMessage).eventPhase === EventPhase.MODIFIED ||
       (message as PodMessage).eventPhase === EventPhase.DELETED) &&
     (message as PodMessage).pod !== undefined
+  );
+}
+
+export function isSandboxMessage(message: unknown): message is SandboxMessage {
+  return (
+    message !== undefined &&
+    ((message as SandboxMessage).eventPhase === EventPhase.ADDED ||
+      (message as SandboxMessage).eventPhase === EventPhase.MODIFIED ||
+      (message as SandboxMessage).eventPhase === EventPhase.DELETED) &&
+    (message as SandboxMessage).sandbox !== undefined
   );
 }
 

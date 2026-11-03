@@ -18,6 +18,7 @@ import {
   isLogsMessage,
   isNotificationMessage,
   isPodMessage,
+  isSandboxMessage,
   isStatusMessage,
   isWebSocketChannel,
   isWebSocketEventData,
@@ -34,6 +35,8 @@ describe('api.webSocket typeguards', () => {
     expect(isWebSocketChannel(Channel.EVENT)).toBeTruthy();
 
     expect(isWebSocketChannel(Channel.POD)).toBeTruthy();
+
+    expect(isWebSocketChannel(Channel.SANDBOX)).toBeTruthy();
 
     expect(isWebSocketChannel(undefined)).toBeFalsy();
     expect(isWebSocketChannel('foo')).toBeFalsy();
@@ -223,6 +226,47 @@ describe('api.webSocket typeguards', () => {
     expect(
       isPodMessage({
         pod: {},
+      }),
+    ).toBeFalsy();
+  });
+
+  test('isSandboxMessage', () => {
+    expect(
+      isSandboxMessage({
+        eventPhase: webSocket.EventPhase.ADDED,
+        sandbox: {},
+      }),
+    ).toBeTruthy();
+    expect(
+      isSandboxMessage({
+        eventPhase: webSocket.EventPhase.DELETED,
+        sandbox: {},
+      }),
+    ).toBeTruthy();
+    expect(
+      isSandboxMessage({
+        eventPhase: webSocket.EventPhase.MODIFIED,
+        sandbox: {},
+      }),
+    ).toBeTruthy();
+
+    expect(isSandboxMessage(undefined)).toBeFalsy();
+    expect(isSandboxMessage({})).toBeFalsy();
+    expect(
+      isSandboxMessage({
+        eventPhase: webSocket.EventPhase.ADDED,
+      }),
+    ).toBeFalsy();
+    expect(
+      isSandboxMessage({
+        sandbox: {},
+      }),
+    ).toBeFalsy();
+    // The phase a status carries is not one a sandbox update can have.
+    expect(
+      isSandboxMessage({
+        eventPhase: webSocket.EventPhase.ERROR,
+        sandbox: {},
       }),
     ).toBeFalsy();
   });

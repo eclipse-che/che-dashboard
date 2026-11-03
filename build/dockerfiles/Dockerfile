@@ -32,6 +32,9 @@ COPY ${FRONTEND}/package.json /dashboard/${FRONTEND}/
 ENV BACKEND=packages/dashboard-backend
 COPY ${BACKEND}/package.json /dashboard/${BACKEND}/
 
+ENV AGENT_SPACE=agent-space/packages/frontend
+COPY ${AGENT_SPACE}/package.json /dashboard/${AGENT_SPACE}/
+
 WORKDIR /dashboard
 
 ENV DISABLE_OPENCOLLECTIVE=true
@@ -40,6 +43,10 @@ ENV ADBLOCK=true
 RUN yarn install --network-timeout 3600000 --frozen-lockfile --mode=skip-build || \
     yarn install --network-timeout 3600000 --frozen-lockfile
 COPY packages/ /dashboard/packages
+COPY agent-space/ /dashboard/agent-space
+
+# Agent Space samples are hardcoded in packages/registry/sandbox/index.json.
+# Webpack copies them into the bundle.
 RUN yarn build
 
 # Prepare air-gapped resources

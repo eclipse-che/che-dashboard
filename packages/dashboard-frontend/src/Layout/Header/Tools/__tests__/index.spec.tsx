@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { render, screen } from '@testing-library/react';
 import { createHashHistory } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -53,17 +54,51 @@ describe('Page header tools', () => {
   it('should correctly render the component', () => {
     expect(renderer.create(component).toJSON()).toMatchSnapshot();
   });
+
+  describe('Agent Space button', () => {
+    it('should not be rendered by default', () => {
+      render(component);
+
+      expect(screen.queryByRole('link', { name: 'Agent Space' })).not.toBeInTheDocument();
+    });
+
+    it('should not be rendered when agentSandbox is disabled', () => {
+      render(buildComponent(createStore(productCli, name, false)));
+
+      expect(screen.queryByRole('link', { name: 'Agent Space' })).not.toBeInTheDocument();
+    });
+
+    it('should link to the Agent Space bundle when agentSandbox is enabled', () => {
+      render(buildComponent(createStore(productCli, name, true)));
+
+      const button = screen.getByRole('link', { name: 'Agent Space' });
+
+      expect(button).toBeInTheDocument();
+      expect(button).toHaveAttribute('href', '/agent-space/');
+    });
+  });
 });
 
-function createStore(cheCliTool: string, name: string): Store {
-  return new MockStoreBuilder()
-    .withUsername(name)
-    .withBranding({
-      configuration: {
-        cheCliTool,
-      },
-      links: BRANDING_DEFAULT.links,
-      docs: {},
-    } as BrandingData)
-    .build();
+function buildComponent(store: Store): React.ReactElement {
+  return (
+    <Provider store={store}>
+      <HeaderTools history={createHashHistory()} logout={jest.fn()} />
+    </Provider>
+  );
+}
+
+function createStore(cheCliTool: string, name: string, agentSandboxEnabled?: boolean): Store {
+  const builder = new MockStoreBuilder().withUsername(name).withBranding({
+    configuration: {
+      cheCliTool,
+    },
+    links: BRANDING_DEFAULT.links,
+    docs: {},
+  } as BrandingData);
+
+  if (agentSandboxEnabled !== undefined) {
+    builder.withDwServerConfig({ agentSandbox: { enabled: agentSandboxEnabled } });
+  }
+
+  return builder.build();
 }

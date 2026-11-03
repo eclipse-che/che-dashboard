@@ -1035,6 +1035,71 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@eclipse-che/agent-space-frontend@workspace:agent-space/packages/frontend":
+  version: 0.0.0-use.local
+  resolution: "@eclipse-che/agent-space-frontend@workspace:agent-space/packages/frontend"
+  dependencies:
+    "@codemirror/lang-yaml": "npm:^6.1.2"
+    "@codemirror/language": "npm:^6.10.8"
+    "@codemirror/view": "npm:^6.36.2"
+    "@lezer/highlight": "npm:^1.2.1"
+    "@patternfly/react-core": "npm:^6.4.0"
+    "@patternfly/react-icons": "npm:^6.4.0"
+    "@patternfly/react-table": "npm:^6.4.0"
+    "@reduxjs/toolkit": "npm:^2.2.7"
+    "@testing-library/dom": "npm:^10.4.0"
+    "@testing-library/jest-dom": "npm:^6.5.0"
+    "@testing-library/react": "npm:^16.0.1"
+    "@testing-library/user-event": "npm:^14.5.2"
+    "@types/jest": "npm:^29.5.3"
+    "@types/js-yaml": "npm:^4.0.5"
+    "@types/react": "npm:^18.3.1"
+    "@types/react-dom": "npm:^18.3.0"
+    "@types/redux-logger": "npm:^3.0.13"
+    "@typescript-eslint/eslint-plugin": "npm:^6.4.0"
+    "@typescript-eslint/parser": "npm:^6.4.0"
+    "@uiw/codemirror-theme-github": "npm:^4.25.4"
+    "@uiw/react-codemirror": "npm:4.23.5"
+    "@xterm/addon-fit": "npm:^0.11.0"
+    "@xterm/xterm": "npm:^6.0.0"
+    axios: "npm:^1.20.0"
+    copy-webpack-plugin: "npm:^11.0.0"
+    css-loader: "npm:^6.8.1"
+    css-minimizer-webpack-plugin: "npm:^5.0.1"
+    detect-browser: "npm:^5.3.0"
+    eslint: "npm:^8.57.1"
+    eslint-config-prettier: "npm:^9.0.0"
+    eslint-plugin-no-relative-import-paths: "npm:^1.5.2"
+    eslint-plugin-notice: "npm:^0.9.10"
+    eslint-plugin-prettier: "npm:^5.0.0"
+    eslint-plugin-react: "npm:^7.33.1"
+    eslint-plugin-react-hooks: "npm:^4.2.0"
+    eslint-plugin-simple-import-sort: "npm:^10.0.0"
+    html-webpack-plugin: "npm:^5.5.3"
+    identity-obj-proxy: "npm:^3.0.0"
+    jest: "npm:^30.2.0"
+    jest-environment-jsdom: "npm:^29.6.4"
+    js-yaml: "npm:^4.3.2"
+    mini-css-extract-plugin: "npm:^2.7.6"
+    prettier: "npm:^3.2.5"
+    react: "npm:^18.3.1"
+    react-dom: "npm:^18.3.1"
+    react-redux: "npm:^9.1.2"
+    react-router-dom: "npm:^6.30.6"
+    redux-logger: "npm:^3.0.6"
+    style-loader: "npm:^3.3.3"
+    stylelint: "npm:^16.15.0"
+    stylelint-config-clean-order: "npm:^5.2.0"
+    stylelint-config-standard: "npm:^34.0.0"
+    ts-jest: "npm:^29.4.6"
+    ts-loader: "npm:^9.4.4"
+    typescript: "npm:^5.5.4"
+    webpack: "npm:^5.104.1"
+    webpack-cli: "npm:^5.1.4"
+    webpack-merge: "npm:^5.9.0"
+  languageName: unknown
+  linkType: soft
+
 "@eclipse-che/che-devworkspace-generator@npm:7.113.0-next-7b6a101":
   version: 7.113.0-next-7b6a101
   resolution: "@eclipse-che/che-devworkspace-generator@npm:7.113.0-next-7b6a101"
@@ -2993,6 +3058,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react@npm:^18.3.1":
+  version: 18.3.31
+  resolution: "@types/react@npm:18.3.31"
+  dependencies:
+    "@types/prop-types": "npm:*"
+    csstype: "npm:^3.2.2"
+  checksum: 10/0a5d73b1ba3ce73273b28cc50da78d520b1a8d4253075820dc5cf6c9e286ff6cb339b56bd613d05885fec214fbecd8137bddcbdb475612fdcc46e061d88f00fc
+  languageName: node
+  linkType: hard
+
 "@types/redux-logger@npm:^3.0.13":
   version: 3.0.13
   resolution: "@types/redux-logger@npm:3.0.13"
@@ -3802,6 +3877,20 @@ __metadata:
     webpack-dev-server:
       optional: true
   checksum: 10/20424e5c1e664e4d7ab11facee7033bb729f6acd86493138069532934c1299c1426da72942822dedb00caca8fc60cc8aec1626e610ee0e8a9679e3614f555860
+  languageName: node
+  linkType: hard
+
+"@xterm/addon-fit@npm:^0.11.0":
+  version: 0.11.0
+  resolution: "@xterm/addon-fit@npm:0.11.0"
+  checksum: 10/daeb1cc2be794e0ee3b0f6b1cbec0ba70ac7c65f14093b405a2dfbf93bf267cd3f81490a72bb71364044ff7fd68ff0e8e124977dd812ff9914ad864c6a610c0b
+  languageName: node
+  linkType: hard
+
+"@xterm/xterm@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "@xterm/xterm@npm:6.0.0"
+  checksum: 10/2e9aef4770ce4778f4823f261491ade3863fa2141ff4607785a4c22cb6948bb0897e21581536ab1a3327a7ee59467e3549c09b61278b07a558f03ff14ba45bc4
   languageName: node
   linkType: hard
 
@@ -5794,6 +5883,13 @@ __metadata:
   version: 3.1.2
   resolution: "csstype@npm:3.1.2"
   checksum: 10/1f39c541e9acd9562996d88bc9fb62d1cb234786ef11ed275567d4b2bd82e1ceacde25debc8de3d3b4871ae02c2933fa02614004c97190711caebad6347debc2
+  languageName: node
+  linkType: hard
+
+"csstype@npm:^3.2.2":
+  version: 3.2.3
+  resolution: "csstype@npm:3.2.3"
+  checksum: 10/ad41baf7e2ffac65ab544d79107bf7cd1a4bb9bab9ac3302f59ab4ba655d5e30942a8ae46e10ba160c6f4ecea464cc95b975ca2fefbdeeacd6ac63f12f99fe1f
   languageName: node
   linkType: hard
 
