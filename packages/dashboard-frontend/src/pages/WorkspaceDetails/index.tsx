@@ -34,6 +34,7 @@ import Header from '@/pages/WorkspaceDetails/Header';
 import { WorkspaceDetailsHeaderActions } from '@/pages/WorkspaceDetails/Header/Actions';
 import styles from '@/pages/WorkspaceDetails/index.module.css';
 import { OverviewTab } from '@/pages/WorkspaceDetails/OverviewTab';
+import StorageTab from '@/pages/WorkspaceDetails/StorageTab';
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import { buildDetailsLocation } from '@/services/helpers/location';
 import { WorkspaceDetailsTab } from '@/services/helpers/types';
@@ -96,6 +97,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
         pathname.startsWith('/workspace/') &&
         (tab === WorkspaceDetailsTab.OVERVIEW ||
           tab === WorkspaceDetailsTab.DEVFILE ||
+          tab === WorkspaceDetailsTab.STORAGE ||
           tab === WorkspaceDetailsTab.BACKUP ||
           tab === WorkspaceDetailsTab.EVENTS ||
           tab === WorkspaceDetailsTab.LOGS ||
@@ -172,6 +174,13 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
               <DevfileEditorTab
                 workspace={workspace}
                 isActive={WorkspaceDetailsTab.DEVFILE === this.state.activeTabKey}
+              />
+            </Tab>
+            <Tab eventKey={WorkspaceDetailsTab.STORAGE} title={WorkspaceDetailsTab.STORAGE}>
+              <StorageTab
+                key={workspace.uid}
+                workspace={workspace}
+                isActive={WorkspaceDetailsTab.STORAGE === this.state.activeTabKey}
               />
             </Tab>
             <Tab eventKey={WorkspaceDetailsTab.BACKUP} title={WorkspaceDetailsTab.BACKUP}>

@@ -13,6 +13,7 @@ Eclipse Che Dashboard is the web-based user interface for Eclipse Che, providing
 - View workspace status and real-time events
 - Access workspace IDE
 - Restore workspaces from backup images
+- Show the workspace volume (PVC), its usage, and expand it (Storage tab of Workspace Details)
 
 ### 2. Factory Flow
 
@@ -140,6 +141,12 @@ src/
 - `GET /dashboard/api/namespace/:namespace/backups`
 - `GET /dashboard/api/namespace/:namespace/devworkspaces/:workspaceName/backup-status`
 
+### Workspace Storage
+
+- `GET/PATCH /dashboard/api/namespace/:namespace/devworkspaces/:workspaceName/storage` — PVC status, and expansion (`{ "size": "15Gi" }`, grow only)
+- `GET /dashboard/api/namespace/:namespace/devworkspaces/:workspaceName/storage/usage` — `df` of the projects volume, running workspaces only
+- `GET /dashboard/api/namespace/:namespace/devworkspaces/:workspaceName/storage/quota?size=` — checks a new size against the namespace ResourceQuotas and LimitRanges
+
 ### Cluster Operations
 
 - `GET /dashboard/api/namespace/:namespace/pods`
@@ -164,6 +171,7 @@ src/
 ## Security
 
 - **SSRF protection**: the data resolver route validates all outbound URLs against an allowlist, blocks private IP ranges (RFC 1918, loopback, IPv4-mapped IPv6, link-local), and rejects redirects to blocked destinations.
+- **Workspace storage**: every call uses the user token, except two read-only fallbacks with the dashboard service account: reading a StorageClass (`allowVolumeExpansion`) when the user may not, and reading the CheCluster default PVC strategy.
 - **Rate limiting**: applied to API routes via `@fastify/rate-limit`.
 - **Dependency pinning**: all transitive dependencies with known CVEs are pinned via `resolutions` in the root `package.json`.
 

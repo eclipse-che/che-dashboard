@@ -37,6 +37,12 @@ jest.mock('@/pages/WorkspaceDetails/Header/Actions', () => ({
 }));
 jest.mock('@/components/WorkspaceLogs');
 jest.mock('@/components/WorkspaceEvents');
+jest.mock('@/pages/WorkspaceDetails/StorageTab', () => ({
+  __esModule: true,
+  default: (props: { isActive: boolean }) => (
+    <div data-testid="storage-tab">Storage tab active: {String(props.isActive)}</div>
+  ),
+}));
 
 const workspaceName = 'wksp';
 const namespace = 'che-user';
@@ -82,17 +88,18 @@ describe('Workspace Details page', () => {
       );
     });
 
-    it('should have six tabs visible', () => {
+    it('should have seven tabs visible', () => {
       const workspace = constructWorkspace(devWorkspaceBuilder.build());
       renderComponent({
         workspace,
       });
 
       const allTabs = screen.getAllByRole('tab');
-      expect(allTabs.length).toBe(6);
+      expect(allTabs.length).toBe(7);
 
       const overviewTab = screen.queryByRole('tab', { name: 'Overview' });
       const devfileTab = screen.queryByRole('tab', { name: 'Devfile' });
+      const storageTab = screen.queryByRole('tab', { name: 'Storage' });
       const backupTab = screen.queryByRole('tab', { name: 'Backup' });
       const logsTab = screen.queryByRole('tab', { name: 'Logs' });
       const eventsTab = screen.queryByRole('tab', { name: 'Events' });
@@ -100,6 +107,7 @@ describe('Workspace Details page', () => {
 
       expect(overviewTab).not.toBeNull();
       expect(devfileTab).not.toBeNull();
+      expect(storageTab).not.toBeNull();
       expect(backupTab).not.toBeNull();
       expect(logsTab).not.toBeNull();
       expect(eventsTab).not.toBeNull();
@@ -131,6 +139,31 @@ describe('Workspace Details page', () => {
       await waitFor(() =>
         expect(screen.queryByRole('tabpanel', { name: 'Backup' })).not.toBeNull(),
       );
+    });
+
+    it('should activate the Storage tab from the location search params', async () => {
+      const workspace = constructWorkspace(devWorkspaceBuilder.build());
+      renderComponent(
+        {
+          workspace,
+        },
+        `?tab=${WorkspaceDetailsTab.STORAGE}`,
+      );
+
+      await waitFor(() =>
+        expect(screen.queryByRole('tabpanel', { name: 'Storage' })).not.toBeNull(),
+      );
+      expect(screen.getByTestId('storage-tab')).toHaveTextContent('Storage tab active: true');
+    });
+
+    it('should place the Storage tab after the Devfile tab', () => {
+      const workspace = constructWorkspace(devWorkspaceBuilder.build());
+      renderComponent({
+        workspace,
+      });
+
+      const tabNames = screen.getAllByRole('tab').map(tab => tab.textContent);
+      expect(tabNames.indexOf('Storage')).toEqual(tabNames.indexOf('Devfile') + 1);
     });
 
     it('should fall back to the Overview tab for an unknown tab search param', async () => {

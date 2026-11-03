@@ -11,6 +11,7 @@
  */
 
 import * as errors from './errors';
+import * as quantity from './quantity';
 import {
   sanitizeLocation,
   sanitizePathname,
@@ -19,6 +20,7 @@ import {
 
 export default {
   errors,
+  quantity,
   sanitizeLocation,
   sanitizePathname,
   sanitizeSearchParams,
