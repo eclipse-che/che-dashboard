@@ -30,7 +30,15 @@ packages/
 ├── common/                 # Shared types and utilities
 ├── dashboard-backend/      # Node.js/Fastify backend
 └── dashboard-frontend/     # React frontend
+
+agent-space/
+├── packages/frontend/      # Agent Space SPA, also a yarn workspace
+├── packages/registry/      # Sandbox sample manifests and their index
+└── scripts/                # Sample preparation
 ```
+
+See [`agent-space/README.md`](agent-space/README.md) for the Agent Space bundle: it is a
+workspace of this monorepo and builds into the dashboard's own output tree.
 
 ## Common Dev Commands
 
