@@ -101,6 +101,7 @@
 | `@eslint/eslintrc@3.3.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@eslint/eslintrc/3.3.4) |
 | `@eslint/js@8.57.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@eslint/js/8.57.1) |
 | `@hapi/hoek@10.0.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/hoek/10.0.1) |
+| `@hapi/topo@5.1.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/topo/5.1.0) |
 | `@humanwhocodes/config-array@0.13.0` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@humanwhocodes/config-array/0.13.0) |
 | `@humanwhocodes/module-importer@1.0.1` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@humanwhocodes/module-importer/1.0.1) |
 | `@humanwhocodes/object-schema@2.0.3` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@humanwhocodes/object-schema/2.0.3) |
@@ -157,6 +158,9 @@
 | `@pkgr/utils@2.4.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@pkgr/utils/2.4.2) |
 | `@polka/url@1.0.0-next.23` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@polka/url/1.0.0-next.23) |
 | `@react-mock/state@0.1.8` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@react-mock/state/0.1.8) |
+| `@sideway/address@4.1.5` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sideway/address/4.1.5) |
+| `@sideway/formula@3.0.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sideway/formula/3.0.1) |
+| `@sideway/pinpoint@2.0.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sideway/pinpoint/2.0.0) |
 | `@simple-libs/child-process-utils@1.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@simple-libs/child-process-utils/1.0.2) |
 | `@simple-libs/stream-utils@1.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@simple-libs/stream-utils/1.2.0) |
 | `@sinclair/typebox@0.27.8` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sinclair/typebox/0.27.8) |
@@ -804,6 +808,7 @@
 | `jest-worker@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jest-worker/30.2.0) |
 | `jest@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jest/30.2.0) |
 | `jiti@2.6.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jiti/2.6.1) |
+| `joi@17.13.9` | BSD-3-Clause | transitive dependency |
 | `jose@6.1.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jose/6.1.3) |
 | `js-tokens@4.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/js-tokens/4.0.0) |
 | `js-yaml@4.3.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/js-yaml/4.3.2) |
