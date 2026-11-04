@@ -11,6 +11,7 @@
 #
 
 name: Release Che Dashboard
+run-name: Release Che Dashboard ${{ inputs.version }} on ${{ github.ref_name }}
 on:
   workflow_dispatch:
     inputs:
@@ -40,11 +41,28 @@ jobs:
         with:
           node-version: "24"
       -
+        name: Display release parameters
+        env:
+          VERSION: ${{ inputs.version }}
+          FORCE_RECREATE_TAGS: ${{ inputs.forceRecreateTags }}
+          REF_NAME: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
+          TRIGGERED_BY: ${{ github.actor }}
+        run: |
+          echo "=== Release Parameters ==="
+          echo "Version: ${VERSION}"
+          echo "Force recreate tags: ${FORCE_RECREATE_TAGS}"
+          echo "Branch: ${REF_NAME}"
+          echo "Commit SHA: ${COMMIT_SHA}"
+          echo "Triggered by: ${TRIGGERED_BY}"
+          echo "=========================="
+      -
         name: Check existing tags
+        env:
+          RECREATE_TAGS: ${{ github.event.inputs.forceRecreateTags }}
+          VERSION: ${{ github.event.inputs.version }}
         run: |
           set +e
-          RECREATE_TAGS=${{ github.event.inputs.forceRecreateTags }}
-          VERSION=${{ github.event.inputs.version }}
           EXISTING_TAG=$(git ls-remote --exit-code origin refs/tags/${VERSION})
           if [[ -n ${EXISTING_TAG} ]]; then
             if [[ ${RECREATE_TAGS} == "true" ]]; then
@@ -59,12 +77,14 @@ jobs:
           fi
       -
         name: "Tag release"
+        env:
+          GITHUB_TOKEN: ${{ secrets.CHE_BOT_GITHUB_TOKEN }}
+          VERSION: ${{ github.event.inputs.version }}
         run: |
           git config --global user.name "Mykhailo Kuznietsov"
           git config --global user.email "mkuznets@redhat.com"
           git config --global pull.rebase true
-          export GITHUB_TOKEN=${{ secrets.CHE_BOT_GITHUB_TOKEN }}
-          /bin/bash make-release.sh --version ${{ github.event.inputs.version }} --tag-release
+          /bin/bash make-release.sh --version ${VERSION} --tag-release
       #- name: Create failure MM message
         #if: ${{ failure() }}
         #run: |
@@ -96,7 +116,7 @@ jobs:
         name: "Checkout Che Dashboard source code"
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.version }}
+          ref: ${{ inputs.version }}
       -
         name: "Set up QEMU"
         uses: docker/setup-qemu-action@v3
@@ -119,12 +139,12 @@ jobs:
           platforms: linux/${{ matrix.arch }}
           push: true
           provenance: false
-          tags: ${{ env.IMAGE }}:${{ github.event.inputs.version }}-${{ matrix.arch }}
+          tags: ${{ env.IMAGE }}:${{ inputs.version }}-${{ matrix.arch }}
       -
         id: result
         name: "Build result outputs version"
         if: ${{ success() }}
-        run: echo "${{ matrix.arch }}=${{ github.event.inputs.version }}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+        run: echo "${{ matrix.arch }}=${{ inputs.version }}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
 
   create-manifest:
     needs: build-images
@@ -139,25 +159,26 @@ jobs:
           password: ${{ secrets.QUAY_PASSWORD }}
       -
         name: "Create and push manifest"
+        env:
+          AMD64_VERSION: ${{ needs['build-images'].outputs.amd64 }}
+          ARM64_VERSION: ${{ needs['build-images'].outputs.arm64 }}
+          S390X_VERSION: ${{ needs['build-images'].outputs.s390x }}
+          VERSION: ${{ inputs.version }}
         run: |
-          AMD64_VERSION="${{ needs['build-images'].outputs.amd64 }}"
-          ARM64_VERSION="${{ needs['build-images'].outputs.arm64 }}"
-          S390X_VERSION="${{ needs['build-images'].outputs.s390x }}"
-
-          if [[ -z "$AMD64_VERSION" || \
-               -z "$ARM64_VERSION" ]]; then
+          if [[ -z "${AMD64_VERSION}" || \
+               -z "${ARM64_VERSION}" ]]; then
             echo "[!] The job 'build-images' fails on some of the architectures. Can't create complete manifest.";
             exit 1;
           fi
 
           AMEND=""
-          AMEND+=" --amend ${{ env.IMAGE }}:$AMD64_VERSION";
-          AMEND+=" --amend ${{ env.IMAGE }}:$ARM64_VERSION";
-          if [ -n "$S390X_VERSION" ]; then
-              AMEND+=" --amend ${{ env.IMAGE }}:$S390X_VERSION";
+          AMEND+=" --amend ${{ env.IMAGE }}:${AMD64_VERSION}";
+          AMEND+=" --amend ${{ env.IMAGE }}:${ARM64_VERSION}";
+          if [ -n "${S390X_VERSION}" ]; then
+              AMEND+=" --amend ${{ env.IMAGE }}:${S390X_VERSION}";
           fi
-          docker manifest create ${{ env.IMAGE }}:${{ github.event.inputs.version }} $AMEND
-          docker manifest push ${{ env.IMAGE }}:${{ github.event.inputs.version }}
+          docker manifest create ${{ env.IMAGE }}:${VERSION} $AMEND
+          docker manifest push ${{ env.IMAGE }}:${VERSION}
       -
         id: result
         name: "Manifest result"
