@@ -11,6 +11,7 @@
 #
 
 name: Release Che Dashboard
+run-name: Release Che Dashboard ${{ inputs.version }} on ${{ github.ref_name }}
 on:
   workflow_dispatch:
     inputs:
@@ -34,6 +35,16 @@ jobs:
       -
         name: "Checkout Che Dashboard source code"
         uses: actions/checkout@v4
+      -
+        name: Display release parameters
+        run: |
+          echo "=== Release Parameters ==="
+          echo "Version: ${{ inputs.version }}"
+          echo "Force recreate tags: ${{ inputs.forceRecreateTags }}"
+          echo "Branch: ${GITHUB_REF#refs/heads/}"
+          echo "Commit SHA: ${{ github.sha }}"
+          echo "Triggered by: ${{ github.actor }}"
+          echo "=========================="
       -
         name: "Setup Node"
         uses: actions/setup-node@v4

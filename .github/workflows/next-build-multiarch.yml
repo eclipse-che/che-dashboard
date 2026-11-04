@@ -11,6 +11,7 @@
 #
 
 name: Che Dashboard Next Build
+run-name: Build and publish images for ${{ github.ref_name }} @ ${{ github.sha }}
 
 on:
   workflow_dispatch:
@@ -38,6 +39,15 @@ jobs:
       -
         name: "Checkout Che Dashboard source code"
         uses: actions/checkout@v4
+      -
+        name: Display build parameters
+        run: |
+          echo "=== Build Parameters ==="
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit SHA: ${{ github.sha }}"
+          echo "Triggered by: ${{ github.actor }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "=========================="
       -
         name: "Set up QEMU"
         uses: docker/setup-qemu-action@v3
