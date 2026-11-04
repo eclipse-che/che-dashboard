@@ -33,7 +33,6 @@
 | `@fastify/websocket@11.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/websocket/11.2.0) |
 | `@hapi/boom@10.0.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/boom/10.0.1) |
 | `@hapi/bourne@3.0.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/bourne/3.0.0) |
-| `@hapi/topo@5.1.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/topo/5.1.0) |
 | `@hapi/wreck@18.1.2` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/wreck/18.1.2) |
 | `@inversifyjs/common@1.5.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@inversifyjs/common/1.5.0) |
 | `@inversifyjs/container@1.9.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@inversifyjs/container/1.9.1) |
@@ -55,9 +54,6 @@
 | `@pinojs/redact@0.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@pinojs/redact/0.4.0) |
 | `@reduxjs/toolkit@2.2.7` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@reduxjs/toolkit/2.2.7) |
 | `@remix-run/router@1.23.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@remix-run/router/1.23.4) |
-| `@sideway/address@4.1.5` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sideway/address/4.1.5) |
-| `@sideway/formula@3.0.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sideway/formula/3.0.1) |
-| `@sideway/pinpoint@2.0.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sideway/pinpoint/2.0.0) |
 | `@types/use-sync-external-store@0.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/use-sync-external-store/0.0.3) |
 | `@uiw/codemirror-extensions-basic-setup@4.23.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/codemirror-extensions-basic-setup/4.23.5) |
 | `@uiw/codemirror-theme-github@4.25.9` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/codemirror-theme-github/4.25.9) |
@@ -133,7 +129,6 @@
 | `inversify@6.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/inversify/6.0.2) |
 | `inversify@7.5.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/inversify/7.5.1) |
 | `ipaddr.js@2.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ipaddr.js/2.3.0) |
-| `joi@17.13.8` | BSD-3-Clause | transitive dependency |
 | `joycon@3.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/joycon/3.1.1) |
 | `json-schema-ref-resolver@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-schema-ref-resolver/3.0.0) |
 | `json-schema-resolver@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-schema-resolver/3.0.0) |
