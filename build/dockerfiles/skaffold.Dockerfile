@@ -26,6 +26,7 @@ COPY ${FRONTEND_LIB} /public
 COPY ${DEVFILE_REGISTRY} /public/dashboard/devfile-registry
 
 COPY ../../build/dockerfiles/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 EXPOSE 80
 EXPOSE 443

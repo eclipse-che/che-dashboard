@@ -204,6 +204,22 @@ interface GitProjectMatch {
 }
 
 /**
+ * Returns the name of the project remote whose URL matches the factory source URL.
+ */
+function findRemoteMatchingSourceUrl(
+  git: V230DevfileProjectsItemsGit,
+  sourceUrl: string | undefined,
+): string | undefined {
+  const targetUrl = normalizeGitUrl(sourceUrl);
+  if (!targetUrl) {
+    return undefined;
+  }
+  return Object.entries(git.remotes || {}).find(
+    ([, remoteUrl]) => normalizeGitUrl(remoteUrl) === targetUrl,
+  )?.[0];
+}
+
+/**
  * Returns the Git project to replace remotes for.
  *
  * The `remotes` and `revision` factory parameters describe the repository the factory URL
@@ -228,7 +244,11 @@ function getGitProjectForConfiguringRemotes(
     return undefined;
   }
   if (gitProjects.length === 1) {
-    return { git: gitProjects[0].git };
+    const soleProject = gitProjects[0].git;
+    const matchedRemoteName = findRemoteMatchingSourceUrl(soleProject, sourceUrl);
+    return matchedRemoteName
+      ? { git: soleProject, remoteName: matchedRemoteName }
+      : { git: soleProject };
   }
 
   const targetUrl = normalizeGitUrl(sourceUrl);
