@@ -10,3 +10,5 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 | `undici@7.30.1` | transitive dependency |
 | `handlebars@4.7.10` | transitive dependency |
 | `joi@17.13.9` | transitive dependency |
+| `follow-redirects@1.16.2` | transitive dependency |
+| `pbkdf2@3.1.7` | transitive dependency |
