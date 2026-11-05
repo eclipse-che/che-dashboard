@@ -1006,7 +1006,7 @@
 | `postcss-reduce-transforms@6.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/postcss-reduce-transforms/6.0.0) |
 | `postcss-resolve-nested-selector@0.1.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/postcss-resolve-nested-selector/0.1.6) |
 | `postcss-safe-parser@7.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/postcss-safe-parser/7.0.1) |
-| `postcss-selector-parser@6.0.13` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/postcss-selector-parser/6.0.13) |
+| `postcss-selector-parser@6.1.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/postcss-selector-parser/6.1.5) |
 | `postcss-selector-parser@7.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/postcss-selector-parser/7.1.0) |
 | `postcss-sorting@8.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/postcss-sorting/8.0.2) |
 | `postcss-svgo@6.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/postcss-svgo/6.0.0) |
