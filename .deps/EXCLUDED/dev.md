@@ -10,3 +10,5 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 | `undici@7.30.1` | transitive dependency |
 | `handlebars@4.7.10` | transitive dependency |
 | `joi@17.13.9` | transitive dependency |
+| `bundle-name@4.1.1` | transitive dependency |
+| `wsl-utils@1.0.1` | transitive dependency |
