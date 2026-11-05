@@ -389,6 +389,23 @@ describe('for DevWorkspace', () => {
       expect(workspace.devfilePath).toEqual('apps/appA/devfile.yaml');
     });
 
+    it('should preserve plus signs in devfilePath from URL-encoded factory params', () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'test-workspace',
+          annotations: {
+            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+              factory: {
+                params: 'override.devfileFilename=devfile%2Bprod.yaml&url=https://dummy.repo',
+              },
+            }),
+          },
+        })
+        .build();
+      const workspace = constructWorkspace(devWorkspace);
+      expect(workspace.devfilePath).toEqual('devfile+prod.yaml');
+    });
+
     it('should return undefined when override.devfileFilename is not in factory params', () => {
       const devWorkspace = new DevWorkspaceBuilder()
         .withMetadata({

@@ -190,6 +190,20 @@ describe('buildFactoryParams', () => {
       });
     });
 
+    it('should preserve plus signs in override values for URLSearchParams round-trip', () => {
+      const searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: 'https://github.com/org/repo',
+        'override.devfileFilename': 'devfile+prod.yaml',
+      });
+
+      const { factoryId } = buildFactoryParams(searchParams);
+
+      // The saved factoryId must be re-parseable by URLSearchParams
+      // without corrupting + into space
+      const reparsed = new URLSearchParams(factoryId);
+      expect(reparsed.get('override.devfileFilename')).toEqual('devfile+prod.yaml');
+    });
+
     it('should return factory identity without EXISTING_WORKSPACE_NAME attributes', () => {
       const searchParams = new URLSearchParams({
         [EDITOR_ATTR]: 'che-incubator/che-code/next',
