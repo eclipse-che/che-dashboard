@@ -223,6 +223,7 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
         remotes,
         isEqual(devfile, defaultDevfile),
         revision || 'HEAD',
+        sourceUrl,
       );
     }
 
