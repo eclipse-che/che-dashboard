@@ -11,16 +11,9 @@
  */
 
 import common from '@eclipse-che/common';
-import {
-  AlertVariant,
-  Button,
-  PageSection,
-  PageSectionVariants,
-  Tab,
-  Tabs,
-} from '@patternfly/react-core';
+import { AlertVariant, PageSection, PageSectionVariants, Tab, Tabs } from '@patternfly/react-core';
 import React from 'react';
-import { Link, Location, NavigateFunction } from 'react-router-dom';
+import { Location, NavigateFunction } from 'react-router-dom';
 
 import Head from '@/components/Head';
 import ProgressIndicator from '@/components/Progress';
@@ -29,7 +22,6 @@ import WorkspaceLogs from '@/components/WorkspaceLogs';
 import { lazyInject } from '@/inversify.config';
 import AdvancedTab from '@/pages/WorkspaceDetails/AdvancedTab';
 import BackupTab from '@/pages/WorkspaceDetails/BackupTab';
-import DevfileEditorTab from '@/pages/WorkspaceDetails/DevfileEditorTab';
 import Header from '@/pages/WorkspaceDetails/Header';
 import { WorkspaceDetailsHeaderActions } from '@/pages/WorkspaceDetails/Header/Actions';
 import styles from '@/pages/WorkspaceDetails/index.module.css';
@@ -46,7 +38,6 @@ export type Props = {
   location: Location;
   navigate: NavigateFunction;
   isLoading: boolean;
-  oldWorkspaceLocation?: Location;
   workspace: Workspace | undefined;
   workspacesLink: string;
   onSave: (workspace: Workspace) => Promise<void>;
@@ -96,7 +87,6 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
       if (
         pathname.startsWith('/workspace/') &&
         (tab === WorkspaceDetailsTab.OVERVIEW ||
-          tab === WorkspaceDetailsTab.DEVFILE ||
           tab === WorkspaceDetailsTab.STORAGE ||
           tab === WorkspaceDetailsTab.BACKUP ||
           tab === WorkspaceDetailsTab.EVENTS ||
@@ -127,7 +117,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { oldWorkspaceLocation, workspace, workspacesLink } = this.props;
+    const { workspace, workspacesLink } = this.props;
 
     if (!workspace) {
       return <div>Workspace not found.</div>;
@@ -145,14 +135,6 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
           status={workspace.status}
           containerScc={containerScc}
         >
-          {oldWorkspaceLocation && (
-            <Button
-              variant="link"
-              component={props => <Link {...props} to={oldWorkspaceLocation} />}
-            >
-              Show Original Devfile
-            </Button>
-          )}
           <WorkspaceDetailsHeaderActions workspace={workspace} />
         </Header>
         <PageSection variant={SECTION_THEME} className={styles.workspaceDetailsTabs}>
@@ -166,14 +148,6 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
                 ref={this.overviewTabPageRef}
                 workspace={workspace}
                 onSave={workspace => this.handleOnSave(workspace)}
-              />
-            </Tab>
-            <Tab eventKey={WorkspaceDetailsTab.DEVFILE} title={WorkspaceDetailsTab.DEVFILE}>
-              <ProgressIndicator isLoading={this.props.isLoading} />
-
-              <DevfileEditorTab
-                workspace={workspace}
-                isActive={WorkspaceDetailsTab.DEVFILE === this.state.activeTabKey}
               />
             </Tab>
             <Tab eventKey={WorkspaceDetailsTab.STORAGE} title={WorkspaceDetailsTab.STORAGE}>
@@ -216,9 +190,6 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
       this.props.navigate(location, { replace: true });
     } catch (e) {
       const errorMessage = common.helpers.errors.getMessage(e);
-      if (this.state.activeTabKey === WorkspaceDetailsTab.DEVFILE) {
-        throw errorMessage;
-      }
       this.showAlert(AlertVariant.danger, errorMessage);
     }
   }

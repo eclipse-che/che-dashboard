@@ -25,9 +25,6 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
       <div className="WorkspaceDetails">
         Workspace Details Page
         <div data-testid="props-is-loading">{this.props.isLoading}</div>
-        <div data-testid="props-old-workspace-path">
-          {this.props.oldWorkspaceLocation?.pathname}
-        </div>
         <div data-testid="props-workspace-id">{this.props.workspace.id}</div>
         <div data-testid="props-workspace-name">{this.props.workspace.name}</div>
         <div data-testid="props-workspaces-link">{this.props.workspacesLink}</div>

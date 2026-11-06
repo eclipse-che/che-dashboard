@@ -17,10 +17,7 @@ import { Location, NavigateFunction, useLocation, useNavigate, useParams } from 
 
 import { WorkspaceDetails } from '@/pages/WorkspaceDetails';
 import { WorkspaceRouteParams } from '@/Routes';
-import { isDevWorkspace } from '@/services/devfileApi';
-import { DEVWORKSPACE_ID_OVERRIDE_ANNOTATION } from '@/services/devfileApi/devWorkspace/metadata';
-import { buildDetailsLocation, buildWorkspacesLocation, toHref } from '@/services/helpers/location';
-import { WorkspaceDetailsTab } from '@/services/helpers/types';
+import { buildWorkspacesLocation, toHref } from '@/services/helpers/location';
 import { Workspace } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
@@ -58,26 +55,6 @@ class WorkspaceDetailsContainer extends React.Component<Props, State> {
     };
   }
 
-  private getOldWorkspaceLocation(workspace?: Workspace): Location | undefined {
-    if (!workspace || !isDevWorkspace(workspace.ref)) {
-      return;
-    }
-
-    const che7WorkspaceId =
-      workspace.ref.metadata.annotations?.[DEVWORKSPACE_ID_OVERRIDE_ANNOTATION];
-    if (!che7WorkspaceId) {
-      return;
-    }
-    // check if the old workspace is still available
-    const che7Workspace = this.props.allWorkspaces.find(
-      workspace => workspace.uid === che7WorkspaceId,
-    );
-    if (!che7Workspace) {
-      return;
-    }
-    return buildDetailsLocation(che7Workspace, WorkspaceDetailsTab.DEVFILE);
-  }
-
   public componentDidMount(): void {
     const { routeParams, allWorkspaces, isLoading, requestWorkspaces } = this.props;
     const workspace = allWorkspaces.find(
@@ -111,14 +88,11 @@ class WorkspaceDetailsContainer extends React.Component<Props, State> {
     const { location, navigate } = this.props;
     const { workspace } = this.state;
 
-    const oldWorkspaceLocation = this.getOldWorkspaceLocation(workspace);
-
     return (
       <WorkspaceDetails
         location={location}
         navigate={navigate}
         isLoading={this.props.isLoading}
-        oldWorkspaceLocation={oldWorkspaceLocation}
         workspace={workspace}
         workspacesLink={this.workspacesLink}
         onSave={async (workspace: Workspace) => await this.onSave(workspace)}
