@@ -53,6 +53,7 @@ import { registerStorageRoutes } from '@/routes/api/storage';
 import { registerWebsocket } from '@/routes/api/websocket';
 import { registerWorkspacePreferencesRoute } from '@/routes/api/workspacePreferences';
 import { registerFactoryAcceptanceRedirect } from '@/routes/factoryAcceptanceRedirect';
+import { registerRootRedirect } from '@/routes/rootRedirect';
 import { registerWorkspaceRedirect } from '@/routes/workspaceRedirect';
 
 export default async function buildApp(server: FastifyInstance): Promise<unknown> {
@@ -96,6 +97,8 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
     registerFactoryAcceptanceRedirect(server),
 
     registerWorkspaceRedirect(server),
+
+    registerRootRedirect(publicFolder, server),
 
     registerWebsocket(server),
 

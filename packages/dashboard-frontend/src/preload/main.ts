@@ -19,6 +19,58 @@ import {
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
 
+declare global {
+  interface Window {
+    CHE_DASHBOARD_REDIRECT_URL?: string;
+  }
+}
+
+export function isValidRedirectUrl(redirectUrl: unknown, currentOrigin: string): boolean {
+  if (!redirectUrl || typeof redirectUrl !== 'string') {
+    return false;
+  }
+  const trimmed = redirectUrl.trim();
+  if (
+    !/^https?:\/\/[^/?#]+/i.test(trimmed) ||
+    /[\s\\]/.test(trimmed) ||
+    Array.from(trimmed).some(character => {
+      const code = character.charCodeAt(0);
+      return code < 32 || (code >= 127 && code <= 159);
+    })
+  ) {
+    return false;
+  }
+  try {
+    const url = new URL(trimmed);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return false;
+    }
+    if (!url.host) {
+      return false;
+    }
+    // Prevent navigation back to an entry point that runs the root preload script.
+    if (url.origin === currentOrigin) {
+      const normalizedPath = url.pathname.replace(/\/+$/, '');
+      if (normalizedPath === '' || normalizedPath === '/index.html') {
+        return false;
+      }
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function getRedirectUrl(): string | undefined {
+  if (typeof window !== 'undefined' && window.CHE_DASHBOARD_REDIRECT_URL !== undefined) {
+    return window.CHE_DASHBOARD_REDIRECT_URL;
+  }
+  if (typeof process !== 'undefined' && process.env?.CHE_DASHBOARD_REDIRECT_URL) {
+    return process.env.CHE_DASHBOARD_REDIRECT_URL;
+  }
+  return undefined;
+}
+
 export function redirectToDashboard(): void {
   if (window.location.pathname.startsWith('/dashboard/')) {
     // known location, do nothing
@@ -43,6 +95,17 @@ export function redirectToDashboard(): void {
     // allow starting workspaces when no project url, but remotes are provided
     window.location.href =
       window.location.origin + '/dashboard' + buildFactoryLoaderPath(window.location.href, false);
+    return;
+  }
+
+  // check if alternative dashboard redirect URL is configured
+  const redirectUrl = getRedirectUrl();
+  if (
+    ['/', '/index.html'].includes(window.location.pathname) &&
+    redirectUrl &&
+    isValidRedirectUrl(redirectUrl, window.location.origin)
+  ) {
+    window.location.replace(redirectUrl.trim());
     return;
   }
 
