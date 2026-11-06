@@ -11,16 +11,9 @@
  */
 
 import common from '@eclipse-che/common';
-import {
-  AlertVariant,
-  Button,
-  PageSection,
-  PageSectionVariants,
-  Tab,
-  Tabs,
-} from '@patternfly/react-core';
+import { AlertVariant, PageSection, PageSectionVariants, Tab, Tabs } from '@patternfly/react-core';
 import React from 'react';
-import { Link, Location, NavigateFunction } from 'react-router-dom';
+import { Location, NavigateFunction } from 'react-router-dom';
 
 import Head from '@/components/Head';
 import ProgressIndicator from '@/components/Progress';
@@ -45,7 +38,6 @@ export type Props = {
   location: Location;
   navigate: NavigateFunction;
   isLoading: boolean;
-  oldWorkspaceLocation?: Location;
   workspace: Workspace | undefined;
   workspacesLink: string;
   onSave: (workspace: Workspace) => Promise<void>;
@@ -125,7 +117,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { oldWorkspaceLocation, workspace, workspacesLink } = this.props;
+    const { workspace, workspacesLink } = this.props;
 
     if (!workspace) {
       return <div>Workspace not found.</div>;
@@ -143,14 +135,6 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
           status={workspace.status}
           containerScc={containerScc}
         >
-          {oldWorkspaceLocation && (
-            <Button
-              variant="link"
-              component={props => <Link {...props} to={oldWorkspaceLocation} />}
-            >
-              Show Original Devfile
-            </Button>
-          )}
           <WorkspaceDetailsHeaderActions workspace={workspace} />
         </Header>
         <PageSection variant={SECTION_THEME} className={styles.workspaceDetailsTabs}>

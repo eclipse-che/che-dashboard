@@ -210,19 +210,14 @@ describe('Workspace Details page', () => {
     expect(mockOnSave).toHaveBeenCalledTimes(1);
   });
 
-  it('should show the original devfile link when oldWorkspaceLocation is provided', () => {
+  it('should not show the "Show Original Devfile" link', () => {
     const workspace = constructWorkspace(devWorkspaceBuilder.build());
-    const oldWorkspaceLocation = {
-      pathname: '/old-workspace-path',
-    } as Location;
     renderComponent({
       workspace,
-      oldWorkspaceLocation,
     });
 
-    const link = screen.getByRole('link', { name: 'Show Original Devfile' });
-    expect(link).not.toBeNull();
-    expect(link.getAttribute('href')).toBe('/old-workspace-path');
+    expect(screen.queryByRole('link', { name: 'Show Original Devfile' })).toBeNull();
+    expect(screen.queryByText('Show Original Devfile')).toBeNull();
   });
 
   describe('onSave error handling', () => {
@@ -263,7 +258,6 @@ function renderComponent(props?: Partial<Props>, search?: string, pathname?: str
           location={location}
           navigate={mockNavigate}
           isLoading={props?.isLoading || false}
-          oldWorkspaceLocation={props?.oldWorkspaceLocation}
           workspace={props?.workspace}
           workspacesLink={props?.workspacesLink || '/workspaces'}
           onSave={mockOnSave}
