@@ -105,7 +105,7 @@ describe('Samples List', () => {
       await userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `${origin}/dashboard/#/load-factory?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fquarkus-quickstarts%2Ftree%2Fdevfilev2%253Fdf%253Ddevfile2.yaml&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=${preferredPvcStrategy}`,
+        `${origin}/dashboard/#/load-factory?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fquarkus-quickstarts%2Ftree%2Fdevfilev2&override.devfileFilename=devfile2.yaml&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&policies.create=peruser&storageType=${preferredPvcStrategy}`,
         '_blank',
       );
     });
@@ -123,7 +123,7 @@ describe('Samples List', () => {
       await userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `${origin}/dashboard/#/load-factory?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fquarkus-quickstarts%2Ftree%2Fdevfilev2%253Fdf%253Ddevfile2.yaml&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=ephemeral`,
+        `${origin}/dashboard/#/load-factory?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fquarkus-quickstarts%2Ftree%2Fdevfilev2&override.devfileFilename=devfile2.yaml&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&policies.create=peruser&storageType=ephemeral`,
         '_blank',
       );
       expect(mockWindowOpen).toHaveBeenCalledTimes(1);
@@ -159,7 +159,7 @@ describe('Samples List', () => {
       await userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `${origin}/dashboard/#/load-factory?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fquarkus-quickstarts%2Ftree%2Fdevfilev2%253Fdf%253Ddevfile2.yaml&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=${preferredPvcStrategy}`,
+        `${origin}/dashboard/#/load-factory?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fquarkus-quickstarts%2Ftree%2Fdevfilev2&override.devfileFilename=devfile2.yaml&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&policies.create=peruser&storageType=${preferredPvcStrategy}`,
         '_blank',
       );
     });
@@ -177,7 +177,7 @@ describe('Samples List', () => {
       await userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `${origin}/dashboard/#/load-factory?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fquarkus-quickstarts%2Ftree%2Fdevfilev2%253Fdf%253Ddevfile2.yaml&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=per-workspace`,
+        `${origin}/dashboard/#/load-factory?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fquarkus-quickstarts%2Ftree%2Fdevfilev2&override.devfileFilename=devfile2.yaml&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&policies.create=peruser&storageType=per-workspace`,
         '_blank',
       );
       expect(mockWindowOpen).toHaveBeenCalledTimes(1);
@@ -206,7 +206,7 @@ describe('Samples List', () => {
       await userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `${origin}/dashboard/#/load-factory?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fquarkus-quickstarts%2Ftree%2Fdevfilev2%253Fdf%253Ddevfile2.yaml&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=ephemeral`,
+        `${origin}/dashboard/#/load-factory?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fquarkus-quickstarts%2Ftree%2Fdevfilev2&override.devfileFilename=devfile2.yaml&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&policies.create=peruser&storageType=ephemeral`,
         '_blank',
       );
     });
@@ -219,7 +219,7 @@ describe('Samples List', () => {
       await userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `${origin}/dashboard/#/load-factory?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fquarkus-quickstarts%2Ftree%2Fdevfilev2%253Fdf%253Ddevfile2.yaml&che-editor=my%2Fcustom%2Feditor&editor-image=custom-editor-image&storageType=ephemeral`,
+        `${origin}/dashboard/#/load-factory?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fquarkus-quickstarts%2Ftree%2Fdevfilev2&override.devfileFilename=devfile2.yaml&che-editor=my%2Fcustom%2Feditor&editor-image=custom-editor-image&policies.create=peruser&storageType=ephemeral`,
         '_blank',
       );
     });
@@ -234,7 +234,7 @@ describe('Samples List', () => {
       await userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `${origin}/dashboard/#/load-factory?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fquarkus-quickstarts%2Ftree%2Fdevfilev2%253Fdf%253Ddevfile2.yaml&che-editor=che-incubator%2Fche-idea%2Fnext&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-idea-next.yaml&storageType=ephemeral`,
+        `${origin}/dashboard/#/load-factory?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fquarkus-quickstarts%2Ftree%2Fdevfilev2&override.devfileFilename=devfile2.yaml&che-editor=che-incubator%2Fche-idea%2Fnext&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-idea-next.yaml&policies.create=peruser&storageType=ephemeral`,
         '_blank',
       );
     });
@@ -284,6 +284,261 @@ describe('Samples List', () => {
     });
   });
 
+  describe('devfilePath URL parameter', () => {
+    const preferredPvcStrategy = 'per-workspace';
+
+    test('should extract devfilePath and pass as override.devfileFilename', async () => {
+      const store = new MockStoreBuilder()
+        .withBranding({
+          docs: {
+            storageTypes: 'storage-types-docs',
+          },
+        } as BrandingData)
+        .withDwServerConfig({
+          defaults: {
+            pvcStrategy: preferredPvcStrategy,
+          } as api.IServerConfig['defaults'],
+        })
+        .withDevfileRegistries({
+          registries: {
+            ['registry-url']: {
+              metadata: [
+                {
+                  displayName: 'Custom Devfile Sample',
+                  description: 'Sample with devfilePath',
+                  tags: ['Test'],
+                  icon: '/images/test.svg',
+                  links: {
+                    v2: 'https://github.com/test-org/test-repo?devfilePath=custom/path/devfile.yaml',
+                  },
+                },
+              ],
+            },
+          },
+        })
+        .build();
+
+      renderComponent(store, editorDefinition, editorImage);
+
+      const sampleCardButton = screen.getByRole('button', { name: 'Select Sample' });
+      await userEvent.click(sampleCardButton);
+
+      const calledUrl = mockWindowOpen.mock.calls[0][0] as string;
+      expect(calledUrl).toContain('url=https%3A%2F%2Fgithub.com%2Ftest-org%2Ftest-repo');
+      expect(calledUrl).toContain('override.devfileFilename=custom%2Fpath%2Fdevfile.yaml');
+      expect(calledUrl).not.toContain('devfilePath');
+    });
+
+    test('should extract devfilepath (lowercase) and pass as override.devfileFilename', async () => {
+      const store = new MockStoreBuilder()
+        .withBranding({
+          docs: {
+            storageTypes: 'storage-types-docs',
+          },
+        } as BrandingData)
+        .withDwServerConfig({
+          defaults: {
+            pvcStrategy: preferredPvcStrategy,
+          } as api.IServerConfig['defaults'],
+        })
+        .withDevfileRegistries({
+          registries: {
+            ['registry-url']: {
+              metadata: [
+                {
+                  displayName: 'Lowercase devfilepath Sample',
+                  description: 'Sample with lowercase devfilepath',
+                  tags: ['Test'],
+                  icon: '/images/test.svg',
+                  links: {
+                    v2: 'https://github.com/test-org/test-repo?devfilepath=my-devfile.yaml',
+                  },
+                },
+              ],
+            },
+          },
+        })
+        .build();
+
+      renderComponent(store, editorDefinition, editorImage);
+
+      const sampleCardButton = screen.getByRole('button', { name: 'Select Sample' });
+      await userEvent.click(sampleCardButton);
+
+      const calledUrl = mockWindowOpen.mock.calls[0][0] as string;
+      expect(calledUrl).toContain('override.devfileFilename=my-devfile.yaml');
+    });
+
+    test('should extract factory attrs like memoryLimit and revision', async () => {
+      const store = new MockStoreBuilder()
+        .withBranding({
+          docs: {
+            storageTypes: 'storage-types-docs',
+          },
+        } as BrandingData)
+        .withDwServerConfig({
+          defaults: {
+            pvcStrategy: preferredPvcStrategy,
+          } as api.IServerConfig['defaults'],
+        })
+        .withDevfileRegistries({
+          registries: {
+            ['registry-url']: {
+              metadata: [
+                {
+                  displayName: 'Factory Attrs Sample',
+                  description: 'Sample with factory attrs in URL',
+                  tags: ['Test'],
+                  icon: '/images/test.svg',
+                  links: {
+                    v2: 'https://github.com/test-org/test-repo?memoryLimit=4Gi&cpuLimit=2&revision=main',
+                  },
+                },
+              ],
+            },
+          },
+        })
+        .build();
+
+      renderComponent(store, editorDefinition, editorImage);
+
+      const sampleCardButton = screen.getByRole('button', { name: 'Select Sample' });
+      await userEvent.click(sampleCardButton);
+
+      const calledUrl = mockWindowOpen.mock.calls[0][0] as string;
+      expect(calledUrl).toContain('url=https%3A%2F%2Fgithub.com%2Ftest-org%2Ftest-repo');
+      expect(calledUrl).toContain('memoryLimit=4Gi');
+      expect(calledUrl).toContain('cpuLimit=2');
+      expect(calledUrl).toContain('revision=main');
+      expect(calledUrl).not.toContain('%253F');
+    });
+
+    test('should extract override.* params from URL', async () => {
+      const store = new MockStoreBuilder()
+        .withBranding({
+          docs: {
+            storageTypes: 'storage-types-docs',
+          },
+        } as BrandingData)
+        .withDwServerConfig({
+          defaults: {
+            pvcStrategy: preferredPvcStrategy,
+          } as api.IServerConfig['defaults'],
+        })
+        .withDevfileRegistries({
+          registries: {
+            ['registry-url']: {
+              metadata: [
+                {
+                  displayName: 'Override Params Sample',
+                  description: 'Sample with override params',
+                  tags: ['Test'],
+                  icon: '/images/test.svg',
+                  links: {
+                    v2: 'https://github.com/test-org/test-repo?override.metadata.name=my-workspace',
+                  },
+                },
+              ],
+            },
+          },
+        })
+        .build();
+
+      renderComponent(store, editorDefinition, editorImage);
+
+      const sampleCardButton = screen.getByRole('button', { name: 'Select Sample' });
+      await userEvent.click(sampleCardButton);
+
+      const calledUrl = mockWindowOpen.mock.calls[0][0] as string;
+      expect(calledUrl).toContain('override.metadata.name=my-workspace');
+    });
+
+    test('should preserve non-extractable query params in encoded URL', async () => {
+      const store = new MockStoreBuilder()
+        .withBranding({
+          docs: {
+            storageTypes: 'storage-types-docs',
+          },
+        } as BrandingData)
+        .withDwServerConfig({
+          defaults: {
+            pvcStrategy: preferredPvcStrategy,
+          } as api.IServerConfig['defaults'],
+        })
+        .withDevfileRegistries({
+          registries: {
+            ['registry-url']: {
+              metadata: [
+                {
+                  displayName: 'Airgap Sample',
+                  description: 'Sample with non-extractable params',
+                  tags: ['Test'],
+                  icon: '/images/test.svg',
+                  links: {
+                    v2: 'https://registry.internal/devfile?id=nodejs-express&df=devfile2.yaml',
+                  },
+                },
+              ],
+            },
+          },
+        })
+        .build();
+
+      renderComponent(store, editorDefinition, editorImage);
+
+      const sampleCardButton = screen.getByRole('button', { name: 'Select Sample' });
+      await userEvent.click(sampleCardButton);
+
+      const calledUrl = mockWindowOpen.mock.calls[0][0] as string;
+      // df= should be extracted as override.devfileFilename
+      expect(calledUrl).toContain('override.devfileFilename=devfile2.yaml');
+      // id= is not extractable, so it stays in the URL (double-encoded by
+      // encodeURIComponent then URLSearchParams)
+      expect(calledUrl).toContain('%253Fid%253Dnodejs-express');
+    });
+
+    test('should handle URL with no devfilePath params', async () => {
+      const store = new MockStoreBuilder()
+        .withBranding({
+          docs: {
+            storageTypes: 'storage-types-docs',
+          },
+        } as BrandingData)
+        .withDwServerConfig({
+          defaults: {
+            pvcStrategy: preferredPvcStrategy,
+          } as api.IServerConfig['defaults'],
+        })
+        .withDevfileRegistries({
+          registries: {
+            ['registry-url']: {
+              metadata: [
+                {
+                  displayName: 'No Devfile Path Sample',
+                  description: 'Sample without devfilePath',
+                  tags: ['Test'],
+                  icon: '/images/test.svg',
+                  links: {
+                    v2: 'https://github.com/test-org/test-repo',
+                  },
+                },
+              ],
+            },
+          },
+        })
+        .build();
+
+      renderComponent(store, editorDefinition, editorImage);
+
+      const sampleCardButton = screen.getByRole('button', { name: 'Select Sample' });
+      await userEvent.click(sampleCardButton);
+
+      const calledUrl = mockWindowOpen.mock.calls[0][0] as string;
+      expect(calledUrl).toContain('url=https%3A%2F%2Fgithub.com%2Ftest-org%2Ftest-repo');
+      expect(calledUrl).not.toContain('override.devfileFilename');
+    });
+  });
+
   describe('SSH URL handling', () => {
     const preferredPvcStrategy = 'per-workspace';
 
@@ -325,7 +580,7 @@ describe('Samples List', () => {
       await userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `${origin}/dashboard/#/load-factory?url=git%40github.com%3Aeclipse-che%2Fche-dashboard.git&che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image&storageType=${preferredPvcStrategy}`,
+        `${origin}/dashboard/#/load-factory?url=git%40github.com%3Aeclipse-che%2Fche-dashboard.git&che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image&policies.create=peruser&storageType=${preferredPvcStrategy}`,
         '_blank',
       );
     });
@@ -368,7 +623,7 @@ describe('Samples List', () => {
       await userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `${origin}/dashboard/#/load-factory?url=git%40github.com%3Aeclipse-che%2Fche-dashboard.git%3Frevision%3Dtest&che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image&storageType=${preferredPvcStrategy}`,
+        `${origin}/dashboard/#/load-factory?url=git%40github.com%3Aeclipse-che%2Fche-dashboard.git%3Frevision%3Dtest&che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image&policies.create=peruser&storageType=${preferredPvcStrategy}`,
         '_blank',
       );
     });
