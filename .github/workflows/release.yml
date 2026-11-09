@@ -11,7 +11,7 @@
 #
 
 name: Release Che Dashboard
-run-name: Release Che Dashboard ${{ inputs.version }} on ${{ github.ref_name }}
+run-name: Release Che Dashboard ${{ inputs.version }} on ${{ github.ref_name }} @ ${{ github.sha }}
 on:
   workflow_dispatch:
     inputs:
@@ -56,35 +56,38 @@ jobs:
           echo "Commit SHA: ${COMMIT_SHA}"
           echo "Triggered by: ${TRIGGERED_BY}"
           echo "=========================="
+
+          # Validate version format
+          [[ "${VERSION}" =~ ^7\.[0-9]+\.[0-9]+$ ]] || { echo "[ERROR] Invalid version: ${VERSION}"; exit 1; }
       -
         name: Check existing tags
         env:
-          RECREATE_TAGS: ${{ github.event.inputs.forceRecreateTags }}
-          VERSION: ${{ github.event.inputs.version }}
+          FORCE_RECREATE_TAGS: ${{ inputs.forceRecreateTags }}
+          VERSION: ${{ inputs.version }}
         run: |
           set +e
-          EXISTING_TAG=$(git ls-remote --exit-code origin refs/tags/${VERSION})
+          EXISTING_TAG=$(git ls-remote --exit-code origin "refs/tags/${VERSION}")
           if [[ -n ${EXISTING_TAG} ]]; then
-            if [[ ${RECREATE_TAGS} == "true" ]]; then
+            if [[ ${FORCE_RECREATE_TAGS} == "true" ]]; then
               echo "[INFO] Removing tag for ${VERSION} version. New tag will be recreated during release."
-              git push origin :$VERSION
+              git push origin ":${VERSION}"
             else
               echo "[ERROR] Cannot proceed with release - tag ${EXISTING_TAG} already exists."
               exit 1
             fi
           else
-            echo "[INFO] No existing tags detected for $VERSION"
+            echo "[INFO] No existing tags detected for ${VERSION}"
           fi
       -
         name: "Tag release"
         env:
           GITHUB_TOKEN: ${{ secrets.CHE_BOT_GITHUB_TOKEN }}
-          VERSION: ${{ github.event.inputs.version }}
+          VERSION: ${{ inputs.version }}
         run: |
           git config --global user.name "Mykhailo Kuznietsov"
           git config --global user.email "mkuznets@redhat.com"
           git config --global pull.rebase true
-          /bin/bash make-release.sh --version ${VERSION} --tag-release
+          /bin/bash make-release.sh --version "${VERSION}" --tag-release
       #- name: Create failure MM message
         #if: ${{ failure() }}
         #run: |
@@ -144,7 +147,10 @@ jobs:
         id: result
         name: "Build result outputs version"
         if: ${{ success() }}
-        run: echo "${{ matrix.arch }}=${{ inputs.version }}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
+        env:
+          ARCH: ${{ matrix.arch }}
+          VERSION: ${{ inputs.version }}
+        run: echo "${ARCH}=${VERSION}-${ARCH}" >> $GITHUB_OUTPUT
 
   create-manifest:
     needs: build-images
@@ -177,8 +183,8 @@ jobs:
           if [ -n "${S390X_VERSION}" ]; then
               AMEND+=" --amend ${{ env.IMAGE }}:${S390X_VERSION}";
           fi
-          docker manifest create ${{ env.IMAGE }}:${VERSION} $AMEND
-          docker manifest push ${{ env.IMAGE }}:${VERSION}
+          docker manifest create "${{ env.IMAGE }}:${VERSION}" $AMEND
+          docker manifest push "${{ env.IMAGE }}:${VERSION}"
       -
         id: result
         name: "Manifest result"
