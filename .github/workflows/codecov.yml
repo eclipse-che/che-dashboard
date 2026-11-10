@@ -21,8 +21,9 @@ jobs:
 
   coverage-report:
     runs-on: ubuntu-22.04
-    # Required for OIDC: https://github.com/codecov/codecov-action?tab=readme-ov-file#using-oidc
     permissions:
+      contents: read
+      # Required for OIDC: https://github.com/codecov/codecov-action?tab=readme-ov-file#using-oidc
       id-token: write
     steps:
       -
