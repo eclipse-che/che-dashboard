@@ -1086,7 +1086,7 @@ __metadata:
     "@eclipse-che/che-devworkspace-generator": "npm:7.113.0-next-7b6a101"
     "@fastify/cors": "npm:^11.2.0"
     "@fastify/error": "npm:^4.2.0"
-    "@fastify/http-proxy": "npm:^11.6.2"
+    "@fastify/http-proxy": "npm:^11.6.6"
     "@fastify/oauth2": "npm:^8.2.0"
     "@fastify/rate-limit": "npm:^10.3.0"
     "@fastify/static": "npm:^10.1.2"
@@ -1443,15 +1443,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fastify/http-proxy@npm:^11.6.2":
-  version: 11.6.3
-  resolution: "@fastify/http-proxy@npm:11.6.3"
+"@fastify/http-proxy@npm:11.6.6":
+  version: 11.6.6
+  resolution: "@fastify/http-proxy@npm:11.6.6"
   dependencies:
     "@fastify/reply-from": "npm:^12.6.2"
     fast-querystring: "npm:^1.1.2"
     fastify-plugin: "npm:^6.0.0"
     ws: "npm:^8.18.3"
-  checksum: 10/4ffbfbea3a61cb5b6ddf39a9f3e4262cd04e50a607aad88565c835d8673bbbde376f0769c1d2a3813163efe01c4663f8ae80090a10117aa9ed26e2614e659262
+  checksum: 10/91bf3fea527907b7f69a36ab4957e2551b5b6f274b15df71ab4208bbc524cf4a9fd87ceecd35f7d1c5d694acae09046e31b9cef7223a9343d16234e2b2371b38
   languageName: node
   linkType: hard
 
