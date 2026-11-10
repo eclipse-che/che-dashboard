@@ -1,2 +1,57 @@
+codecov:
+  require_ci_to_pass: yes
+
+coverage:
+  precision: 2
+  round: down
+  range: "50...100"
+
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+    patch:
+      default:
+        target: auto
+        threshold: 1%
+
+# Ignore files/directories that tests won't cover
+ignore:
+  - "node_modules/**"
+  - "**/node_modules/**"
+  - "**/__mocks__/**"
+  - "**/coverage/**"
+  - "**/dist/**"
+  - "**/build/**"
+  - "**/*.config.js"
+  - "**/*.config.ts"
+  - "**/webpack.config*.js"
+  - "scripts/**"
+  - "run/**"
+  - "build/**"
+  - "docs/**"
+  - "adr/**"
+  - "**/adr/**"
+  - ".github/**"
+  - ".vscode/**"
+  - ".husky/**"
+  - "packages/devfile-registry/**"  # No coverage for this package
+
+# Carry forward coverage from previous successful uploads when a flag's
+# report is missing (e.g. a CI test suite failed and skipped uploading).
+# This prevents patch coverage from dropping drastically due to incomplete data.
+flag_management:
+  default_rules:
+    carryforward: true
+
+flags:
+  unit-tests:
+    carryforward: true
+
+comment:
+  layout: "reach,diff,flags,files"
+  behavior: default
+
 github_checks:
   annotations: false
