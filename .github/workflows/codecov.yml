@@ -21,6 +21,10 @@ jobs:
 
   coverage-report:
     runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      # Required for OIDC: https://github.com/codecov/codecov-action?tab=readme-ov-file#using-oidc
+      id-token: write
     steps:
       -
         name: "Checkout Che Dashboard source code"
@@ -39,10 +43,12 @@ jobs:
         name: "Run unit tests"
         run: yarn test:coverage
       -
-        name: "Build Codecov report"
+        name: "Upload coverage to Codecov"
         uses: codecov/codecov-action@v4
         with:
+          use_oidc: true
+          flags: unit-tests
           files: ./packages/dashboard-frontend/coverage/lcov.info,./packages/dashboard-backend/coverage/lcov.info,./packages/common/coverage/lcov.info
-          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
           verbose: true
 
