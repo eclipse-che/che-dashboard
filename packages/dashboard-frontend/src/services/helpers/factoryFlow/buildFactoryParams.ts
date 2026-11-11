@@ -211,7 +211,9 @@ function buildFactoryId(searchParams: URLSearchParams): string {
     factoryParams.append(key, val);
   });
 
-  return window.decodeURIComponent(factoryParams.toString());
+  // Decode for readability, but preserve %2B (literal +) so that re-parsing
+  // with URLSearchParams does not corrupt + into a space.
+  return window.decodeURIComponent(factoryParams.toString().replace(/%2B/gi, '%252B'));
 }
 
 function buildOverrideParams(searchParams: URLSearchParams): Record<string, string> | undefined {
