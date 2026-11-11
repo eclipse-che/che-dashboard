@@ -20,12 +20,10 @@
 | `@fastify/error@4.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/error/4.2.0) |
 | `@fastify/fast-json-stringify-compiler@5.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/fast-json-stringify-compiler/5.0.3) |
 | `@fastify/forwarded@3.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/forwarded/3.0.1) |
-| `@fastify/http-proxy@11.6.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/http-proxy/11.6.3) |
 | `@fastify/merge-json-schemas@0.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/merge-json-schemas/0.2.1) |
 | `@fastify/oauth2@8.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/oauth2/8.2.0) |
 | `@fastify/proxy-addr@5.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/proxy-addr/5.1.2) |
 | `@fastify/rate-limit@10.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/rate-limit/10.3.0) |
-| `@fastify/reply-from@12.6.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/reply-from/12.6.2) |
 | `@fastify/send@4.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/send/4.1.0) |
 | `@fastify/static@10.1.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/static/10.1.3) |
 | `@fastify/swagger-ui@5.2.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/swagger-ui/5.2.5) |
@@ -100,12 +98,10 @@
 | `escape-html@1.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/escape-html/1.0.3) |
 | `event-target-shim@5.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/event-target-shim/5.0.1) |
 | `evp_bytestokey@1.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/evp_bytestokey/1.0.3) |
-| `fast-content-type-parse@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-content-type-parse/3.0.0) |
 | `fast-copy@3.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-copy/3.1.0) |
 | `fast-decode-uri-component@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-decode-uri-component/1.0.1) |
 | `fast-json-stringify@6.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-json-stringify/6.3.0) |
 | `fast-json-stringify@7.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-json-stringify/7.0.1) |
-| `fast-querystring@1.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-querystring/1.1.2) |
 | `fast-redact@3.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-redact/3.3.0) |
 | `fast-safe-stringify@2.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-safe-stringify/2.1.1) |
 | `fastify-plugin@5.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/5.0.1) |
