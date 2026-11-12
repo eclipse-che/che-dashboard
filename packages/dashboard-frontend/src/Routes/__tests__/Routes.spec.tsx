@@ -121,8 +121,11 @@ describe('Routes', () => {
       expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument();
     });
 
-    it('should handle "/workspace/namespace/name?tab=Devfile"', async () => {
-      const location = buildDetailsLocation(workspace, WorkspaceDetailsTab.DEVFILE);
+    it('should route "/workspace/namespace/name?tab=Devfile" to the Workspace Details page', async () => {
+      const location = {
+        ...buildDetailsLocation(workspace),
+        search: '?tab=Devfile',
+      };
       render(getComponent(location));
 
       await waitFor(() => expect(screen.queryByText('Workspace Details')).toBeTruthy());

@@ -20,7 +20,6 @@ import { Store } from 'redux';
 
 import { ROUTE } from '@/Routes';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
-import { DEVWORKSPACE_ID_OVERRIDE_ANNOTATION } from '@/services/devfileApi/devWorkspace/metadata';
 import { constructWorkspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
@@ -98,26 +97,6 @@ describe('Workspace Details container', () => {
     expect(workspaceIdEl).toHaveTextContent(workspaceId_1);
 
     expect(mockNavigate).not.toHaveBeenCalled();
-  });
-
-  it('should render the page without a link to the original devfile for a workspace migrated from Che 7', () => {
-    // the Devfile tab is hidden, so the link to the original Che 7 workspace devfile is not built anymore
-    const che7Workspace = workspaceBuilder_2.withUID(workspaceId_2).build();
-    const workspace = workspaceBuilder_1
-      .withMetadata({
-        annotations: {
-          [DEVWORKSPACE_ID_OVERRIDE_ANNOTATION]: workspaceId_2,
-        },
-      })
-      .build();
-    const store = prevStoreBuilder
-      .withDevWorkspaces({ workspaces: [workspace, che7Workspace] })
-      .build();
-
-    renderComponent(store, [`/workspace/${namespace}/${workspaceName_1}`]);
-
-    expect(screen.getByTestId('props-workspace-id')).toHaveTextContent(workspaceId_1);
-    expect(screen.queryByTestId('props-old-workspace-path')).toBeNull();
   });
 
   it('should sanitize the page location', async () => {
