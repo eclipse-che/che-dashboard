@@ -55,7 +55,6 @@ export const DEVWORKSPACE_LABEL_METADATA_NAME = 'kubernetes.io/metadata.name';
 
 export const DEVWORKSPACE_NEXT_START_ANNOTATION = 'che.eclipse.org/next-start-cfg';
 export const DEVWORKSPACE_DEVFILE_SOURCE = 'che.eclipse.org/devfile-source';
-export const DEVWORKSPACE_DEVFILE = 'che.eclipse.org/devfile';
 
 export const DEVWORKSPACE_BOOTSTRAP = 'controller.devfile.io/bootstrap-devworkspace';
 export const DEVWORKSPACE_DEBUG_START_ANNOTATION = 'controller.devfile.io/debug-start';

@@ -16,14 +16,10 @@ import cloneDeep from 'lodash/cloneDeep';
 import { container } from '@/inversify.config';
 import devfileApi, { isDevWorkspace } from '@/services/devfileApi';
 import { devWorkspaceKind } from '@/services/devfileApi/devWorkspace';
-import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
-import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { compareStringsAsNumbers } from '@/services/helpers/resourceVersion';
 import { PreBuiltResources } from '@/services/registry/resources';
 import {
   COMPONENT_UPDATE_POLICY,
-  DEVWORKSPACE_BOOTSTRAP,
-  DEVWORKSPACE_DEVFILE,
   DEVWORKSPACE_NEXT_START_ANNOTATION,
   DevWorkspaceClient,
   REGISTRY_URL,
@@ -133,7 +129,6 @@ export function shouldUpdateDevWorkspace(
 
 export function getDevWorkspaceFromResources(
   resources: PreBuiltResources,
-  params: Partial<FactoryParams>,
 ): devfileApi.DevWorkspace {
   const _devWorkspaceResource = resources.find(
     resource => resource.kind === 'DevWorkspace',
@@ -144,21 +139,8 @@ export function getDevWorkspaceFromResources(
   if (_devWorkspaceResource.metadata === undefined) {
     throw new Error('Fetched resource includes not a valid DevWorkspace.');
   }
-  const devWorkspaceResource = cloneDeep(_devWorkspaceResource);
 
-  if (!devWorkspaceResource.metadata.annotations) {
-    devWorkspaceResource.metadata.annotations = {};
-  }
-  // for SSH location only
-  if (params.sourceUrl && FactoryLocationAdapter.isSshLocation(params.sourceUrl)) {
-    // if the Devfile resolution is not supported by che-server({...'controller.devfile.io/bootstrap-devworkspace': true ...})
-    if (devWorkspaceResource?.spec?.template?.attributes?.[DEVWORKSPACE_BOOTSTRAP] === true) {
-      // remove the default devfile content from the DevWorkspace resources
-      devWorkspaceResource.metadata.annotations[DEVWORKSPACE_DEVFILE] = '';
-    }
-  }
-
-  return devWorkspaceResource;
+  return cloneDeep(_devWorkspaceResource);
 }
 
 export function getDevWorkspaceTemplateFromResources(

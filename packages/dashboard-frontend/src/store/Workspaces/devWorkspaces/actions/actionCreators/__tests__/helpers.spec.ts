@@ -18,7 +18,6 @@ import { devWorkspaceKind } from '@/services/devfileApi/devWorkspace';
 import { compareStringsAsNumbers } from '@/services/helpers/resourceVersion';
 import {
   COMPONENT_UPDATE_POLICY,
-  DEVWORKSPACE_DEVFILE,
   DEVWORKSPACE_NEXT_START_ANNOTATION,
   DevWorkspaceClient,
   REGISTRY_URL,
@@ -275,122 +274,42 @@ describe('devWorkspaces, helpers', () => {
         },
       ] as devfileApi.DevWorkspace[];
 
-      const params = { sourceUrl: 'https://example.com/repo.git' };
-      const result = getDevWorkspaceFromResources(resources, params);
+      const result = getDevWorkspaceFromResources(resources);
 
       expect(result).toBeDefined();
       expect(result.kind).toBe('DevWorkspace');
       expect(result.metadata.name).toBe('test-workspace');
     });
-    describe('Devfile resolution supported by che-server', () => {
-      it('should return DevWorkspace with original devfile recourse for URL location', () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            name: 'test-workspace',
-            annotations: {
-              'che.eclipse.org/devfile': `schemaVersion: 2.2.0\nmetadata:\n name: test-workspace\n`,
-            },
-          })
-          .build();
-        const resources = [
-          devWorkspace,
-          {
-            kind: 'OtherResource',
-            metadata: { name: 'other-resource' },
-          },
-        ] as devfileApi.DevWorkspace[];
 
-        const params = { sourceUrl: 'http://example.com/repo.git' };
-        const result = getDevWorkspaceFromResources(resources, params);
+    it('should return a copy of the DevWorkspace resource', () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withMetadata({ name: 'test-workspace' })
+        .build();
+      const resources = [devWorkspace] as devfileApi.DevWorkspace[];
 
-        expect(result.metadata.annotations![DEVWORKSPACE_DEVFILE]).toBeDefined();
-        expect(result.metadata.annotations![DEVWORKSPACE_DEVFILE]).toContain(
-          'schemaVersion: 2.2.0',
-        );
-      });
+      const result = getDevWorkspaceFromResources(resources);
 
-      it('should return DevWorkspace wit original devfile recourse for SSH location', () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            name: 'test-workspace',
-            annotations: {
-              'che.eclipse.org/devfile': `schemaVersion: 2.2.0\nmetadata:\n name: test-workspace\n`,
-            },
-          })
-          .build();
-        const resources = [
-          devWorkspace,
-          {
-            kind: 'OtherResource',
-            metadata: { name: 'other-resource' },
-          },
-        ] as devfileApi.DevWorkspace[];
-
-        const params = { sourceUrl: 'ssh://example.com/repo.git' };
-        const result = getDevWorkspaceFromResources(resources, params);
-
-        expect(result.metadata.annotations![DEVWORKSPACE_DEVFILE]).toBeDefined();
-        expect(result.metadata.annotations![DEVWORKSPACE_DEVFILE]).toContain(
-          'schemaVersion: 2.2.0',
-        );
-      });
+      expect(result).not.toBe(devWorkspace);
+      expect(result).toEqual(devWorkspace);
     });
-    describe('Devfile resolution is not supported by che-server', () => {
-      it('should return DevWorkspace with original devfile recourse for URL location', () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            name: 'test-workspace',
-            annotations: {
-              'che.eclipse.org/devfile': `schemaVersion: 2.2.0\nmetadata:\n name: test-workspace\n`,
-            },
-          })
-          .withTemplateAttributes({
-            'controller.devfile.io/bootstrap-devworkspace': true,
-          })
-          .build();
-        const resources = [
-          devWorkspace,
-          {
-            kind: 'OtherResource',
-            metadata: { name: 'other-resource' },
+
+    it('should keep the annotations of the DevWorkspace resource untouched', () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'test-workspace',
+          annotations: {
+            'che.eclipse.org/devfile-source': 'url:\n location: http://example.com/repo.git\n',
           },
-        ] as devfileApi.DevWorkspace[];
+        })
+        .withTemplateAttributes({
+          'controller.devfile.io/bootstrap-devworkspace': true,
+        })
+        .build();
+      const resources = [devWorkspace] as devfileApi.DevWorkspace[];
 
-        const params = { sourceUrl: 'http://example.com/repo.git' };
-        const result = getDevWorkspaceFromResources(resources, params);
+      const result = getDevWorkspaceFromResources(resources);
 
-        expect(result.metadata.annotations![DEVWORKSPACE_DEVFILE]).toBeDefined();
-        expect(result.metadata.annotations![DEVWORKSPACE_DEVFILE]).toContain(
-          'schemaVersion: 2.2.0',
-        );
-      });
-
-      it('should return DevWorkspace without original devfile recourse for SSH location', () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            name: 'test-workspace',
-            annotations: {
-              'che.eclipse.org/devfile': `schemaVersion: 2.2.0\nmetadata:\n name: test-workspace\n`,
-            },
-          })
-          .withTemplateAttributes({
-            'controller.devfile.io/bootstrap-devworkspace': true,
-          })
-          .build();
-        const resources = [
-          devWorkspace,
-          {
-            kind: 'OtherResource',
-            metadata: { name: 'other-resource' },
-          },
-        ] as devfileApi.DevWorkspace[];
-
-        const params = { sourceUrl: 'ssh://example.com/repo.git' };
-        const result = getDevWorkspaceFromResources(resources, params);
-
-        expect(result.metadata.annotations![DEVWORKSPACE_DEVFILE]).toBeDefined();
-        expect(result.metadata.annotations![DEVWORKSPACE_DEVFILE]).toEqual('');
-      });
+      expect(result.metadata.annotations).toEqual(devWorkspace.metadata.annotations);
     });
 
     it('should throw error if no DevWorkspace resource found', () => {
@@ -401,7 +320,7 @@ describe('devWorkspaces, helpers', () => {
         },
       ] as devfileApi.DevWorkspace[];
 
-      expect(() => getDevWorkspaceFromResources(resources, {})).toThrow(
+      expect(() => getDevWorkspaceFromResources(resources)).toThrow(
         'Failed to find a DevWorkspace in the fetched resources.',
       );
     });
@@ -413,7 +332,7 @@ describe('devWorkspaces, helpers', () => {
         },
       ] as devfileApi.DevWorkspace[]; // invalid DevWorkspace without metadata
 
-      expect(() => getDevWorkspaceFromResources(resources, {})).toThrow(
+      expect(() => getDevWorkspaceFromResources(resources)).toThrow(
         'Fetched resource includes not a valid DevWorkspace.',
       );
     });

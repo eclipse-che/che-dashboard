@@ -17,13 +17,8 @@ import cloneDeep from 'lodash/cloneDeep';
 import { DevfileAdapter } from '@/services/devfile/adapter';
 import devfileApi from '@/services/devfileApi';
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
-import stringify from '@/services/helpers/editor';
 import match from '@/services/helpers/filter';
 import { che } from '@/services/models';
-import {
-  DEVWORKSPACE_DEVFILE,
-  DEVWORKSPACE_METADATA_ANNOTATION,
-} from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { RootState } from '@/store';
 import { getPvcStrategy } from '@/store/ServerConfig/helpers';
 import { selectDefaultComponents } from '@/store/ServerConfig/selectors';
@@ -127,13 +122,8 @@ export const selectDefaultDevfile = createSelector(
     const devfileContent = state.devfiles[devfileLocation]?.content;
     if (devfileContent) {
       try {
-        const _devfile = load(devfileContent) as devfileApi.Devfile;
-        const devfile = cloneDeep(_devfile);
+        const devfile = load(devfileContent) as devfileApi.Devfile;
         const devfileAttr = DevfileAdapter.getAttributes(devfile);
-        if (!devfileAttr[DEVWORKSPACE_METADATA_ANNOTATION]) {
-          devfileAttr[DEVWORKSPACE_METADATA_ANNOTATION] = {};
-        }
-        devfileAttr[DEVWORKSPACE_METADATA_ANNOTATION][DEVWORKSPACE_DEVFILE] = stringify(_devfile);
         // set default storage type if not set
         if (!devfileAttr[DEVWORKSPACE_STORAGE_TYPE_ATTR] && pvcStrategy) {
           devfileAttr[DEVWORKSPACE_STORAGE_TYPE_ATTR] = pvcStrategy;

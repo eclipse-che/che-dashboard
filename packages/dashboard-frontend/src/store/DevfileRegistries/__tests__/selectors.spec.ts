@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { dump, load } from 'js-yaml';
+import { load } from 'js-yaml';
 
 import devfileApi from '@/services/devfileApi';
 import { che } from '@/services/models';
@@ -303,22 +303,17 @@ describe('DevfileRegistries, selectors', () => {
           name: 'empty',
         },
       };
-      const mockDevfileStr = 'schemaVersion: 2.2.0\nmetadata:\n  name: empty\n';
-
       (load as jest.Mock).mockReturnValue(mockDevfile);
-      (dump as jest.Mock).mockReturnValue(mockDevfileStr);
 
       const result = selectDefaultDevfile(mockState);
-      expect(result).toEqual(
-        Object.assign({}, mockDevfile, {
-          attributes: {
-            'dw.metadata.annotations': {
-              'che.eclipse.org/devfile': mockDevfileStr,
-            },
-          },
-          components: [],
-        }),
-      );
+      expect(result).toEqual({
+        schemaVersion: '2.2.0',
+        metadata: {
+          name: 'empty',
+        },
+        attributes: {},
+        components: [],
+      });
     });
     it('should select devfile with default storage-type', () => {
       const mockDevfile = {
@@ -327,23 +322,19 @@ describe('DevfileRegistries, selectors', () => {
           name: 'empty',
         },
       };
-      const mockDevfileStr = 'schemaVersion: 2.2.0\nmetadata:\n  name: empty\n';
-
       (load as jest.Mock).mockReturnValue(mockDevfile);
-      (dump as jest.Mock).mockReturnValue(mockDevfileStr);
 
       const result = selectDefaultDevfile(mockState);
-      expect(result).toEqual(
-        Object.assign({}, mockDevfile, {
-          attributes: {
-            'controller.devfile.io/storage-type': 'per-user',
-            'dw.metadata.annotations': {
-              'che.eclipse.org/devfile': mockDevfileStr,
-            },
-          },
-          components: [],
-        }),
-      );
+      expect(result).toEqual({
+        schemaVersion: '2.2.0',
+        metadata: {
+          name: 'empty',
+        },
+        attributes: {
+          'controller.devfile.io/storage-type': 'per-user',
+        },
+        components: [],
+      });
     });
     it('should select devfile with storage-type', () => {
       const mockDevfile = {
@@ -355,23 +346,19 @@ describe('DevfileRegistries, selectors', () => {
           'controller.devfile.io/storage-type': 'per-workspace',
         },
       };
-      const mockDevfileStr = 'schemaVersion: 2.2.0\nmetadata:\n  name: empty\n';
-
       (load as jest.Mock).mockReturnValue(mockDevfile);
-      (dump as jest.Mock).mockReturnValue(mockDevfileStr);
 
       const result = selectDefaultDevfile(mockState);
-      expect(result).toEqual(
-        Object.assign({}, mockDevfile, {
-          attributes: {
-            'controller.devfile.io/storage-type': 'per-workspace',
-            'dw.metadata.annotations': {
-              'che.eclipse.org/devfile': mockDevfileStr,
-            },
-          },
-          components: [],
-        }),
-      );
+      expect(result).toEqual({
+        schemaVersion: '2.2.0',
+        metadata: {
+          name: 'empty',
+        },
+        attributes: {
+          'controller.devfile.io/storage-type': 'per-workspace',
+        },
+        components: [],
+      });
     });
 
     it('should return undefined if the empty workspace URL is not found', () => {
