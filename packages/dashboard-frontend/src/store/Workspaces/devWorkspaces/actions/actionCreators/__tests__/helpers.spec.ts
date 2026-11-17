@@ -18,6 +18,8 @@ import { devWorkspaceKind } from '@/services/devfileApi/devWorkspace';
 import { compareStringsAsNumbers } from '@/services/helpers/resourceVersion';
 import {
   COMPONENT_UPDATE_POLICY,
+  DEVWORKSPACE_BOOTSTRAP,
+  DEVWORKSPACE_DEVFILE_SOURCE,
   DEVWORKSPACE_NEXT_START_ANNOTATION,
   DevWorkspaceClient,
   REGISTRY_URL,
@@ -298,11 +300,11 @@ describe('devWorkspaces, helpers', () => {
         .withMetadata({
           name: 'test-workspace',
           annotations: {
-            'che.eclipse.org/devfile-source': 'url:\n location: http://example.com/repo.git\n',
+            [DEVWORKSPACE_DEVFILE_SOURCE]: 'url:\n location: http://example.com/repo.git\n',
           },
         })
         .withTemplateAttributes({
-          'controller.devfile.io/bootstrap-devworkspace': true,
+          [DEVWORKSPACE_BOOTSTRAP]: true,
         })
         .build();
       const resources = [devWorkspace] as devfileApi.DevWorkspace[];

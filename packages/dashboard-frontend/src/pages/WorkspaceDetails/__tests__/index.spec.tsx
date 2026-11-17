@@ -122,7 +122,9 @@ describe('Workspace Details page', () => {
 
     it('should fall back to the Overview tab for the Devfile tab search param', async () => {
       const workspace = constructWorkspace(devWorkspaceBuilder.build());
-      renderComponent({ workspace }, `?tab=${WorkspaceDetailsTab.DEVFILE}`);
+      // the literal is intentional: 'Devfile' is no longer a WorkspaceDetailsTab member,
+      // but old bookmarks still carry it
+      renderComponent({ workspace }, '?tab=Devfile');
 
       await waitFor(() =>
         expect(screen.queryByRole('tabpanel', { name: 'Overview' })).not.toBeNull(),

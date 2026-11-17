@@ -128,9 +128,10 @@ export const selectDefaultDevfile = createSelector(
         if (!devfileAttr[DEVWORKSPACE_STORAGE_TYPE_ATTR] && pvcStrategy) {
           devfileAttr[DEVWORKSPACE_STORAGE_TYPE_ATTR] = pvcStrategy;
         }
-        // propagate default components
+        // propagate default components, cloned so that callers cannot mutate
+        // the array owned by the selectDefaultComponents cache
         if (!devfile.components || devfile.components.length === 0) {
-          devfile.components = defaultComponents;
+          devfile.components = cloneDeep(defaultComponents);
         }
         return devfile;
       } catch (e) {

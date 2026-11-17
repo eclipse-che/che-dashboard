@@ -100,8 +100,9 @@ describe('Workspace Details container', () => {
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
-  it('should render the page without a link to the original devfile for a workspace migrated from Che 7', () => {
-    // the Devfile tab is hidden, so the link to the original Che 7 workspace devfile is not built anymore
+  it('should pass the current workspace id for a workspace migrated from Che 7', () => {
+    // the id override annotation points at the Che 7 workspace, which is still in the store;
+    // the container has to keep passing the id of the workspace the route resolves to
     const che7Workspace = workspaceBuilder_2.withUID(workspaceId_2).build();
     const workspace = workspaceBuilder_1
       .withMetadata({
@@ -117,7 +118,6 @@ describe('Workspace Details container', () => {
     renderComponent(store, [`/workspace/${namespace}/${workspaceName_1}`]);
 
     expect(screen.getByTestId('props-workspace-id')).toHaveTextContent(workspaceId_1);
-    expect(screen.queryByTestId('props-old-workspace-path')).toBeNull();
   });
 
   it('should sanitize the page location', async () => {

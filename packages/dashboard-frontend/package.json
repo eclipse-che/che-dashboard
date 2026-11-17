@@ -32,10 +32,7 @@
     "test:watch": "yarn test --watch"
   },
   "dependencies": {
-    "@codemirror/lang-yaml": "^6.1.2",
-    "@codemirror/language": "^6.10.8",
     "@codemirror/view": "^6.36.2",
-    "@lezer/highlight": "^1.2.1",
     "@patternfly/react-core": "^6.4.0",
     "@patternfly/react-icons": "^6.4.0",
     "@patternfly/react-table": "^6.4.0",

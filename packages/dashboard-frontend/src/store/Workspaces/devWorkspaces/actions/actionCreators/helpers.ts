@@ -130,17 +130,18 @@ export function shouldUpdateDevWorkspace(
 export function getDevWorkspaceFromResources(
   resources: PreBuiltResources,
 ): devfileApi.DevWorkspace {
-  const _devWorkspaceResource = resources.find(
+  const devWorkspaceResource = resources.find(
     resource => resource.kind === 'DevWorkspace',
-  ) as devfileApi.DevWorkspace; // Ensure we are working with a clone to avoid mutating the original object
-  if (_devWorkspaceResource === undefined) {
+  ) as devfileApi.DevWorkspace;
+  if (devWorkspaceResource === undefined) {
     throw new Error('Failed to find a DevWorkspace in the fetched resources.');
   }
-  if (_devWorkspaceResource.metadata === undefined) {
+  if (devWorkspaceResource.metadata === undefined) {
     throw new Error('Fetched resource includes not a valid DevWorkspace.');
   }
 
-  return cloneDeep(_devWorkspaceResource);
+  // clone so callers cannot mutate the fetched resources
+  return cloneDeep(devWorkspaceResource);
 }
 
 export function getDevWorkspaceTemplateFromResources(

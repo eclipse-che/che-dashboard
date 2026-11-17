@@ -10,57 +10,9 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { dump } from 'js-yaml';
-
-import devfileApi from '@/services/devfileApi';
 import { DEVWORKSPACE_CHE_EDITOR } from '@/services/devfileApi/devWorkspace/metadata';
 import { che } from '@/services/models';
 import { Workspace } from '@/services/workspace-adapter';
-
-const sortOrder: Array<keyof devfileApi.Devfile> = [
-  'schemaVersion',
-  'metadata',
-  'attributes',
-  'projects',
-  'components',
-  'commands',
-];
-
-const lineWidth = 9999;
-
-function sortKeys(
-  key1: keyof (devfileApi.Devfile | devfileApi.DevWorkspace),
-  key2: keyof (devfileApi.Devfile | devfileApi.DevWorkspace),
-): -1 | 0 | 1 {
-  const index1 = sortOrder.indexOf(key1);
-  const index2 = sortOrder.indexOf(key2);
-  if (index1 === -1 && index2 === -1) {
-    return 0;
-  }
-  if (index1 === -1) {
-    return 1;
-  }
-  if (index2 === -1) {
-    return -1;
-  }
-  if (index1 < index2) {
-    return -1;
-  }
-  if (index1 > index2) {
-    return 1;
-  }
-  return 0;
-}
-
-/**
- * Provides a devfile stringify function.
- */
-export default function stringify(obj: devfileApi.Devfile | devfileApi.DevWorkspace): string {
-  if (!obj) {
-    return '';
-  }
-  return dump(obj, { lineWidth, sortKeys });
-}
 
 export type EditorGroup = {
   key: string;
