@@ -182,11 +182,11 @@ function buildPostStartCommandLine(tool: api.AiToolDefinition): string {
     // Binary already at /injected-tools/bin/<binary>, just ensure PATH
     mainCmd = pathSetup;
   } else {
-    // Symlink bundle binary (and bundled node if present) into /injected-tools/bin/
+    // Symlink bundle binary into /injected-tools/bin/
+    // Bundled dependencies (e.g. node) remain internal to the tool and must not be exposed in PATH
     const bundleDir = `/injected-tools/${slug}/bin`;
     const symlinkTarget = `${bundleDir}/${binary}`;
-    const nodeSymlink = `test -f ${bundleDir}/node && ln -sf ${bundleDir}/node /injected-tools/bin/node; true`;
-    mainCmd = `mkdir -p /injected-tools/bin && ln -sf ${symlinkTarget} /injected-tools/bin/${binary} && ${nodeSymlink} && ${pathSetup}`;
+    mainCmd = `mkdir -p /injected-tools/bin && ln -sf ${symlinkTarget} /injected-tools/bin/${binary} && ${pathSetup}`;
   }
 
   // SECURITY NOTE: setupCommand is sourced from an admin-managed ConfigMap.
@@ -212,6 +212,7 @@ function buildCleanupCommandLine(tool: api.AiToolDefinition): string {
   if (pattern === 'bundle') {
     parts.push(`rm -rf /injected-tools/${slug}`);
   }
+  // Note: bundled dependencies (e.g. /injected-tools/bin/node) are NOT symlinked, so no cleanup needed
   // Run in background so it never blocks workspace startup
   return `nohup sh -c '${parts.join(' && ')}' >/dev/null 2>&1 &`;
 }
