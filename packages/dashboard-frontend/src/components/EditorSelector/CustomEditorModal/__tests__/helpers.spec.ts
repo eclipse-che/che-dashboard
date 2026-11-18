@@ -11,10 +11,9 @@
  */
 
 import {
-  getEditorDefinitionName,
-  isValidEditorDefinition,
   isValidEditorName,
   MAX_EDITOR_NAME_LENGTH,
+  parseEditorDefinition,
 } from '@/components/EditorSelector/CustomEditorModal/helpers';
 
 describe('CustomEditorModal helpers', () => {
@@ -42,57 +41,52 @@ describe('CustomEditorModal helpers', () => {
     });
   });
 
-  describe('isValidEditorDefinition', () => {
-    it('should accept an editor devfile', () => {
-      expect(isValidEditorDefinition('schemaVersion: 2.2.2\nmetadata:\n  name: che-code\n')).toBe(
-        true,
-      );
+  describe('parseEditorDefinition', () => {
+    it('should accept an editor devfile and read its name', () => {
+      expect(parseEditorDefinition('schemaVersion: 2.2.2\nmetadata:\n  name: che-code\n')).toEqual({
+        isValid: true,
+        name: 'che-code',
+      });
     });
 
-    it('should accept a reference with overrides', () => {
+    it('should accept a reference with overrides, which has no name yet', () => {
       expect(
-        isValidEditorDefinition(
+        parseEditorDefinition(
           'reference: https://example.com/devfile.yaml\noverride:\n  containers:\n    - name: injector\n',
         ),
-      ).toBe(true);
+      ).toEqual({ isValid: true, name: undefined });
+    });
+
+    it.each([['id'], ['inline']])('should accept a che-editor.yaml with %s', key => {
+      expect(parseEditorDefinition(`${key}: che-incubator/che-code/latest\n`).isValid).toBe(true);
+    });
+
+    it('should reject a YAML document that is neither a devfile nor a reference', () => {
+      expect(parseEditorDefinition('foo: bar\n')).toEqual({ isValid: false, name: undefined });
     });
 
     it('should reject a plain string', () => {
-      expect(isValidEditorDefinition('just a string')).toBe(false);
+      expect(parseEditorDefinition('just a string').isValid).toBe(false);
     });
 
     it('should reject broken yaml', () => {
-      expect(isValidEditorDefinition('metadata:\n  name: [unclosed\n')).toBe(false);
+      expect(parseEditorDefinition('metadata:\n  name: [unclosed\n').isValid).toBe(false);
     });
 
     it('should reject an empty definition', () => {
-      expect(isValidEditorDefinition('   ')).toBe(false);
-    });
-  });
-
-  describe('getEditorDefinitionName', () => {
-    it('should return metadata.name of an editor devfile', () => {
-      expect(
-        getEditorDefinitionName('schemaVersion: 2.2.2\nmetadata:\n  name: che-code\n'),
-      ).toEqual('che-code');
+      expect(parseEditorDefinition('   ')).toEqual({ isValid: false, name: undefined });
     });
 
-    it('should return undefined for a reference', () => {
+    it('should return no name when metadata has none', () => {
       expect(
-        getEditorDefinitionName('reference: https://example.com/devfile.yaml\n'),
+        parseEditorDefinition('schemaVersion: 2.2.2\nmetadata:\n  displayName: VS Code\n').name,
       ).toBeUndefined();
     });
 
-    it('should return undefined when metadata has no name', () => {
-      expect(getEditorDefinitionName('metadata:\n  displayName: VS Code\n')).toBeUndefined();
-    });
-
-    it('should return undefined when metadata is not an object', () => {
-      expect(getEditorDefinitionName('metadata: che-code\n')).toBeUndefined();
-    });
-
-    it('should return undefined for an invalid definition', () => {
-      expect(getEditorDefinitionName('just a string')).toBeUndefined();
+    it('should return no name when metadata is not an object', () => {
+      expect(
+        parseEditorDefinition('schemaVersion: 2.2.2\nmetadata: che-code\n').name,
+      ).toBeUndefined();
     });
   });
 });

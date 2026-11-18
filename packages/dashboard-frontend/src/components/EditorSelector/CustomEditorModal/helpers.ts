@@ -28,36 +28,19 @@ export function isValidEditorName(editorName: string): boolean {
   );
 }
 
-function parseDefinition(editorDefinition: string): object | undefined {
-  if (editorDefinition.trim().length === 0) {
-    return undefined;
-  }
-  try {
-    const parsed = load(editorDefinition);
-    return typeof parsed === 'object' && parsed !== null ? (parsed as object) : undefined;
-  } catch (e) {
-    return undefined;
-  }
-}
+/** The keys that tell an editor devfile or a reference to one from any other YAML. */
+const DEFINITION_KEYS = ['schemaVersion', 'reference', 'id', 'inline'] as const;
 
-/**
- * An editor definition is either an editor devfile or a reference to one with
- * optional overrides, the same two shapes `.che/che-editor.yaml` accepts.
- */
-export function isValidEditorDefinition(editorDefinition: string): boolean {
-  return parseDefinition(editorDefinition) !== undefined;
-}
+export type ParsedEditorDefinition = {
+  /** True when the document is an editor devfile or a reference to one. */
+  isValid: boolean;
+  /** `metadata.name` of an editor devfile, absent on a reference. */
+  name: string | undefined;
+};
 
-/**
- * Returns `metadata.name` of the editor devfile, when the definition carries
- * one. A reference to a devfile has no name until it is resolved.
- */
-export function getEditorDefinitionName(editorDefinition: string): string | undefined {
-  const parsed = parseDefinition(editorDefinition);
-  if (parsed === undefined) {
-    return undefined;
-  }
+const EMPTY_DEFINITION: ParsedEditorDefinition = { isValid: false, name: undefined };
 
+function readName(parsed: object): string | undefined {
   const metadata = (parsed as { metadata?: unknown }).metadata;
   if (typeof metadata !== 'object' || metadata === null) {
     return undefined;
@@ -65,4 +48,30 @@ export function getEditorDefinitionName(editorDefinition: string): string | unde
 
   const name = (metadata as { name?: unknown }).name;
   return typeof name === 'string' && name.length > 0 ? name : undefined;
+}
+
+/**
+ * Parses an editor definition once, so a caller does not pay for the YAML on
+ * every keystroke and on every render. A definition is either an editor
+ * devfile or a reference to one with optional overrides, the same two shapes
+ * `.che/che-editor.yaml` accepts.
+ */
+export function parseEditorDefinition(editorDefinition: string): ParsedEditorDefinition {
+  if (editorDefinition.trim().length === 0) {
+    return EMPTY_DEFINITION;
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = load(editorDefinition);
+  } catch (e) {
+    return EMPTY_DEFINITION;
+  }
+
+  if (typeof parsed !== 'object' || parsed === null) {
+    return EMPTY_DEFINITION;
+  }
+
+  const isValid = DEFINITION_KEYS.some(key => key in parsed);
+  return { isValid, name: isValid ? readName(parsed) : undefined };
 }

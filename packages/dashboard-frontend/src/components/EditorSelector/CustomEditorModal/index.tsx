@@ -30,10 +30,9 @@ import { ExclamationCircleIcon, InfoIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 import {
-  getEditorDefinitionName,
-  isValidEditorDefinition,
   isValidEditorName,
   MAX_EDITOR_NAME_LENGTH,
+  parseEditorDefinition,
 } from '@/components/EditorSelector/CustomEditorModal/helpers';
 
 export type Props = {
@@ -45,12 +44,15 @@ export type Props = {
 export type State = {
   editorName: string;
   editorDefinition: string;
+  /** Whether the definition parses as an editor devfile or a reference to one. */
+  isDefinitionValid: boolean;
   containerImage: string;
 };
 
 const EMPTY_STATE: State = {
   editorName: '',
   editorDefinition: '',
+  isDefinitionValid: false,
   containerImage: '',
 };
 
@@ -73,11 +75,13 @@ export class CustomEditorModal extends React.PureComponent<Props, State> {
    * definition that carries one wins over whatever was typed before.
    */
   private handleDefinitionChange(editorDefinition: string): void {
-    const nameFromDefinition = getEditorDefinitionName(editorDefinition);
+    // parsed once here rather than on every render
+    const { isValid, name } = parseEditorDefinition(editorDefinition);
 
     this.setState({
       editorDefinition,
-      editorName: nameFromDefinition !== undefined ? nameFromDefinition : this.state.editorName,
+      isDefinitionValid: isValid,
+      editorName: name !== undefined ? name : this.state.editorName,
     });
   }
 
@@ -90,13 +94,10 @@ export class CustomEditorModal extends React.PureComponent<Props, State> {
   }
 
   private getDefinitionValidated(): ValidatedOptions {
-    const { editorDefinition } = this.state;
-    if (editorDefinition.trim().length === 0) {
+    if (!this.hasDefinition()) {
       return ValidatedOptions.default;
     }
-    return isValidEditorDefinition(editorDefinition)
-      ? ValidatedOptions.success
-      : ValidatedOptions.error;
+    return this.state.isDefinitionValid ? ValidatedOptions.success : ValidatedOptions.error;
   }
 
   private hasDefinition(): boolean {
