@@ -186,7 +186,12 @@ function buildPostStartCommandLine(tool: api.AiToolDefinition): string {
     // Bundled dependencies (e.g. node) remain internal to the tool and must not be exposed in PATH
     const bundleDir = `/injected-tools/${slug}/bin`;
     const symlinkTarget = `${bundleDir}/${binary}`;
-    mainCmd = `mkdir -p /injected-tools/bin && ln -sf ${symlinkTarget} /injected-tools/bin/${binary} && ${pathSetup}`;
+    // an earlier version linked the bundled node into /injected-tools/bin, and
+    // the volume outlives the upgrade, so the stale link is dropped here -
+    // 'rm -f' succeeds when it is not there
+    const removeLegacyNodeLink =
+      binary === 'node' ? '' : 'rm -f /injected-tools/bin/node 2>/dev/null; ';
+    mainCmd = `mkdir -p /injected-tools/bin && ${removeLegacyNodeLink}ln -sf ${symlinkTarget} /injected-tools/bin/${binary} && ${pathSetup}`;
   }
 
   // SECURITY NOTE: setupCommand is sourced from an admin-managed ConfigMap.

@@ -544,6 +544,21 @@ describe('aiTools', () => {
       );
     });
 
+    it('should drop a node symlink left in the shared volume by an earlier version', () => {
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+      ]);
+
+      const patched = addAiToolToWorkspace(workspace, 'google/gemini', ALL_TOOLS);
+      const symlinkCmd = patched.spec.template.commands?.find(
+        (c: { id?: string }) => c.id === 'symlink-gemini-cli',
+      ) as { exec?: { commandLine?: string } } | undefined;
+
+      // the volume outlives an upgrade, so a bundled node exposed on PATH by a
+      // previous release has to be removed before the tool binary is linked
+      expect(symlinkCmd?.exec?.commandLine).toContain('rm -f /injected-tools/bin/node');
+    });
+
     it('should create symlink postStart command for bundle-pattern tool', () => {
       const workspace = buildWorkspaceWithComponents([
         { name: 'editor', container: { image: 'che-code:latest' } },
