@@ -15,6 +15,7 @@ import { che } from '@/services/models';
 export const NAME_ATTR = 'name';
 export const DEV_WORKSPACE_ATTR = 'devWorkspace';
 export const EDITOR_ATTR = 'che-editor';
+export const EDITOR_NAME_ATTR = 'che-editor-name';
 export const AI_PROVIDER_ATTR = 'ai-provider';
 export const ERROR_CODE_ATTR = 'error_code';
 export const FACTORY_URL_ATTR = 'url';
@@ -36,6 +37,7 @@ export const PROPAGATE_FACTORY_ATTRS = [
   'workspaceDeploymentLabels',
   DEV_WORKSPACE_ATTR,
   EDITOR_ATTR,
+  EDITOR_NAME_ATTR,
   AI_PROVIDER_ATTR,
   FACTORY_URL_ATTR,
   POLICIES_CREATE_ATTR,
@@ -63,6 +65,7 @@ export type FactoryParams = {
   errorCode: ErrorCode | undefined;
   storageType: che.WorkspaceStorageType | undefined;
   cheEditor: string | undefined;
+  cheEditorName: string | undefined;
   editorImage: string | undefined;
   remotes: string | undefined;
   revision: string | undefined;
@@ -83,6 +86,7 @@ export type ErrorCode = 'invalid_request' | 'access_denied' | 'ssl_exception';
 export function buildFactoryParams(searchParams: URLSearchParams): FactoryParams {
   return {
     cheEditor: getEditorId(searchParams),
+    cheEditorName: getEditorName(searchParams),
     editorImage: getEditorImage(searchParams),
     errorCode: getErrorCode(searchParams),
     factoryId: buildFactoryId(searchParams),
@@ -158,6 +162,10 @@ function getStorageType(searchParams: URLSearchParams): che.WorkspaceStorageType
 
 function getEditorId(searchParams: URLSearchParams): string | undefined {
   return searchParams.get(EDITOR_ATTR) || undefined;
+}
+
+function getEditorName(searchParams: URLSearchParams): string | undefined {
+  return searchParams.get(EDITOR_NAME_ATTR) || undefined;
 }
 
 function getEditorImage(searchParams: URLSearchParams): string | undefined {

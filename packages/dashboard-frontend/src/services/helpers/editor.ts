@@ -13,7 +13,10 @@
 import { dump } from 'js-yaml';
 
 import devfileApi from '@/services/devfileApi';
-import { DEVWORKSPACE_CHE_EDITOR } from '@/services/devfileApi/devWorkspace/metadata';
+import {
+  DEVWORKSPACE_CHE_EDITOR,
+  DEVWORKSPACE_CHE_EDITOR_NAME,
+} from '@/services/devfileApi/devWorkspace/metadata';
 import { che } from '@/services/models';
 import { Workspace } from '@/services/workspace-adapter';
 
@@ -131,6 +134,12 @@ export function getCurrentEditorId(workspace: Workspace): string | undefined {
 }
 
 export function getCurrentEditorLabel(workspace: Workspace, editors: che.Plugin[]): string {
+  // Check if this is a custom editor
+  const customEditorName = workspace.ref.metadata?.annotations?.[DEVWORKSPACE_CHE_EDITOR_NAME];
+  if (customEditorName) {
+    return customEditorName;
+  }
+
   const id = getCurrentEditorId(workspace);
   if (!id) {
     return 'Default';
