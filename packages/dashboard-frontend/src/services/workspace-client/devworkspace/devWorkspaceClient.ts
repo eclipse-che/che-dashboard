@@ -154,7 +154,7 @@ export class DevWorkspaceClient {
     defaultNamespace: string,
     devWorkspaceResource: devfileApi.DevWorkspace,
     editorId: string | undefined,
-    customName?: string,
+    workspaceDisplayName?: string,
     cheEditorName?: string,
   ): Promise<{ headers: DwApi.Headers; devWorkspace: devfileApi.DevWorkspace }> {
     if (!devWorkspaceResource.spec.routingClass) {
@@ -183,8 +183,8 @@ export class DevWorkspaceClient {
     if (!devWorkspaceResource.metadata.labels) {
       devWorkspaceResource.metadata.labels = {};
     }
-    if (customName) {
-      devWorkspaceResource.metadata.labels[DEVWORKSPACE_LABEL_METADATA_NAME] = customName;
+    if (workspaceDisplayName) {
+      devWorkspaceResource.metadata.labels[DEVWORKSPACE_LABEL_METADATA_NAME] = workspaceDisplayName;
     }
 
     const { headers, devWorkspace } = await DwApi.createWorkspace(devWorkspaceResource);

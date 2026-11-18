@@ -217,7 +217,9 @@ function buildCleanupCommandLine(tool: api.AiToolDefinition): string {
   if (pattern === 'bundle') {
     parts.push(`rm -rf /injected-tools/${slug}`);
   }
-  // Note: bundled dependencies (e.g. /injected-tools/bin/node) are NOT symlinked, so no cleanup needed
+  // Bundled dependencies are not symlinked into /injected-tools/bin any more;
+  // 'rm -rf /injected-tools/<slug>' above takes the whole bundle including its
+  // node, and a link left by an older release is dropped on the next postStart
   // Run in background so it never blocks workspace startup
   return `nohup sh -c '${parts.join(' && ')}' >/dev/null 2>&1 &`;
 }
