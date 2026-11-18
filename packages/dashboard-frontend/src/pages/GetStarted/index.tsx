@@ -34,6 +34,7 @@ type Props = MappedProps & {
 type State = {
   editorDefinition: string | undefined;
   editorImage: string | undefined;
+  customEditorName: string | undefined;
   aiProviders: string[];
   presetFilter: string | undefined;
 };
@@ -45,6 +46,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
     this.state = {
       editorDefinition: undefined,
       editorImage: undefined,
+      customEditorName: undefined,
       aiProviders: [],
       presetFilter: this.getPresetFilter(),
     };
@@ -74,16 +76,19 @@ export class GetStarted extends React.PureComponent<Props, State> {
   private handleSelectEditor(
     editorDefinition: string | undefined,
     editorImage: string | undefined,
+    customEditorName?: string,
   ): void {
     this.setState({
       editorDefinition,
       editorImage,
+      customEditorName,
     });
   }
 
   render(): React.ReactNode {
     const { aiEnabled, defaultEditor, navigate } = this.props;
-    const { editorDefinition, editorImage, aiProviders, presetFilter } = this.state;
+    const { editorDefinition, editorImage, customEditorName, aiProviders, presetFilter } =
+      this.state;
 
     const title = 'Create Workspace';
 
@@ -100,8 +105,8 @@ export class GetStarted extends React.PureComponent<Props, State> {
         <PageSection variant={PageSectionVariants.default}>
           <EditorSelector
             defaultEditorId={defaultEditor}
-            onSelect={(editorDefinition, editorImage) =>
-              this.handleSelectEditor(editorDefinition, editorImage)
+            onSelect={(editorDefinition, editorImage, customEditorName) =>
+              this.handleSelectEditor(editorDefinition, editorImage, customEditorName)
             }
           />
 
@@ -120,6 +125,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
           <ImportFromGit
             editorDefinition={editorDefinition}
             editorImage={editorImage}
+            customEditorName={customEditorName}
             aiProviders={aiProviders}
             navigate={navigate}
           />
@@ -129,6 +135,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
           <SamplesList
             editorDefinition={editorDefinition}
             editorImage={editorImage}
+            customEditorName={customEditorName}
             aiProviders={aiProviders}
             presetFilter={presetFilter}
           />
