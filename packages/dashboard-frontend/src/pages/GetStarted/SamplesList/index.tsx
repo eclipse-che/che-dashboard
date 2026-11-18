@@ -127,6 +127,13 @@ class SamplesList extends React.PureComponent<Props, State> {
     if (_editorDefinition) {
       factoryParams[EDITOR_ATTR] = _editorDefinition;
 
+      // the name labels the custom definition, so it only travels together
+      // with it; without one the workspace runs the default editor and must
+      // not be labelled as something else
+      if (customEditorName !== undefined && editorDefinition !== undefined) {
+        factoryParams[EDITOR_NAME_ATTR] = customEditorName;
+      }
+
       const prebuiltDevWorkspace = metadata.links.devWorkspaces?.[_editorDefinition];
       if (prebuiltDevWorkspace !== undefined) {
         factoryParams[DEV_WORKSPACE_ATTR] = prebuiltDevWorkspace;
@@ -135,10 +142,6 @@ class SamplesList extends React.PureComponent<Props, State> {
 
     if (editorImage !== undefined) {
       factoryParams[EDITOR_IMAGE_ATTR] = editorImage;
-    }
-
-    if (customEditorName !== undefined) {
-      factoryParams[EDITOR_NAME_ATTR] = customEditorName;
     }
 
     if (aiProviders !== undefined && aiProviders.length > 0) {

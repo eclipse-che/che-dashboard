@@ -133,15 +133,17 @@ class ImportFromGit extends React.PureComponent<Props, State> {
       // annotation, exactly like an editor defined in the repository
       if (editorDefinition !== undefined) {
         factory.searchParams.set(EDITOR_ATTR, editorDefinition);
+
+        // the name labels that definition, so it only travels together with it:
+        // on a URL that already names an editor the definition is left out, and
+        // a name without it would label an editor the user did not choose
+        if (customEditorName !== undefined) {
+          factory.searchParams.set(EDITOR_NAME_ATTR, customEditorName);
+        }
       }
       if (editorImage !== undefined) {
         factory.searchParams.set(EDITOR_IMAGE_ATTR, editorImage);
       }
-    }
-
-    // add the custom editor name if provided
-    if (customEditorName !== undefined) {
-      factory.searchParams.set(EDITOR_NAME_ATTR, customEditorName);
     }
     if (
       aiProviders !== undefined &&
