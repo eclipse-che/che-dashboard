@@ -11,19 +11,18 @@
  */
 
 import { api } from '@eclipse-che/common';
-import { StateMock } from '@react-mock/state';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
 
-import EditorSelector, { State } from '@/components/EditorSelector';
+import EditorSelector from '@/components/EditorSelector';
 import mockPlugins from '@/pages/GetStarted/__tests__/plugins.json';
 import getComponentRenderer, { screen, within } from '@/services/__mocks__/getComponentRenderer';
 import { che } from '@/services/models';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
-jest.mock('@/components/EditorSelector/Definition');
-jest.mock('@/components/EditorSelector/Gallery');
+jest.mock('@/components/EditorSelector/Dropdown');
+jest.mock('@/components/EditorSelector/CustomEditorModal');
 
 const plugins = mockPlugins as che.Plugin[];
 
@@ -41,127 +40,51 @@ describe('Editor Selector', () => {
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 
-  test('accordion content toggling', async () => {
+  test('render editor dropdown', async () => {
     renderComponent();
 
-    const defaultEditorButton = screen.getByRole('button', { name: 'Use a Default Editor' });
-    const editorGalleryButton = screen.getByRole('button', { name: 'Choose an Editor' });
-    const editorDefinitionButton = screen.getByRole('button', { name: 'Use an Editor Definition' });
-
-    // initially the default editor section is visible; the selector and definition sections are not
-    expect(screen.getByTestId('default-editor-content')).not.toHaveAttribute('hidden');
-    expect(screen.getByTestId('editor-gallery-content')).toHaveAttribute('hidden');
-    expect(screen.getByTestId('editor-definition-content')).toHaveAttribute('hidden');
-
-    /* switch to the editor gallery section */
-
-    await userEvent.click(editorGalleryButton);
-
-    // now the gallery is visible
-    expect(screen.getByTestId('editor-gallery-content')).not.toHaveAttribute('hidden');
-    expect(screen.getByTestId('editor-definition-content')).toHaveAttribute('hidden');
-    expect(screen.getByTestId('default-editor-content')).toHaveAttribute('hidden');
-
-    /* switch to the editor definition section */
-
-    await userEvent.click(editorDefinitionButton);
-
-    // now the editor definition is visible
-    expect(screen.getByTestId('editor-definition-content')).not.toHaveAttribute('hidden');
-    expect(screen.getByTestId('editor-gallery-content')).toHaveAttribute('hidden');
-    expect(screen.getByTestId('default-editor-content')).toHaveAttribute('hidden');
-
-    /* switch back to the default editor section */
-
-    await userEvent.click(defaultEditorButton);
-
-    // now the default editor section is visible
-    expect(screen.getByTestId('default-editor-content')).not.toHaveAttribute('hidden');
-    expect(screen.getByTestId('editor-gallery-content')).toHaveAttribute('hidden');
-    expect(screen.getByTestId('editor-definition-content')).toHaveAttribute('hidden');
-  });
-
-  test('use a default editor', async () => {
-    renderComponent();
-
-    expect(screen.getByTestId('default-editor-content')).not.toHaveAttribute('hidden');
-
-    expect(mockOnSelect).not.toHaveBeenCalled();
-
-    const defaultEditorButton = screen.getByRole('button', { name: 'Use a Default Editor' });
-
-    await userEvent.click(defaultEditorButton);
-    expect(mockOnSelect).toHaveBeenCalledWith(undefined, undefined);
-  });
-
-  test('select editor from gallery', async () => {
-    renderComponent({
-      expandedId: 'selector',
-      selectorEditorValue: 'some/editor/id',
-      definitionEditorValue: undefined,
-      definitionImageValue: undefined,
-    });
-
-    const editorGallery = screen.getByTestId('editor-gallery-content');
-    expect(editorGallery).not.toHaveAttribute('hidden');
+    // Check that the editor gallery content (from dropdown mock) is visible
+    const allEditorGalleriesContent = screen.getAllByTestId('editor-gallery-content');
+    expect(allEditorGalleriesContent.length).toBeGreaterThan(0);
 
     // initial default editor ID
-    const defaultEditor = within(editorGallery).getByTestId('default-editor-id');
+    const defaultEditor = within(allEditorGalleriesContent[0]).getByTestId('default-editor-id');
     expect(defaultEditor).toHaveTextContent('default/editor/id');
+  });
 
-    // initial selected editor ID
-    const selectedEditor = within(editorGallery).getByTestId('selected-editor-id');
-    expect(selectedEditor).toHaveTextContent('some/editor/id');
+  test('select editor from dropdown', async () => {
+    renderComponent();
 
-    const selectEditorButton = within(editorGallery).getByRole('button', {
-      name: 'Select Editor',
-    });
+    const selectEditorButton = screen.getByTestId('select-editor-button');
 
     await userEvent.click(selectEditorButton);
 
     expect(mockOnSelect).toHaveBeenCalledWith('che-incubator/che-code/latest', undefined);
-
-    // next selected editor ID
-    expect(screen.queryByTestId('selected-editor-id')).toHaveTextContent(
-      'che-incubator/che-code/latest',
-    );
   });
 
-  test('define editor by ID and editor image', async () => {
-    renderComponent({
-      expandedId: 'definition',
-      selectorEditorValue: 'some/editor/id',
-      definitionEditorValue: undefined,
-      definitionImageValue: undefined,
-    });
+  test('render custom editor modal', async () => {
+    renderComponent();
 
-    const editorDefinitionPanel = screen.getByTestId('editor-definition-content');
-    expect(editorDefinitionPanel).not.toHaveAttribute('hidden');
+    // Verify custom editor modal is rendered (mocked component)
+    const customEditorModal = screen.getByTestId('custom-editor-modal-mock');
+    expect(customEditorModal).toBeInTheDocument();
+  });
 
-    // initial editor definition state
-    const editorDefinition = within(editorDefinitionPanel).getByTestId('editor-definition');
-    expect(editorDefinition).toBeEmptyDOMElement();
+  test('saving a custom editor selects it', async () => {
+    renderComponent();
 
-    // initial editor image
-    const editorImage = within(editorDefinitionPanel).getByTestId('editor-image');
-    expect(editorImage).toBeEmptyDOMElement();
+    await userEvent.click(screen.getByTestId('custom-editor-modal-save'));
 
-    const changeDefinitionButton = within(editorDefinitionPanel).getByRole('button', {
-      name: 'Editor Definition Change',
-    });
-
-    await userEvent.click(changeDefinitionButton);
-
-    expect(mockOnSelect).toHaveBeenCalledWith('some/editor/id', 'editor-image');
-
-    // next editor definition
-    expect(screen.getByTestId('editor-definition')).toHaveTextContent('some/editor/id');
-    // next editor image
-    expect(screen.getByTestId('editor-image')).toHaveTextContent('editor-image');
+    expect(mockOnSelect).toHaveBeenCalledWith(
+      'schemaVersion: 2.2.2',
+      'quay.io/my/editor',
+      'che-code',
+    );
+    expect(screen.getByTestId('custom-editor-name')).toHaveTextContent('che-code');
   });
 });
 
-function getComponent(localState?: State) {
+function getComponent() {
   const store = new MockStoreBuilder()
     .withPlugins(plugins)
     .withDwServerConfig({
@@ -171,15 +94,9 @@ function getComponent(localState?: State) {
     })
     .build();
 
-  const component = <EditorSelector defaultEditorId="default/editor/id" onSelect={mockOnSelect} />;
-
-  if (localState) {
-    return (
-      <Provider store={store}>
-        <StateMock state={localState}>{component}</StateMock>
-      </Provider>
-    );
-  }
-
-  return <Provider store={store}>{component}</Provider>;
+  return (
+    <Provider store={store}>
+      <EditorSelector defaultEditorId="default/editor/id" onSelect={mockOnSelect} />
+    </Provider>
+  );
 }

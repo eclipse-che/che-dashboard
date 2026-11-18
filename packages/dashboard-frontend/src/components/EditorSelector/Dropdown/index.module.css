@@ -1,0 +1,119 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+.container {
+  display: flex;
+  gap: var(--pf-t--global--spacer--md);
+  align-items: flex-start;
+  height: 38px;
+}
+
+.container > :first-child {
+  flex: 1;
+  min-width: 250px;
+  height: inherit;
+}
+
+.container > :last-child {
+  min-width: 100px;
+  height: inherit;
+}
+
+.toggleButton {
+  position: relative;
+  top: 2px;
+
+  display: inline-flex;
+  gap: var(--pf-t--global--spacer--sm);
+  align-items: center;
+}
+
+.toggleContent {
+  display: flex;
+  gap: var(--pf-t--global--spacer--sm);
+  align-items: center;
+}
+
+.toggleContent > span:first-child {
+  position: relative;
+  top: 1px;
+}
+
+.toggleIcon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+}
+
+.dropdownList {
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.itemContent {
+  display: flex;
+  gap: var(--pf-t--global--spacer--sm);
+  align-items: flex-start;
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+}
+
+.itemMain {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--pf-t--global--spacer--xs);
+}
+
+.itemTitle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pf-t--global--spacer--sm);
+  align-items: center;
+}
+
+.itemName {
+  font-weight: 500;
+}
+
+.defaultLabel {
+  padding: 2px 8px;
+
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--pf-t--global--text--color--on-inverse--default);
+  white-space: nowrap;
+
+  background-color: var(--pf-t--global--background--color--status--info);
+  border-radius: 4px;
+}
+
+.itemDescription {
+  margin-top: var(--pf-t--global--spacer--xs);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--pf-t--global--text--color--subtle);
+}
+
+.itemDescription a {
+  color: var(--pf-t--global--text--color--link--default);
+  text-decoration: none;
+}
+
+.itemDescription a:hover {
+  text-decoration: underline;
+}
