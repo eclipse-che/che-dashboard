@@ -71,6 +71,7 @@ export const createWorkspaceFromResources =
         devWorkspace,
         cheEditor,
         customName,
+        params.cheEditorName,
       );
 
       if (createResp.headers.warning) {

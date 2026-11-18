@@ -154,6 +154,31 @@ describe('getCurrentEditorLabel', () => {
     expect(getCurrentEditorLabel(workspace, editors)).toBe('Default');
   });
 
+  it('returns displayName of a custom editor stored as its devfile', () => {
+    const dw = new DevWorkspaceBuilder()
+      .withMetadata({
+        annotations: {
+          'che.eclipse.org/che-editor':
+            'schemaVersion: 2.2.2\nmetadata:\n  name: che-code\n  displayName: My VS Code\n',
+        },
+      })
+      .build();
+    const workspace = constructWorkspace(dw);
+    expect(getCurrentEditorLabel(workspace, editors)).toBe('My VS Code');
+  });
+
+  it('falls back to metadata.name when the devfile has no displayName', () => {
+    const dw = new DevWorkspaceBuilder()
+      .withMetadata({
+        annotations: {
+          'che.eclipse.org/che-editor': 'schemaVersion: 2.2.2\nmetadata:\n  name: my-editor\n',
+        },
+      })
+      .build();
+    const workspace = constructWorkspace(dw);
+    expect(getCurrentEditorLabel(workspace, editors)).toBe('my-editor');
+  });
+
   it('falls back to plugin name when found editor has no displayName', () => {
     const editorWithoutDisplayName: che.Plugin = {
       ...makePlugin('che-incubator', 'che-code', 'latest', ''),

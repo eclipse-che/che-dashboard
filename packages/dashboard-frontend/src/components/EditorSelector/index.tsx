@@ -23,6 +23,12 @@ import { selectEditorsVisibility } from '@/store/ServerConfig';
 
 export type Props = MappedProps & {
   defaultEditorId: string;
+  /**
+   * Whether the consumer can act on a custom editor. Pass false where only an
+   * editor id or definition is forwarded, so the option is not offered and
+   * then silently ignored. Defaults to true.
+   */
+  canUseCustomEditor?: boolean;
   onSelect: (
     editorDefinition: string | undefined,
     editorImage: string | undefined,
@@ -86,6 +92,7 @@ class EditorSelector extends React.PureComponent<Props, State> {
               currentArchitecture={currentArchitecture}
               selectedEditorId={selectedEditorId}
               customEditorName={customEditorName}
+              canUseCustomEditor={this.props.canUseCustomEditor}
               onSelect={editorId => this.handleEditorSelect(editorId)}
               onDefaultEditorClick={() => this.handleDefaultEditorSelect()}
               onCustomEditorClick={() => this.setState({ isCustomEditorModalOpen: true })}

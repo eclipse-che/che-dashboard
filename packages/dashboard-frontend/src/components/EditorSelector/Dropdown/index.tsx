@@ -44,6 +44,8 @@ export type Props = {
   onCustomEditorClick: () => void;
   /** Name of the selected custom editor, if one is selected. */
   customEditorName?: string;
+  /** Whether the consumer can act on a custom editor. Defaults to true. */
+  canUseCustomEditor?: boolean;
 };
 export type State = {
   selectedId: string;
@@ -74,7 +76,15 @@ export class EditorDropdown extends React.PureComponent<Props, State> {
   }
 
   public componentDidUpdate(prevProps: Readonly<Props>): void {
-    if (prevProps.selectedEditorId !== this.props.selectedEditorId) {
+    // the editors arrive from the plugin registry after the first render, and
+    // the architecture and the visibility config decide which of them are
+    // listed, so the groups have to be rebuilt whenever any of them changes
+    if (
+      prevProps.selectedEditorId !== this.props.selectedEditorId ||
+      prevProps.editors !== this.props.editors ||
+      prevProps.currentArchitecture !== this.props.currentArchitecture ||
+      prevProps.editorsVisibilityConfig !== this.props.editorsVisibilityConfig
+    ) {
       this.init();
     }
   }
@@ -244,23 +254,25 @@ export class EditorDropdown extends React.PureComponent<Props, State> {
     });
 
     // Add custom editor option at the bottom
-    items.push(
-      <DropdownItem
-        key="custom-editor"
-        onClick={() => {
-          this.setState({ isEditorDropdownOpen: false });
-          this.props.onCustomEditorClick();
-        }}
-        data-testid="custom-editor-dropdown-item"
-      >
-        <div className={styles.itemContent}>
-          <CogIcon className={styles.icon} />
-          <div className={styles.itemMain}>
-            <span className={styles.itemName}>Custom Editor</span>
+    if (this.props.canUseCustomEditor !== false) {
+      items.push(
+        <DropdownItem
+          key="custom-editor"
+          onClick={() => {
+            this.setState({ isEditorDropdownOpen: false });
+            this.props.onCustomEditorClick();
+          }}
+          data-testid="custom-editor-dropdown-item"
+        >
+          <div className={styles.itemContent}>
+            <CogIcon className={styles.icon} />
+            <div className={styles.itemMain}>
+              <span className={styles.itemName}>Custom Editor</span>
+            </div>
           </div>
-        </div>
-      </DropdownItem>,
-    );
+        </DropdownItem>,
+      );
+    }
 
     return items;
   }
