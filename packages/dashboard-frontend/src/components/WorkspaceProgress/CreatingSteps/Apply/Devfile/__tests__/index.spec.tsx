@@ -248,10 +248,6 @@ describe('Creating steps, applying a devfile', () => {
             attributes: {
               [DEVWORKSPACE_BOOTSTRAP]: true,
               defaultDevfile: true,
-              'dw.metadata.annotations': {
-                'che.eclipse.org/devfile':
-                  'schemaVersion: 2.1.0\nmetadata:\n  generateName: empty\nattributes:\n  defaultDevfile: true\n',
-              },
             },
           }),
           factoryId,
@@ -420,10 +416,6 @@ describe('Creating steps, applying a devfile', () => {
           expect.objectContaining({
             attributes: {
               defaultDevfile: true,
-              'dw.metadata.annotations': {
-                'che.eclipse.org/devfile':
-                  'schemaVersion: 2.1.0\nmetadata:\n  generateName: empty\nattributes:\n  defaultDevfile: true\n',
-              },
               [DEVWORKSPACE_BOOTSTRAP]: true,
             },
           }),
@@ -505,10 +497,6 @@ describe('Creating steps, applying a devfile', () => {
           expect.objectContaining({
             attributes: {
               defaultDevfile: true,
-              'dw.metadata.annotations': {
-                'che.eclipse.org/devfile':
-                  'schemaVersion: 2.1.0\nmetadata:\n  generateName: empty\nattributes:\n  defaultDevfile: true\n',
-              },
             },
           }),
           factoryId,

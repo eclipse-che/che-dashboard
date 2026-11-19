@@ -18,14 +18,12 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import { DevfileAdapter } from '@/services/devfile/adapter';
 import devfileApi, { isDevfileV2 } from '@/services/devfileApi';
-import stringify from '@/services/helpers/editor';
 import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { generateWorkspaceName } from '@/services/helpers/generateName';
 import { getProjectName } from '@/services/helpers/getProjectName';
 import { DevfileV2ProjectSource, FactoryResolver } from '@/services/helpers/types';
 import { CheApiLink, CheDevfileV1 } from '@/services/models/che';
 import {
-  DEVWORKSPACE_DEVFILE,
   DEVWORKSPACE_DEVFILE_SOURCE,
   DEVWORKSPACE_METADATA_ANNOTATION,
 } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
@@ -272,6 +270,5 @@ export function normalizeDevfile(
     attributes[DEVWORKSPACE_METADATA_ANNOTATION] = {};
   }
   attributes[DEVWORKSPACE_METADATA_ANNOTATION][DEVWORKSPACE_DEVFILE_SOURCE] = devfileSource;
-  attributes[DEVWORKSPACE_METADATA_ANNOTATION][DEVWORKSPACE_DEVFILE] = stringify(data.devfile);
   return devfile;
 }

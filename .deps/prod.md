@@ -4,7 +4,6 @@
 | --- | --- | --- |
 | `@codemirror/autocomplete@6.18.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/autocomplete/6.18.6) |
 | `@codemirror/commands@6.8.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/commands/6.8.1) |
-| `@codemirror/lang-yaml@6.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/lang-yaml/6.1.2) |
 | `@codemirror/language@6.11.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/language/6.11.3) |
 | `@codemirror/lint@6.8.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/lint/6.8.5) |
 | `@codemirror/search@6.5.11` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/search/6.5.11) |
@@ -41,7 +40,6 @@
 | `@lezer/common@1.2.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lezer/common/1.2.3) |
 | `@lezer/highlight@1.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lezer/highlight/1.2.1) |
 | `@lezer/lr@1.4.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lezer/lr/1.4.2) |
-| `@lezer/yaml@1.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lezer/yaml/1.0.3) |
 | `@lukeed/ms@2.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lukeed/ms/2.0.2) |
 | `@marijn/find-cluster-break@1.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@marijn/find-cluster-break/1.0.2) |
 | `@patternfly/react-core@6.4.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-core/6.4.2) |

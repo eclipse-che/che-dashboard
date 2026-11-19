@@ -99,7 +99,7 @@ export const createWorkspaceFromDevfile =
         editorContent: editorContent,
       });
       const resources = loadResourcesContent(resourcesContent);
-      devWorkspaceResource = getDevWorkspaceFromResources(resources, params);
+      devWorkspaceResource = getDevWorkspaceFromResources(resources);
       devWorkspaceTemplateResource = getDevWorkspaceTemplateFromResources(resources, editorYamlUrl);
     } catch (e) {
       const errorMessage = common.helpers.errors.getMessage(e);

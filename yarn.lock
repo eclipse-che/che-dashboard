@@ -671,22 +671,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/lang-yaml@npm:^6.1.2":
-  version: 6.1.2
-  resolution: "@codemirror/lang-yaml@npm:6.1.2"
-  dependencies:
-    "@codemirror/autocomplete": "npm:^6.0.0"
-    "@codemirror/language": "npm:^6.0.0"
-    "@codemirror/state": "npm:^6.0.0"
-    "@lezer/common": "npm:^1.2.0"
-    "@lezer/highlight": "npm:^1.2.0"
-    "@lezer/lr": "npm:^1.0.0"
-    "@lezer/yaml": "npm:^1.0.0"
-  checksum: 10/1a1ad16554b27d9f66ad2a342170e7c7e51781876280727790e763e9a770163772d4880a9c344705ca65acc2b5fb228962dc3281ba05a71d2c071515541258ae
-  languageName: node
-  linkType: hard
-
-"@codemirror/language@npm:^6.0.0, @codemirror/language@npm:^6.10.8":
+"@codemirror/language@npm:^6.0.0":
   version: 6.11.3
   resolution: "@codemirror/language@npm:6.11.3"
   dependencies:
@@ -1145,12 +1130,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@eclipse-che/dashboard-frontend@workspace:packages/dashboard-frontend"
   dependencies:
-    "@codemirror/lang-yaml": "npm:^6.1.2"
-    "@codemirror/language": "npm:^6.10.8"
     "@codemirror/view": "npm:^6.36.2"
     "@devfile/api": "npm:2.3.0-1747843475"
     "@kubernetes/client-node": "npm:^0.22.1"
-    "@lezer/highlight": "npm:^1.2.1"
     "@patternfly/react-core": "npm:^6.4.0"
     "@patternfly/react-icons": "npm:^6.4.0"
     "@patternfly/react-table": "npm:^6.4.0"
@@ -2232,14 +2214,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lezer/common@npm:^1.0.0, @lezer/common@npm:^1.1.0, @lezer/common@npm:^1.2.0":
+"@lezer/common@npm:^1.0.0, @lezer/common@npm:^1.1.0":
   version: 1.2.3
   resolution: "@lezer/common@npm:1.2.3"
   checksum: 10/dad24e353e4e67d88b203191361ca1dff26c01c2b7b4ae829b668a1d115929334d077217367683e39180c0556510ed2066ea8ddba2b079be7c08a7152208cc87
   languageName: node
   linkType: hard
 
-"@lezer/highlight@npm:^1.0.0, @lezer/highlight@npm:^1.2.0, @lezer/highlight@npm:^1.2.1":
+"@lezer/highlight@npm:^1.0.0":
   version: 1.2.1
   resolution: "@lezer/highlight@npm:1.2.1"
   dependencies:
@@ -2248,23 +2230,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lezer/lr@npm:^1.0.0, @lezer/lr@npm:^1.4.0":
+"@lezer/lr@npm:^1.0.0":
   version: 1.4.2
   resolution: "@lezer/lr@npm:1.4.2"
   dependencies:
     "@lezer/common": "npm:^1.0.0"
   checksum: 10/f7b505906c8d8df14c07866553cf3dae1e065b1da8b28fbb4193fd67ab8d187eb45f92759e29a2cfe4283296f0aa864b38a0a91708ecfc3e24b8f662d626e0c6
-  languageName: node
-  linkType: hard
-
-"@lezer/yaml@npm:^1.0.0":
-  version: 1.0.3
-  resolution: "@lezer/yaml@npm:1.0.3"
-  dependencies:
-    "@lezer/common": "npm:^1.2.0"
-    "@lezer/highlight": "npm:^1.0.0"
-    "@lezer/lr": "npm:^1.4.0"
-  checksum: 10/6697b964403dc5dec9186732c5997675e5140ef5dddc8371dd28fa194d8431d8a7d5f18670be47b81a0b4ad6cbfe82e4f7c9c6f06e6f763bd100f7a38908baf5
   languageName: node
   linkType: hard
 

@@ -20,6 +20,7 @@ import { Store } from 'redux';
 
 import { ROUTE } from '@/Routes';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
+import { DEVWORKSPACE_ID_OVERRIDE_ANNOTATION } from '@/services/devfileApi/devWorkspace/metadata';
 import { constructWorkspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
@@ -97,6 +98,26 @@ describe('Workspace Details container', () => {
     expect(workspaceIdEl).toHaveTextContent(workspaceId_1);
 
     expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it('should pass the current workspace id for a workspace migrated from Che 7', () => {
+    // the id override annotation points at the Che 7 workspace, which is still in the store;
+    // the container has to keep passing the id of the workspace the route resolves to
+    const che7Workspace = workspaceBuilder_2.withUID(workspaceId_2).build();
+    const workspace = workspaceBuilder_1
+      .withMetadata({
+        annotations: {
+          [DEVWORKSPACE_ID_OVERRIDE_ANNOTATION]: workspaceId_2,
+        },
+      })
+      .build();
+    const store = prevStoreBuilder
+      .withDevWorkspaces({ workspaces: [workspace, che7Workspace] })
+      .build();
+
+    renderComponent(store, [`/workspace/${namespace}/${workspaceName_1}`]);
+
+    expect(screen.getByTestId('props-workspace-id')).toHaveTextContent(workspaceId_1);
   });
 
   it('should sanitize the page location', async () => {

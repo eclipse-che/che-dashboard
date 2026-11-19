@@ -23,9 +23,7 @@ export class DevWorkspaceBuilder {
     kind: 'DevWorkspace',
     apiVersion: 'workspace.devfile.io/v1alpha2',
     metadata: {
-      annotations: {
-        'che.eclipse.org/devfile': `schemaVersion: 2.2.0\nmetadata:\n generateName: dev-wksp\n`,
-      },
+      annotations: {},
       labels: {},
       name: 'dev-wksp-' + getRandomString(4),
       namespace: '',
