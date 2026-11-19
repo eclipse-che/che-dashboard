@@ -22,6 +22,11 @@ import {
   ProgressStepState,
 } from '@/components/WorkspaceProgress/ProgressStep';
 import {
+  buildPVCErrorMessage,
+  PVC_FULL_FALLBACK_MESSAGE,
+} from '@/components/WorkspaceProgress/StartingSteps/StartWorkspace/buildPVCErrorMessage';
+import { hasPVCErrors } from '@/components/WorkspaceProgress/StartingSteps/StartWorkspace/detectPVCErrors';
+import {
   applyRestartDefaultLocation,
   applyRestartInSafeModeLocation,
   getStartParams,
@@ -40,10 +45,23 @@ import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
 import { selectApplications } from '@/store/ClusterInfo/selectors';
+import { selectEventsFromResourceVersion } from '@/store/Events';
 import { selectCurrentScc, selectStartTimeout } from '@/store/ServerConfig/selectors';
 import { workspacesActionCreators } from '@/store/Workspaces';
-import { selectDevWorkspaceWarnings } from '@/store/Workspaces/devWorkspaces/selectors';
+import {
+  selectDevWorkspaceWarnings,
+  selectStartedWorkspaces,
+} from '@/store/Workspaces/devWorkspaces/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
+
+/** An error carrying a rendered message node, used for the PVC-full alert. */
+export interface PVCFullError extends Error {
+  detailedMessage?: React.ReactNode;
+}
+
+function hasDetailedMessage(error: Error): error is PVCFullError {
+  return 'detailedMessage' in error;
+}
 
 export type Props = MappedProps &
   ProgressStepProps & {
@@ -131,7 +149,19 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       return true;
     }
 
-    return false;
+    // a newly arrived event may turn the PVC verdict around
+    return (
+      hasPVCErrors(
+        workspace,
+        this.props.startedWorkspaces,
+        this.props.eventsFromResourceVersionFn,
+      ) !==
+      hasPVCErrors(
+        nextWorkspace,
+        nextProps.startedWorkspaces,
+        nextProps.eventsFromResourceVersionFn,
+      )
+    );
   }
 
   public componentWillUnmount(): void {
@@ -158,9 +188,28 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
           warning,
         });
       }
+      if (
+        hasPVCErrors(
+          workspace,
+          this.props.startedWorkspaces,
+          this.props.eventsFromResourceVersionFn,
+        )
+      ) {
+        this.handlePVCError(workspace);
+      }
     }
 
     this.prepareAndRun();
+  }
+
+  protected handlePVCError(workspace: Workspace | undefined): void {
+    const message = buildPVCErrorMessage(workspace, this.props.applications);
+    const pvcError: PVCFullError = new Error(
+      typeof message === 'string' ? message : PVC_FULL_FALLBACK_MESSAGE,
+    );
+    // keep the rendered node so buildAlertItem can show the actionable guidance
+    pvcError.detailedMessage = message;
+    this.handleError(pvcError);
   }
 
   protected handleRestart(alertKey: string, tab: LoaderTab): void {
@@ -229,6 +278,14 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
     if (this.state.shouldUpdateWithDefaultDevfile) {
       await this.props.updateWorkspaceWithDefaultDevfile(workspace);
       this.setState({ shouldUpdateWithDefaultDevfile: false });
+      return false;
+    }
+
+    if (
+      hasPVCErrors(workspace, this.props.startedWorkspaces, this.props.eventsFromResourceVersionFn)
+    ) {
+      this.handlePVCError(workspace);
+      // hold the step - restarting will not help until storage is freed
       return false;
     }
 
@@ -302,7 +359,10 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       key,
       title: 'Failed to open the workspace',
       variant: AlertVariant.warning,
-      children: common.helpers.errors.getMessage(error),
+      children:
+        hasDetailedMessage(error) && error.detailedMessage !== undefined
+          ? error.detailedMessage
+          : common.helpers.errors.getMessage(error),
       actionCallbacks,
     };
   }
@@ -362,6 +422,8 @@ const mapStateToProps = (state: RootState) => ({
   currentScc: selectCurrentScc(state),
   startTimeout: selectStartTimeout(state),
   devWorkspaceWarnings: selectDevWorkspaceWarnings(state),
+  eventsFromResourceVersionFn: selectEventsFromResourceVersion(state),
+  startedWorkspaces: selectStartedWorkspaces(state),
 });
 
 const connector = connect(mapStateToProps, workspacesActionCreators, null, {

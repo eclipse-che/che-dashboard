@@ -11,7 +11,8 @@
  */
 
 import { api } from '@eclipse-che/common';
-import { screen, waitFor } from '@testing-library/react';
+import { CoreV1Event } from '@kubernetes/client-node';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent, { UserEvent } from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -21,8 +22,10 @@ import { Store } from 'redux';
 import { MIN_STEP_DURATION_MS } from '@/components/WorkspaceProgress/const';
 import { WorkspaceRouteParams } from '@/Routes';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
+import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
 import { getDefer } from '@/services/helpers/deferred';
 import { AlertItem, isActionCallback } from '@/services/helpers/types';
+import { che } from '@/services/models';
 import { AppThunk } from '@/store';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
@@ -897,6 +900,88 @@ describe('Starting steps, starting a workspace', () => {
 
       // No errors should be shown
       expect(mockOnError).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('PVC errors', () => {
+    const uid = 'uid-pvc-1';
+    const workspaceId = 'workspace-pvc-1';
+
+    function buildStore(storageType?: che.WorkspaceStorageType): Store {
+      const builder = new DevWorkspaceBuilder()
+        .withName(workspaceName)
+        .withNamespace(namespace)
+        .withId(workspaceId)
+        .withUID(uid)
+        .withStatus({ phase: 'STARTING' });
+
+      if (storageType) {
+        builder.withTemplateAttributes({
+          [DEVWORKSPACE_STORAGE_TYPE_ATTR]: storageType,
+        });
+      }
+
+      return new MockStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [builder.build()],
+          startedWorkspaces: { [uid]: '100' },
+        })
+        .withEvents({
+          events: [
+            {
+              metadata: { name: `${workspaceId}-pod.1`, resourceVersion: '101' },
+              reason: 'Failed',
+              message: 'Error: write /projects/x: no space left on device',
+            } as CoreV1Event,
+          ],
+        })
+        .withDwServerConfig(serverConfig)
+        .build();
+    }
+
+    test('reports a PVC-full alert when a matching Failed event arrives', async () => {
+      renderComponent(buildStore('per-user'));
+
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+      await waitFor(() => expect(mockOnError).toHaveBeenCalled());
+
+      const alertItem = mockOnError.mock.calls[0][0] as AlertItem;
+      expect(alertItem.title).toEqual('Failed to open the workspace');
+
+      render(<>{alertItem.children}</>);
+      expect(screen.getByText(/PVC is full/)).toBeInTheDocument();
+    });
+
+    test('does not report a PVC alert for ephemeral storage', async () => {
+      renderComponent(buildStore('ephemeral'));
+
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+      expect(mockOnError).not.toHaveBeenCalled();
+    });
+
+    test('does not advance to the next step while the PVC error stands', async () => {
+      renderComponent(buildStore('per-user'));
+
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+      await waitFor(() => expect(mockOnError).toHaveBeenCalled());
+      expect(mockOnNextStep).not.toHaveBeenCalled();
+    });
+
+    test('does not stack alerts when the same event is seen again', async () => {
+      const store = buildStore('per-user');
+      const { reRenderComponent } = renderComponent(store);
+
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+      await waitFor(() => expect(mockOnError).toHaveBeenCalled());
+
+      reRenderComponent(store);
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+      const keys = mockOnError.mock.calls.map(call => (call[0] as AlertItem).key);
+      expect(new Set(keys).size).toEqual(1);
     });
   });
 });
