@@ -27,7 +27,11 @@ import {
   getDevWorkspaceTemplateFromResources,
 } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers';
 import { updateEditorDevfile } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/editorImage';
-import { getCustomEditor } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/getCustomEditor';
+import {
+  getCustomEditor,
+  getEditorDefinition,
+  isEditorDefinitionContent,
+} from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/getCustomEditor';
 import {
   devWorkspacesErrorAction,
   devWorkspacesRequestAction,
@@ -49,7 +53,15 @@ export const createWorkspaceFromDevfile =
     let editorYamlUrl: string | undefined;
     // do we have an optional editor parameter ?
     let editor = params.cheEditor;
-    if (editor) {
+    if (editor && isEditorDefinitionContent(editor)) {
+      // a custom editor the user described by hand: resolve it the same way an
+      // editor from `.che/che-editor.yaml` is resolved, and keep the resolved
+      // devfile as the editor, so it lands in the 'che.eclipse.org/che-editor'
+      // annotation instead of an editor id
+      editorContent = await getEditorDefinition(editor, dispatch, getState);
+      editor = editorContent;
+      editorYamlUrl = undefined;
+    } else if (editor) {
       const response = await getEditor(editor, dispatch, getState);
       if (response.content) {
         editorContent = response.content;

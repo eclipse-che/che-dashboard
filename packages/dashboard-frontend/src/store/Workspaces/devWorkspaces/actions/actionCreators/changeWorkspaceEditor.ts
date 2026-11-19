@@ -17,7 +17,10 @@ import cloneDeep from 'lodash/cloneDeep';
 import * as DwApi from '@/services/backend-client/devWorkspaceApi';
 import * as DwtApi from '@/services/backend-client/devWorkspaceTemplateApi';
 import devfileApi from '@/services/devfileApi';
-import { DEVWORKSPACE_CHE_EDITOR } from '@/services/devfileApi/devWorkspace/metadata';
+import {
+  DEVWORKSPACE_CHE_EDITOR,
+  DEVWORKSPACE_CHE_EDITOR_NAME,
+} from '@/services/devfileApi/devWorkspace/metadata';
 import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
 import { Workspace } from '@/services/workspace-adapter';
 import {
@@ -122,6 +125,9 @@ export const changeWorkspaceEditor =
 
       const annotations = { ...(dw.metadata.annotations ?? {}) };
       annotations[DEVWORKSPACE_CHE_EDITOR] = newEditorId;
+      // the new editor comes from the registry, so the name of the custom one
+      // it replaces must not stay behind and keep being shown
+      delete annotations[DEVWORKSPACE_CHE_EDITOR_NAME];
       const devfileSource = annotations[DEVWORKSPACE_DEVFILE_SOURCE] ?? '';
       if (devfileSource.includes('che-editor=')) {
         annotations[DEVWORKSPACE_DEVFILE_SOURCE] = devfileSource.replace(

@@ -224,6 +224,30 @@ describe('Samples List', () => {
       );
     });
 
+    test('a custom editor adds both its definition and its name', async () => {
+      const store = storeBuilder.build();
+      renderComponent(store, 'schemaVersion: 2.2.2', undefined, 'my-editor');
+
+      await userEvent.click(screen.getByRole('button', { name: 'Select Sample' }));
+
+      const factoryUrl = mockWindowOpen.mock.calls[0][0];
+      expect(factoryUrl).toContain('che-editor=schemaVersion%3A+2.2.2');
+      expect(factoryUrl).toContain('che-editor-name=my-editor');
+    });
+
+    test('a custom editor without a definition falls back to the default editor unlabelled', async () => {
+      // nothing describes the editor, so the workspace runs the default one and
+      // must not be labelled with a name that suggests otherwise
+      const store = storeBuilder.build();
+      renderComponent(store, undefined, 'custom-editor-image', 'my-editor');
+
+      await userEvent.click(screen.getByRole('button', { name: 'Select Sample' }));
+
+      const factoryUrl = mockWindowOpen.mock.calls[0][0];
+      expect(factoryUrl).toContain('editor-image=custom-editor-image');
+      expect(factoryUrl).not.toContain('che-editor-name');
+    });
+
     test('default editor matches some resource', async () => {
       const store = storeBuilder
         .withDwPlugins({}, {}, false, [], undefined, 'che-incubator/che-idea/next')
@@ -379,6 +403,7 @@ function getComponent(
   store: Store,
   editorDefinition: string | undefined,
   editorImage: string | undefined,
+  customEditorName: string | undefined = undefined,
 ) {
   return (
     <Provider store={store}>
@@ -386,6 +411,7 @@ function getComponent(
         presetFilter={undefined}
         editorDefinition={editorDefinition}
         editorImage={editorImage}
+        customEditorName={customEditorName}
       />
     </Provider>
   );

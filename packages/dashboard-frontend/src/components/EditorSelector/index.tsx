@@ -10,40 +10,35 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionToggle,
-  Content,
-  Panel,
-  PanelHeader,
-  PanelMain,
-  PanelMainBody,
-  Title,
-} from '@patternfly/react-core';
+import { Panel, PanelHeader, PanelMain, PanelMainBody, Title } from '@patternfly/react-core';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
-import { EditorDefinition } from '@/components/EditorSelector/Definition';
-import { DocsLink } from '@/components/EditorSelector/DocsLink';
-import { EditorGallery } from '@/components/EditorSelector/Gallery';
+import { CustomEditorModal } from '@/components/EditorSelector/CustomEditorModal';
+import { EditorDropdown } from '@/components/EditorSelector/Dropdown';
 import { RootState } from '@/store';
 import { selectCurrentArchitecture } from '@/store/ClusterConfig/selectors';
 import { selectEditors } from '@/store/Plugins/chePlugins/selectors';
 import { selectEditorsVisibility } from '@/store/ServerConfig';
 
-type AccordionId = 'default' | 'selector' | 'definition';
-
 export type Props = MappedProps & {
   defaultEditorId: string;
-  onSelect: (editorDefinition: string | undefined, editorImage: string | undefined) => void;
+  /**
+   * Whether the consumer can act on a custom editor. Pass false where only an
+   * editor id or definition is forwarded, so the option is not offered and
+   * then silently ignored. Defaults to true.
+   */
+  canUseCustomEditor?: boolean;
+  onSelect: (
+    editorDefinition: string | undefined,
+    editorImage: string | undefined,
+    customEditorName?: string,
+  ) => void;
 };
 export type State = {
-  definitionEditorValue: string | undefined;
-  definitionImageValue: string | undefined;
-  selectorEditorValue: string;
-  expandedId: AccordionId | undefined;
+  selectedEditorId: string;
+  customEditorName: string | undefined;
+  isCustomEditorModalOpen: boolean;
 };
 
 class EditorSelector extends React.PureComponent<Props, State> {
@@ -51,61 +46,37 @@ class EditorSelector extends React.PureComponent<Props, State> {
     super(props);
 
     this.state = {
-      definitionEditorValue: undefined,
-      definitionImageValue: undefined,
-      selectorEditorValue: '',
-      expandedId: 'default',
+      selectedEditorId: '',
+      customEditorName: undefined,
+      isCustomEditorModalOpen: false,
     };
   }
 
-  private handleSelectorValueChange(editorId: string): void {
-    this.setState({ selectorEditorValue: editorId });
-
-    // propagate the change to the parent component
-    // only if the selector is expanded
-    if (this.state.expandedId === 'selector') {
-      this.props.onSelect(editorId, undefined);
-    }
+  private handleDefaultEditorSelect(): void {
+    this.setState({ selectedEditorId: '', customEditorName: undefined });
+    this.props.onSelect(undefined, undefined);
   }
 
-  private handleDefinitionValueChange(
+  private handleEditorSelect(editorId: string): void {
+    this.setState({ selectedEditorId: editorId, customEditorName: undefined });
+    this.props.onSelect(editorId, undefined);
+  }
+
+  private handleCustomEditorSelect(
+    editorName: string,
     editorDefinition: string | undefined,
-    editorImage: string | undefined,
+    editorImage: string,
   ): void {
     this.setState({
-      definitionEditorValue: editorDefinition,
-      definitionImageValue: editorImage,
+      customEditorName: editorName,
+      isCustomEditorModalOpen: false,
     });
-
-    // propagate the change to the parent component
-    // only if the definition is expanded
-    if (this.state.expandedId === 'definition') {
-      this.props.onSelect(editorDefinition, editorImage);
-    }
-  }
-
-  private handleToggle(expandedId: AccordionId): void {
-    const { onSelect } = this.props;
-
-    this.setState({
-      expandedId: this.state.expandedId === expandedId ? this.state.expandedId : expandedId,
-    });
-
-    const { definitionEditorValue, definitionImageValue, selectorEditorValue } = this.state;
-
-    if (expandedId === 'default') {
-      onSelect(undefined, undefined);
-    } else if (expandedId === 'selector') {
-      onSelect(selectorEditorValue, undefined);
-    } else {
-      onSelect(definitionEditorValue, definitionImageValue);
-    }
+    this.props.onSelect(editorDefinition, editorImage || undefined, editorName);
   }
 
   render(): React.ReactElement {
     const { editorsVisibilityConfig, defaultEditorId, editors, currentArchitecture } = this.props;
-    const { definitionEditorValue, definitionImageValue, selectorEditorValue, expandedId } =
-      this.state;
+    const { selectedEditorId, customEditorName, isCustomEditorModalOpen } = this.state;
 
     return (
       <Panel>
@@ -114,87 +85,26 @@ class EditorSelector extends React.PureComponent<Props, State> {
         </PanelHeader>
         <PanelMain>
           <PanelMainBody>
-            <Accordion>
-              <AccordionItem isExpanded={expandedId === 'default'}>
-                <AccordionToggle
-                  onClick={() => {
-                    this.handleToggle('default');
-                  }}
-                  id="accordion-item-default"
-                >
-                  Use a Default Editor
-                </AccordionToggle>
+            <EditorDropdown
+              editorsVisibilityConfig={editorsVisibilityConfig}
+              defaultEditorId={defaultEditorId}
+              editors={editors}
+              currentArchitecture={currentArchitecture}
+              selectedEditorId={selectedEditorId}
+              customEditorName={customEditorName}
+              canUseCustomEditor={this.props.canUseCustomEditor}
+              onSelect={editorId => this.handleEditorSelect(editorId)}
+              onDefaultEditorClick={() => this.handleDefaultEditorSelect()}
+              onCustomEditorClick={() => this.setState({ isCustomEditorModalOpen: true })}
+            />
 
-                <AccordionContent data-testid="default-editor-content">
-                  <Panel>
-                    <PanelMain>
-                      <PanelMainBody>
-                        <Content component="p">
-                          The editor defined as a query parameter, at the repository level or at the
-                          Custom Resource level will be used.
-                        </Content>
-                        <DocsLink />
-                      </PanelMainBody>
-                    </PanelMain>
-                  </Panel>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem isExpanded={expandedId === 'selector'}>
-                <AccordionToggle
-                  onClick={() => {
-                    this.handleToggle('selector');
-                  }}
-                  id="accordion-item-selector"
-                >
-                  Choose an Editor
-                </AccordionToggle>
-
-                <AccordionContent data-testid="editor-gallery-content">
-                  <Panel>
-                    <PanelMain>
-                      <PanelMainBody>
-                        <EditorGallery
-                          editorsVisibilityConfig={editorsVisibilityConfig}
-                          defaultEditorId={defaultEditorId}
-                          editors={editors}
-                          currentArchitecture={currentArchitecture}
-                          selectedEditorId={selectorEditorValue}
-                          onSelect={editorId => this.handleSelectorValueChange(editorId)}
-                        />
-                      </PanelMainBody>
-                    </PanelMain>
-                  </Panel>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem isExpanded={expandedId === 'definition'}>
-                <AccordionToggle
-                  onClick={() => {
-                    this.handleToggle('definition');
-                  }}
-                  id="accordion-item-definition"
-                >
-                  Use an Editor Definition
-                </AccordionToggle>
-
-                <AccordionContent data-testid="editor-definition-content">
-                  <Panel>
-                    <PanelMain>
-                      <PanelMainBody>
-                        <EditorDefinition
-                          editorDefinition={definitionEditorValue}
-                          editorImage={definitionImageValue}
-                          onChange={(editorDefinition, editorImage) =>
-                            this.handleDefinitionValueChange(editorDefinition, editorImage)
-                          }
-                        />
-                      </PanelMainBody>
-                    </PanelMain>
-                  </Panel>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+            <CustomEditorModal
+              isOpen={isCustomEditorModalOpen}
+              onClose={() => this.setState({ isCustomEditorModalOpen: false })}
+              onSave={(editorName, editorDefinition, editorImage) =>
+                this.handleCustomEditorSelect(editorName, editorDefinition, editorImage)
+              }
+            />
           </PanelMainBody>
         </PanelMain>
       </Panel>

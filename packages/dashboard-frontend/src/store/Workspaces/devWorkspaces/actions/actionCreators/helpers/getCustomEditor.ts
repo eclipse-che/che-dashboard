@@ -35,6 +35,55 @@ export async function getCustomEditor(
   if (!cheEditorYaml) {
     return undefined;
   }
+
+  return resolveCheEditorYaml(cheEditorYaml, dispatch, getState);
+}
+
+/**
+ * Tells an inline editor definition from an editor id or an editor URL. An id
+ * and a URL are plain strings, a definition is a YAML document - either an
+ * editor devfile or a reference to one with optional overrides.
+ */
+export function isEditorDefinitionContent(editorIdOrPathOrContent: string): boolean {
+  const value = editorIdOrPathOrContent.trim();
+  if (value.length === 0 || /^https?:\/\//.test(value)) {
+    return false;
+  }
+
+  try {
+    const parsed = load(value);
+    return typeof parsed === 'object' && parsed !== null;
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
+ * Resolves an editor definition the user provided by hand into the editor
+ * devfile that goes onto the workspace. Accepts the same two shapes
+ * `.che/che-editor.yaml` accepts - an editor devfile, or a reference to one
+ * with optional overrides.
+ */
+export async function getEditorDefinition(
+  editorDefinition: string,
+  dispatch: ThunkDispatch<RootState, unknown, UnknownAction>,
+  getState: () => RootState,
+): Promise<string> {
+  const parsed = load(editorDefinition);
+
+  // an editor devfile is used as it is
+  if (isDevfileV2(parsed)) {
+    return dump(parsed);
+  }
+
+  return resolveCheEditorYaml(parsed as ICheEditorYaml, dispatch, getState);
+}
+
+async function resolveCheEditorYaml(
+  cheEditorYaml: ICheEditorYaml,
+  dispatch: ThunkDispatch<RootState, unknown, UnknownAction>,
+  getState: () => RootState,
+): Promise<string> {
   let repositoryEditorYaml: devfileApi.Devfile | undefined;
   let editorReference: string | undefined;
   // it's an inlined editor, use the inline content

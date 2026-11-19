@@ -30,6 +30,7 @@ import {
   DEV_WORKSPACE_ATTR,
   EDITOR_ATTR,
   EDITOR_IMAGE_ATTR,
+  EDITOR_NAME_ATTR,
   FACTORY_URL_ATTR,
   NAME_ATTR,
   POLICIES_CREATE_ATTR,
@@ -47,6 +48,7 @@ import { selectPvcStrategy } from '@/store/ServerConfig/selectors';
 export type Props = {
   editorDefinition: string | undefined;
   editorImage: string | undefined;
+  customEditorName?: string;
   aiProviders?: string[];
   presetFilter: string | undefined;
 } & MappedProps;
@@ -98,7 +100,7 @@ class SamplesList extends React.PureComponent<Props, State> {
   }
 
   private async handleSampleCardClick(metadata: DevfileRegistryMetadata): Promise<void> {
-    const { editorDefinition, editorImage, aiProviders } = this.props;
+    const { editorDefinition, editorImage, customEditorName, aiProviders } = this.props;
 
     // Handle SSH URLs (git@...) and HTTP(S) URLs differently
     let factoryUrl: string;
@@ -115,9 +117,22 @@ class SamplesList extends React.PureComponent<Props, State> {
       [FACTORY_URL_ATTR]: factoryUrl,
     };
 
-    const _editorDefinition = editorDefinition || this.props.defaultEditorId;
+    // a custom editor carries its own definition, so it must not fall back to
+    // the cluster default; it reaches the workspace through 'che-editor' the
+    // same way an editor defined in the repository does
+    const _editorDefinition =
+      customEditorName === undefined
+        ? editorDefinition || this.props.defaultEditorId
+        : editorDefinition;
     if (_editorDefinition) {
       factoryParams[EDITOR_ATTR] = _editorDefinition;
+
+      // the name labels the custom definition, so it only travels together
+      // with it; without one the workspace runs the default editor and must
+      // not be labelled as something else
+      if (customEditorName !== undefined && editorDefinition !== undefined) {
+        factoryParams[EDITOR_NAME_ATTR] = customEditorName;
+      }
 
       const prebuiltDevWorkspace = metadata.links.devWorkspaces?.[_editorDefinition];
       if (prebuiltDevWorkspace !== undefined) {

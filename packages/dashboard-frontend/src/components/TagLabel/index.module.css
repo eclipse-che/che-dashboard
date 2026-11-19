@@ -11,14 +11,10 @@
  */
 
 .label {
-  position: relative;
-  top: 0.125rem;
-
   margin-left: 5px;
   padding: 0 5px;
 
   font-size: x-small;
-  line-height: 12px;
   vertical-align: top;
 
   background-color: var(--pf-t--global--background--color--primary--default);
