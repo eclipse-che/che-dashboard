@@ -11,22 +11,28 @@
  */
 
 /**
+ * Path segments that introduce the browse part of a URL: `tree` for a directory listing,
+ * `blob` for a single file. Both are followed by the revision, so both are cut off.
+ */
+const BROWSE_MARKERS = ['tree', 'blob'];
+
+/**
  * Cuts the browse suffix off a `<host>/<org>/<repo>/...` path, so that a browse URL
  * compares equal to the clone URL of the same repository:
  *
- *   github, GitHub Enterprise   <host>/<org>/<repo>/tree/<branch>
+ *   github, GitHub Enterprise   <host>/<org>/<repo>/tree|blob/<branch>
  *   gitlab                      <host>/<group>/[<subgroup>/…]<repo>/-/tree|blob/<branch>
  *   bitbucket                   <host>/<workspace>/<repo>/src/<branch>
  *
  * The marker is only honoured where the provider puts it, so a group, project or
- * repository genuinely named `src` or `tree` is left alone.
+ * repository genuinely named `src`, `tree` or `blob` is left alone.
  */
 function stripBrowseSuffix(hostAndPath: string): string {
   const segments = hostAndPath.split('/');
 
   // GitLab separates the browse part with `-`, after any number of subgroups
   const dashIndex = segments.indexOf('-');
-  if (dashIndex >= 3 && ['tree', 'blob'].includes(segments[dashIndex + 1])) {
+  if (dashIndex >= 3 && BROWSE_MARKERS.includes(segments[dashIndex + 1])) {
     return segments.slice(0, dashIndex).join('/');
   }
 
@@ -34,10 +40,12 @@ function stripBrowseSuffix(hostAndPath: string): string {
     return hostAndPath;
   }
 
-  // GitHub paths are never deeper than <org>/<repo>, so `tree` in that position is
-  // always the browse marker. The host is not checked, otherwise GitHub Enterprise,
-  // which uses the same shape under an arbitrary host name, would be missed.
-  if (segments[3] === 'tree') {
+  // GitHub paths are never deeper than <org>/<repo>, so a browse marker in that position
+  // is always the browse marker. `blob` is as common as `tree`: a link to a file in the
+  // repository carries it, and dropping it matters as much as dropping `tree`. The host is
+  // not checked, otherwise GitHub Enterprise, which uses the same shape under an arbitrary
+  // host name, would be missed.
+  if (BROWSE_MARKERS.includes(segments[3])) {
     return segments.slice(0, 3).join('/');
   }
 

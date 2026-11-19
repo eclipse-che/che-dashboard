@@ -20,6 +20,8 @@ describe('normalizeGitUrl', () => {
     ['https://github.com/org/repo.git', 'github.com/org/repo'],
     ['https://github.com/org/repo/tree/my-branch', 'github.com/org/repo'],
     ['https://github.com/org/repo/tree/feature/my-branch', 'github.com/org/repo'],
+    ['https://github.com/org/repo/blob/my-branch/devfile.yaml', 'github.com/org/repo'],
+    ['https://github.com/org/repo/blob/feature/my-branch/devfile.yaml', 'github.com/org/repo'],
     ['https://user:token@github.com/org/repo.git', 'github.com/org/repo'],
     ['https://GitHub.com/Org/Repo.git', 'github.com/org/repo'],
     ['git@github.com:org/repo.git', 'github.com/org/repo'],
@@ -45,12 +47,17 @@ describe('normalizeGitUrl', () => {
     // a group, project or repository named after a browse marker is not a browse URL
     ['https://github.com/src/repo.git', 'github.com/src/repo'],
     ['https://github.com/tree/repo.git', 'github.com/tree/repo'],
+    ['https://github.com/blob/repo.git', 'github.com/blob/repo'],
     ['https://bitbucket.example/scm/src/repo.git', 'bitbucket.example/scm/src/repo'],
     ['https://gitlab.com/group/subgroup/src/repo.git', 'gitlab.com/group/subgroup/src/repo'],
     ['git@ssh.dev.azure.com:v3/org/src/repo', 'dev.azure.com/org/src/repo'],
     ['ssh://git@ssh.dev.azure.com/v3/org/src/repo', 'dev.azure.com/org/src/repo'],
     // GitHub Enterprise: arbitrary host, same browse shape
     ['https://github.example.com/org/repo/tree/my-branch', 'github.example.com/org/repo'],
+    [
+      'https://github.example.com/org/repo/blob/my-branch/devfile.yaml',
+      'github.example.com/org/repo',
+    ],
     ['https://ghe.internal/org/repo/tree/feature/x', 'ghe.internal/org/repo'],
     ['https://gitlab.com/group/subgroup/repo/-/tree/feature/x', 'gitlab.com/group/subgroup/repo'],
     // self-hosted instances
@@ -72,6 +79,7 @@ describe('normalizeGitUrl', () => {
 
     expect(normalizeGitUrl('git@github.com:org/repo.git')).toBe(expected);
     expect(normalizeGitUrl('https://github.com/org/repo/tree/main')).toBe(expected);
+    expect(normalizeGitUrl('https://github.com/org/repo/blob/main/devfile.yaml')).toBe(expected);
     expect(normalizeGitUrl('ssh://git@github.com/org/repo/')).toBe(expected);
     expect(normalizeGitUrl('ssh://git@github.com:22/org/repo.git')).toBe(expected);
   });

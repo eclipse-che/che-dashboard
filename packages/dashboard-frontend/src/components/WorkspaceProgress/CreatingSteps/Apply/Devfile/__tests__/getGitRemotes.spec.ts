@@ -498,6 +498,103 @@ describe('getGitRemotes functions', () => {
     });
   });
 
+  describe('configureProjectRemotes() with a single Git project', () => {
+    const FORK_URL = 'https://github.com/user/weebo.git';
+
+    function buildSingleProjectDevfile(): devfileApi.Devfile {
+      return {
+        schemaVersion: '2.3.0',
+        metadata: { name: 'weebo' },
+        projects: [
+          {
+            name: 'weebo',
+            git: {
+              remotes: {
+                // `origin` is a different repository than the one the factory URL names
+                origin: 'https://github.com/upstream/weebo.git',
+                fork: FORK_URL,
+              },
+            },
+          },
+        ],
+      } as devfileApi.Devfile;
+    }
+
+    test('should check out from the remote the factory URL points at, not from origin', () => {
+      const devfile = buildSingleProjectDevfile();
+
+      configureProjectRemotes(
+        devfile,
+        undefined,
+        false,
+        'feature-x',
+        'https://github.com/user/weebo/tree/feature-x',
+      );
+
+      expect(devfile.projects?.[0].git?.checkoutFrom).toStrictEqual({
+        remote: 'fork',
+        revision: 'feature-x',
+      });
+    });
+
+    test('should match the SSH form of the factory URL against an HTTPS remote', () => {
+      const devfile = buildSingleProjectDevfile();
+
+      configureProjectRemotes(
+        devfile,
+        undefined,
+        false,
+        'feature-x',
+        'git@github.com:user/weebo.git',
+      );
+
+      expect(devfile.projects?.[0].git?.checkoutFrom).toStrictEqual({
+        remote: 'fork',
+        revision: 'feature-x',
+      });
+    });
+
+    test('should fall back to origin when no remote matches the factory URL', () => {
+      const devfile = buildSingleProjectDevfile();
+
+      configureProjectRemotes(
+        devfile,
+        undefined,
+        false,
+        'my-branch',
+        'https://github.com/user/unrelated-repo',
+      );
+
+      expect(devfile.projects?.[0].git?.checkoutFrom).toStrictEqual({
+        remote: 'origin',
+        revision: 'my-branch',
+      });
+    });
+
+    test('should still add explicitly requested remotes when nothing matches (the sole project is never ambiguous)', () => {
+      // Unlike the multi-project path, an unmatched single project does not throw: there is
+      // only one project the remotes could belong to, so there is nothing to disambiguate.
+      const devfile = buildSingleProjectDevfile();
+      const remotes = '{{upstream,https://github.com/upstream/weebo.git}}';
+
+      expect(() =>
+        configureProjectRemotes(
+          devfile,
+          remotes,
+          false,
+          'HEAD',
+          'https://github.com/user/unrelated-repo',
+        ),
+      ).not.toThrow();
+
+      expect(devfile.projects?.[0].git?.remotes).toStrictEqual({
+        origin: 'https://github.com/upstream/weebo.git',
+        fork: FORK_URL,
+        upstream: 'https://github.com/upstream/weebo.git',
+      });
+    });
+  });
+
   describe('configureProjectRemotes() edge cases', () => {
     test('should not throw when the devfile declares no Git project and only a revision is given', () => {
       const devfile = {
