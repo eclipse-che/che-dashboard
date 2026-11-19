@@ -18,6 +18,11 @@ import { DevfileAdapter } from '@/services/devfile/adapter';
 import devfileApi from '@/services/devfileApi';
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
 import stringify from '@/services/helpers/editor';
+import {
+  FACTORY_URL_ATTR,
+  OVERRIDE_ATTR_PREFIX,
+  PROPAGATE_FACTORY_ATTRS,
+} from '@/services/helpers/factoryFlow/buildFactoryParams';
 import match from '@/services/helpers/filter';
 import { che } from '@/services/models';
 import {
@@ -53,10 +58,14 @@ export const selectIsRegistryDevfile = createSelector(selectState, state => {
       }
 
       // if the url is not a subpath of the registry url,
-      // check if it equals to a sample source url
+      // check if it equals a sample source url after stripping
+      // factory-extractable params (devfilePath aliases, override.*, etc.)
       const registryMetadata = state.registries[registryUrl].metadata || [];
+      const normalizedUrl = normalizeSourceUrl(url);
 
-      return registryMetadata.some(meta => meta.links?.v2 === url);
+      return registryMetadata.some(
+        meta => meta.links?.v2 !== undefined && normalizeSourceUrl(meta.links.v2) === normalizedUrl,
+      );
     });
 });
 
@@ -150,6 +159,39 @@ export const selectDefaultDevfile = createSelector(
     return undefined;
   },
 );
+
+const DEVFILE_PATH_ALIASES = ['devfilePath', 'devfilepath', 'df'];
+
+/**
+ * Strips factory-extractable query params from a URL so that a sample's
+ * original URL (with e.g. ?df=devfile.yaml) can be compared against the
+ * source URL that the factory loader sees after param extraction.
+ */
+function normalizeSourceUrl(urlStr: string): string {
+  try {
+    const url = new URL(urlStr);
+
+    for (const attr of PROPAGATE_FACTORY_ATTRS) {
+      if (attr !== FACTORY_URL_ATTR) {
+        url.searchParams.delete(attr);
+      }
+    }
+
+    for (const alias of DEVFILE_PATH_ALIASES) {
+      url.searchParams.delete(alias);
+    }
+
+    for (const key of [...url.searchParams.keys()]) {
+      if (key.startsWith(OVERRIDE_ATTR_PREFIX)) {
+        url.searchParams.delete(key);
+      }
+    }
+
+    return url.toString();
+  } catch {
+    return urlStr;
+  }
+}
 
 function matches(meta: che.DevfileMetaData, filterValue: string): boolean {
   return (

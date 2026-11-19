@@ -240,11 +240,39 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
     factoryParams: FactoryParams,
     resolvedDefaultSource?: string,
   ): Workspace[] {
+    const DEVFILE_PATH_ALIASES = ['devfilePath', 'devfilepath', 'df'];
+
+    const stripDevfilePathFromUrl = (urlStr: string): string => {
+      try {
+        const url = new URL(urlStr);
+        for (const alias of DEVFILE_PATH_ALIASES) {
+          url.searchParams.delete(alias);
+        }
+        return url.toString();
+      } catch {
+        return urlStr;
+      }
+    };
+
+    const extractDevfilePathFromUrl = (urlStr: string): string | undefined => {
+      try {
+        const url = new URL(urlStr);
+        for (const alias of DEVFILE_PATH_ALIASES) {
+          const value = url.searchParams.get(alias);
+          if (value) {
+            return value;
+          }
+        }
+        return undefined;
+      } catch {
+        return undefined;
+      }
+    };
+
     const factoryDevfilePath = factoryParams.overrides?.['override.devfileFilename'];
-    // Normalize: when devfileFilename is omitted, fall back to the resolver's source
-    // so that a workspace created without the override matches one created with the
-    // explicit default filename (e.g. devfile.yaml) and vice-versa.
     const effectiveFactoryDevfilePath = factoryDevfilePath ?? resolvedDefaultSource;
+    const normalizedFactorySourceUrl = stripDevfilePathFromUrl(factoryParams.sourceUrl);
+
     return workspaces.filter(workspace => {
       let revision: string | undefined;
       const projects = workspace.ref.spec.template.projects;
@@ -256,9 +284,16 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
           }
         }
       }
-      const effectiveWorkspaceDevfilePath = workspace.devfilePath ?? resolvedDefaultSource;
+      const legacyDevfilePath = workspace.source
+        ? extractDevfilePathFromUrl(workspace.source)
+        : undefined;
+      const effectiveWorkspaceDevfilePath =
+        workspace.devfilePath ?? legacyDevfilePath ?? resolvedDefaultSource;
+      const normalizedWorkspaceSource = workspace.source
+        ? stripDevfilePathFromUrl(workspace.source)
+        : undefined;
       return (
-        workspace.source === factoryParams.sourceUrl &&
+        normalizedWorkspaceSource === normalizedFactorySourceUrl &&
         revision === factoryParams.revision &&
         effectiveWorkspaceDevfilePath === effectiveFactoryDevfilePath
       );
