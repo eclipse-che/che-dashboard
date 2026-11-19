@@ -17,7 +17,7 @@ import { Provider } from 'react-redux';
 import { Location, MemoryRouter } from 'react-router-dom';
 
 import { container } from '@/inversify.config';
-import { Props, WorkspaceDetails } from '@/pages/WorkspaceDetails';
+import { Props, WORKSPACE_DETAILS_TABS, WorkspaceDetails } from '@/pages/WorkspaceDetails';
 import { mockShowAlert } from '@/pages/WorkspaceDetails/__mocks__';
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import devfileApi from '@/services/devfileApi';
@@ -29,7 +29,6 @@ import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 const mockOnSave = jest.fn();
 const mockNavigate = jest.fn();
 
-jest.mock('@/pages/WorkspaceDetails/DevfileEditorTab');
 jest.mock('@/pages/WorkspaceDetails/OverviewTab');
 jest.mock('@/pages/WorkspaceDetails/Header');
 jest.mock('@/pages/WorkspaceDetails/Header/Actions', () => ({
@@ -88,17 +87,16 @@ describe('Workspace Details page', () => {
       );
     });
 
-    it('should have seven tabs visible', () => {
+    it('should have six tabs visible', () => {
       const workspace = constructWorkspace(devWorkspaceBuilder.build());
       renderComponent({
         workspace,
       });
 
       const allTabs = screen.getAllByRole('tab');
-      expect(allTabs.length).toBe(7);
+      expect(allTabs.length).toBe(6);
 
       const overviewTab = screen.queryByRole('tab', { name: 'Overview' });
-      const devfileTab = screen.queryByRole('tab', { name: 'Devfile' });
       const storageTab = screen.queryByRole('tab', { name: 'Storage' });
       const backupTab = screen.queryByRole('tab', { name: 'Backup' });
       const logsTab = screen.queryByRole('tab', { name: 'Logs' });
@@ -106,7 +104,6 @@ describe('Workspace Details page', () => {
       const advancedTab = screen.queryByRole('tab', { name: 'Advanced' });
 
       expect(overviewTab).not.toBeNull();
-      expect(devfileTab).not.toBeNull();
       expect(storageTab).not.toBeNull();
       expect(backupTab).not.toBeNull();
       expect(logsTab).not.toBeNull();
@@ -114,17 +111,23 @@ describe('Workspace Details page', () => {
       expect(advancedTab).not.toBeNull();
     });
 
-    it('should switch to the Devfile tab', async () => {
+    it('should not show the Devfile tab', () => {
       const workspace = constructWorkspace(devWorkspaceBuilder.build());
       renderComponent({
         workspace,
       });
 
-      const devfileTab = screen.getByRole('tab', { name: 'Devfile' });
-      await userEvent.click(devfileTab);
+      expect(screen.queryByRole('tab', { name: 'Devfile' })).toBeNull();
+    });
 
-      const tabpanel = screen.getByRole('tabpanel', { name: 'Devfile' });
-      expect(tabpanel).not.toBeNull();
+    it('should fall back to the Overview tab for the legacy Devfile tab search param', async () => {
+      const workspace = constructWorkspace(devWorkspaceBuilder.build());
+      // the Devfile tab was removed; legacy links still carry the plain query value
+      renderComponent({ workspace }, '?tab=Devfile');
+
+      await waitFor(() =>
+        expect(screen.queryByRole('tabpanel', { name: 'Overview' })).not.toBeNull(),
+      );
     });
 
     it('should activate the tab provided in the location search params', async () => {
@@ -156,14 +159,14 @@ describe('Workspace Details page', () => {
       expect(screen.getByTestId('storage-tab')).toHaveTextContent('Storage tab active: true');
     });
 
-    it('should place the Storage tab after the Devfile tab', () => {
+    it('should place the Storage tab after the Overview tab', () => {
       const workspace = constructWorkspace(devWorkspaceBuilder.build());
       renderComponent({
         workspace,
       });
 
       const tabNames = screen.getAllByRole('tab').map(tab => tab.textContent);
-      expect(tabNames.indexOf('Storage')).toEqual(tabNames.indexOf('Devfile') + 1);
+      expect(tabNames.indexOf('Storage')).toEqual(tabNames.indexOf('Overview') + 1);
     });
 
     it('should fall back to the Overview tab for an unknown tab search param', async () => {
@@ -194,6 +197,31 @@ describe('Workspace Details page', () => {
         expect(screen.queryByRole('tabpanel', { name: 'Overview' })).not.toBeNull(),
       );
     });
+
+    it.each([...WORKSPACE_DETAILS_TABS])(
+      'should activate the %s tab from the location search params',
+      async tab => {
+        const workspace = constructWorkspace(devWorkspaceBuilder.build());
+        renderComponent({ workspace }, `?tab=${tab}`);
+
+        await waitFor(() => expect(screen.queryByRole('tabpanel', { name: tab })).not.toBeNull());
+      },
+    );
+
+    it('should switch to the Storage tab on click', async () => {
+      const workspace = constructWorkspace(devWorkspaceBuilder.build());
+      renderComponent({ workspace });
+
+      await userEvent.click(screen.getByRole('tab', { name: 'Storage' }));
+
+      await waitFor(() =>
+        expect(screen.queryByRole('tabpanel', { name: 'Storage' })).not.toBeNull(),
+      );
+      expect(screen.getByTestId('storage-tab')).toHaveTextContent('Storage tab active: true');
+      expect(mockNavigate).toHaveBeenCalledWith(
+        `/workspace/${namespace}/${workspaceName}?tab=${WorkspaceDetailsTab.STORAGE}`,
+      );
+    });
   });
 
   it('should handle the onSave event', async () => {
@@ -208,23 +236,18 @@ describe('Workspace Details page', () => {
     expect(mockOnSave).toHaveBeenCalledTimes(1);
   });
 
-  it('should show the original devfile link when oldWorkspaceLocation is provided', () => {
+  it('should not show the "Show Original Devfile" link', () => {
     const workspace = constructWorkspace(devWorkspaceBuilder.build());
-    const oldWorkspaceLocation = {
-      pathname: '/old-workspace-path',
-    } as Location;
     renderComponent({
       workspace,
-      oldWorkspaceLocation,
     });
 
-    const link = screen.getByRole('link', { name: 'Show Original Devfile' });
-    expect(link).not.toBeNull();
-    expect(link.getAttribute('href')).toBe('/old-workspace-path');
+    expect(screen.queryByRole('link', { name: 'Show Original Devfile' })).toBeNull();
+    expect(screen.queryByText('Show Original Devfile')).toBeNull();
   });
 
   describe('onSave error handling', () => {
-    it('should show a danger alert when saving fails on a non-Devfile tab', async () => {
+    it('should show a danger alert when saving fails', async () => {
       const workspace = constructWorkspace(devWorkspaceBuilder.build());
       mockOnSave.mockRejectedValueOnce(new Error('Failed to save the workspace'));
       renderComponent({
@@ -242,19 +265,6 @@ describe('Workspace Details page', () => {
           }),
         ),
       );
-    });
-
-    it('should re-throw the error when saving fails while the Devfile tab is active', async () => {
-      const workspace = constructWorkspace(devWorkspaceBuilder.build());
-      mockOnSave.mockRejectedValueOnce(new Error('Failed to save the workspace'));
-      renderComponent({ workspace }, `?tab=${WorkspaceDetailsTab.DEVFILE}`);
-
-      const saveButton = screen.getByRole('button', { name: 'Update workspace', hidden: true });
-      await userEvent.click(saveButton);
-
-      await waitFor(() => expect(mockOnSave).toHaveBeenCalledTimes(1));
-
-      expect(mockShowAlert).not.toHaveBeenCalled();
     });
   });
 });
@@ -274,7 +284,6 @@ function renderComponent(props?: Partial<Props>, search?: string, pathname?: str
           location={location}
           navigate={mockNavigate}
           isLoading={props?.isLoading || false}
-          oldWorkspaceLocation={props?.oldWorkspaceLocation}
           workspace={props?.workspace}
           workspacesLink={props?.workspacesLink || '/workspaces'}
           onSave={mockOnSave}

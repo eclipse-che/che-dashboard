@@ -13,7 +13,9 @@
 import { V1alpha2DevWorkspaceMetadata } from '@devfile/api';
 
 export const DEVWORKSPACE_CHE_EDITOR = 'che.eclipse.org/che-editor';
-// used by devworkspace-controller to allow to mount the corresponding Che7 workspace folder
+// Mirrors the annotation the devworkspace-controller reads to mount the corresponding Che7
+// workspace folder. The dashboard no longer builds Che7 links, so nothing here reads it, but it
+// is intentionally retained to keep the external controller contract documented in one place.
 export const DEVWORKSPACE_ID_OVERRIDE_ANNOTATION = 'controller.devfile.io/devworkspace_id_override';
 export const DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION = 'che.eclipse.org/last-updated-timestamp';
 type DevWorkspaceMetadataAnnotation = {
