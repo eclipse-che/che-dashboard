@@ -16,12 +16,22 @@ import { Props } from '@/pages/GetStarted/SamplesList/Toolbar';
 
 export default class SamplesListToolbar extends React.PureComponent<Props> {
   render(): React.ReactNode {
-    const { isTemporary, onTemporaryStorageChange } = this.props;
+    const {
+      isTemporary,
+      onTemporaryStorageChange,
+      onCreateNewIfExistChange,
+      onWorkspaceNameChange,
+    } = this.props;
     return (
       <div>
         <span>Samples List Toolbar</span>
         <span data-testid="isTemporary">{isTemporary ? 'true' : 'false'}</span>
         <button onClick={() => onTemporaryStorageChange(!isTemporary)}>Toggle isTemporary</button>
+        <button onClick={() => onCreateNewIfExistChange(true)}>Enable createNewIfExist</button>
+        <input
+          data-testid="workspace-name"
+          onChange={event => onWorkspaceNameChange(event.target.value)}
+        />
       </div>
     );
   }

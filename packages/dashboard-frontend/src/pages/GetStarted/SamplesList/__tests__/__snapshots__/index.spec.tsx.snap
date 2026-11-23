@@ -58,6 +58,15 @@ exports[`Samples List preferred storage: ephemeral snapshot 1`] = `
         >
           Toggle isTemporary
         </button>
+        <button
+          onClick={[Function]}
+        >
+          Enable createNewIfExist
+        </button>
+        <input
+          data-testid="workspace-name"
+          onChange={[Function]}
+        />
       </div>
     </div>
     <div
@@ -143,6 +152,15 @@ exports[`Samples List preferred storage: non-ephemeral snapshot 1`] = `
         >
           Toggle isTemporary
         </button>
+        <button
+          onClick={[Function]}
+        >
+          Enable createNewIfExist
+        </button>
+        <input
+          data-testid="workspace-name"
+          onChange={[Function]}
+        />
       </div>
     </div>
     <div

@@ -19,7 +19,6 @@ import {
   FlexItem,
   Form,
   FormGroup,
-  Label,
   MenuToggle,
   MenuToggleElement,
   Select,
@@ -223,11 +222,7 @@ export class EditorDropdown extends React.PureComponent<Props, State> {
             <div className={styles.itemMain}>
               <div className={styles.itemTitle}>
                 <span className={styles.itemName}>{groupName}</span>
-                {isDefault && (
-                  <Label color="blue" variant="filled" isCompact>
-                    default
-                  </Label>
-                )}
+                {isDefault && <TagLabel type="default" text="default" />}
                 {tags.length > 0 && tags.map(tag => <TagLabel key={tag} type="tag" text={tag} />)}
               </div>
             </div>
@@ -314,11 +309,7 @@ export class EditorDropdown extends React.PureComponent<Props, State> {
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span>{editor.version}</span>
-            {showDefaultLabel && (
-              <Label color="blue" variant="filled" isCompact>
-                default
-              </Label>
-            )}
+            {showDefaultLabel && <TagLabel type="default" text="default" />}
           </div>
         </SelectOption>
       );
@@ -398,11 +389,7 @@ export class EditorDropdown extends React.PureComponent<Props, State> {
                           <span>{selectedEditorName}</span>
                           {tags.length > 0 &&
                             tags.map(tag => <TagLabel key={tag} type="tag" text={tag} />)}
-                          {showDefaultLabel && (
-                            <Label color="blue" variant="filled" isCompact>
-                              default
-                            </Label>
-                          )}
+                          {showDefaultLabel && <TagLabel type="default" text="default" />}
                         </div>
                       </div>
                     </MenuToggle>

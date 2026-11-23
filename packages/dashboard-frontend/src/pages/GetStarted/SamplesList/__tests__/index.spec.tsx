@@ -224,6 +224,29 @@ describe('Samples List', () => {
       );
     });
 
+    test('enabling createNewIfExist switches the create policy to perclick', async () => {
+      const store = storeBuilder.build();
+      renderComponent(store, undefined, undefined);
+
+      await userEvent.click(screen.getByRole('button', { name: 'Enable createNewIfExist' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Select Sample' }));
+
+      const factoryUrl = mockWindowOpen.mock.calls[0][0];
+      expect(factoryUrl).toContain('policies.create=perclick');
+      expect(factoryUrl).not.toContain('policies.create=peruser');
+    });
+
+    test('a custom workspace name is forwarded to the factory', async () => {
+      const store = storeBuilder.build();
+      renderComponent(store, undefined, undefined);
+
+      await userEvent.type(screen.getByTestId('workspace-name'), 'my-workspace');
+      await userEvent.click(screen.getByRole('button', { name: 'Select Sample' }));
+
+      const factoryUrl = mockWindowOpen.mock.calls[0][0];
+      expect(factoryUrl).toContain('name=my-workspace');
+    });
+
     test('a custom editor adds both its definition and its name', async () => {
       const store = storeBuilder.build();
       renderComponent(store, 'schemaVersion: 2.2.2', undefined, 'my-editor');

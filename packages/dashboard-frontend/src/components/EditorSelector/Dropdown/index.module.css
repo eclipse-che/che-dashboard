@@ -40,9 +40,11 @@
 }
 
 /* Matches the intrinsic width of the "Create & Open" button in ImportFromGit so
-   the second column of both panels lines up. */
+   the second column of both panels lines up. `min-width`, not `width`: a version
+   string longer than the button grows the toggle instead of being ellipsized by
+   the `overflow: hidden` PF puts on the toggle text. */
 .versionToggle {
-  width: 141px;
+  min-width: 141px;
 }
 
 .dropdownList {

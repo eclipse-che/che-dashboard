@@ -86,6 +86,40 @@ describe('GitRepoLocationInput', () => {
     expect(window.open).not.toHaveBeenCalled();
   });
 
+  describe('untrusted source confirmation', () => {
+    test('cancelling the confirmation closes it without opening the factory', async () => {
+      renderComponent(store);
+
+      const input = screen.getByRole('textbox');
+      await userEvent.click(input);
+      await userEvent.paste('http://test-location/');
+
+      await userEvent.click(screen.getByRole('button', { name: 'Create & Open' }));
+      expect(screen.queryByText('UntrustedSourceModal')).not.toBeNull();
+
+      await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+      expect(screen.queryByText('UntrustedSourceModal')).toBeNull();
+      expect(window.open).not.toHaveBeenCalled();
+    });
+
+    test('the factory opens once the confirmation is re-opened and continued', async () => {
+      renderComponent(store);
+
+      const input = screen.getByRole('textbox');
+      await userEvent.click(input);
+      await userEvent.paste('http://test-location/');
+
+      await userEvent.click(screen.getByRole('button', { name: 'Create & Open' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+      await userEvent.click(screen.getByRole('button', { name: 'Create & Open' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+      expect(window.open).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('valid HTTP location', () => {
     describe('factory URL w/o other parameters', () => {
       test('trim spaces from the input value', async () => {
