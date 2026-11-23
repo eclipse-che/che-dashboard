@@ -10,48 +10,39 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-.container {
-  display: flex;
-  gap: var(--pf-t--global--spacer--md);
-  align-items: flex-start;
-  height: 38px;
-}
-
-.container > :first-child {
-  flex: 1;
-  min-width: 250px;
-  height: inherit;
-}
-
-.container > :last-child {
-  min-width: 100px;
-  height: inherit;
-}
-
+/* `display: flex`, not `inline-flex`: an inline-level box sits on the text
+   baseline, so the line box reserves descender space under the 18px icon and
+   the toggle grows past the 36.96px every other control uses. */
 .toggleButton {
-  position: relative;
-  top: 2px;
-
-  display: inline-flex;
+  display: flex;
   gap: var(--pf-t--global--spacer--sm);
   align-items: center;
+  min-width: 0;
 }
 
 .toggleContent {
+  overflow: hidden;
   display: flex;
   gap: var(--pf-t--global--spacer--sm);
   align-items: center;
 }
 
 .toggleContent > span:first-child {
-  position: relative;
-  top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .toggleIcon {
   flex-shrink: 0;
   width: 18px;
   height: 18px;
+}
+
+/* Matches the intrinsic width of the "Create & Open" button in ImportFromGit so
+   the second column of both panels lines up. */
+.versionToggle {
+  width: 141px;
 }
 
 .dropdownList {

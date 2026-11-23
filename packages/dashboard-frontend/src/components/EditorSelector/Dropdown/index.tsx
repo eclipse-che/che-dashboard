@@ -15,6 +15,9 @@ import {
   Dropdown,
   DropdownItem,
   DropdownList,
+  Flex,
+  FlexItem,
+  Form,
   FormGroup,
   Label,
   MenuToggle,
@@ -54,6 +57,7 @@ export type State = {
   sortedEditorsByName: Map<string, che.Plugin[]>;
 };
 
+const FIELD_ID = 'editor-selector';
 const VERSION_PRIORITY: ReadonlyArray<string> = ['insiders', 'next', 'latest'];
 const DEPRECATED_TAG = 'Deprecated';
 const GROUP_PRIORITY = 'che-code';
@@ -360,73 +364,87 @@ export class EditorDropdown extends React.PureComponent<Props, State> {
 
     return (
       <div>
-        <FormGroup label="Select an Editor">
-          <div className={styles.container}>
-            <Dropdown
-              isOpen={isEditorDropdownOpen}
-              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                <MenuToggle
-                  ref={toggleRef}
-                  onClick={() => this.setState({ isEditorDropdownOpen: !isEditorDropdownOpen })}
-                  isExpanded={isEditorDropdownOpen}
-                  data-testid="editor-dropdown-toggle"
+        {/* horizontal form and the 500px/70% field width mirror the Git repo URL
+            field in ImportFromGit, so the two panels line up */}
+        <Form isHorizontal={true} onSubmit={e => e.preventDefault()}>
+          <FormGroup fieldId={FIELD_ID} label="Select an Editor">
+            {/* Flex aligns on the baseline by default. The editor toggle takes its
+                baseline from the icon image (bottom edge), the version toggle from
+                text, so the two would sit at different heights. */}
+            <Flex alignItems={{ default: 'alignItemsCenter' }}>
+              <FlexItem grow={{ default: 'grow' }} style={{ maxWidth: '500px', minWidth: '70%' }}>
+                <Dropdown
+                  isOpen={isEditorDropdownOpen}
+                  toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                    <MenuToggle
+                      id={FIELD_ID}
+                      ref={toggleRef}
+                      isFullWidth
+                      onClick={() => this.setState({ isEditorDropdownOpen: !isEditorDropdownOpen })}
+                      isExpanded={isEditorDropdownOpen}
+                      data-testid="editor-dropdown-toggle"
+                    >
+                      <div className={styles.toggleButton}>
+                        {isCustomEditorSelected && <CogIcon className={styles.toggleIcon} />}
+                        {isDefaultEditorSelected && <CubesIcon className={styles.toggleIcon} />}
+                        {!isCustomEditorSelected && !isDefaultEditorSelected && (
+                          <img
+                            src={iconSrc}
+                            alt={`${selectedEditorName} icon`}
+                            className={styles.toggleIcon}
+                          />
+                        )}
+                        <div className={styles.toggleContent}>
+                          <span>{selectedEditorName}</span>
+                          {tags.length > 0 &&
+                            tags.map(tag => <TagLabel key={tag} type="tag" text={tag} />)}
+                          {showDefaultLabel && (
+                            <Label color="blue" variant="filled" isCompact>
+                              default
+                            </Label>
+                          )}
+                        </div>
+                      </div>
+                    </MenuToggle>
+                  )}
+                  onOpenChange={isOpen => this.setState({ isEditorDropdownOpen: isOpen })}
                 >
-                  <div className={styles.toggleButton}>
-                    {isCustomEditorSelected && <CogIcon className={styles.toggleIcon} />}
-                    {isDefaultEditorSelected && <CubesIcon className={styles.toggleIcon} />}
-                    {!isCustomEditorSelected && !isDefaultEditorSelected && (
-                      <img
-                        src={iconSrc}
-                        alt={`${selectedEditorName} icon`}
-                        className={styles.toggleIcon}
-                      />
-                    )}
-                    <div className={styles.toggleContent}>
-                      <span>{selectedEditorName}</span>
-                      {tags.length > 0 &&
-                        tags.map(tag => <TagLabel key={tag} type="tag" text={tag} />)}
-                      {showDefaultLabel && (
-                        <Label color="blue" variant="filled" isCompact>
-                          default
-                        </Label>
-                      )}
-                    </div>
-                  </div>
-                </MenuToggle>
-              )}
-              onOpenChange={isOpen => this.setState({ isEditorDropdownOpen: isOpen })}
-            >
-              <DropdownList className={styles.dropdownList}>
-                {this.buildEditorDropdownItems()}
-              </DropdownList>
-            </Dropdown>
+                  <DropdownList className={styles.dropdownList}>
+                    {this.buildEditorDropdownItems()}
+                  </DropdownList>
+                </Dropdown>
+              </FlexItem>
 
-            {!isCustomEditorSelected && !isDefaultEditorSelected && (
-              <Select
-                isOpen={isVersionSelectOpen}
-                onOpenChange={isOpen => this.setState({ isVersionSelectOpen: isOpen })}
-                onSelect={(e, value) => {
-                  if (typeof value === 'string') {
-                    this.handleVersionSelect(value);
-                  }
-                }}
-                selected={selectedId}
-                data-testid="version-select"
-                toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                  <MenuToggle
-                    ref={toggleRef}
-                    onClick={() => this.setState({ isVersionSelectOpen: !isVersionSelectOpen })}
-                    isExpanded={isVersionSelectOpen}
+              {!isCustomEditorSelected && !isDefaultEditorSelected && (
+                <FlexItem>
+                  <Select
+                    isOpen={isVersionSelectOpen}
+                    onOpenChange={isOpen => this.setState({ isVersionSelectOpen: isOpen })}
+                    onSelect={(e, value) => {
+                      if (typeof value === 'string') {
+                        this.handleVersionSelect(value);
+                      }
+                    }}
+                    selected={selectedId}
+                    data-testid="version-select"
+                    toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                      <MenuToggle
+                        ref={toggleRef}
+                        className={styles.versionToggle}
+                        onClick={() => this.setState({ isVersionSelectOpen: !isVersionSelectOpen })}
+                        isExpanded={isVersionSelectOpen}
+                      >
+                        {selectedEditor?.version}
+                      </MenuToggle>
+                    )}
                   >
-                    {selectedEditor?.version}
-                  </MenuToggle>
-                )}
-              >
-                <SelectList>{this.buildVersionOptions()}</SelectList>
-              </Select>
-            )}
-          </div>
-        </FormGroup>
+                    <SelectList>{this.buildVersionOptions()}</SelectList>
+                  </Select>
+                </FlexItem>
+              )}
+            </Flex>
+          </FormGroup>
+        </Form>
 
         <Spacer />
 

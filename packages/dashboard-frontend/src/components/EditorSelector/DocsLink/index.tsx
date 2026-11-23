@@ -14,7 +14,7 @@ import { Button, Flex, FlexItem } from '@patternfly/react-core';
 import React from 'react';
 
 const DOCS_DEFINING_A_COMMON_IDE =
-  'https://eclipse.dev/che/docs/stable/end-user-guide/defining-a-common-ide/';
+  'https://eclipse.dev/che/docs/stable/develop/defining-a-common-ide/';
 
 export class DocsLink extends React.PureComponent {
   public render() {
