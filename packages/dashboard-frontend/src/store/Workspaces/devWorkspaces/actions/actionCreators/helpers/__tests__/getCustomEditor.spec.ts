@@ -395,6 +395,12 @@ describe('isEditorDefinitionContent', () => {
   ])('should take %s for a definition', (_label, value) => {
     expect(isEditorDefinitionContent(value)).toBe(true);
   });
+
+  it('should not take a broken YAML document for a definition', () => {
+    expect(isEditorDefinitionContent('metadata:\n  name: che-code\n bad-indent: true\n')).toBe(
+      false,
+    );
+  });
 });
 
 describe('getEditorDefinition', () => {
@@ -426,6 +432,17 @@ describe('getEditorDefinition', () => {
     expect((load(definition) as devfileApi.Devfile).components?.[0].container?.memoryLimit).toEqual(
       '2048Mi',
     );
+  });
+
+  it('should fail when the reference cannot be fetched', async () => {
+    const editorUrl = 'https://registry/plugins/unknown/devfile.yaml';
+    const store = new MockStoreBuilder()
+      .withDevfileRegistries({ devfiles: { [editorUrl]: { error: 'Not Found' } } })
+      .build();
+
+    await expect(
+      getEditorDefinition(dump({ reference: editorUrl }), store.dispatch, store.getState),
+    ).rejects.toThrow('Not Found');
   });
 
   it('should fail on a definition with neither a devfile nor a reference', async () => {

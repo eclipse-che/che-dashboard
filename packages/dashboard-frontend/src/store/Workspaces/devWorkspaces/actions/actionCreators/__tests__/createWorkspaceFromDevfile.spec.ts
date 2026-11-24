@@ -24,7 +24,11 @@ import { verifyAuthorized } from '@/store/SanityCheck';
 import { actionCreators } from '@/store/Workspaces/devWorkspaces/actions/actionCreators';
 import { createWorkspaceFromDevfile } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/createWorkspaceFromDevfile';
 import { updateEditorDevfile } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/editorImage';
-import { getCustomEditor } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/getCustomEditor';
+import {
+  getCustomEditor,
+  getEditorDefinition,
+  isEditorDefinitionContent,
+} from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/getCustomEditor';
 import {
   devWorkspacesErrorAction,
   devWorkspacesRequestAction,
@@ -70,6 +74,8 @@ describe('devWorkspaces, actions', () => {
         editorYamlUrl: 'https://editor-url.com',
       });
       (getCustomEditor as jest.Mock).mockResolvedValue('custom-editor-content');
+      (isEditorDefinitionContent as jest.Mock).mockReturnValue(false);
+      (getEditorDefinition as jest.Mock).mockResolvedValue('resolved-definition-content');
       (verifyAuthorized as jest.Mock).mockResolvedValue(true);
       (updateEditorDevfile as jest.Mock).mockReturnValue('updated-editor-content');
       (dump as jest.Mock).mockReturnValue('devfile-yaml');
@@ -116,6 +122,71 @@ describe('devWorkspaces, actions', () => {
       });
       expect(loadResourcesContent).toHaveBeenCalledWith('resources-content');
       expect(actionCreators.createWorkspaceFromResources).toHaveBeenCalled();
+    });
+
+    it('should resolve an editor definition given in params', async () => {
+      (isEditorDefinitionContent as jest.Mock).mockReturnValue(true);
+      const paramsWithDefinition = {
+        cheEditor: 'schemaVersion: 2.2.2',
+      } as Partial<FactoryParams>;
+
+      await store.dispatch(
+        createWorkspaceFromDevfile(mockDevfile, paramsWithDefinition, mockOptionalFilesContent),
+      );
+
+      expect(getEditorDefinition).toHaveBeenCalledWith(
+        'schemaVersion: 2.2.2',
+        expect.any(Function),
+        expect.any(Function),
+      );
+      // the definition is resolved on its own, neither the registry nor
+      // `.che/che-editor.yaml` is consulted
+      expect(getEditor).not.toHaveBeenCalled();
+      expect(getCustomEditor).not.toHaveBeenCalled();
+      expect(updateEditorDevfile).toHaveBeenCalledWith('resolved-definition-content', undefined);
+      expect(fetchResources).toHaveBeenCalledWith({
+        devfileContent: 'devfile-yaml',
+        editorPath: undefined,
+        editorContent: 'updated-editor-content',
+      });
+      expect(actionCreators.createWorkspaceFromResources).toHaveBeenCalled();
+    });
+
+    it('should throw when the editor given in params cannot be fetched', async () => {
+      (getEditor as jest.Mock).mockResolvedValue({ error: 'Editor not found' });
+      const paramsWithEditor = { cheEditor: 'custom-editor' } as Partial<FactoryParams>;
+
+      await expect(
+        store.dispatch(
+          createWorkspaceFromDevfile(mockDevfile, paramsWithEditor, mockOptionalFilesContent),
+        ),
+      ).rejects.toThrow('Editor not found');
+    });
+
+    it('should fall back to the default editor when the custom editor fails to resolve', async () => {
+      (getCustomEditor as jest.Mock).mockRejectedValue(new Error('Broken che-editor.yaml'));
+
+      await store.dispatch(
+        createWorkspaceFromDevfile(mockDevfile, mockParams, mockOptionalFilesContent),
+      );
+
+      expect(getEditor).toHaveBeenCalledWith(
+        'default-editor',
+        expect.any(Function),
+        expect.any(Function),
+      );
+      expect(actionCreators.createWorkspaceFromResources).toHaveBeenCalled();
+    });
+
+    it('should throw when the default editor cannot be fetched', async () => {
+      (getCustomEditor as jest.Mock).mockResolvedValue(undefined);
+      (getEditor as jest.Mock).mockResolvedValue({ error: 'Default editor not found' });
+
+      await expect(
+        store.dispatch(
+          createWorkspaceFromDevfile(mockDevfile, mockParams, mockOptionalFilesContent),
+        ),
+      ).rejects.toThrow('Default editor not found');
     });
 
     it('should create workspace with custom editor from optional files', async () => {

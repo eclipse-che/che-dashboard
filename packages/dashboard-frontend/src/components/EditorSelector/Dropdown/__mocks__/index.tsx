@@ -20,6 +20,7 @@ export class EditorDropdown extends React.PureComponent<Props> {
       defaultEditorId,
       selectedEditorId,
       customEditorName,
+      canUseCustomEditor,
       onSelect,
       onDefaultEditorClick,
       onCustomEditorClick,
@@ -34,6 +35,8 @@ export class EditorDropdown extends React.PureComponent<Props> {
           <dd data-testid="selected-editor-id">{selectedEditorId}</dd>
           <dt>custom-editor-name</dt>
           <dd data-testid="custom-editor-name">{customEditorName || 'none'}</dd>
+          <dt>can-use-custom-editor</dt>
+          <dd data-testid="can-use-custom-editor">{String(canUseCustomEditor !== false)}</dd>
         </dl>
         <button
           data-testid="default-editor-button"

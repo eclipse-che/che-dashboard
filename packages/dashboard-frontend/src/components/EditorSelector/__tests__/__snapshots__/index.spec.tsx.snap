@@ -53,6 +53,14 @@ exports[`Editor Selector snapshot 1`] = `
           >
             none
           </dd>
+          <dt>
+            can-use-custom-editor
+          </dt>
+          <dd
+            data-testid="can-use-custom-editor"
+          >
+            true
+          </dd>
         </dl>
         <button
           data-testid="default-editor-button"
@@ -87,6 +95,12 @@ exports[`Editor Selector snapshot 1`] = `
           onClick={[Function]}
         >
           Save
+        </button>
+        <button
+          data-testid="custom-editor-modal-close"
+          onClick={[Function]}
+        >
+          Close
         </button>
       </div>
     </div>

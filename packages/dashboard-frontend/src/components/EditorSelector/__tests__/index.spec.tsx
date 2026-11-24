@@ -62,6 +62,21 @@ describe('Editor Selector', () => {
     expect(mockOnSelect).toHaveBeenCalledWith('che-incubator/che-code/latest', undefined);
   });
 
+  test('select the default editor', async () => {
+    renderComponent();
+
+    // pick an editor first, so the default editor is a change
+    await userEvent.click(screen.getByTestId('select-editor-button'));
+    expect(screen.getByTestId('selected-editor-id')).toHaveTextContent(
+      'che-incubator/che-code/latest',
+    );
+
+    await userEvent.click(screen.getByTestId('default-editor-button'));
+
+    expect(mockOnSelect).toHaveBeenLastCalledWith(undefined, undefined);
+    expect(screen.getByTestId('selected-editor-id')).toBeEmptyDOMElement();
+  });
+
   test('render custom editor modal', async () => {
     renderComponent();
 
@@ -82,9 +97,29 @@ describe('Editor Selector', () => {
     );
     expect(screen.getByTestId('custom-editor-name')).toHaveTextContent('che-code');
   });
+
+  test('opening and closing the custom editor modal', async () => {
+    renderComponent();
+
+    expect(screen.getByTestId('custom-editor-modal-is-open')).toHaveTextContent('false');
+
+    await userEvent.click(screen.getByTestId('custom-editor-button'));
+    expect(screen.getByTestId('custom-editor-modal-is-open')).toHaveTextContent('true');
+
+    await userEvent.click(screen.getByTestId('custom-editor-modal-close'));
+    expect(screen.getByTestId('custom-editor-modal-is-open')).toHaveTextContent('false');
+
+    expect(mockOnSelect).not.toHaveBeenCalled();
+  });
+
+  test('the custom editor option is hidden when it cannot be used', () => {
+    renderComponent(false);
+
+    expect(screen.getByTestId('can-use-custom-editor')).toHaveTextContent('false');
+  });
 });
 
-function getComponent() {
+function getComponent(canUseCustomEditor?: boolean) {
   const store = new MockStoreBuilder()
     .withPlugins(plugins)
     .withDwServerConfig({
@@ -96,7 +131,11 @@ function getComponent() {
 
   return (
     <Provider store={store}>
-      <EditorSelector defaultEditorId="default/editor/id" onSelect={mockOnSelect} />
+      <EditorSelector
+        defaultEditorId="default/editor/id"
+        canUseCustomEditor={canUseCustomEditor}
+        onSelect={mockOnSelect}
+      />
     </Provider>
   );
 }

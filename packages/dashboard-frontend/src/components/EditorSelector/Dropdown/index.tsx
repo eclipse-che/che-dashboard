@@ -420,6 +420,7 @@ export class EditorDropdown extends React.PureComponent<Props, State> {
                         className={styles.versionToggle}
                         onClick={() => this.setState({ isVersionSelectOpen: !isVersionSelectOpen })}
                         isExpanded={isVersionSelectOpen}
+                        data-testid="version-select-toggle"
                       >
                         {selectedEditor?.version}
                       </MenuToggle>

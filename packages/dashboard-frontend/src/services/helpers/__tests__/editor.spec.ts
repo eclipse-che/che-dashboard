@@ -92,6 +92,73 @@ describe('groupEditorsByName', () => {
     expect(groups[0].versions[1].version).toBe('latest');
   });
 
+  it('sorts a known version before an unknown one', () => {
+    const plugins = [
+      makePlugin('che-incubator', 'che-code', '1.0.0', 'VS Code'),
+      makePlugin('che-incubator', 'che-code', 'latest', 'VS Code'),
+    ];
+    const groups = groupEditorsByName(plugins);
+    expect(groups[0].versions.map(v => v.version)).toEqual(['latest', '1.0.0']);
+  });
+
+  it('sorts an unknown version after a known one', () => {
+    const plugins = [
+      makePlugin('che-incubator', 'che-code', 'latest', 'VS Code'),
+      makePlugin('che-incubator', 'che-code', '1.0.0', 'VS Code'),
+    ];
+    const groups = groupEditorsByName(plugins);
+    expect(groups[0].versions.map(v => v.version)).toEqual(['latest', '1.0.0']);
+  });
+
+  it('sorts che-code first when it comes first in the input', () => {
+    const plugins = [
+      makePlugin('che-incubator', 'che-code', 'latest', 'VS Code'),
+      makePlugin('che-incubator', 'che-idea-server', 'latest', 'IntelliJ IDEA'),
+    ];
+    const groups = groupEditorsByName(plugins);
+    expect(groups.map(g => g.key)).toEqual([
+      'che-incubator/che-code',
+      'che-incubator/che-idea-server',
+    ]);
+  });
+
+  it('sorts che-code before the other che-code-* groups', () => {
+    const plugins = [
+      makePlugin('che-incubator', 'che-code-server', 'latest', 'VS Code Server'),
+      makePlugin('che-incubator', 'che-code-insiders', 'latest', 'VS Code Insiders'),
+      makePlugin('che-incubator', 'che-code', 'latest', 'VS Code'),
+    ];
+    const groups = groupEditorsByName(plugins);
+    expect(groups.map(g => g.key)).toEqual([
+      'che-incubator/che-code',
+      'che-incubator/che-code-insiders',
+      'che-incubator/che-code-server',
+    ]);
+  });
+
+  it('keeps che-code first among several other groups', () => {
+    const plugins = [
+      makePlugin('che-incubator', 'che-idea-server', 'latest', 'IntelliJ IDEA'),
+      makePlugin('che-incubator', 'che-code', 'latest', 'VS Code'),
+      makePlugin('che-incubator', 'che-clion-server', 'latest', 'CLion'),
+    ];
+    const groups = groupEditorsByName(plugins);
+    expect(groups.map(g => g.key)).toEqual([
+      'che-incubator/che-code',
+      'che-incubator/che-clion-server',
+      'che-incubator/che-idea-server',
+    ]);
+  });
+
+  it('sorts groups without che-code by display name', () => {
+    const plugins = [
+      makePlugin('che-incubator', 'che-phpstorm-server', 'latest', 'PhpStorm'),
+      makePlugin('che-incubator', 'che-clion-server', 'latest', 'CLion'),
+    ];
+    const groups = groupEditorsByName(plugins);
+    expect(groups.map(g => g.displayName)).toEqual(['CLion', 'PhpStorm']);
+  });
+
   it('falls back to plugin name when displayName is empty', () => {
     const plugin: che.Plugin = {
       ...makePlugin('che-incubator', 'che-code', 'latest', ''),
@@ -177,6 +244,53 @@ describe('getCurrentEditorLabel', () => {
       .build();
     const workspace = constructWorkspace(dw);
     expect(getCurrentEditorLabel(workspace, editors)).toBe('my-editor');
+  });
+
+  it('returns the custom editor name when the annotation carries one', () => {
+    const dw = new DevWorkspaceBuilder()
+      .withMetadata({
+        annotations: {
+          'che.eclipse.org/che-editor': 'schemaVersion: 2.2.2\nmetadata:\n  name: che-code\n',
+          'che.eclipse.org/che-editor-name': 'My Custom Editor',
+        },
+      })
+      .build();
+    const workspace = constructWorkspace(dw);
+    expect(getCurrentEditorLabel(workspace, editors)).toBe('My Custom Editor');
+  });
+
+  it('returns the raw annotation when it is not a YAML document', () => {
+    const dw = new DevWorkspaceBuilder()
+      .withMetadata({ annotations: { 'che.eclipse.org/che-editor': '{ unclosed' } })
+      .build();
+    const workspace = constructWorkspace(dw);
+    expect(getCurrentEditorLabel(workspace, editors)).toBe('{ unclosed');
+  });
+
+  it('returns the raw annotation when the devfile metadata is not an object', () => {
+    const dw = new DevWorkspaceBuilder()
+      .withMetadata({
+        annotations: { 'che.eclipse.org/che-editor': 'schemaVersion: 2.2.2\nmetadata: a-string\n' },
+      })
+      .build();
+    const workspace = constructWorkspace(dw);
+    expect(getCurrentEditorLabel(workspace, editors)).toBe(
+      'schemaVersion: 2.2.2\nmetadata: a-string\n',
+    );
+  });
+
+  it('returns the raw annotation when the devfile metadata has no name', () => {
+    const dw = new DevWorkspaceBuilder()
+      .withMetadata({
+        annotations: {
+          'che.eclipse.org/che-editor': 'schemaVersion: 2.2.2\nmetadata:\n  version: 1.0.0\n',
+        },
+      })
+      .build();
+    const workspace = constructWorkspace(dw);
+    expect(getCurrentEditorLabel(workspace, editors)).toBe(
+      'schemaVersion: 2.2.2\nmetadata:\n  version: 1.0.0\n',
+    );
   });
 
   it('falls back to plugin name when found editor has no displayName', () => {

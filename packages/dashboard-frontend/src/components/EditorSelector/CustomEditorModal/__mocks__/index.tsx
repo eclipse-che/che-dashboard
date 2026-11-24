@@ -16,7 +16,7 @@ import { Props } from '@/components/EditorSelector/CustomEditorModal';
 
 export class CustomEditorModal extends React.PureComponent<Props> {
   render(): React.ReactElement {
-    const { isOpen, onSave } = this.props;
+    const { isOpen, onClose, onSave } = this.props;
 
     return (
       <div data-testid="custom-editor-modal-mock">
@@ -27,6 +27,9 @@ export class CustomEditorModal extends React.PureComponent<Props> {
           onClick={() => onSave('che-code', 'schemaVersion: 2.2.2', 'quay.io/my/editor')}
         >
           Save
+        </button>
+        <button data-testid="custom-editor-modal-close" onClick={() => onClose()}>
+          Close
         </button>
       </div>
     );
