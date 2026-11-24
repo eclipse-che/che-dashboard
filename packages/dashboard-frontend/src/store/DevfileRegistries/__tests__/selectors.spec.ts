@@ -128,6 +128,94 @@ describe('DevfileRegistries, selectors', () => {
     expect(result).toBe(true);
   });
 
+  it('should match registry devfile URL after stripping devfilePath aliases', () => {
+    const stateWithExternalSample = {
+      ...mockState,
+      devfileRegistries: {
+        ...mockState.devfileRegistries,
+        registries: {
+          'https://internal-registry.com': {
+            metadata: [
+              {
+                displayName: 'External Sample',
+                description: 'Sample with devfilePath param',
+                links: { v2: 'https://github.com/org/repo?df=custom-devfile.yaml' },
+                tags: ['tag1'],
+              } as che.DevfileMetaData,
+            ],
+          },
+        },
+      },
+    } as RootState;
+
+    const isRegistryDevfile = selectIsRegistryDevfile(stateWithExternalSample);
+
+    // After param extraction in handleSampleCardClick, the source URL won't have ?df=...
+    expect(isRegistryDevfile('https://github.com/org/repo')).toBe(true);
+
+    // Original URL with ?df= should also match
+    expect(isRegistryDevfile('https://github.com/org/repo?df=custom-devfile.yaml')).toBe(true);
+
+    // Unrelated URLs should not match
+    expect(isRegistryDevfile('https://github.com/other/repo')).toBe(false);
+  });
+
+  it('should match registry devfile URL after stripping override params', () => {
+    const stateWithOverrideParams = {
+      ...mockState,
+      devfileRegistries: {
+        ...mockState.devfileRegistries,
+        registries: {
+          'https://internal-registry.com': {
+            metadata: [
+              {
+                displayName: 'Override Sample',
+                description: 'Sample with override params',
+                links: {
+                  v2: 'https://github.com/org/repo?override.devfileFilename=my-devfile.yaml&memoryLimit=2Gi',
+                },
+                tags: ['tag1'],
+              } as che.DevfileMetaData,
+            ],
+          },
+        },
+      },
+    } as RootState;
+
+    const isRegistryDevfile = selectIsRegistryDevfile(stateWithOverrideParams);
+
+    // After param extraction, the source URL won't have override or factory params
+    expect(isRegistryDevfile('https://github.com/org/repo')).toBe(true);
+  });
+
+  it('should handle non-URL strings in registry devfile matching', () => {
+    const stateWithSshSample = {
+      ...mockState,
+      devfileRegistries: {
+        ...mockState.devfileRegistries,
+        registries: {
+          'https://internal-registry.com': {
+            metadata: [
+              {
+                displayName: 'SSH Sample',
+                description: 'Sample with SSH URL',
+                links: { v2: 'git@github.com:org/repo.git' },
+                tags: ['tag1'],
+              } as che.DevfileMetaData,
+            ],
+          },
+        },
+      },
+    } as RootState;
+
+    const isRegistryDevfile = selectIsRegistryDevfile(stateWithSshSample);
+
+    // SSH URLs are not valid URLs for new URL(), normalizeSourceUrl should
+    // fall back to returning the string as-is for exact comparison
+    expect(isRegistryDevfile('git@github.com:org/repo.git')).toBe(true);
+    expect(isRegistryDevfile('git@github.com:other/repo.git')).toBe(false);
+  });
+
   it('should select registries errors', () => {
     const result = selectRegistriesErrors(mockState);
     expect(result).toEqual([

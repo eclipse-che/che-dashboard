@@ -32,7 +32,9 @@ import {
   EDITOR_IMAGE_ATTR,
   FACTORY_URL_ATTR,
   NAME_ATTR,
+  OVERRIDE_ATTR_PREFIX,
   POLICIES_CREATE_ATTR,
+  PROPAGATE_FACTORY_ATTRS,
   STORAGE_TYPE_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { che } from '@/services/models';
@@ -102,17 +104,60 @@ class SamplesList extends React.PureComponent<Props, State> {
 
     // Handle SSH URLs (git@...) and HTTP(S) URLs differently
     let factoryUrl: string;
+    const extractedParams: { [key: string]: string } = {};
+
     if (FactoryLocationAdapter.isSshLocation(metadata.links.v2)) {
       // SSH URLs should be used as-is
       factoryUrl = metadata.links.v2;
     } else {
       // HTTP(S) URLs need to be parsed and encoded properly
       const url = new URL(metadata.links.v2);
-      factoryUrl = `${url.origin}${url.pathname}${encodeURIComponent(url.search)}`;
+      const searchParams = new URLSearchParams(url.search);
+
+      // Extract factory attrs from the URL so they are not double-encoded
+      for (const attr of PROPAGATE_FACTORY_ATTRS) {
+        if (attr === FACTORY_URL_ATTR) {
+          continue;
+        }
+        const value = searchParams.get(attr);
+        if (value !== null) {
+          extractedParams[attr] = value;
+          searchParams.delete(attr);
+        }
+      }
+
+      // Extract devfilePath aliases and convert to override.devfileFilename
+      const devfilePath = ['devfilePath', 'devfilepath', 'df']
+        .map(param => {
+          const value = searchParams.get(param);
+          searchParams.delete(param);
+          return value;
+        })
+        .find(value => value !== null && value !== '');
+      if (devfilePath) {
+        extractedParams[OVERRIDE_ATTR_PREFIX + 'devfileFilename'] = devfilePath;
+      }
+
+      // Extract any remaining override.* params
+      for (const [key, value] of [...searchParams.entries()]) {
+        if (key.startsWith(OVERRIDE_ATTR_PREFIX)) {
+          extractedParams[key] = value;
+          searchParams.delete(key);
+        }
+      }
+
+      let urlStr = `${url.origin}${url.pathname}`;
+      const remainingSearch = searchParams.toString();
+      if (remainingSearch) {
+        urlStr += encodeURIComponent('?' + remainingSearch);
+      }
+      factoryUrl = urlStr;
     }
 
+    // Extracted URL params go first; explicit settings below override them
     const factoryParams: { [key: string]: string } = {
       [FACTORY_URL_ATTR]: factoryUrl,
+      ...extractedParams,
     };
 
     const _editorDefinition = editorDefinition || this.props.defaultEditorId;
@@ -135,9 +180,7 @@ class SamplesList extends React.PureComponent<Props, State> {
 
     const isEmptyWorkspace = metadata.tags?.some(tag => tag.toLowerCase() === 'empty') === true;
     const policiesCreate = isEmptyWorkspace ? 'perclick' : this.getPoliciesCreate();
-    if (policiesCreate !== 'peruser') {
-      factoryParams[POLICIES_CREATE_ATTR] = policiesCreate;
-    }
+    factoryParams[POLICIES_CREATE_ATTR] = policiesCreate;
 
     factoryParams[STORAGE_TYPE_ATTR] = this.getStorageType();
 
