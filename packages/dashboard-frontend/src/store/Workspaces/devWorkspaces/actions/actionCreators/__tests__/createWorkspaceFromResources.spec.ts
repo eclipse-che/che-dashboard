@@ -130,6 +130,7 @@ describe('devWorkspaces, actions', () => {
         mockWorkspace,
         'che-editor',
         'test-workspace',
+        undefined,
       );
 
       expect(mockCreateDevWorkspaceTemplate).toHaveBeenCalled();
@@ -174,6 +175,30 @@ describe('devWorkspaces, actions', () => {
         mockWorkspace,
         'custom-editor',
         'test-workspace',
+        undefined,
+      );
+    });
+
+    it('should forward the custom editor name so it reaches the annotation', async () => {
+      const paramsWithEditorName = {
+        cheEditorName: 'my-editor',
+      } as Partial<FactoryParams>;
+
+      await store.dispatch(
+        createWorkspaceFromResources(
+          mockWorkspace,
+          mockWorkspaceTemplate,
+          paramsWithEditorName,
+          'custom-editor',
+        ),
+      );
+
+      expect(mockCreateDevWorkspace).toHaveBeenCalledWith(
+        'default-namespace',
+        mockWorkspace,
+        'custom-editor',
+        'test-workspace',
+        'my-editor',
       );
     });
 
@@ -189,6 +214,7 @@ describe('devWorkspaces, actions', () => {
         mockWorkspace,
         'che-editor',
         'test-workspace',
+        undefined,
       );
     });
 

@@ -226,7 +226,14 @@ export const RestoreFromBackupPage: React.FC<Props> = props => {
 
         <Spacer />
 
-        <EditorSelector defaultEditorId={defaultEditor} onSelect={handleEditorSelect} />
+        {/* restoreFromBackup forwards a single editor id or definition and has
+            nowhere to put a container image, so a custom editor is not offered
+            here rather than being accepted and dropped */}
+        <EditorSelector
+          defaultEditorId={defaultEditor}
+          onSelect={handleEditorSelect}
+          canUseCustomEditor={false}
+        />
       </PageSection>
 
       {restoreData && (

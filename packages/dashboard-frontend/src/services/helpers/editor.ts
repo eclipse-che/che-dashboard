@@ -10,10 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { dump } from 'js-yaml';
+import { dump, load } from 'js-yaml';
 
 import devfileApi from '@/services/devfileApi';
-import { DEVWORKSPACE_CHE_EDITOR } from '@/services/devfileApi/devWorkspace/metadata';
+import {
+  DEVWORKSPACE_CHE_EDITOR,
+  DEVWORKSPACE_CHE_EDITOR_NAME,
+} from '@/services/devfileApi/devWorkspace/metadata';
 import { che } from '@/services/models';
 import { Workspace } from '@/services/workspace-adapter';
 
@@ -130,11 +133,51 @@ export function getCurrentEditorId(workspace: Workspace): string | undefined {
   return workspace.ref.metadata?.annotations?.[DEVWORKSPACE_CHE_EDITOR];
 }
 
+/**
+ * Reads the display name out of an editor devfile kept in the
+ * 'che.eclipse.org/che-editor' annotation. A custom editor is stored as its
+ * devfile rather than as an id, so without this the whole document would be
+ * shown as the editor name.
+ */
+function getInlineEditorLabel(cheEditor: string): string | undefined {
+  let parsed: unknown;
+  try {
+    parsed = load(cheEditor);
+  } catch (e) {
+    return undefined;
+  }
+
+  if (typeof parsed !== 'object' || parsed === null) {
+    return undefined;
+  }
+
+  const metadata = (parsed as { metadata?: unknown }).metadata;
+  if (typeof metadata !== 'object' || metadata === null) {
+    return undefined;
+  }
+
+  const { displayName, name } = metadata as { displayName?: unknown; name?: unknown };
+  if (typeof displayName === 'string' && displayName.length > 0) {
+    return displayName;
+  }
+  return typeof name === 'string' && name.length > 0 ? name : undefined;
+}
+
 export function getCurrentEditorLabel(workspace: Workspace, editors: che.Plugin[]): string {
+  // Check if this is a custom editor
+  const customEditorName = workspace.ref.metadata?.annotations?.[DEVWORKSPACE_CHE_EDITOR_NAME];
+  if (customEditorName) {
+    return customEditorName;
+  }
+
   const id = getCurrentEditorId(workspace);
   if (!id) {
     return 'Default';
   }
   const found = editors.find(e => e.id === id);
-  return found ? found.displayName || found.name : id;
+  if (found) {
+    return found.displayName || found.name;
+  }
+
+  return getInlineEditorLabel(id) || id;
 }

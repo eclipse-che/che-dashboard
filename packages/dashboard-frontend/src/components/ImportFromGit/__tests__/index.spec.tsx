@@ -86,6 +86,40 @@ describe('GitRepoLocationInput', () => {
     expect(window.open).not.toHaveBeenCalled();
   });
 
+  describe('untrusted source confirmation', () => {
+    test('cancelling the confirmation closes it without opening the factory', async () => {
+      renderComponent(store);
+
+      const input = screen.getByRole('textbox');
+      await userEvent.click(input);
+      await userEvent.paste('http://test-location/');
+
+      await userEvent.click(screen.getByRole('button', { name: 'Create & Open' }));
+      expect(screen.queryByText('UntrustedSourceModal')).not.toBeNull();
+
+      await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+      expect(screen.queryByText('UntrustedSourceModal')).toBeNull();
+      expect(window.open).not.toHaveBeenCalled();
+    });
+
+    test('the factory opens once the confirmation is re-opened and continued', async () => {
+      renderComponent(store);
+
+      const input = screen.getByRole('textbox');
+      await userEvent.click(input);
+      await userEvent.paste('http://test-location/');
+
+      await userEvent.click(screen.getByRole('button', { name: 'Create & Open' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+      await userEvent.click(screen.getByRole('button', { name: 'Create & Open' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+      expect(window.open).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('valid HTTP location', () => {
     describe('factory URL w/o other parameters', () => {
       test('trim spaces from the input value', async () => {
@@ -264,6 +298,38 @@ describe('GitRepoLocationInput', () => {
         expect(window.open).toHaveBeenCalledTimes(1);
       });
 
+      test('a custom editor adds both its definition and its name', async () => {
+        renderComponent(store, 'schemaVersion: 2.2.2', undefined, 'my-editor');
+
+        const input = screen.getByRole('textbox');
+        await userEvent.click(input);
+        await userEvent.paste('http://test-location/');
+
+        await userEvent.click(screen.getByRole('button', { name: 'Create & Open' }));
+        await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+        const factoryUrl = (window.open as jest.Mock).mock.calls[0][0];
+        expect(factoryUrl).toContain('che-editor=schemaVersion%3A+2.2.2');
+        expect(factoryUrl).toContain('che-editor-name=my-editor');
+      });
+
+      test('a custom editor name is left out when the URL already names an editor', async () => {
+        // the definition is skipped because the URL has priority, so the name
+        // must not be attached to the editor the URL names
+        renderComponent(store, 'schemaVersion: 2.2.2', undefined, 'my-editor');
+
+        const input = screen.getByRole('textbox');
+        await userEvent.click(input);
+        await userEvent.paste('http://test-location/?che-editor=other-editor-id');
+
+        await userEvent.click(screen.getByRole('button', { name: 'Create & Open' }));
+        await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+        const factoryUrl = (window.open as jest.Mock).mock.calls[0][0];
+        expect(factoryUrl).toContain('che-editor=other-editor-id');
+        expect(factoryUrl).not.toContain('che-editor-name');
+      });
+
       test('editor definition and editor image are defined, and `editor-image` is provided', async () => {
         renderComponent(store, editorId, editorImage);
 
@@ -434,6 +500,7 @@ function getComponent(
   store: Store,
   editorDefinition: string | undefined = undefined,
   editorImage: string | undefined = undefined,
+  customEditorName: string | undefined = undefined,
 ) {
   return (
     <Provider store={store}>
@@ -441,6 +508,7 @@ function getComponent(
         navigate={mockNavigate}
         editorDefinition={editorDefinition}
         editorImage={editorImage}
+        customEditorName={customEditorName}
       />
     </Provider>
   );

@@ -17,16 +17,26 @@ import styles from '@/components/TagLabel/index.module.css';
 
 export type Props = {
   text: string;
-  type: 'version' | 'tag' | 'placeholder';
+  type: 'version' | 'tag' | 'placeholder' | 'default';
 };
 
 export class TagLabel extends React.PureComponent<Props> {
   public render(): React.ReactElement {
-    const { text } = this.props;
+    const { text, type } = this.props;
 
-    const className = `${styles.label} ${this.props.type === 'tag' ? styles.tag : styles.version}`;
+    // the filled badge shares the size of the outline ones so two of them can
+    // sit side by side without looking like different components
+    if (type === 'default') {
+      return (
+        <Label className={styles.label} variant="filled" color="blue" isCompact>
+          {text}
+        </Label>
+      );
+    }
 
-    const color = this.props.type === 'tag' ? 'orange' : 'blue';
+    const className = `${styles.label} ${type === 'tag' ? styles.tag : styles.version}`;
+
+    const color = type === 'tag' ? 'orange' : 'blue';
 
     return (
       <Label className={className} variant="outline" color={color}>

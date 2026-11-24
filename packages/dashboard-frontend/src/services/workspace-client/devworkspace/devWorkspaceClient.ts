@@ -27,6 +27,7 @@ import devfileApi from '@/services/devfileApi';
 import { DevWorkspacePlugin } from '@/services/devfileApi/devWorkspace';
 import {
   DEVWORKSPACE_CHE_EDITOR,
+  DEVWORKSPACE_CHE_EDITOR_NAME,
   DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION,
 } from '@/services/devfileApi/devWorkspace/metadata';
 import {
@@ -153,7 +154,8 @@ export class DevWorkspaceClient {
     defaultNamespace: string,
     devWorkspaceResource: devfileApi.DevWorkspace,
     editorId: string | undefined,
-    customName?: string,
+    workspaceDisplayName?: string,
+    cheEditorName?: string,
   ): Promise<{ headers: DwApi.Headers; devWorkspace: devfileApi.DevWorkspace }> {
     if (!devWorkspaceResource.spec.routingClass) {
       devWorkspaceResource.spec.routingClass = 'che';
@@ -172,11 +174,17 @@ export class DevWorkspaceClient {
       devWorkspaceResource.metadata.annotations[DEVWORKSPACE_CHE_EDITOR] = editorId;
     }
 
+    // the editor the user described by hand is stored as its devfile, so the
+    // name they gave it is kept next to it for the UI to show
+    if (cheEditorName) {
+      devWorkspaceResource.metadata.annotations[DEVWORKSPACE_CHE_EDITOR_NAME] = cheEditorName;
+    }
+
     if (!devWorkspaceResource.metadata.labels) {
       devWorkspaceResource.metadata.labels = {};
     }
-    if (customName) {
-      devWorkspaceResource.metadata.labels[DEVWORKSPACE_LABEL_METADATA_NAME] = customName;
+    if (workspaceDisplayName) {
+      devWorkspaceResource.metadata.labels[DEVWORKSPACE_LABEL_METADATA_NAME] = workspaceDisplayName;
     }
 
     const { headers, devWorkspace } = await DwApi.createWorkspace(devWorkspaceResource);

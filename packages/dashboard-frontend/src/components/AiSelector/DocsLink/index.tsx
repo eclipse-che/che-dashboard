@@ -18,7 +18,7 @@ export type Props = {
 };
 
 const DEFAULT_DOCS_URL =
-  'https://eclipse.dev/che/docs/stable/end-user-guide/using-ai-assistants-in-workspaces/';
+  'https://eclipse.dev/che/docs/stable/develop/using-ai-assistants-in-workspaces/';
 
 export class AiSelectorDocsLink extends React.PureComponent<Props> {
   public render() {

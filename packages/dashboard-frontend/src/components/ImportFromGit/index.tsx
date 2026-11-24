@@ -44,6 +44,7 @@ import {
   AI_PROVIDER_ATTR,
   EDITOR_ATTR,
   EDITOR_IMAGE_ATTR,
+  EDITOR_NAME_ATTR,
   REVISION_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildUserPreferencesLocation } from '@/services/helpers/location';
@@ -57,6 +58,7 @@ const FIELD_ID = 'git-repo-url';
 export type Props = MappedProps & {
   editorDefinition: string | undefined;
   editorImage: string | undefined;
+  customEditorName?: string;
   aiProviders?: string[];
   navigate: NavigateFunction;
 };
@@ -113,7 +115,7 @@ class ImportFromGit extends React.PureComponent<Props, State> {
   }
 
   private startFactory(): void {
-    const { editorDefinition, editorImage, aiProviders } = this.props;
+    const { editorDefinition, editorImage, customEditorName, aiProviders } = this.props;
     const factory = new FactoryLocationAdapter(this.state.location);
 
     // Apply the "Create New" switch state at click-time rather than encoding ?new in the
@@ -126,8 +128,18 @@ class ImportFromGit extends React.PureComponent<Props, State> {
     // add the editor definition and editor image to the URL
     // if they are not already there
     if (!factory.searchParams.has(EDITOR_ATTR) && !factory.searchParams.has(EDITOR_IMAGE_ATTR)) {
+      // a custom editor definition goes into 'che-editor' as well, so the
+      // workspace ends up with it in the 'che.eclipse.org/che-editor'
+      // annotation, exactly like an editor defined in the repository
       if (editorDefinition !== undefined) {
         factory.searchParams.set(EDITOR_ATTR, editorDefinition);
+
+        // the name labels that definition, so it only travels together with it:
+        // on a URL that already names an editor the definition is left out, and
+        // a name without it would label an editor the user did not choose
+        if (customEditorName !== undefined) {
+          factory.searchParams.set(EDITOR_NAME_ATTR, customEditorName);
+        }
       }
       if (editorImage !== undefined) {
         factory.searchParams.set(EDITOR_IMAGE_ATTR, editorImage);

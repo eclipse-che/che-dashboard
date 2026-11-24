@@ -15,6 +15,10 @@ import * as DwApi from '@/services/backend-client/devWorkspaceApi';
 import * as DwtApi from '@/services/backend-client/devWorkspaceTemplateApi';
 import devfileApi from '@/services/devfileApi';
 import {
+  DEVWORKSPACE_CHE_EDITOR,
+  DEVWORKSPACE_CHE_EDITOR_NAME,
+} from '@/services/devfileApi/devWorkspace/metadata';
+import {
   DEVWORKSPACE_LABEL_METADATA_NAME,
   DevWorkspaceClient,
 } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
@@ -262,6 +266,72 @@ describe('DevWorkspace client, create', () => {
             labels: expect.objectContaining({
               [DEVWORKSPACE_LABEL_METADATA_NAME]: overrideName,
             }),
+          }),
+        }),
+      );
+    });
+
+    it('should add the editor id as an annotation', async () => {
+      spyCreateWorkspace = jest.spyOn(DwApi, 'createWorkspace').mockResolvedValueOnce({
+        headers: {},
+        devWorkspace: testDevWorkspace,
+      });
+
+      await client.createDevWorkspace(namespace, testDevWorkspace, 'che-incubator/che-code/latest');
+
+      expect(spyCreateWorkspace).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            annotations: expect.objectContaining({
+              [DEVWORKSPACE_CHE_EDITOR]: 'che-incubator/che-code/latest',
+            }),
+          }),
+        }),
+      );
+    });
+
+    it('should keep the custom editor name next to its definition', async () => {
+      // a custom editor is stored as its devfile, the name the user gave it
+      // goes to a separate annotation
+      const editorDefinition = 'schemaVersion: 2.2.2\nmetadata:\n  name: my-editor\n';
+      spyCreateWorkspace = jest.spyOn(DwApi, 'createWorkspace').mockResolvedValueOnce({
+        headers: {},
+        devWorkspace: testDevWorkspace,
+      });
+
+      await client.createDevWorkspace(
+        namespace,
+        testDevWorkspace,
+        editorDefinition,
+        undefined,
+        'My Editor',
+      );
+
+      expect(spyCreateWorkspace).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            annotations: expect.objectContaining({
+              [DEVWORKSPACE_CHE_EDITOR]: editorDefinition,
+              [DEVWORKSPACE_CHE_EDITOR_NAME]: 'My Editor',
+            }),
+          }),
+        }),
+      );
+    });
+
+    it('should add the metadata labels when the resource has none', async () => {
+      delete testDevWorkspace.metadata.labels;
+      spyCreateWorkspace = jest.spyOn(DwApi, 'createWorkspace').mockResolvedValueOnce({
+        headers: {},
+        devWorkspace: testDevWorkspace,
+      });
+
+      await client.createDevWorkspace(namespace, testDevWorkspace, undefined, 'test-override');
+
+      expect(spyCreateWorkspace).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            labels: { [DEVWORKSPACE_LABEL_METADATA_NAME]: 'test-override' },
           }),
         }),
       );

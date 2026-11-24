@@ -182,11 +182,16 @@ function buildPostStartCommandLine(tool: api.AiToolDefinition): string {
     // Binary already at /injected-tools/bin/<binary>, just ensure PATH
     mainCmd = pathSetup;
   } else {
-    // Symlink bundle binary (and bundled node if present) into /injected-tools/bin/
+    // Symlink bundle binary into /injected-tools/bin/
+    // Bundled dependencies (e.g. node) remain internal to the tool and must not be exposed in PATH
     const bundleDir = `/injected-tools/${slug}/bin`;
     const symlinkTarget = `${bundleDir}/${binary}`;
-    const nodeSymlink = `test -f ${bundleDir}/node && ln -sf ${bundleDir}/node /injected-tools/bin/node; true`;
-    mainCmd = `mkdir -p /injected-tools/bin && ln -sf ${symlinkTarget} /injected-tools/bin/${binary} && ${nodeSymlink} && ${pathSetup}`;
+    // an earlier version linked the bundled node into /injected-tools/bin, and
+    // the volume outlives the upgrade, so the stale link is dropped here -
+    // 'rm -f' succeeds when it is not there
+    const removeLegacyNodeLink =
+      binary === 'node' ? '' : 'rm -f /injected-tools/bin/node 2>/dev/null; ';
+    mainCmd = `mkdir -p /injected-tools/bin && ${removeLegacyNodeLink}ln -sf ${symlinkTarget} /injected-tools/bin/${binary} && ${pathSetup}`;
   }
 
   // SECURITY NOTE: setupCommand is sourced from an admin-managed ConfigMap.
@@ -212,6 +217,9 @@ function buildCleanupCommandLine(tool: api.AiToolDefinition): string {
   if (pattern === 'bundle') {
     parts.push(`rm -rf /injected-tools/${slug}`);
   }
+  // Bundled dependencies are not symlinked into /injected-tools/bin any more;
+  // 'rm -rf /injected-tools/<slug>' above takes the whole bundle including its
+  // node, and a link left by an older release is dropped on the next postStart
   // Run in background so it never blocks workspace startup
   return `nohup sh -c '${parts.join(' && ')}' >/dev/null 2>&1 &`;
 }

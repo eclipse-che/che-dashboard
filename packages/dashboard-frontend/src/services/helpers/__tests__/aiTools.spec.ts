@@ -544,6 +544,21 @@ describe('aiTools', () => {
       );
     });
 
+    it('should drop a node symlink left in the shared volume by an earlier version', () => {
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+      ]);
+
+      const patched = addAiToolToWorkspace(workspace, 'google/gemini', ALL_TOOLS);
+      const symlinkCmd = patched.spec.template.commands?.find(
+        (c: { id?: string }) => c.id === 'symlink-gemini-cli',
+      ) as { exec?: { commandLine?: string } } | undefined;
+
+      // the volume outlives an upgrade, so a bundled node exposed on PATH by a
+      // previous release has to be removed before the tool binary is linked
+      expect(symlinkCmd?.exec?.commandLine).toContain('rm -f /injected-tools/bin/node');
+    });
+
     it('should create symlink postStart command for bundle-pattern tool', () => {
       const workspace = buildWorkspaceWithComponents([
         { name: 'editor', container: { image: 'che-code:latest' } },
@@ -556,6 +571,30 @@ describe('aiTools', () => {
       expect(symlinkCmd).toBeDefined();
       expect(symlinkCmd?.exec?.commandLine).toContain(
         'ln -sf /injected-tools/gemini-cli/bin/gemini /injected-tools/bin/gemini',
+      );
+    });
+
+    it('should keep the node link for a bundle tool whose binary is node', () => {
+      const nodeTool: api.AiToolDefinition = {
+        ...GEMINI_TOOL,
+        providerId: 'example/node-tool',
+        name: 'Node Tool',
+        binary: 'node',
+        injectorImage: 'quay.io/example/node-tool:latest',
+      };
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+      ]);
+
+      const patched = addAiToolToWorkspace(workspace, 'example/node-tool', [nodeTool]);
+      const symlinkCmd = patched.spec.template.commands?.find(
+        (c: { id?: string }) => c.id === 'symlink-node-tool',
+      ) as { exec?: { commandLine?: string } } | undefined;
+
+      // the tool itself is node here, so removing the link would remove the tool
+      expect(symlinkCmd?.exec?.commandLine).not.toContain('rm -f /injected-tools/bin/node');
+      expect(symlinkCmd?.exec?.commandLine).toContain(
+        'ln -sf /injected-tools/node-tool/bin/node /injected-tools/bin/node',
       );
     });
 
@@ -793,6 +832,23 @@ describe('aiTools', () => {
       ) as { exec?: { commandLine?: string } } | undefined;
       expect(cleanupCmd).toBeDefined();
       expect(cleanupCmd?.exec?.commandLine).toContain('rm -f /injected-tools/bin/opencode');
+    });
+
+    it('should add cleanup that removes the whole bundle for bundle-pattern tools', () => {
+      const workspace = buildWorkspaceWithComponents([
+        { name: 'editor', container: { image: 'che-code:latest' } },
+      ]);
+
+      const added = addAiToolToWorkspace(workspace, 'google/gemini', ALL_TOOLS);
+      const addedWorkspace = constructWorkspace(added);
+      const removed = removeAiToolFromWorkspace(addedWorkspace, 'google/gemini', ALL_TOOLS);
+
+      const cleanupCmd = removed.spec.template.commands?.find(
+        (c: { id?: string }) => c.id === 'cleanup-gemini-cli',
+      ) as { exec?: { commandLine?: string } } | undefined;
+      expect(cleanupCmd?.exec?.commandLine).toContain('rm -f /injected-tools/bin/gemini');
+      // the bundle holds the tool dependencies, node among them
+      expect(cleanupCmd?.exec?.commandLine).toContain('rm -rf /injected-tools/gemini-cli');
     });
 
     it('should remove cleanup command when re-adding a previously removed tool', () => {

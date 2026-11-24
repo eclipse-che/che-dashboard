@@ -11,12 +11,16 @@
  */
 
 import common from '@eclipse-che/common';
-import { dump } from 'js-yaml';
+import { dump, load } from 'js-yaml';
 
 import devfileApi from '@/services/devfileApi';
 import { CHE_EDITOR_YAML_PATH } from '@/services/workspace-client/helpers';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
-import { getCustomEditor } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/getCustomEditor';
+import {
+  getCustomEditor,
+  getEditorDefinition,
+  isEditorDefinitionContent,
+} from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/getCustomEditor';
 
 describe('Look for the custom editor', () => {
   let optionalFilesContent: {
@@ -371,6 +375,82 @@ describe('Look for the custom editor', () => {
         );
       });
     });
+  });
+});
+
+describe('isEditorDefinitionContent', () => {
+  it.each([
+    ['an editor id', 'che-incubator/che-code/latest'],
+    ['an http URL', 'http://example.com/devfile.yaml'],
+    ['an https URL', 'https://example.com/devfile.yaml'],
+    ['an empty string', ''],
+    ['blanks', '   '],
+  ])('should not take %s for a definition', (_label, value) => {
+    expect(isEditorDefinitionContent(value)).toBe(false);
+  });
+
+  it.each([
+    ['an editor devfile', 'schemaVersion: 2.2.2\nmetadata:\n  name: che-code\n'],
+    ['a reference', 'reference: https://example.com/devfile.yaml\n'],
+  ])('should take %s for a definition', (_label, value) => {
+    expect(isEditorDefinitionContent(value)).toBe(true);
+  });
+
+  it('should not take a broken YAML document for a definition', () => {
+    expect(isEditorDefinitionContent('metadata:\n  name: che-code\n bad-indent: true\n')).toBe(
+      false,
+    );
+  });
+});
+
+describe('getEditorDefinition', () => {
+  it('should return an editor devfile as it is', async () => {
+    const editor = buildEditor();
+    const store = new MockStoreBuilder().build();
+
+    const definition = await getEditorDefinition(dump(editor), store.dispatch, store.getState);
+
+    expect(load(definition)).toEqual(editor);
+  });
+
+  it('should resolve a reference and apply the overrides', async () => {
+    const editor = buildEditor();
+    const editorUrl = 'https://registry/plugins/che-incubator/che-code/insiders/devfile.yaml';
+    const store = new MockStoreBuilder()
+      .withDevfileRegistries({ devfiles: { [editorUrl]: { content: dump(editor) } } })
+      .build();
+
+    const definition = await getEditorDefinition(
+      dump({
+        reference: editorUrl,
+        override: { containers: [{ name: 'eclipse-ide', memoryLimit: '2048Mi' }] },
+      }),
+      store.dispatch,
+      store.getState,
+    );
+
+    expect((load(definition) as devfileApi.Devfile).components?.[0].container?.memoryLimit).toEqual(
+      '2048Mi',
+    );
+  });
+
+  it('should fail when the reference cannot be fetched', async () => {
+    const editorUrl = 'https://registry/plugins/unknown/devfile.yaml';
+    const store = new MockStoreBuilder()
+      .withDevfileRegistries({ devfiles: { [editorUrl]: { error: 'Not Found' } } })
+      .build();
+
+    await expect(
+      getEditorDefinition(dump({ reference: editorUrl }), store.dispatch, store.getState),
+    ).rejects.toThrow('Not Found');
+  });
+
+  it('should fail on a definition with neither a devfile nor a reference', async () => {
+    const store = new MockStoreBuilder().build();
+
+    await expect(
+      getEditorDefinition(dump({ unexpected: true }), store.dispatch, store.getState),
+    ).rejects.toThrow('Missing id, reference or inline content');
   });
 });
 

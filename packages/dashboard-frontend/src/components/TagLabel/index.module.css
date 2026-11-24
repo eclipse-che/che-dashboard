@@ -10,17 +10,15 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+/* The font size is smaller than the one PF sized the label box from, so
+   `line-height: 1` lets the content box track the actual text and the
+   `align-items: center` on `.pf-v6-c-label__content` centres it. Spacing between
+   a tag and the text beside it comes from the flex `gap` at each call site, not
+   from a margin here. */
 .label {
-  position: relative;
-  top: 0.125rem;
-
-  margin-left: 5px;
-  padding: 0 5px;
-
-  font-size: x-small;
-  line-height: 12px;
-  vertical-align: top;
-
+  padding: 2px 5px;
+  font-size: xx-small;
+  line-height: 1;
   background-color: var(--pf-t--global--background--color--primary--default);
 }
 
