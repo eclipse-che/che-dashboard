@@ -102,6 +102,11 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
     return this.selectedEditorId !== (this.props.currentEditorId ?? '');
   }
 
+  /** Save requires a real selected group; empty key yields an invalid id like "/". */
+  private get canSave(): boolean {
+    return Boolean(this.state.selectedGroupKey) && this.hasChanged;
+  }
+
   private handleSelectGroup(group: EditorGroup): void {
     this.setState(prevState => ({
       selectedGroupKey: group.key,
@@ -270,7 +275,7 @@ export class EditorSelectorModal extends React.PureComponent<Props, State> {
           <Button
             key="confirm"
             variant="primary"
-            isDisabled={!this.hasChanged}
+            isDisabled={!this.canSave}
             onClick={() => onConfirm(this.selectedEditorId)}
           >
             Save

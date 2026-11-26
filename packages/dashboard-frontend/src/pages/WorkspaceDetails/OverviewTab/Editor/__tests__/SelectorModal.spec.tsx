@@ -50,12 +50,16 @@ const editors: che.Plugin[] = [
 const mockOnConfirm = jest.fn();
 const mockOnClose = jest.fn();
 
-function getComponent(isOpen: boolean, currentEditorId: string | undefined): React.ReactElement {
+function getComponent(
+  isOpen: boolean,
+  currentEditorId: string | undefined,
+  editorsOverride: che.Plugin[] = editors,
+): React.ReactElement {
   return (
     <EditorSelectorModal
       isOpen={isOpen}
       currentEditorId={currentEditorId}
-      editors={editors}
+      editors={editorsOverride}
       onConfirm={mockOnConfirm}
       onClose={mockOnClose}
     />
@@ -93,6 +97,14 @@ describe('EditorSelectorModal', () => {
 
   it('Save button is disabled when selection has not changed', () => {
     renderComponent(true, 'che-incubator/che-code/latest');
+    expect(screen.getByRole('button', { name: /Save/i })).toBeDisabled();
+  });
+
+  it('Save button is disabled when there is no selectable editor group', () => {
+    // No current editor and every editor filtered out → selectedGroupKey is empty,
+    // selectedEditorId would be "/" — Save must stay disabled.
+    renderComponent(true, undefined, []);
+    expect(screen.getByText(/No editors are available/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Save/i })).toBeDisabled();
   });
 
