@@ -33,6 +33,7 @@ function makePlugin(
   name: string,
   version: string,
   displayName: string,
+  arch: Architecture[] = ['x86_64'],
 ): che.Plugin {
   return {
     id: `${publisher}/${name}/${version}`,
@@ -44,6 +45,7 @@ function makePlugin(
     icon: '<svg/>',
     iconMediatype: 'image/svg+xml',
     links: { devfile: '' },
+    arch,
   };
 }
 
@@ -53,8 +55,7 @@ const editors = [
 ];
 
 const amd64OnlyEditor: che.Plugin = {
-  ...makePlugin('che-incubator', 'amd64-only', 'latest', 'AMD64 Only Editor'),
-  arch: ['amd64'],
+  ...makePlugin('che-incubator', 'amd64-only', 'latest', 'AMD64 Only Editor', ['amd64']),
 };
 
 const mockChangeEditor = jest.fn().mockResolvedValue(undefined);
@@ -67,13 +68,19 @@ function buildWorkspace(editorId?: string): Workspace {
   return constructWorkspace(builder.build());
 }
 
-function getComponent(readonly: boolean, workspace: Workspace, arch?: string): React.ReactElement {
+function getComponent(
+  readonly: boolean,
+  workspace: Workspace,
+  arch?: string,
+  editorsVisibility?: { showDeprecated: boolean; hideById: string[] },
+): React.ReactElement {
   return (
     <EditorFormGroup
       readonly={readonly}
       workspace={workspace}
       editors={editors}
       currentArchitecture={arch as Architecture | undefined}
+      editorsVisibility={editorsVisibility}
       changeEditor={mockChangeEditor}
     />
   );
@@ -143,8 +150,9 @@ describe('EditorFormGroup', () => {
     );
   });
 
-  it('filters editors by architecture when currentArchitecture is set', () => {
-    // amd64OnlyEditor should be excluded when architecture is arm64
+  it('keeps Overview label for wrong-arch current editor but excludes it from the modal', async () => {
+    // amd64OnlyEditor should be excluded from the modal when architecture is arm64,
+    // while the Overview label still resolves the display name from the full list.
     const { renderComponent: render } = getComponentRenderer(
       (readonly: boolean, workspace: Workspace) => (
         <EditorFormGroup
@@ -152,13 +160,54 @@ describe('EditorFormGroup', () => {
           workspace={workspace}
           editors={[...editors, amd64OnlyEditor]}
           currentArchitecture={'arm64' as Architecture}
+          editorsVisibility={undefined}
           changeEditor={mockChangeEditor}
         />
       ),
     );
     render(false, buildWorkspace('che-incubator/amd64-only/latest'));
-    // label falls back to raw id since amd64-only is filtered out
-    expect(screen.getByText('che-incubator/amd64-only/latest')).toBeInTheDocument();
+    expect(screen.getByText('AMD64 Only Editor')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: /Change editor/i }));
+    const modalEditors = screen.getByTestId('mock-modal-editors').textContent || '';
+    expect(modalEditors).not.toContain('che-incubator/amd64-only/latest');
+  });
+
+  it('excludes editors listed in editorsVisibility.hideById from the modal', async () => {
+    const { renderComponent: render } = getComponentRenderer(
+      (readonly: boolean, workspace: Workspace) => (
+        <EditorFormGroup
+          readonly={readonly}
+          workspace={workspace}
+          editors={editors}
+          currentArchitecture={'x86_64' as Architecture}
+          editorsVisibility={{
+            showDeprecated: false,
+            hideById: ['che-incubator/che-idea-server/latest'],
+          }}
+          changeEditor={mockChangeEditor}
+        />
+      ),
+    );
+    // Overview label still shows the hidden editor's display name
+    render(false, buildWorkspace('che-incubator/che-idea-server/latest'));
+    expect(screen.getByText('JetBrains IntelliJ IDEA')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: /Change editor/i }));
+    const modalEditors = screen.getByTestId('mock-modal-editors').textContent || '';
+    expect(modalEditors).toContain('che-incubator/che-code/latest');
+    expect(modalEditors).not.toContain('che-incubator/che-idea-server/latest');
+  });
+
+  it('honors hideById when currentArchitecture is undefined', async () => {
+    renderComponent(false, buildWorkspace('che-incubator/che-code/latest'), undefined, {
+      showDeprecated: false,
+      hideById: ['che-incubator/che-idea-server/latest'],
+    });
+    await userEvent.click(screen.getByRole('button', { name: /Change editor/i }));
+    const modalEditors = screen.getByTestId('mock-modal-editors').textContent || '';
+    expect(modalEditors).toContain('che-incubator/che-code/latest');
+    expect(modalEditors).not.toContain('che-incubator/che-idea-server/latest');
   });
 
   it('closes the modal without calling changeEditor when Close Modal is clicked', async () => {

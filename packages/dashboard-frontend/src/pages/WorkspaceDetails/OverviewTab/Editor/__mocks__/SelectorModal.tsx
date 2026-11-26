@@ -23,6 +23,7 @@ export class EditorSelectorModal extends React.PureComponent<Props> {
     const firstId = editors[0]?.id ?? '';
     return (
       <div data-testid="mock-editor-selector-modal">
+        <div data-testid="mock-modal-editors">{editors.map(e => e.id).join(',')}</div>
         <button onClick={() => onConfirm(firstId)}>Confirm Editor</button>
         <button onClick={onClose}>Close Modal</button>
       </div>

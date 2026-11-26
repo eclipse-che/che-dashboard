@@ -22,6 +22,7 @@ import { PencilAltIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { filterEditors } from '@/components/EditorSelector/Gallery';
 import { lazyInject } from '@/inversify.config';
 import { EditorSelectorModal } from '@/pages/WorkspaceDetails/OverviewTab/Editor/SelectorModal';
 import overviewStyles from '@/pages/WorkspaceDetails/OverviewTab/index.module.css';
@@ -33,7 +34,10 @@ import { Workspace } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
 import { selectCurrentArchitecture } from '@/store/ClusterConfig/selectors';
 import { selectEditors } from '@/store/Plugins/chePlugins/selectors';
+import { selectEditorsVisibility } from '@/store/ServerConfig';
 import { changeWorkspaceEditor } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/changeWorkspaceEditor';
+
+const DEPRECATED_TAG = 'Deprecated';
 
 export type Props = MappedProps & {
   readonly: boolean;
@@ -50,11 +54,23 @@ export class EditorFormGroup extends React.PureComponent<Props, State> {
 
   state: State = { isSelectorOpen: false };
 
-  private get filteredEditors(): che.Plugin[] {
-    const { editors, currentArchitecture } = this.props;
-    return editors.filter(
-      e => !currentArchitecture || !e.arch || e.arch.includes(currentArchitecture as Architecture),
-    );
+  /**
+   * Editors shown in the Change Editor modal.
+   * Uses the same visibility rules as Create Workspace (arch + deprecated + hideById).
+   * When architecture is unknown, still apply deprecated/hideById so CHE_HIDE_EDITORS_BY_ID is honored.
+   */
+  private get modalEditors(): che.Plugin[] {
+    const { editors, currentArchitecture, editorsVisibility } = this.props;
+    if (currentArchitecture) {
+      return filterEditors(editors, currentArchitecture, editorsVisibility);
+    }
+    const hideById = editorsVisibility?.hideById || [];
+    return editors.filter(editor => {
+      if (!editorsVisibility?.showDeprecated && editor.tags?.includes(DEPRECATED_TAG)) {
+        return false;
+      }
+      return !hideById.includes(editor.id);
+    });
   }
 
   private async handleConfirm(newEditorId: string): Promise<void> {
@@ -77,11 +93,13 @@ export class EditorFormGroup extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactNode {
-    const { readonly, workspace } = this.props;
+    const { readonly, workspace, editors } = this.props;
     const { isSelectorOpen } = this.state;
-    const editors = this.filteredEditors;
+    // Use the full editor list for the Overview label so a workspace that is
+    // already on a hidden editor still shows a proper display name.
     const label = getCurrentEditorLabel(workspace, editors);
     const currentEditorId = getCurrentEditorId(workspace);
+    const modalEditors = this.modalEditors;
 
     return (
       <FormGroup
@@ -111,7 +129,7 @@ export class EditorFormGroup extends React.PureComponent<Props, State> {
         <EditorSelectorModal
           isOpen={isSelectorOpen}
           currentEditorId={currentEditorId}
-          editors={editors}
+          editors={modalEditors}
           onConfirm={editorId => this.handleConfirm(editorId)}
           onClose={() => this.setState({ isSelectorOpen: false })}
         />
@@ -123,6 +141,7 @@ export class EditorFormGroup extends React.PureComponent<Props, State> {
 const mapStateToProps = (state: RootState) => ({
   editors: selectEditors(state),
   currentArchitecture: selectCurrentArchitecture(state) as Architecture | undefined,
+  editorsVisibility: selectEditorsVisibility(state),
 });
 
 const mapDispatchToProps = {
