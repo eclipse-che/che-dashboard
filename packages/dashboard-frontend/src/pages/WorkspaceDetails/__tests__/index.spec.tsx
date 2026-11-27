@@ -17,7 +17,7 @@ import { Provider } from 'react-redux';
 import { Location, MemoryRouter } from 'react-router-dom';
 
 import { container } from '@/inversify.config';
-import { Props, WorkspaceDetails } from '@/pages/WorkspaceDetails';
+import { Props, WORKSPACE_DETAILS_TABS, WorkspaceDetails } from '@/pages/WorkspaceDetails';
 import { mockShowAlert } from '@/pages/WorkspaceDetails/__mocks__';
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import devfileApi from '@/services/devfileApi';
@@ -120,9 +120,10 @@ describe('Workspace Details page', () => {
       expect(screen.queryByRole('tab', { name: 'Devfile' })).toBeNull();
     });
 
-    it('should fall back to the Overview tab for the Devfile tab search param', async () => {
+    it('should fall back to the Overview tab for the legacy Devfile tab search param', async () => {
       const workspace = constructWorkspace(devWorkspaceBuilder.build());
-      renderComponent({ workspace }, `?tab=${WorkspaceDetailsTab.DEVFILE}`);
+      // the Devfile tab was removed; legacy links still carry the plain query value
+      renderComponent({ workspace }, '?tab=Devfile');
 
       await waitFor(() =>
         expect(screen.queryByRole('tabpanel', { name: 'Overview' })).not.toBeNull(),
@@ -194,6 +195,31 @@ describe('Workspace Details page', () => {
 
       await waitFor(() =>
         expect(screen.queryByRole('tabpanel', { name: 'Overview' })).not.toBeNull(),
+      );
+    });
+
+    it.each([...WORKSPACE_DETAILS_TABS])(
+      'should activate the %s tab from the location search params',
+      async tab => {
+        const workspace = constructWorkspace(devWorkspaceBuilder.build());
+        renderComponent({ workspace }, `?tab=${tab}`);
+
+        await waitFor(() => expect(screen.queryByRole('tabpanel', { name: tab })).not.toBeNull());
+      },
+    );
+
+    it('should switch to the Storage tab on click', async () => {
+      const workspace = constructWorkspace(devWorkspaceBuilder.build());
+      renderComponent({ workspace });
+
+      await userEvent.click(screen.getByRole('tab', { name: 'Storage' }));
+
+      await waitFor(() =>
+        expect(screen.queryByRole('tabpanel', { name: 'Storage' })).not.toBeNull(),
+      );
+      expect(screen.getByTestId('storage-tab')).toHaveTextContent('Storage tab active: true');
+      expect(mockNavigate).toHaveBeenCalledWith(
+        `/workspace/${namespace}/${workspaceName}?tab=${WorkspaceDetailsTab.STORAGE}`,
       );
     });
   });
