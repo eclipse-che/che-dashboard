@@ -167,7 +167,6 @@
 | `@simple-libs/stream-utils@1.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@simple-libs/stream-utils/1.2.0) |
 | `@sinclair/typebox@0.27.8` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sinclair/typebox/0.27.8) |
 | `@sinclair/typebox@0.34.41` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sinclair/typebox/0.34.41) |
-| `@sinonjs/commons@3.0.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sinonjs/commons/3.0.0) |
 | `@sinonjs/commons@3.0.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sinonjs/commons/3.0.1) |
 | `@sinonjs/fake-timers@10.3.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sinonjs/fake-timers/10.3.0) |
 | `@sinonjs/fake-timers@13.0.5` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sinonjs/fake-timers/13.0.5) |
@@ -305,9 +304,11 @@
 | `acorn-import-phases@1.0.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/acorn-import-phases/1.0.4) |
 | `acorn-jsx@5.3.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/acorn-jsx/5.3.2) |
 | `acorn-walk@8.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/acorn-walk/8.3.0) |
+| `acorn-walk@8.3.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/acorn-walk/8.3.5) |
 | `acorn@8.11.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/acorn/8.11.2) |
 | `acorn@8.14.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/acorn/8.14.0) |
 | `acorn@8.15.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/acorn/8.15.0) |
+| `acorn@8.19.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/acorn/8.19.0) |
 | `agent-base@6.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/agent-base/6.0.2) |
 | `agent-base@7.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/agent-base/7.1.1) |
 | `agent-base@7.1.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/agent-base/7.1.4) |
@@ -473,7 +474,7 @@
 | `debug@4.3.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/debug/4.3.4) |
 | `debug@4.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/debug/4.4.0) |
 | `debug@4.4.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/debug/4.4.3) |
-| `decimal.js@10.4.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/decimal.js/10.4.3) |
+| `decimal.js@10.6.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/decimal.js/10.6.0) |
 | `dedent@1.7.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/dedent/1.7.0) |
 | `deep-diff@0.3.8` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/deep-diff/0.3.8) |
 | `deep-is@0.1.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/deep-is/0.1.4) |
@@ -525,6 +526,7 @@
 | `entities@2.2.0` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/entities/2.2.0) |
 | `entities@4.5.0` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/entities/4.5.0) |
 | `entities@7.0.1` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/entities/7.0.1) |
+| `entities@9.0.0` | BSD-2-Clause | transitive dependency |
 | `env-paths@2.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/env-paths/2.2.1) |
 | `envinfo@7.11.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/envinfo/7.11.0) |
 | `environment@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/environment/1.1.0) |
@@ -923,7 +925,7 @@
 | `npm-run-path@4.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/npm-run-path/4.0.1) |
 | `npm-run-path@5.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/npm-run-path/5.1.0) |
 | `nth-check@2.1.1` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/nth-check/2.1.1) |
-| `nwsapi@2.2.7` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/nwsapi/2.2.7) |
+| `nwsapi@2.2.28` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/nwsapi/2.2.28) |
 | `oauth-sign@0.9.0` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/oauth-sign/0.9.0) |
 | `oauth4webapi@3.8.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/oauth4webapi/3.8.3) |
 | `object-assign@4.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/object-assign/4.1.1) |
@@ -955,7 +957,7 @@
 | `parent-module@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/parent-module/1.0.1) |
 | `parse-json@4.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/parse-json/4.0.0) |
 | `parse-json@5.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/parse-json/5.2.0) |
-| `parse5@7.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/parse5/7.1.2) |
+| `parse5@8.1.1` | MIT | transitive dependency |
 | `pascal-case@3.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pascal-case/3.1.2) |
 | `path-exists@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/path-exists/3.0.0) |
 | `path-exists@4.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/path-exists/4.0.0) |
@@ -1028,7 +1030,6 @@
 | `prop-types@15.8.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/prop-types/15.8.1) |
 | `proxy-from-env@2.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/proxy-from-env/2.1.0) |
 | `psl@1.15.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/psl/1.15.0) |
-| `psl@1.9.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/psl/1.9.0) |
 | `pstree.remy@1.1.8` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pstree.remy/1.1.8) |
 | `pump@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pump/3.0.0) |
 | `punycode@2.3.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/punycode/2.3.1) |
@@ -1194,7 +1195,7 @@
 | `totalist@3.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/totalist/3.0.1) |
 | `touch@3.1.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/touch/3.1.0) |
 | `tough-cookie@2.5.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/tough-cookie/2.5.0) |
-| `tough-cookie@4.1.3` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/tough-cookie/4.1.3) |
+| `tough-cookie@4.1.4` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/tough-cookie/4.1.4) |
 | `tr46@0.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/tr46/0.0.3) |
 | `tr46@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/tr46/3.0.0) |
 | `ts-api-utils@1.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ts-api-utils/1.0.3) |
