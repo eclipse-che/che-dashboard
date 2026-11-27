@@ -103,6 +103,7 @@
     "qs": "6.16.1",
     "source-map-js": "1.2.2",
     "uri-js@^4.2.2": "npm:uri-js-replace@1.0.1",
-    "open": "11.0.4"
+    "open": "11.0.4",
+    "parse5": "8.1.1"
   }
 }
