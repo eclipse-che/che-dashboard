@@ -170,13 +170,14 @@ export class AiProviderEntry extends React.PureComponent<Props, State> {
     );
   }
 
-  private getTechPreviewBadges(): React.ReactElement[] {
+  private getSupportedBadges(): React.ReactElement[] {
     const { tags } = this.props;
     if (!tags) {
       return [];
     }
+    const supportedTags = ['Tech-Preview', 'Community'];
     return tags
-      .filter(tag => tag === 'Tech-Preview')
+      .filter(tag => supportedTags.includes(tag))
       .map((tag, index) => (
         <Badge isRead style={{ whiteSpace: 'nowrap' }} key={`tag-${index}`}>
           {tag}
@@ -189,7 +190,7 @@ export class AiProviderEntry extends React.PureComponent<Props, State> {
     const { activeTool } = this.state;
 
     const titleClassName = `${styles.cardTitle}${isSelected ? ` ${styles.activeCard}` : ''}`;
-    const techPreviewBadges = this.getTechPreviewBadges();
+    const supportedBadges = this.getSupportedBadges();
     const versionDropdown = this.buildVersionDropdown();
 
     return (
@@ -236,7 +237,7 @@ export class AiProviderEntry extends React.PureComponent<Props, State> {
                   Key configured
                 </Badge>
               )}
-              {techPreviewBadges}
+              {supportedBadges}
             </span>
           </CardTitle>
         </CardHeader>

@@ -80,9 +80,46 @@ describe('AiProviderEntry', () => {
     expect(screen.getByText('Tech-Preview')).toBeInTheDocument();
   });
 
-  it('does not show Tech-Preview badge when provider has no tags', () => {
+  it('shows Community badge when provider has Community tag', () => {
+    renderComponent([geminiTool], false, false, ['Community']);
+    expect(screen.getByText('Community')).toBeInTheDocument();
+  });
+
+  it('shows both Tech-Preview and Community badges when provider has both tags', () => {
+    renderComponent([geminiTool], false, false, ['Tech-Preview', 'Community']);
+    expect(screen.getByText('Tech-Preview')).toBeInTheDocument();
+    expect(screen.getByText('Community')).toBeInTheDocument();
+  });
+
+  it('shows both Community and Tech-Preview badges in any order', () => {
+    renderComponent([geminiTool], false, false, ['Community', 'Tech-Preview']);
+    expect(screen.getByText('Community')).toBeInTheDocument();
+    expect(screen.getByText('Tech-Preview')).toBeInTheDocument();
+  });
+
+  it('does not show badge for unsupported tags', () => {
+    renderComponent([geminiTool], false, false, ['UnknownTag', 'Another']);
+    expect(screen.queryByText('UnknownTag')).toBeNull();
+    expect(screen.queryByText('Another')).toBeNull();
+  });
+
+  it('shows only supported tags when mixed with unsupported tags', () => {
+    renderComponent([geminiTool], false, false, ['Tech-Preview', 'UnknownTag', 'Community']);
+    expect(screen.getByText('Tech-Preview')).toBeInTheDocument();
+    expect(screen.getByText('Community')).toBeInTheDocument();
+    expect(screen.queryByText('UnknownTag')).toBeNull();
+  });
+
+  it('does not show any badge when provider has no tags', () => {
     renderComponent([geminiTool], false, false);
     expect(screen.queryByText('Tech-Preview')).toBeNull();
+    expect(screen.queryByText('Community')).toBeNull();
+  });
+
+  it('does not show any badge when provider has empty tags array', () => {
+    renderComponent([geminiTool], false, false, []);
+    expect(screen.queryByText('Tech-Preview')).toBeNull();
+    expect(screen.queryByText('Community')).toBeNull();
   });
 
   describe('version dropdown', () => {

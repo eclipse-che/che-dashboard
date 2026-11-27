@@ -1,6 +1,6 @@
 {
   "name": "@eclipse-che/dashboard-backend",
-  "version": "7.125.0-next",
+  "version": "7.126.0-next",
   "description": "Dashboard backend for Eclipse Che",
   "scripts": {
     "build": "webpack --color --config webpack.config.prod.js",
@@ -30,7 +30,7 @@
     "@eclipse-che/che-devworkspace-generator": "7.113.0-next-7b6a101",
     "@fastify/cors": "^11.2.0",
     "@fastify/error": "^4.2.0",
-    "@fastify/http-proxy": "^11.6.2",
+    "@fastify/http-proxy": "^11.6.6",
     "@fastify/oauth2": "^8.2.0",
     "@fastify/rate-limit": "^10.3.0",
     "@fastify/static": "^10.1.2",
@@ -42,7 +42,7 @@
     "args": "^5.0.3",
     "axios": "^1.20.0",
     "cron-parser": "^5.5.0",
-    "fastify": "^5.12.5",
+    "fastify": "^5.12.6",
     "fs-extra": "^11.1.1",
     "https": "^1.0.0",
     "js-yaml": "^4.3.2",
